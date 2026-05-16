@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { COLOR, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './okaanda-tokens';
 import {
   DarkContext,
@@ -77,6 +78,13 @@ const focusItems = [
   { icon: IconTarget, label: 'Deliver tools', body: 'Move from internal stack to pilots and sector-facing products.', hex: COLOR.dyePlum }
 ];
 
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-40px' },
+  transition: { duration: 0.45 }
+};
+
 const PublicNav = () => (
   <nav className="sticky top-0 z-50 w-full border-b" style={{
     background: 'rgba(232,225,207,0.92)',
@@ -113,7 +121,12 @@ const PublicShell = ({ children }: { children: React.ReactNode }) => (
 
 const Ticker = () => (
   <div className="w-screen overflow-hidden border-y" style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
-    <div className="flex w-max items-center py-3">
+    <motion.div
+      data-onganda-ticker
+      animate={{ x: ['0%', '-50%'] }}
+      transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+      className="flex w-max items-center py-3"
+    >
       {[...SYSTEMS, ...SYSTEMS].map((sys, index) => (
         <div key={`${sys.name}-${index}`} className="flex items-center">
           <PixelDot color={sys.borderHex} size={6} />
@@ -122,7 +135,7 @@ const Ticker = () => (
           <div className="mr-8 h-4 w-px" style={{ background: darkLine }} />
         </div>
       ))}
-    </div>
+    </motion.div>
   </div>
 );
 
@@ -145,14 +158,26 @@ const PublicHero = ({
 }) => (
   <header className="relative flex min-h-[calc(100svh-65px)] flex-col items-center justify-center overflow-hidden">
     <WeaveOverlay opacity={0.026} />
-    <div className="absolute inset-y-0 left-0 flex w-5 flex-col" aria-hidden="true">
+    <div className="absolute inset-y-0 left-0 flex w-5 flex-col overflow-hidden" aria-hidden="true">
       {[COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum, COLOR.firedRed].map((hex, i) => (
-        <div key={`${hex}-${i}`} className="h-12 w-2" style={{ background: hex, opacity: i % 2 ? 0.18 : 0.48 }} />
+        <motion.div
+          key={`${hex}-${i}`}
+          animate={{ y: [0, -80, 0] }}
+          transition={{ duration: 16 + i * 2, repeat: Infinity, ease: 'linear' }}
+          className="h-12 w-2"
+          style={{ background: hex, opacity: i % 2 ? 0.18 : 0.48 }}
+        />
       ))}
     </div>
-    <div className="absolute inset-y-0 right-0 flex w-5 flex-col items-end" aria-hidden="true">
+    <div className="absolute inset-y-0 right-0 flex w-5 flex-col items-end overflow-hidden" aria-hidden="true">
       {[COLOR.dyePlum, COLOR.mopaneBrown, COLOR.mahanguGold, COLOR.barkRust, COLOR.ochreOrange, COLOR.firedRed].map((hex, i) => (
-        <div key={`${hex}-${i}`} className="h-12 w-2" style={{ background: hex, opacity: i % 2 ? 0.16 : 0.42 }} />
+        <motion.div
+          key={`${hex}-${i}`}
+          animate={{ y: [0, 80, 0] }}
+          transition={{ duration: 17 + i * 2, repeat: Infinity, ease: 'linear' }}
+          className="h-12 w-2"
+          style={{ background: hex, opacity: i % 2 ? 0.16 : 0.42 }}
+        />
       ))}
     </div>
 
@@ -162,9 +187,19 @@ const PublicHero = ({
         <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: quiet }}>{LAB_LABEL}</span>
       </div>
       <h1 className="flex max-w-6xl flex-col items-center text-center font-bold leading-[0.95]" style={{ color: COLOR.charBlack, fontSize: 'clamp(3.1rem, 8vw, 7.6rem)' }}>
-        <span>{line1}</span>
-        <span>{line2}</span>
-        <span style={{ color: COLOR.ochreOrange }}>{line3}</span>
+        {[line1, line2, line3].map((line, index) => (
+          <span key={line} className="block overflow-hidden">
+            <motion.span
+              className="block"
+              initial={{ y: '110%', opacity: 0 }}
+              animate={{ y: '0%', opacity: 1 }}
+              transition={{ duration: 0.72, delay: 0.08 + index * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              style={{ color: index === 2 ? COLOR.ochreOrange : COLOR.charBlack }}
+            >
+              {line}
+            </motion.span>
+          </span>
+        ))}
       </h1>
       <Ticker />
       <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
@@ -218,7 +253,13 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
     <SectionTitle label="Systems" headline="Five systems. One compound." accent={COLOR.mahanguGold} />
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {SYSTEMS.map((sys, index) => (
-        <article key={sys.name} className="relative flex min-h-[320px] flex-col border p-8" style={{ background: COLOR.dustLight, borderColor: line }}>
+        <motion.article
+          key={sys.name}
+          {...fadeUp}
+          whileHover={{ y: -4 }}
+          className="relative flex min-h-[320px] flex-col border p-8"
+          style={{ background: COLOR.dustLight, borderColor: line }}
+        >
           <WeaveOverlay opacity={0.035} />
           <div className="relative mb-8 flex items-start justify-between">
             <div className="border p-3" style={{ borderColor: `${sys.borderHex}40`, background: `${sys.borderHex}14` }}>
@@ -234,44 +275,60 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           </div>
           <div className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} aria-hidden="true" />
           <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />
-        </article>
+        </motion.article>
       ))}
-      {detailed && (
-        <article className="relative flex min-h-[320px] flex-col justify-between overflow-hidden p-8" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+      <motion.article
+        {...fadeUp}
+        whileHover={{ y: -4 }}
+        className="relative flex min-h-[320px] flex-col justify-between overflow-hidden p-8"
+        style={{ background: COLOR.charBlack, color: COLOR.milletClay }}
+      >
           <WeaveOverlay isDark opacity={0.06} />
           <div className="relative">
-            <PixelTag hex={COLOR.ochreOrange} label="LAB" />
+            <div className="w-full" style={{ background: COLOR.ochreOrange, height: 28 }}>
+              <span className="ml-3 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: COLOR.milletClay, lineHeight: '28px' }}>LAB</span>
+            </div>
             <h3 className="mt-8 text-2xl font-semibold">{BRAND}</h3>
             <p className="mt-5 text-sm leading-relaxed" style={{ color: 'rgba(232,225,207,0.56)' }}>
-              The compound exists so the five systems work together rather than become isolated prototypes.
+              {detailed ? 'The compound exists so the five systems work together rather than become isolated prototypes.' : 'Five systems working as one compound: from readiness to delivery.'}
             </p>
           </div>
           <IconCheck size={24} color={COLOR.ochreOrange} />
-        </article>
-      )}
+      </motion.article>
     </div>
   </section>
 );
 
 const SignalBand = () => (
-  <section className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
+  <section id="why" className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
     <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="relative overflow-hidden p-8" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+      <motion.div
+        {...fadeUp}
+        whileHover={{ y: -3 }}
+        className="relative overflow-hidden p-8"
+        style={{ background: COLOR.charBlack, color: COLOR.milletClay }}
+      >
         <WeaveOverlay isDark opacity={0.055} />
         <div className="relative">
-          <PixelTag hex={COLOR.ochreOrange} label="WHY" />
-          <h2 className="mt-10 max-w-xl text-3xl font-semibold leading-tight md:text-5xl">Namibia should not only consume AI.</h2>
+          <PixelTag hex={COLOR.ochreOrange} label="Why Onganda" />
+          <h2 className="mt-10 max-w-xl text-3xl font-semibold leading-tight md:text-5xl">Namibia should not only consume AI. It should be able to shape it.</h2>
           <p className="mt-8 max-w-lg text-sm leading-relaxed md:text-base" style={{ color: 'rgba(232,225,207,0.58)' }}>
-            The work is not a trophy lab. It is a capability layer: adaptation, evaluation, deployment, interfaces, and delivered tools.
+            Onganda is building the missing layer: adaptation, evaluation, deployment, interfaces, and delivered tools.
           </p>
           <DitherBar color={COLOR.ochreOrange} segments={28} height={3} opacity={0.65} className="mt-10" />
         </div>
-      </div>
+      </motion.div>
       <div className="grid gap-4 sm:grid-cols-2">
         {focusItems.slice(0, 4).map((item, index) => {
           const Icon = item.icon;
           return (
-            <article key={item.label} className="relative border p-6" style={{ background: COLOR.dustLight, borderColor: line }}>
+            <motion.article
+              key={item.label}
+              {...fadeUp}
+              whileHover={{ y: -3 }}
+              className="relative border p-6"
+              style={{ background: COLOR.dustLight, borderColor: line }}
+            >
               <PixelCornerMarks hex={item.hex} size={7} />
               <div className="mb-8 flex items-center justify-between">
                 <PixelTag hex={item.hex} label={String(index + 1).padStart(2, '0')} />
@@ -279,12 +336,19 @@ const SignalBand = () => (
               </div>
               <h3 className="text-lg font-semibold leading-tight">{item.label}</h3>
               <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{item.body}</p>
-            </article>
+            </motion.article>
           );
         })}
       </div>
     </div>
   </section>
+);
+
+const WhatBuildingBand = () => (
+  <EditorialSection id="building" label="What we are building" headline="A systems lab for sovereignty, capability, and use." accent={COLOR.barkRust}>
+    <p>{BRAND} is not a single product. It is a lab organized around a coherent stack: model and data systems, adaptation workflows, containers, interfaces, and delivery.</p>
+    <p>From there, the lab turns those systems into pilots, tools, and applications that can be used in practice.</p>
+  </EditorialSection>
 );
 
 const TerminalBand = () => (
@@ -329,9 +393,9 @@ const ContactBand = ({ compact = false }: { compact?: boolean }) => (
               <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Short note</span>
               <textarea className="mt-3 min-h-32 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="What would you like to discuss?" />
             </label>
-            <button className="inline-flex w-fit items-center gap-2 px-6 py-3 text-sm font-semibold" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+            <motion.button whileTap={{ scale: 0.98 }} className="inline-flex w-fit items-center gap-2 px-6 py-3 text-sm font-semibold" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
               Contact {BRAND}<IconArrowRight size={14} />
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -351,6 +415,7 @@ const HomePage = () => (
       secondary={{ label: 'View the systems', href: '#systems' }}
     />
     <SignalBand />
+    <WhatBuildingBand />
     <SystemsGrid />
     <ContactBand compact />
   </>
@@ -372,6 +437,7 @@ const FullPage = () => (
       <p>Without local capability, countries remain dependent on outside providers for model choices, system behavior, language support, evaluation standards, and deployment decisions.</p>
       <p>{BRAND} is building that missing layer: not a trophy lab, but a working capability layer.</p>
     </EditorialSection>
+    <WhatBuildingBand />
     <SystemsGrid detailed />
     <TerminalBand />
     <EditorialSection id="focus" label="Focus" headline="Where sovereignty becomes practical." accent={COLOR.dyePlum}>
@@ -380,14 +446,14 @@ const FullPage = () => (
         {focusItems.map((item, index) => {
           const Icon = item.icon;
           return (
-            <article key={item.label} className="relative flex gap-5 border p-5" style={{ background: COLOR.dustLight, borderColor: line }}>
+            <motion.article key={item.label} {...fadeUp} whileHover={{ x: 4 }} className="relative flex gap-5 border p-5" style={{ background: COLOR.dustLight, borderColor: line }}>
               <PixelTag hex={item.hex} label={String(index + 1).padStart(2, '0')} />
               <div className="shrink-0 pt-1"><Icon size={22} color={item.hex} /></div>
               <div>
                 <h3 className="font-semibold">{item.label}</h3>
                 <p className="mt-2 text-sm leading-relaxed" style={{ color: muted }}>{item.body}</p>
               </div>
-            </article>
+            </motion.article>
           );
         })}
       </div>
