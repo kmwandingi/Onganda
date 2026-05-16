@@ -30,8 +30,6 @@ function App() {
 
   const generatedComponent = useMemo(() => {
     if (path === '/showcase') return <NamibiaAISystemsHub />;
-    if (path === '/systems') return <OkaandaPublicSite page="systems" />;
-    if (path === '/contact') return <OkaandaPublicSite page="contact" />;
     if (path === '/full') return <OkaandaPublicSite page="full" />;
     return <OkaandaPublicSite page="home" />;
   }, [path]);
