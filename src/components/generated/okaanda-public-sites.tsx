@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  COLOR,
-  SYSTEMS
-} from './okaanda-tokens';
+import { COLOR, SYSTEMS, SystemEntry } from './okaanda-tokens';
 import {
   DarkContext,
   DitherBar,
@@ -10,48 +7,44 @@ import {
   PixelCornerMarks,
   PixelDot,
   PixelTag,
-  SectionHeader,
-  WeaveOverlay
+  WeaveOverlay,
+  IconOkaanda,
+  IconOshini,
+  IconOmbiga,
+  IconEtiti,
+  IconOshitoo
 } from './okaanda-primitives';
+import {
+  IconArrowRight,
+  IconCheck,
+  IconCode,
+  IconDatabase,
+  IconDashboard,
+  IconMail,
+  IconPackage,
+  IconTarget,
+  IconTerminal,
+  IconUsers
+} from './okaanda-icons';
 
 type PublicPage = 'home' | 'systems' | 'contact' | 'full';
 
-const muted = 'rgb(30 26 23 / 62%)';
-const quiet = 'rgb(30 26 23 / 42%)';
-const line = 'rgb(30 26 23 / 10%)';
-const lineStrong = 'rgb(30 26 23 / 16%)';
+const BRAND = 'Onganda';
+const LAB_LABEL = 'Namibia AI Systems Lab';
+const muted = 'rgba(30,26,23,0.58)';
+const quiet = 'rgba(30,26,23,0.42)';
+const line = 'rgba(30,26,23,0.10)';
+const darkLine = 'rgba(232,225,207,0.10)';
 
-const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/systems', label: 'Systems' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/full', label: 'Full site' },
-  { href: '/showcase', label: 'Showcase' }
-];
+const systemIcon = (name: string, size = 42) => {
+  if (name === 'Okaanda') return <IconOkaanda size={size} />;
+  if (name === 'Oshini') return <IconOshini size={size} />;
+  if (name === 'Ombiga') return <IconOmbiga size={size} />;
+  if (name === 'Etiti') return <IconEtiti size={size} />;
+  return <IconOshitoo size={size} />;
+};
 
-const fullSections = [
-  { id: 'why', label: 'Why Okaanda' },
-  { id: 'systems', label: 'Systems' },
-  { id: 'studio', label: 'Studio' },
-  { id: 'focus', label: 'Focus' },
-  { id: 'people', label: 'People' },
-  { id: 'contact', label: 'Contact' }
-];
-
-const focusAreas = [
-  'AI adaptation and evaluation',
-  'Local deployment workflows',
-  'Agents and applied interfaces',
-  'Public-interest and institutional systems',
-  'Sector tools that can move from internal stack to real use'
-];
-
-const studioSteps = [
-  'Build the stack',
-  'Test the system',
-  'Turn it into a usable interface',
-  'Deliver it as a real tool'
-];
+const systemEnglish = (sys: SystemEntry) => sys.name === 'Okaanda' ? 'Granary' : sys.english;
 
 const systemLine = (name: string) => {
   if (name === 'Okaanda') return 'Storage, readiness, and model organization.';
@@ -62,72 +55,83 @@ const systemLine = (name: string) => {
 };
 
 const systemLong = (name: string) => {
-  if (name === 'Okaanda') {
-    return 'Okaanda is the storage and readiness layer of the lab. It holds datasets, evaluation structures, model organization, and the internal order that makes the rest of the stack usable.';
-  }
-  if (name === 'Oshini') {
-    return 'Oshini is where raw material becomes usable capability. It carries the workflows for fine-tuning, distillation, compression, evaluation, and model adaptation.';
-  }
-  if (name === 'Ombiga') {
-    return 'Ombiga holds systems in a form that can travel. It is the layer for containers, agent runtimes, memory, and portable units of work.';
-  }
-  if (name === 'Etiti') {
-    return 'Etiti is the surface where people meet the system. It turns model work into dashboards, review spaces, workbenches, and interfaces that can be understood and controlled.';
-  }
+  if (name === 'Okaanda') return 'Okaanda is the granary: the storage and readiness layer. It holds datasets, evaluation structures, model organization, and the internal order that makes the rest of the stack usable.';
+  if (name === 'Oshini') return 'Oshini is where raw material becomes usable capability. It carries the workflows for fine-tuning, distillation, compression, evaluation, and model adaptation.';
+  if (name === 'Ombiga') return 'Ombiga holds systems in a form that can travel. It is the layer for containers, agent runtimes, memory, and portable units of work.';
+  if (name === 'Etiti') return 'Etiti is the surface where people meet the system. It turns model work into dashboards, review spaces, workbenches, and interfaces that can be understood and controlled.';
   return 'Oshitoo is the delivery layer. It is where the lab turns internal capability into pilots, applications, and sector-facing products prepared for real use.';
 };
 
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/systems', label: 'Systems' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/full', label: 'Full site' },
+  { href: '/showcase', label: 'Showcase' }
+];
+
+const focusItems = [
+  { icon: IconDatabase, label: 'Model adaptation and evaluation', hex: COLOR.ochreOrange },
+  { icon: IconTerminal, label: 'Local deployment workflows', hex: COLOR.barkRust },
+  { icon: IconPackage, label: 'Agents, containers, and held systems', hex: COLOR.mahanguGold },
+  { icon: IconDashboard, label: 'Interfaces for review, control, and use', hex: COLOR.mopaneBrown },
+  { icon: IconTarget, label: 'Applied systems that can move into practice', hex: COLOR.dyePlum }
+];
+
+const studioSteps = [
+  { icon: IconDatabase, label: 'Build the stack', body: 'Start with model, data, evaluation, and readiness layers.', hex: COLOR.ochreOrange },
+  { icon: IconCode, label: 'Test the system', body: 'Adapt, compress, evaluate, and inspect behavior before use.', hex: COLOR.barkRust },
+  { icon: IconDashboard, label: 'Shape the interface', body: 'Turn capability into work surfaces people can understand.', hex: COLOR.mopaneBrown },
+  { icon: IconPackage, label: 'Deliver the tool', body: 'Package outputs into pilots, products, and sector systems.', hex: COLOR.dyePlum }
+];
+
 const PublicNav = () => (
-  <header className="sticky top-0 z-40 border-b backdrop-blur" style={{
-    background: 'rgb(232 225 207 / 92%)',
-    borderColor: line
+  <nav className="sticky top-0 z-50 w-full border-b" style={{
+    background: 'rgba(232,225,207,0.92)',
+    borderColor: line,
+    backdropFilter: 'blur(14px)'
   }}>
-    <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 md:px-12">
+    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
       <a href="/" className="flex items-center gap-3 no-underline" style={{ color: COLOR.charBlack }}>
-        <OkaandaLogoMark size={22} />
+        <OkaandaLogoMark size={24} />
         <div>
-          <p className="text-sm font-semibold leading-none tracking-tight">Okaanda</p>
+          <p className="text-sm font-semibold leading-none tracking-tight">{BRAND}</p>
           <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>
-            Namibia AI Systems Lab
+            {LAB_LABEL}
           </p>
         </div>
       </a>
-      <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+      <div className="hidden items-center gap-1 md:flex">
         {navItems.map(item => (
-          <a
-            key={item.href}
-            href={item.href}
-            className="px-3 py-2 text-xs font-bold uppercase tracking-[0.13em] no-underline transition-colors"
-            style={{ color: quiet }}
-          >
+          <a key={item.href} href={item.href} className="px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] no-underline" style={{ color: quiet }}>
             {item.label}
           </a>
         ))}
-      </nav>
+      </div>
     </div>
-  </header>
+  </nav>
 );
 
 const PublicShell = ({ children }: { children: React.ReactNode }) => (
   <DarkContext.Provider value={{ isDark: false, toggle: () => {} }}>
-    <div className="min-h-screen" style={{
-      background: COLOR.milletClay,
-      color: COLOR.charBlack,
-      fontFamily: 'Inter, Arial, sans-serif'
-    }}>
+    <div className="min-h-screen" style={{ background: COLOR.milletClay, color: COLOR.charBlack, fontFamily: 'Inter, Arial, sans-serif' }}>
       <PublicNav />
       {children}
-      <footer className="border-t px-6 py-10 md:px-12" style={{ borderColor: line }}>
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <footer className="w-full border-t px-6 py-14 md:px-12" style={{ background: COLOR.charBlack, borderColor: COLOR.ochreOrange, color: COLOR.milletClay }}>
+        <div className="mx-auto flex max-w-7xl flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold">Okaanda</p>
-            <p className="mt-2 max-w-md text-sm leading-relaxed" style={{ color: muted }}>
+            <div className="flex items-center gap-3">
+              <OkaandaLogoMark size={22} />
+              <p className="text-lg font-semibold">{BRAND}</p>
+              <span className="text-sm" style={{ color: 'rgba(232,225,207,0.38)' }}>· {LAB_LABEL}</span>
+            </div>
+            <p className="mt-5 max-w-lg text-sm leading-relaxed" style={{ color: 'rgba(232,225,207,0.55)' }}>
               AI systems that Namibia can shape, run, and build on.
             </p>
           </div>
           <div className="flex gap-1" aria-hidden="true">
-            {[COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum].map(hex => (
-              <PixelDot key={hex} color={hex} size={10} />
+            {[COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown, COLOR.dyePlum].map(hex => (
+              <PixelDot key={hex} color={hex} size={10} opacity={0.8} />
             ))}
           </div>
         </div>
@@ -136,71 +140,104 @@ const PublicShell = ({ children }: { children: React.ReactNode }) => (
   </DarkContext.Provider>
 );
 
-const HeroPanel = ({
-  label,
+const Ticker = () => (
+  <div className="w-screen overflow-hidden border-y" style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
+    <div className="flex w-max items-center py-3">
+      {[...SYSTEMS, ...SYSTEMS].map((sys, index) => (
+        <div key={`${sys.name}-${index}`} className="flex items-center">
+          <PixelDot color={sys.borderHex} size={6} />
+          <span className="ml-3 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: sys.borderHex }}>{sys.name}</span>
+          <span className="ml-2 mr-8 text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: 'rgba(232,225,207,0.32)' }}>
+            {systemEnglish(sys)}
+          </span>
+          <div className="mr-8 h-4 w-px" style={{ background: darkLine }} />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const PublicHero = ({
+  mode,
   headline,
   body,
   primary,
   secondary
 }: {
-  label: string;
+  mode: 'selective' | 'full' | 'systems' | 'contact';
   headline: string;
   body: string;
   primary?: { label: string; href: string };
   secondary?: { label: string; href: string };
 }) => (
-  <section className="relative overflow-hidden px-6 py-20 md:px-12 md:py-28">
-    <WeaveOverlay opacity={0.045} />
-    <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-      <div>
-        <div className="mb-8 flex items-center gap-3">
-          <PixelTag hex={COLOR.ochreOrange} label="ROOT" />
-          <span className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{label}</span>
-        </div>
-        <h1 className="max-w-5xl text-5xl font-semibold leading-[0.94] tracking-tight md:text-7xl">
-          {headline}
-        </h1>
-        <p className="mt-8 max-w-2xl text-lg leading-relaxed md:text-xl" style={{ color: muted }}>
-          {body}
-        </p>
-        {(primary || secondary) && (
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            {primary && <a href={primary.href} className="inline-flex px-6 py-3 text-sm font-semibold no-underline" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>{primary.label}</a>}
-            {secondary && <a href={secondary.href} className="inline-flex border px-6 py-3 text-sm font-semibold no-underline" style={{ borderColor: lineStrong, color: COLOR.charBlack }}>{secondary.label}</a>}
-          </div>
-        )}
+  <header className="relative flex min-h-[calc(100svh-65px)] flex-col items-center justify-center overflow-hidden">
+    <WeaveOverlay opacity={0.026} />
+    <div className="absolute inset-y-0 left-0 flex w-5 flex-col" aria-hidden="true">
+      {[COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum, COLOR.firedRed].map((hex, i) => (
+        <div key={`${hex}-${i}`} className="h-12 w-2" style={{ background: hex, opacity: i % 2 ? 0.18 : 0.48 }} />
+      ))}
+    </div>
+    <div className="absolute inset-y-0 right-0 flex w-5 flex-col items-end" aria-hidden="true">
+      {[COLOR.dyePlum, COLOR.mopaneBrown, COLOR.mahanguGold, COLOR.barkRust, COLOR.ochreOrange, COLOR.firedRed].map((hex, i) => (
+        <div key={`${hex}-${i}`} className="h-12 w-2" style={{ background: hex, opacity: i % 2 ? 0.16 : 0.42 }} />
+      ))}
+    </div>
+
+    <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 py-20 text-center md:px-12">
+      <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
+        <PixelTag hex={COLOR.ochreOrange} label={mode === 'selective' ? 'LIVE' : mode === 'full' ? 'LATER' : 'ROOT'} />
+        <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: quiet }}>{LAB_LABEL}</span>
       </div>
-      <div className="relative border p-7" style={{ background: COLOR.dustLight, borderColor: line }}>
-        <PixelCornerMarks hex={COLOR.ochreOrange} size={9} />
-        <p className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>Capability path</p>
-        <div className="mt-7 flex flex-col gap-0">
-          {SYSTEMS.map((sys, index) => (
-            <div key={sys.name} className="flex items-center gap-4 border-t py-4 first:border-t-0 first:pt-0" style={{ borderColor: line }}>
-              <PixelTag hex={sys.borderHex} label={String(index + 1).padStart(2, '0')} />
-              <div>
-                <p className="font-semibold leading-none">{sys.name}</p>
-                <p className="mt-1 text-sm" style={{ color: muted }}>{sys.role}</p>
-              </div>
-            </div>
-          ))}
+      <h1 className="max-w-6xl text-5xl font-bold leading-[0.95] tracking-tight md:text-8xl" style={{ color: COLOR.charBlack }}>
+        {headline}
+      </h1>
+      <Ticker />
+      <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>
+        {body}
+      </p>
+      {(primary || secondary) && (
+        <div className="mt-9 flex flex-wrap justify-center gap-3">
+          {primary && <a href={primary.href} className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold no-underline" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+            {primary.label}<IconArrowRight size={14} />
+          </a>}
+          {secondary && <a href={secondary.href} className="inline-flex items-center gap-2 border px-6 py-3 text-sm font-semibold no-underline" style={{ borderColor: line, color: COLOR.charBlack }}>
+            {secondary.label}<IconArrowRight size={14} />
+          </a>}
         </div>
-        <DitherBar color={COLOR.ochreOrange} segments={30} height={3} opacity={0.55} className="mt-4" />
+      )}
+      <div className="mt-8 flex gap-1" aria-hidden="true">
+        {[COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown].map(hex => <PixelDot key={hex} color={hex} size={8} opacity={0.45} />)}
       </div>
     </div>
-  </section>
+  </header>
 );
 
-const TextSection = ({ id, label, headline, children }: {
+const EditorialSection = ({
+  id,
+  label,
+  headline,
+  children,
+  accent = COLOR.ochreOrange
+}: {
   id?: string;
   label: string;
   headline: string;
   children: React.ReactNode;
+  accent?: string;
 }) => (
   <section id={id} className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
-    <SectionHeader label={label} headline={headline} />
-    <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+    <div className="mb-12 border-b pb-6" style={{ borderColor: line }}>
+      <div className="mb-3 flex items-center gap-3">
+        <PixelDot color={accent} size={7} />
+        <h2 className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{label}</h2>
+      </div>
+      <p className="max-w-4xl text-2xl font-medium leading-tight tracking-tight md:text-4xl" style={{ color: COLOR.charBlack }}>
+        {headline}
+      </p>
+    </div>
+    <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
       <div className="hidden lg:block">
-        <DitherBar color={COLOR.ochreOrange} segments={36} height={4} opacity={0.36} />
+        <DitherBar color={accent} segments={34} height={4} opacity={0.42} />
       </div>
       <div className="space-y-5 text-base leading-relaxed md:text-lg" style={{ color: muted }}>
         {children}
@@ -209,107 +246,138 @@ const TextSection = ({ id, label, headline, children }: {
   </section>
 );
 
-const SystemRows = ({ concise = false }: { concise?: boolean }) => (
-  <div className="mx-auto grid max-w-7xl gap-3 px-6 pb-24 md:px-12">
-    {SYSTEMS.map((sys, index) => (
-      <article key={sys.name} className="relative border p-6 md:grid md:grid-cols-[220px_1fr] md:gap-8 md:p-8" style={{
-        background: COLOR.dustLight,
-        borderColor: line
-      }}>
-        <div className="flex items-center gap-4">
-          <PixelTag hex={sys.borderHex} label={String(index + 1).padStart(2, '0')} />
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight">{sys.name}</h2>
-            <p className="mt-1 text-sm font-medium" style={{ color: sys.borderHex }}>{sys.english}</p>
+const IconCard = ({ item, index }: {
+  item: { icon: React.ComponentType<{ size?: number; color?: string; opacity?: number }>; label: string; body?: string; hex: string };
+  index: number;
+}) => {
+  const Icon = item.icon;
+  return (
+    <article className="relative border p-6" style={{ background: COLOR.dustLight, borderColor: line }}>
+      <PixelCornerMarks hex={item.hex} size={7} />
+      <div className="mb-8 flex items-center justify-between">
+        <PixelTag hex={item.hex} label={String(index + 1).padStart(2, '0')} />
+        <Icon size={22} color={item.hex} />
+      </div>
+      <h3 className="text-lg font-semibold leading-tight tracking-tight">{item.label}</h3>
+      {item.body && <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{item.body}</p>}
+      <DitherBar color={item.hex} segments={18} height={2} opacity={0.55} className="mt-6" />
+    </article>
+  );
+};
+
+const SystemsShowcase = ({ concise = false }: { concise?: boolean }) => (
+  <section id="systems" className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {SYSTEMS.map((sys, index) => (
+        <article key={sys.name} className="relative flex min-h-[320px] flex-col border p-8" style={{ background: COLOR.dustLight, borderColor: line }}>
+          <WeaveOverlay opacity={0.035} />
+          <div className="relative mb-8 flex items-start justify-between">
+            <div className="border p-3" style={{ borderColor: `${sys.borderHex}40`, background: `${sys.borderHex}14` }}>
+              {systemIcon(sys.name, 48)}
+            </div>
+            <PixelTag hex={sys.borderHex} label={String(index + 1).padStart(2, '0')} />
           </div>
-        </div>
-        <div className="mt-5 md:mt-0">
-          <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>{sys.role}</p>
-          <p className="mt-3 max-w-3xl text-base leading-relaxed" style={{ color: muted }}>
-            {concise ? systemLine(sys.name) : systemLong(sys.name)}
-          </p>
-        </div>
-        <div className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} aria-hidden="true" />
-      </article>
-    ))}
-  </div>
+          <div className="relative">
+            <h3 className="text-2xl font-semibold tracking-tight">{sys.name}</h3>
+            <p className="mt-1 text-sm font-medium" style={{ color: sys.borderHex }}>{systemEnglish(sys)}</p>
+            <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>{sys.role}</p>
+            <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{concise ? systemLine(sys.name) : systemLong(sys.name)}</p>
+          </div>
+          <div className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} aria-hidden="true" />
+          <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />
+        </article>
+      ))}
+      {!concise && (
+        <article className="relative flex min-h-[320px] flex-col justify-between overflow-hidden p-8" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+          <WeaveOverlay isDark opacity={0.06} />
+          <div className="relative">
+            <PixelTag hex={COLOR.ochreOrange} label="LAB" />
+            <h3 className="mt-8 text-2xl font-semibold tracking-tight">{BRAND}</h3>
+            <p className="mt-5 text-sm leading-relaxed" style={{ color: 'rgba(232,225,207,0.56)' }}>
+              The compound exists so the five systems work together rather than become isolated prototypes.
+            </p>
+          </div>
+          <IconCheck size={24} color={COLOR.ochreOrange} />
+        </article>
+      )}
+    </div>
+  </section>
 );
 
 const SelectiveHome = () => (
   <>
-    <HeroPanel
-      label="Namibia AI Systems Lab"
+    <PublicHero
+      mode="selective"
       headline="A new lab for AI systems that can be shaped locally."
-      body="Okaanda is building the capability to adapt, evaluate, deploy, and turn AI systems into useful tools. More will be shared in time. For now, the lab is opening conversations."
+      body={`${BRAND} is building the capability to adapt, evaluate, deploy, and turn AI systems into useful tools. More will be shared in time. For now, the lab is opening conversations.`}
       primary={{ label: 'Request a conversation', href: '/contact' }}
       secondary={{ label: 'View the systems', href: '/systems' }}
     />
-    <TextSection id="why" label="Why Okaanda" headline="Useful systems need local control over how they work.">
+    <EditorialSection id="why" label={`Why ${BRAND}`} headline="Useful systems need local control over how they work." accent={COLOR.barkRust}>
       <p>
-        AI capability is becoming part of national capacity. Okaanda is being built so that systems can be shaped, tested, and delivered with local control over their behavior, deployment, and use.
+        AI capability is becoming part of national capacity. {BRAND} is being built so that useful systems can be shaped, tested, and delivered with local control over behavior, deployment, and use.
       </p>
-    </TextSection>
-    <section className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
-      <SectionHeader label="Systems" headline="Five systems. One compound." />
-      <div className="grid gap-3 md:grid-cols-5">
-        {SYSTEMS.map((sys, index) => (
-          <a key={sys.name} href="/systems" className="border p-5 no-underline" style={{ background: COLOR.dustLight, borderColor: line, color: COLOR.charBlack }}>
-            <PixelTag hex={sys.borderHex} label={String(index + 1).padStart(2, '0')} />
-            <p className="mt-5 text-lg font-semibold">{sys.name}</p>
-            <p className="mt-2 text-sm" style={{ color: muted }}>{sys.english}</p>
-          </a>
-        ))}
-      </div>
-      <p className="mt-8 max-w-xl text-base leading-relaxed" style={{ color: muted }}>
-        Together, they form the internal architecture of the lab.
-      </p>
-    </section>
-    <TextSection id="invitation" label="Invitation" headline="For those who want to see what is being built">
+    </EditorialSection>
+    <SystemsShowcase concise />
+    <EditorialSection id="invitation" label="Invitation" headline="For those who want to see what is being built" accent={COLOR.dyePlum}>
       <p>
-        The lab is still selective in what it shares publicly. For institutional interest, collaboration, or early conversations, contact Okaanda directly.
+        The lab is still selective in what it shares publicly. For institutional interest, collaboration, or early conversations, contact {BRAND} directly.
       </p>
-      <p><a href="/contact" className="font-semibold no-underline" style={{ color: COLOR.ochreOrange }}>Contact the lab</a></p>
-    </TextSection>
+      <p>
+        <a href="/contact" className="inline-flex items-center gap-2 font-semibold no-underline" style={{ color: COLOR.ochreOrange }}>
+          Contact the lab <IconArrowRight size={14} />
+        </a>
+      </p>
+    </EditorialSection>
   </>
 );
 
 const SelectiveSystems = () => (
   <>
-    <HeroPanel
-      label="Internal architecture"
-      headline="Five linked systems, from storage to delivery."
-      body="Okaanda is built around systems that move from readiness and adaptation to interface and delivered tools. More detail is shared through direct conversation."
+    <PublicHero
+      mode="systems"
+      headline="The internal architecture of Onganda."
+      body={`${BRAND} is built around five linked systems that move from storage and adaptation to interface and delivery.`}
     />
-    <SystemRows concise />
+    <SystemsShowcase concise />
+    <EditorialSection label="Shared movement" headline="More detail is shared through direct conversation." accent={COLOR.mahanguGold}>
+      <p>
+        The public view stays intentionally concise. The important point is the structure: each system has a role, and the stack is designed to move.
+      </p>
+    </EditorialSection>
   </>
 );
 
 const ContactPage = () => (
   <>
-    <HeroPanel
-      label="Contact"
-      headline="Start a conversation with Okaanda."
+    <PublicHero
+      mode="contact"
+      headline={`Start a conversation with ${BRAND}.`}
       body="For collaboration, institutional interest, or early access conversations, reach out directly."
     />
-    <section className="mx-auto max-w-4xl px-6 pb-24 md:px-12">
+    <section className="mx-auto max-w-5xl px-6 pb-24 md:px-12">
       <div className="relative border p-8 md:p-10" style={{ background: COLOR.dustLight, borderColor: line }}>
         <PixelCornerMarks hex={COLOR.ochreOrange} size={10} />
+        <div className="mb-8 flex items-center gap-3">
+          <IconMail size={22} color={COLOR.ochreOrange} />
+          <p className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>Direct inquiry</p>
+        </div>
         <div className="grid gap-6 md:grid-cols-2">
           <label className="block">
             <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Email</span>
-            <input className="mt-3 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: lineStrong }} placeholder="name@institution.na" />
+            <input className="mt-3 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="name@institution.na" />
           </label>
           <label className="block">
             <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Inquiry type</span>
-            <input className="mt-3 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: lineStrong }} placeholder="Partnership, pilot, access" />
+            <input className="mt-3 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="Partnership, pilot, access" />
           </label>
           <label className="block md:col-span-2">
             <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Short note</span>
-            <textarea className="mt-3 min-h-36 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: lineStrong }} placeholder="What would you like to discuss?" />
+            <textarea className="mt-3 min-h-36 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="What would you like to discuss?" />
           </label>
         </div>
-        <button className="mt-8 px-6 py-3 text-sm font-semibold" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
-          Contact Okaanda
+        <button className="mt-8 inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+          Contact {BRAND}<IconArrowRight size={14} />
         </button>
       </div>
     </section>
@@ -318,88 +386,55 @@ const ContactPage = () => (
 
 const FullSite = () => (
   <>
-    <section className="border-b px-6 py-4 md:px-12" style={{ borderColor: line }}>
-      <div className="mx-auto flex max-w-7xl flex-wrap gap-2">
-        {fullSections.map(section => (
-          <a key={section.id} href={`#${section.id}`} className="border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] no-underline" style={{ borderColor: line, color: quiet }}>
-            {section.label}
-          </a>
-        ))}
-      </div>
-    </section>
-    <HeroPanel
-      label="Namibia AI Systems Lab"
+    <PublicHero
+      mode="full"
       headline="AI systems that Namibia can shape, run, and build on."
-      body="Okaanda is building the domestic capability to adapt, evaluate, deploy, and turn AI systems into useful tools."
+      body={`${BRAND} is building domestic capability to adapt, evaluate, deploy, and turn AI systems into useful tools.`}
       primary={{ label: 'Explore the systems', href: '#systems' }}
-      secondary={{ label: 'Why Okaanda exists', href: '#why' }}
+      secondary={{ label: `Why ${BRAND} exists`, href: '#why' }}
     />
-    <TextSection id="why" label="Why this lab exists" headline="Namibia should not only consume AI. It should be able to shape it.">
-      <p>
-        AI is becoming part of infrastructure: how knowledge is handled, how decisions are supported, how tools are built, and how services are delivered.
-      </p>
-      <p>
-        Without local capability, countries remain dependent on outside providers for model choices, system behavior, language support, evaluation standards, and deployment decisions.
-      </p>
-      <p>
-        Okaanda is building that missing layer. Not a trophy lab. A working capability layer.
-      </p>
-    </TextSection>
-    <TextSection label="What we are building" headline="A systems lab for sovereignty, capability, and use.">
-      <p>
-        Okaanda is not a single product. It is a lab organized around a coherent stack: model and data systems, adaptation workflows, containers, interfaces, and delivery.
-      </p>
-      <p>
-        From there, the lab turns those systems into pilots, tools, and applications that can be used in practice.
-      </p>
-    </TextSection>
-    <section id="systems" className="mx-auto max-w-7xl px-6 pb-10 md:px-12">
-      <SectionHeader label="Five systems" headline="Five tools. One compound." />
-      <p className="max-w-3xl pb-10 text-lg leading-relaxed" style={{ color: muted }}>
-        Okaanda is structured as five linked systems. Each one has a local name and a clear role.
-      </p>
+    <EditorialSection id="why" label={`Why ${BRAND}`} headline="Namibia should not only consume AI. It should be able to shape it." accent={COLOR.ochreOrange}>
+      <p>AI is becoming part of infrastructure: how knowledge is handled, how decisions are supported, how tools are built, and how services are delivered.</p>
+      <p>Without local capability, countries remain dependent on outside providers for model choices, system behavior, language support, evaluation standards, and deployment decisions.</p>
+      <p>{BRAND} is building that missing layer. Not a trophy lab. A working capability layer.</p>
+    </EditorialSection>
+    <EditorialSection label="What we are building" headline="A systems lab for sovereignty, capability, and use." accent={COLOR.barkRust}>
+      <p>{BRAND} is not a single product. It is a lab organized around a coherent stack: model and data systems, adaptation workflows, containers, interfaces, and delivery.</p>
+      <p>From there, the lab turns those systems into pilots, tools, and applications that can be used in practice.</p>
+    </EditorialSection>
+    <section className="mx-auto max-w-7xl px-6 pb-10 md:px-12">
+      <div className="mb-12 border-b pb-6" style={{ borderColor: line }}>
+        <div className="mb-3 flex items-center gap-3">
+          <PixelDot color={COLOR.mahanguGold} size={7} />
+          <h2 className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>Five systems</h2>
+        </div>
+        <p className="max-w-4xl text-2xl font-medium leading-tight tracking-tight md:text-4xl">Five tools. One compound.</p>
+      </div>
     </section>
-    <SystemRows />
-    <TextSection id="studio" label="Studio" headline="Built like a lab. Run like a startup.">
-      <p>
-        Okaanda is structured for making: small teams, clear systems, fast cycles, and real outputs.
-      </p>
-      <p>
-        It combines research, systems design, model work, interface building, and applied prototyping in one place. The goal is not to generate demos. The goal is to build reusable capability that can become dependable tools.
-      </p>
-      <div className="grid gap-2 pt-3 sm:grid-cols-2">
-        {studioSteps.map((step, index) => (
-          <div key={step} className="border p-4" style={{ borderColor: line, background: COLOR.dustLight }}>
-            <PixelTag hex={COLOR.ochreOrange} label={String(index + 1).padStart(2, '0')} />
-            <p className="mt-4 font-semibold" style={{ color: COLOR.charBlack }}>{step}</p>
-          </div>
-        ))}
+    <SystemsShowcase />
+    <EditorialSection id="studio" label="Studio" headline="Built like a lab. Run like a startup." accent={COLOR.mopaneBrown}>
+      <p>{BRAND} is structured for making: small teams, clear systems, fast cycles, and real outputs.</p>
+      <p>It combines research, systems design, model work, interface building, and applied prototyping in one place.</p>
+      <div className="grid gap-3 pt-4 sm:grid-cols-2">
+        {studioSteps.map((item, index) => <IconCard key={item.label} item={item} index={index} />)}
       </div>
-    </TextSection>
-    <TextSection id="focus" label="Focus" headline="Where sovereignty becomes practical.">
-      <p>
-        Sovereignty is not a slogan. It becomes real when systems can be adapted, tested, deployed, and used locally.
-      </p>
-      <div className="grid gap-2 pt-3">
-        {focusAreas.map(area => (
-          <div key={area} className="flex items-center gap-3 border p-4" style={{ borderColor: line, background: COLOR.dustLight }}>
-            <PixelDot color={COLOR.barkRust} size={8} />
-            <span style={{ color: COLOR.charBlack }}>{area}</span>
-          </div>
-        ))}
+    </EditorialSection>
+    <EditorialSection id="focus" label="Focus" headline="Where sovereignty becomes practical." accent={COLOR.dyePlum}>
+      <p>Sovereignty is not a slogan. It becomes real when systems can be adapted, tested, deployed, and used locally.</p>
+      <div className="grid gap-3 pt-4">
+        {focusItems.map((item, index) => <IconCard key={item.label} item={item} index={index} />)}
       </div>
-    </TextSection>
-    <TextSection id="people" label="People" headline="A place for builders.">
-      <p>
-        Okaanda brings together people working across systems, models, interfaces, and applications. The lab is designed for technical depth, practical experimentation, and shared making.
-      </p>
-    </TextSection>
-    <TextSection id="contact" label="Contact" headline="Start a conversation.">
-      <p>
-        Okaanda is being built as a long-term capability for Namibia. For institutional partnerships, early collaboration, or direct inquiries, contact the lab.
-      </p>
-      <p><a href="/contact" className="font-semibold no-underline" style={{ color: COLOR.ochreOrange }}>Contact Okaanda</a></p>
-    </TextSection>
+    </EditorialSection>
+    <EditorialSection id="people" label="People" headline="A place for builders." accent={COLOR.ochreOrange}>
+      <div className="flex items-start gap-4">
+        <IconUsers size={28} color={COLOR.ochreOrange} />
+        <p>{BRAND} brings together people working across systems, models, interfaces, and applications. The lab is designed for technical depth, practical experimentation, and shared making.</p>
+      </div>
+    </EditorialSection>
+    <EditorialSection id="contact" label="Contact" headline="Start a conversation." accent={COLOR.barkRust}>
+      <p>{BRAND} is being built as a long-term capability for Namibia. For institutional partnerships, early collaboration, or direct inquiries, contact the lab.</p>
+      <p><a href="/contact" className="inline-flex items-center gap-2 font-semibold no-underline" style={{ color: COLOR.ochreOrange }}>Contact {BRAND}<IconArrowRight size={14} /></a></p>
+    </EditorialSection>
   </>
 );
 

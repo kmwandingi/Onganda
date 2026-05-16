@@ -1,12 +1,12 @@
-# Okaanda Design Guidelines
+# Onganda Design Guidelines
 
-This document serves as the single source of truth for the design language of Okaanda (Namibia AI Systems Lab). It codifies the visual, architectural, and cultural principles that define the project. Whenever adding new features, components, or systems to this project, adhere strictly to these guidelines to ensure consistency.
+This document serves as the single source of truth for the design language of **Onganda** (Namibia AI Systems Lab). It codifies the visual, architectural, and cultural principles that define the project. Whenever adding new features, components, or systems to this project, adhere strictly to these guidelines to ensure consistency.
 
 ---
 
 ## 1. Introduction & Vision
 
-**Okaanda** is the parent institution—the Namibia AI Systems Lab. It represents a sovereign AI infrastructure grounded in the Namibian context.
+**Onganda** is the project and public home of the Namibia AI Systems Lab. It represents sovereign AI infrastructure grounded in the Namibian context. **Okaanda** is one system inside that project: the granary, or model and data platform.
 
 *   **The Vision**: To build and maintain AI tools (models, workflows, containers, interfaces, and applications) that are deeply aligned with Namibian culture, language, and needs.
 *   **The Metaphor**: The architecture borrows from traditional Oshiwambo agricultural and domestic life. The systems process data the way a village processes grain: from storage (granary) to grinding (mill), to holding (vessel), to the surface where it is used (etiti), and finally to delivery (oshitoo).
@@ -15,7 +15,7 @@ This document serves as the single source of truth for the design language of Ok
 
 ## 2. Core Principles
 
-The design of Okaanda is governed by five unwavering principles (defined in `okaanda-tokens.ts`):
+The design of Onganda is governed by five unwavering principles (defined in `okaanda-tokens.ts`):
 
 1.  **Language**: *Oshiwambo first. English second.*
     *   In UI and documentation, the primary name is always the Oshiwambo term, followed by the English translation for functional clarity.
@@ -32,7 +32,7 @@ The design of Okaanda is governed by five unwavering principles (defined in `oka
 
 ## 3. Color Palette
 
-The Okaanda color palette is strictly defined. **Do not use generic Tailwind colors (e.g., `bg-red-500`, `text-blue-500`).** Always use the semantic tokens defined in `okaanda-tokens.ts`.
+The Onganda color palette is strictly defined. **Do not use generic Tailwind colors (e.g., `bg-red-500`, `text-blue-500`).** Always use the semantic tokens defined in `okaanda-tokens.ts`.
 
 ### Base & Backgrounds
 *   **Millet Clay** (`#E8E1CF`): The primary light background. Used as the canvas for the `light` theme.
@@ -79,9 +79,9 @@ All visual flair must be pixelated.
 
 ## 6. System Architecture Hierarchy
 
-Okaanda is divided into five functional systems. Each system has a dedicated name, role, color, and tag. When building a feature, identify which system it belongs to and use the corresponding visual language.
+Onganda is divided into five functional systems. Each system has a dedicated name, role, color, and tag. When building a feature, identify which system it belongs to and use the corresponding visual language.
 
-1.  **Okaanda** (Namibia AI Systems Lab / Granary)
+1.  **Okaanda** (Granary)
     *   **Role**: Parent Institution, Model & Data Platform (Storage, repositories, datasets).
     *   **Color**: Ochre Orange (`#D9791F`)
     *   **Tag**: `01` or `ROOT`
@@ -179,15 +179,15 @@ The design system is implemented via modular files in the `generated` directory:
 2.  **Minimalism**: Prefer elegant improvements over verbosity. If a piece of UI feels cluttered, you are violating the "Anthropic-level whitespace discipline" rule.
 3.  **Comment Minimally**: Only document what is not obvious. Rely on the strong naming conventions provided by the Oshiwambo + English system roles.
 4.  **No Generic Colors**: New code must not introduce generic Tailwind color classes or unrelated hex values. Use `COLOR`, existing data constants, or add a named semantic token first.
-5.  **Sharp Brand Geometry**: Do not add rounded corners to brand cards, diagrams, icons, or major Okaanda surfaces. Small utility controls may remain rectangular or stepped.
+5.  **Sharp Brand Geometry**: Do not add rounded corners to brand cards, diagrams, icons, or major Onganda surfaces. Small utility controls may remain rectangular or stepped.
 
 ### Current Compliance Notes
 The core design language is present and importable, but the repository still contains legacy generated code that predates the stricter token rule:
 
-*   Several generated components hardcode approved Okaanda hex values directly in JSX. Treat those as migration debt, not as a pattern to copy.
+*   Several generated components hardcode approved Onganda palette values directly in JSX. Treat those as migration debt, not as a pattern to copy.
 *   `DocumentEditor` and `SlideEditor` include additional light-surface variants for paper/editor canvases. These should be promoted into named tokens before further expansion.
 *   `src/index.css` maps global Tailwind/shadcn-style variables to the Okaanda palette so generic utilities such as `bg-background`, `text-foreground`, and `border-border` remain brand-aligned.
 *   `npm run lint` may report Fast Refresh warnings because some generated files export both components and constants. These warnings do not block use, but a future library extraction should split contexts/constants into separate files.
 
 ---
-*Following these guidelines ensures that the Namibia AI Systems Lab remains visually coherent, culturally grounded, and architecturally sound.*
+*Following these guidelines ensures that Onganda remains visually coherent, culturally grounded, and architecturally sound.*
