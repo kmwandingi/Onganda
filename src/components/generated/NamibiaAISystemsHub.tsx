@@ -1,0 +1,205 @@
+// ─── Okaanda — Namibia AI Systems Hub ────────────────────────────────────────
+// Top-level page component. Composes sections and primitives from the
+// Okaanda design system. All tokens live in okaanda-tokens.ts,
+// all atomic primitives in okaanda-primitives.tsx,
+// all page sections in okaanda-sections.tsx.
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './okaanda-tokens';
+import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, OkaandaFooter } from './okaanda-primitives';
+import { OkaandaNav, OkaandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase } from './okaanda-sections';
+import { Publications } from './okaanda-publications';
+import { DocumentEditor } from './okaanda-document-editor';
+import { SlideEditor } from './okaanda-slide-editor';
+
+// ─── Main export ──────────────────────────────────────────────────────────────
+export const NamibiaAISystemsHub = () => {
+  const [isDark, setIsDark] = useState(false);
+  const toggle = () => setIsDark(d => !d);
+  const [view, setView] = useState<'hub' | 'document' | 'slides'>('hub');
+  const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
+  const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
+
+  // Editor views render outside the hub scroll so they get the full viewport
+  if (view === 'document') {
+    return <DarkContext.Provider value={{
+      isDark,
+      toggle
+    }}>
+        <DocumentEditor onClose={() => setView('hub')} />
+      </DarkContext.Provider>;
+  }
+  if (view === 'slides') {
+    return <DarkContext.Provider value={{
+      isDark,
+      toggle
+    }}>
+        <SlideEditor onClose={() => setView('hub')} />
+      </DarkContext.Provider>;
+  }
+  return <DarkContext.Provider value={{
+    isDark,
+    toggle
+  }}>
+      <div className="min-h-screen selection:bg-[#D9791F] selection:text-[#E8E1CF]" style={{
+      fontFamily: 'Inter, Arial, sans-serif',
+      background: bg,
+      color: fg,
+      transition: 'background 0.35s, color 0.35s'
+    }}>
+        {/* ── Navigation ── */}
+        <OkaandaNav />
+
+        {/* ── Hero ── */}
+        <OkaandaHero />
+
+        {/* ── Research Signals stats bar ── */}
+        <ResearchSignals />
+
+        {/* ── Systems grid ── */}
+        <section id="systems" className="max-w-7xl mx-auto px-6 pb-24 md:px-12 pt-16">
+          <div className="flex items-end justify-between mb-10 border-b pb-6" style={{
+          borderColor: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)'
+        }}>
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{
+              color: isDark ? 'rgba(232,225,207,0.38)' : 'rgba(30,26,23,0.45)'
+            }}>System Architecture</h2>
+              <p className="text-2xl md:text-3xl font-medium tracking-tight" style={{
+              color: isDark ? COLOR.milletClay : COLOR.charBlack
+            }}>Five tools. One workshop.</p>
+            </div>
+            <div aria-hidden="true" className="hidden md:flex gap-1.5 items-end pb-1">
+              <DitherStrip color={COLOR.ochreOrange} opacity={0.3} />
+              <DitherStrip color={COLOR.mahanguGold} opacity={0.25} />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SYSTEMS.map((sys, idx) => <SystemCard key={sys.name} sys={sys} idx={idx} />)}
+
+            {/* Institute promo card */}
+            <motion.div initial={{
+            opacity: 0,
+            y: 16
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true,
+            margin: '-40px'
+          }} transition={{
+            delay: 0.42,
+            duration: 0.5
+          }} className="relative p-8 flex flex-col justify-between overflow-hidden" style={{
+            background: isDark ? COLOR.darkCardAlt : COLOR.charBlack,
+            border: isDark ? `1px solid rgba(217,121,31,0.25)` : 'none'
+          }}>
+              <WeaveOverlay isDark opacity={0.06} />
+              {isDark && <div aria-hidden="true" className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#D9791F]" style={{
+              opacity: 0.55
+            }} />}
+              <div className="relative">
+                <div className="w-3 h-3 bg-[#D9791F] mb-8" aria-hidden="true" />
+                <h3 className="text-xl font-semibold tracking-tight mb-3 text-[#E8E1CF]">The Institute</h3>
+                <p className="leading-relaxed text-sm mb-8" style={{
+                color: isDark ? 'rgba(232,225,207,0.50)' : 'rgba(232,225,207,0.60)'
+              }}>
+                  A science and technology park driving applied research, piloting, and technology transfer. Sovereign AI infrastructure for Namibia.
+                </p>
+              </div>
+              <button className="relative self-start px-5 py-2.5 bg-[#D9791F] text-[#E8E1CF] font-medium text-sm hover:bg-[#C84A1B] transition-colors duration-200">
+                Read the manifesto
+              </button>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── Developer Terminal ── */}
+        <PixelTerminal />
+
+        {/* ── System Connection Diagram ── */}
+        <SystemConnectionDiagram />
+
+        {/* ── Material Palette ── */}
+        <section id="palette" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+          <SectionHeader label="Material Palette" headline="Millet, clay, bark, smoke, ochre." isDark={isDark} />
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
+            {SWATCHES.map(sw => <SwatchChip key={sw.hex} swatch={sw} />)}
+          </div>
+        </section>
+
+        {/* ── Research Heatmap ── */}
+        <PixelHeatmap />
+
+        {/* ── Roadmap Timeline ── */}
+        <RoadmapTimeline />
+
+        {/* ── Brand Principles ── */}
+        <section id="language" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+          <SectionHeader label="Brand Principles" headline="Pixelated by design. Oshiwambo by name." isDark={isDark} />
+          <dl className="divide-y divide-[#1E1A17]/10">
+            {PRINCIPLES.map((p, i) => <PrincipleRow key={p.label} principle={p} idx={i} />)}
+          </dl>
+        </section>
+
+        {/* ── Icon Bank ── */}
+        <IconShowcase />
+
+        {/* ── Naming ladder ── */}
+        <section className="max-w-7xl mx-auto px-6 pb-32 md:px-12">
+          <div className="bg-[#F3E8C3] border border-[#1E1A17]/10 p-8 md:p-12">
+            <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-0">
+              <div className="md:w-1/3 shrink-0">
+                <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/45 mb-3">Naming Hierarchy</h2>
+                <p className="text-2xl font-medium tracking-tight text-[#1E1A17] leading-snug">
+                  One parent.<br />Five tools.<br />One direction.
+                </p>
+                <p className="mt-4 text-sm text-[#1E1A17]/60 leading-relaxed max-w-xs">
+                  Names pending final validation with fluent Oshikwanyama / Oshindonga speakers and community-informed partners before lock.
+                </p>
+              </div>
+              <div className="flex-1">
+                <div className="flex flex-col gap-0">
+                  <div className="flex items-center gap-4 py-4 border-b border-[#1E1A17]/10">
+                    <div className="w-2 h-8 bg-[#D9791F] shrink-0" aria-hidden="true" />
+                    <div>
+                      <p className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">Okaanda</p>
+                      <p className="text-xs text-[#1E1A17]/50 mt-0.5">Parent brand · Namibia Applied AI Lab</p>
+                    </div>
+                  </div>
+                  {SYSTEMS.map((sys, i) => <div key={`nl-${sys.name}`} className="flex items-center gap-4 py-3.5 border-b border-[#1E1A17]/8 pl-6">
+                      <div className="w-1.5 h-6 shrink-0" style={{
+                    background: sys.borderHex,
+                    opacity: 0.7
+                  }} aria-hidden="true" />
+                      <div className="flex-1 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+                        <p className="text-base font-semibold text-[#1E1A17] tracking-tight leading-none">{sys.name}</p>
+                        <p className="text-xs text-[#1E1A17]/45 mt-0.5 sm:mt-0">
+                          <span className="text-[#1E1A17]/60">{sys.english}</span>
+                          <span className="mx-1.5">·</span>
+                          <span>{sys.role}</span>
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#1E1A17]/25">{String(i + 1).padStart(2, '0')}</span>
+                    </div>)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Field Applications ── */}
+        <FieldApplications />
+
+        {/* ── Publications — Document & Presentation authoring ── */}
+        <Publications onOpenDocument={() => setView('document')} onOpenSlides={() => setView('slides')} />
+
+        {/* ── Brand Guide — Pixel Flowchart ── */}
+        <PixelFlowchart />
+
+        {/* ── Footer ── */}
+        <OkaandaFooter />
+      </div>
+    </DarkContext.Provider>;
+};

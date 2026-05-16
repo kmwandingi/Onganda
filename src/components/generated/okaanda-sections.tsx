@@ -1,0 +1,2088 @@
+// ─── Okaanda Design System — Sections ────────────────────────────────────────
+// All page-level section components. Each is self-contained and composable.
+// Imports only from okaanda-tokens and okaanda-primitives.
+
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useInView, useAnimation } from 'framer-motion';
+import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge } from './okaanda-tokens';
+import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OkaandaFooter, OkaandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './okaanda-primitives';
+import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './okaanda-icons';
+const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
+const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
+
+// ─── Section code snippet data (declared outside components per rules) ────────
+
+const SNIPPET_SYSTEM_ARCH: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// System Architecture — render a SystemCard'
+}, {
+  type: 'import',
+  text: "import { SystemCard } from './okaanda-primitives';"
+}, {
+  type: 'import',
+  text: "import { SYSTEMS } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Map over SYSTEMS to render the grid'
+}, {
+  type: 'tag',
+  text: '<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">'
+}, {
+  type: 'plain',
+  text: '  {SYSTEMS.map((sys, idx) => ('
+}, {
+  type: 'tag',
+  text: '    <SystemCard'
+}, {
+  type: 'prop',
+  text: '      key={sys.name}'
+}, {
+  type: 'prop',
+  text: '      sys={sys}'
+}, {
+  type: 'prop',
+  text: '      idx={idx}'
+}, {
+  type: 'tag',
+  text: '    />'
+}, {
+  type: 'plain',
+  text: '  ))}'
+}, {
+  type: 'tag',
+  text: '</div>'
+}];
+const SNIPPET_DEVELOPER_SURFACE: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Developer Surface — render a TerminalCard'
+}, {
+  type: 'import',
+  text: "import { TerminalCard } from './okaanda-primitives';"
+}, {
+  type: 'import',
+  text: "import { TERMINAL_BLOCKS } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Each block has title, tag, tagHex, and an array of typed lines'
+}, {
+  type: 'plain',
+  text: 'const block = {'
+}, {
+  type: 'prop',
+  text: "  title: 'Oshini — Fine-Tune Pipeline',"
+}, {
+  type: 'prop',
+  text: "  tag: '02', tagHex: '#8F3E21',"
+}, {
+  type: 'prop',
+  text: '  lines: ['
+}, {
+  type: 'string',
+  text: "    { type: 'comment', text: '# oshini · adaptation workflow' },"
+}, {
+  type: 'string',
+  text: "    { type: 'keyword', text: 'from' },"
+}, {
+  type: 'string',
+  text: "    { type: 'plain', text: ' oshini.pipeline import FineTuneJob' },"
+}, {
+  type: 'prop',
+  text: '  ],'
+}, {
+  type: 'plain',
+  text: '};'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'tag',
+  text: '<TerminalCard block={block} />'
+}];
+const SNIPPET_SYSTEM_CONNECTIONS: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// System Connections — render a connection map'
+}, {
+  type: 'import',
+  text: "import { DIAGRAM_NODES, CONNECTION_EDGES } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A DiagramNode entry'
+}, {
+  type: 'plain',
+  text: 'const node = {'
+}, {
+  type: 'prop',
+  text: "  id: 'Okaanda', label: 'Okaanda', sublabel: 'Granary',"
+}, {
+  type: 'prop',
+  text: "  hex: '#D9791F', tag: '01', cx: 50, cy: 16,"
+}, {
+  type: 'plain',
+  text: '};'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A ConnectionEdge entry'
+}, {
+  type: 'plain',
+  text: 'const edge = {'
+}, {
+  type: 'prop',
+  text: "  from: 'Okaanda', to: 'Oshini',"
+}, {
+  type: 'prop',
+  text: "  label: 'feeds raw data', color: '#D9791F',"
+}, {
+  type: 'plain',
+  text: '};'
+}];
+const SNIPPET_MATERIAL_PALETTE: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Material Palette — render SwatchChips'
+}, {
+  type: 'import',
+  text: "import { SwatchChip } from './okaanda-primitives';"
+}, {
+  type: 'import',
+  text: "import { SWATCHES } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Each swatch has name, hex, desc, light (bool)'
+}, {
+  type: 'tag',
+  text: '<div className="grid grid-cols-3 sm:grid-cols-5 gap-2">'
+}, {
+  type: 'plain',
+  text: '  {SWATCHES.map(sw => ('
+}, {
+  type: 'tag',
+  text: '    <SwatchChip'
+}, {
+  type: 'prop',
+  text: '      key={sw.hex}'
+}, {
+  type: 'prop',
+  text: '      swatch={sw}'
+}, {
+  type: 'tag',
+  text: '    />'
+}, {
+  type: 'plain',
+  text: '  ))}'
+}, {
+  type: 'tag',
+  text: '</div>'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// COLOR token reference'
+}, {
+  type: 'import',
+  text: "import { COLOR } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: "// COLOR.ochreOrange → '#D9791F'"
+}, {
+  type: 'plain',
+  text: "// COLOR.milletClay  → '#E8E1CF'"
+}, {
+  type: 'plain',
+  text: "// COLOR.charBlack   → '#1E1A17'"
+}];
+const SNIPPET_RESEARCH_SIGNALS: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Research Signals — heatmap grid'
+}, {
+  type: 'import',
+  text: "import { HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A HeatCell entry: { row, col, intensity (0–1) }'
+}, {
+  type: 'plain',
+  text: 'const cell = { row: 0, col: 2, intensity: 0.6 };'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Derive fill color from intensity'
+}, {
+  type: 'plain',
+  text: 'const getHeatColor = (v: number) => {'
+}, {
+  type: 'keyword',
+  text: '  if'
+}, {
+  type: 'plain',
+  text: " (v > 0.85) return COLOR.firedRed;"
+}, {
+  type: 'keyword',
+  text: '  if'
+}, {
+  type: 'plain',
+  text: " (v > 0.65) return COLOR.ochreOrange;"
+}, {
+  type: 'keyword',
+  text: '  if'
+}, {
+  type: 'plain',
+  text: " (v > 0.45) return COLOR.mahanguGold;"
+}, {
+  type: 'plain',
+  text: '};'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Render a single cell'
+}, {
+  type: 'tag',
+  text: '<div style={{ background: getHeatColor(cell.intensity) }} />'
+}];
+const SNIPPET_ROADMAP: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Development Roadmap — timeline phase'
+}, {
+  type: 'import',
+  text: "import { TIMELINE_PHASES } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A TimelinePhase entry'
+}, {
+  type: 'plain',
+  text: 'const phase = {'
+}, {
+  type: 'prop',
+  text: "  tag: 'P–01', oshiwambo: 'Ouheke', english: 'Foundation',"
+}, {
+  type: 'prop',
+  text: "  period: 'Q1 – Q2 2024', hex: '#D9791F',"
+}, {
+  type: 'prop',
+  text: "  progress: 100, status: 'complete',"
+}, {
+  type: 'prop',
+  text: "  milestones: ['Corpus v1 ingested', 'Okaanda granary deployed'],"
+}, {
+  type: 'plain',
+  text: '};'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Progress bar (animated with framer-motion)'
+}, {
+  type: 'tag',
+  text: '<motion.div'
+}, {
+  type: 'prop',
+  text: '  animate={{ width: `${phase.progress}%` }}'
+}, {
+  type: 'prop',
+  text: '  style={{ background: phase.hex, height: 12 }}'
+}, {
+  type: 'tag',
+  text: '/>'
+}];
+const SNIPPET_BRAND_PRINCIPLES: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Brand Principles — render PrincipleRow'
+}, {
+  type: 'import',
+  text: "import { PrincipleRow } from './okaanda-primitives';"
+}, {
+  type: 'import',
+  text: "import { PRINCIPLES } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A PrincipleEntry: { label: string, value: string }'
+}, {
+  type: 'tag',
+  text: '<dl className="divide-y divide-[#1E1A17]/10">'
+}, {
+  type: 'plain',
+  text: '  {PRINCIPLES.map((p, i) => ('
+}, {
+  type: 'tag',
+  text: '    <PrincipleRow'
+}, {
+  type: 'prop',
+  text: '      key={p.label}'
+}, {
+  type: 'prop',
+  text: '      principle={p}'
+}, {
+  type: 'prop',
+  text: '      idx={i}'
+}, {
+  type: 'tag',
+  text: '    />'
+}, {
+  type: 'plain',
+  text: '  ))}'
+}, {
+  type: 'tag',
+  text: '</dl>'
+}];
+const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Icon Bank — import and use pixel icons'
+}, {
+  type: 'import',
+  text: "import { IconSearch, IconUser, IconCheck } from './okaanda-icons';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// All icons use a 12×12 pixel grid, rect-only, currentColor'
+}, {
+  type: 'tag',
+  text: '<IconSearch'
+}, {
+  type: 'prop',
+  text: '  size={16}'
+}, {
+  type: 'prop',
+  text: "  color='#D9791F'"
+}, {
+  type: 'tag',
+  text: '/>'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// ICON_REGISTRY entry shape:'
+}, {
+  type: 'plain',
+  text: '// { id, name, category, component: React.FC<{size?,color?,opacity?}> }'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Browse all icons (click any to copy import)'
+}, {
+  type: 'import',
+  text: "import { ICON_REGISTRY, ICON_CATEGORIES } from './okaanda-icons';"
+}];
+const SNIPPET_FIELD_APPS: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Field Applications — render FieldAppCard'
+}, {
+  type: 'import',
+  text: "import { FieldAppCard } from './okaanda-primitives';"
+}, {
+  type: 'import',
+  text: "import { SECTOR_APPS } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A SectorApp entry'
+}, {
+  type: 'plain',
+  text: 'const app = {'
+}, {
+  type: 'prop',
+  text: "  name: 'OshitooHealth', oshiwambo: 'Oshitoo',"
+}, {
+  type: 'prop',
+  text: "  sector: 'Healthcare', hex: '#6F4A6E', tag: 'H–01',"
+}, {
+  type: 'prop',
+  text: "  desc: 'AI triage and clinical decision support...',"
+}, {
+  type: 'plain',
+  text: '};'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'tag',
+  text: '<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">'
+}, {
+  type: 'plain',
+  text: '  {SECTOR_APPS.map((app, idx) => ('
+}, {
+  type: 'tag',
+  text: '    <FieldAppCard key={app.tag} app={app} idx={idx} />'
+}, {
+  type: 'plain',
+  text: '  ))}'
+}, {
+  type: 'tag',
+  text: '</div>'
+}];
+const SNIPPET_BRAND_GUIDE: CodeSnippetLine[] = [{
+  type: 'comment',
+  text: '// Brand Guide — FlowNodeCard naming hierarchy'
+}, {
+  type: 'import',
+  text: "import { FlowNodeCard, FlowNodeIcon } from './okaanda-primitives';"
+}, {
+  type: 'import',
+  text: "import { FLOW_NODES } from './okaanda-tokens';"
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// A FlowNodeEntry'
+}, {
+  type: 'plain',
+  text: 'const node = {'
+}, {
+  type: 'prop',
+  text: "  id: 'mill', oshiwambo: 'Oshini', english: 'Mill',"
+}, {
+  type: 'prop',
+  text: "  role: 'Adaptation Workflows', hex: '#8F3E21',"
+}, {
+  type: 'prop',
+  text: "  pixelTag: '02', isRoot: false,"
+}, {
+  type: 'plain',
+  text: '};'
+}, {
+  type: 'plain',
+  text: ''
+}, {
+  type: 'comment',
+  text: '// Render with hover state'
+}, {
+  type: 'tag',
+  text: '<FlowNodeCard'
+}, {
+  type: 'prop',
+  text: '  node={node}'
+}, {
+  type: 'prop',
+  text: '  isHovered={false}'
+}, {
+  type: 'tag',
+  text: '/>'
+}];
+
+// ─── OkaandaNav ───────────────────────────────────────────────────────────────
+export const OkaandaNav = () => {
+  const {
+    isDark,
+    toggle
+  } = useDark();
+  const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
+  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const linkColor = isDark ? 'rgba(232,225,207,0.5)' : 'rgba(30,26,23,0.6)';
+  const subtitleColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.70)';
+  const dotColor = isDark ? 'rgba(232,225,207,0.3)' : 'rgba(30,26,23,0.4)';
+  const NAV_ITEMS = [{
+    label: 'Systems',
+    href: '#systems'
+  }, {
+    label: 'Palette',
+    href: '#palette'
+  }, {
+    label: 'Principles',
+    href: '#language'
+  }, {
+    label: 'Icons',
+    href: '#icon-bank'
+  }, {
+    label: 'Brand Guide',
+    href: '#brand-guide'
+  }];
+  return <nav style={{
+    width: '100%',
+    padding: '24px 48px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottom: `1px solid ${border}`,
+    background: bg,
+    transition: 'background 0.35s, border-color 0.35s'
+  }}>
+      <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 12
+    }}>
+        <OkaandaLogoMark size={28} />
+        <span style={{
+        fontWeight: 600,
+        letterSpacing: '-0.01em',
+        fontSize: 15,
+        lineHeight: 1
+      }}>
+          <span style={{
+          color: COLOR.ochreOrange
+        }}>Okaanda</span>
+          <span style={{
+          color: dotColor,
+          margin: '0 8px',
+          fontWeight: 300
+        }}>·</span>
+          <span style={{
+          color: subtitleColor,
+          fontWeight: 400,
+          fontSize: 13
+        }}>Namibia AI Systems Lab</span>
+        </span>
+      </div>
+      <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 32
+    }}>
+        <div className="hidden md:flex" style={{
+        gap: 32
+      }}>
+          {NAV_ITEMS.map(item => <a key={item.label} href={item.href} style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: linkColor,
+          textDecoration: 'none',
+          transition: 'color 0.2s'
+        }} onMouseEnter={e => e.currentTarget.style.color = COLOR.ochreOrange} onMouseLeave={e => e.currentTarget.style.color = linkColor}>
+              {item.label}
+            </a>)}
+        </div>
+        <motion.button onClick={toggle} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} whileTap={{
+        scale: 0.88
+      }} style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '6px 10px',
+        border: `1px solid ${isDark ? 'rgba(217,121,31,0.45)' : 'rgba(30,26,23,0.18)'}`,
+        background: isDark ? 'rgba(217,121,31,0.10)' : 'rgba(30,26,23,0.04)',
+        color: isDark ? COLOR.ochreOrange : 'rgba(30,26,23,0.55)',
+        cursor: 'pointer',
+        transition: 'background 0.25s, border-color 0.25s, color 0.25s'
+      }} onMouseEnter={e => {
+        (e.currentTarget as HTMLButtonElement).style.background = isDark ? 'rgba(217,121,31,0.18)' : 'rgba(30,26,23,0.08)';
+      }} onMouseLeave={e => {
+        (e.currentTarget as HTMLButtonElement).style.background = isDark ? 'rgba(217,121,31,0.10)' : 'rgba(30,26,23,0.04)';
+      }}>
+          <motion.span key={isDark ? 'moon' : 'sun'} initial={{
+          opacity: 0,
+          scale: 0.6,
+          rotate: -30
+        }} animate={{
+          opacity: 1,
+          scale: 1,
+          rotate: 0
+        }} transition={{
+          duration: 0.22,
+          ease: 'easeOut'
+        }} style={{
+          display: 'flex',
+          alignItems: 'center'
+        }}>
+            {isDark ? <IconMoon /> : <IconSun />}
+          </motion.span>
+          <span style={{
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase'
+        }} className="hidden sm:inline">
+            {isDark ? 'Light' : 'Dark'}
+          </span>
+        </motion.button>
+      </div>
+    </nav>;
+};
+
+// ─── OkaandaHero ─────────────────────────────────────────────────────────────
+export const OkaandaHero = () => {
+  const CORNER_CHIPS = [{
+    text: 'Applied Sovereign AI',
+    hex: COLOR.ochreOrange,
+    pos: {
+      top: '10%',
+      left: '4%'
+    },
+    dy: -6,
+    delay: 1.0,
+    ix: -14
+  }, {
+    text: 'Oshiwambo by name',
+    hex: COLOR.barkRust,
+    pos: {
+      top: '13%',
+      right: '4%'
+    },
+    dy: 7,
+    delay: 1.1,
+    ix: 14
+  }, {
+    text: 'Material by palette',
+    hex: COLOR.mahanguGold,
+    pos: {
+      bottom: '20%',
+      left: '4%'
+    },
+    dy: 8,
+    delay: 1.2,
+    ix: -14
+  }, {
+    text: 'Windhoek, Namibia',
+    hex: COLOR.mopaneBrown,
+    pos: {
+      bottom: '24%',
+      right: '4%'
+    },
+    dy: -7,
+    delay: 1.3,
+    ix: 14
+  }];
+  return <header style={{
+    position: 'relative',
+    width: '100%',
+    minHeight: '100svh',
+    background: COLOR.milletClay,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}>
+      <WeaveOverlay isDark={false} opacity={0.022} />
+
+      {/* Basket-centre glow */}
+      <div aria-hidden="true" style={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '72vw',
+      maxWidth: 820,
+      aspectRatio: '1 / 1',
+      pointerEvents: 'none',
+      zIndex: 1
+    }}>
+        <div style={{
+        position: 'absolute',
+        inset: 0,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle at 50% 50%, rgba(217,121,31,0.10) 0%, rgba(217,121,31,0.04) 38%, transparent 70%)'
+      }} />
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%'
+      }}>
+          <motion.ellipse cx="100" cy="100" rx="88" ry="88" stroke="#D9791F" strokeWidth="0.55" strokeDasharray="4 6" strokeLinecap="square" strokeOpacity="0.18" animate={{
+          scale: [1, 1.025, 1],
+          opacity: [0.18, 0.28, 0.18]
+        }} transition={{
+          duration: 9,
+          repeat: Infinity,
+          ease: 'easeInOut'
+        }} style={{
+          transformOrigin: '100px 100px'
+        }} />
+          <motion.ellipse cx="100" cy="100" rx="64" ry="64" stroke="#C84A1B" strokeWidth="0.5" strokeDasharray="3 5" strokeLinecap="square" strokeOpacity="0.14" animate={{
+          scale: [1, 1.035, 1],
+          opacity: [0.14, 0.24, 0.14]
+        }} transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 1.2
+        }} style={{
+          transformOrigin: '100px 100px'
+        }} />
+          <motion.ellipse cx="100" cy="100" rx="38" ry="38" stroke="#D9791F" strokeWidth="0.7" strokeDasharray="2 4" strokeLinecap="square" strokeOpacity="0.22" animate={{
+          scale: [1, 1.06, 1],
+          opacity: [0.22, 0.38, 0.22]
+        }} transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 0.5
+        }} style={{
+          transformOrigin: '100px 100px'
+        }} />
+          <motion.rect x="97" y="97" width="6" height="6" fill="#D9791F" fillOpacity="0.35" animate={{
+          opacity: [0.35, 0.6, 0.35],
+          scale: [1, 1.15, 1]
+        }} transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 0.2
+        }} style={{
+          transformOrigin: '100px 100px'
+        }} />
+          {([{
+          x: 98,
+          y: 58
+        }, {
+          x: 98,
+          y: 138
+        }, {
+          x: 58,
+          y: 98
+        }, {
+          x: 138,
+          y: 98
+        }] as {
+          x: number;
+          y: number;
+        }[]).map((pt, i) => <motion.rect key={`stitch-${i}`} x={pt.x} y={pt.y} width="4" height="4" fill="#8F3E21" fillOpacity="0.22" animate={{
+          opacity: [0.22, 0.40, 0.22]
+        }} transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: i * 0.6
+        }} />)}
+        </svg>
+      </div>
+
+      {/* Dither columns */}
+      {[{
+      side: 'left',
+      cols: DITHER_COLS.slice(0, 2),
+      yDir: -80
+    }, {
+      side: 'right',
+      cols: DITHER_COLS.slice(2, 4),
+      yDir: 80
+    }].map(strip => <div key={strip.side} aria-hidden="true" style={{
+      position: 'absolute',
+      top: 0,
+      [strip.side]: 0,
+      bottom: 0,
+      width: 20,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
+    }}>
+          {strip.cols.map((col, ci) => <motion.div key={`d${strip.side}-${ci}`} initial={{
+        opacity: 0
+      }} animate={{
+        opacity: 1,
+        y: [0, strip.yDir, 0]
+      }} transition={{
+        opacity: {
+          delay: 0.8 + ci * 0.1,
+          duration: 0.5
+        },
+        y: {
+          duration: 18 + ci * 4,
+          repeat: Infinity,
+          ease: 'linear',
+          delay: col.delay
+        }
+      }} style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0,
+        width: 10,
+        marginLeft: ci * 10
+      }}>
+              {col.colors.concat(col.colors).concat(col.colors).map((c, pi) => <div key={`dp-${ci}-${pi}`} style={{
+          width: 10,
+          height: 10,
+          background: c,
+          opacity: pi % 3 === 0 ? 0.55 : pi % 3 === 1 ? 0.22 : 0.08
+        }} />)}
+            </motion.div>)}
+        </div>)}
+
+      {/* Corner chips */}
+      {CORNER_CHIPS.map((chip, ci) => <motion.div key={`chip-${ci}`} initial={{
+      opacity: 0,
+      x: chip.ix
+    }} animate={{
+      opacity: 1,
+      x: 0
+    }} transition={{
+      delay: chip.delay,
+      duration: 0.5
+    }} style={{
+      position: 'absolute',
+      zIndex: 4,
+      ...chip.pos
+    }}>
+          <motion.div animate={{
+        y: [0, chip.dy, 0]
+      }} transition={{
+        duration: 8 + ci * 1.5,
+        repeat: Infinity,
+        ease: 'easeInOut',
+        delay: ci * 0.5
+      }} style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        border: '1px solid rgba(30,26,23,0.15)',
+        background: 'rgba(243,232,195,0.9)',
+        padding: '6px 12px'
+      }}>
+            <PixelDot color={chip.hex} size={5} />
+            <span style={{
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: 'rgba(30,26,23,0.55)'
+        }}>
+              {chip.text}
+            </span>
+          </motion.div>
+        </motion.div>)}
+
+      {/* Headline */}
+      <div style={{
+      position: 'relative',
+      zIndex: 2,
+      width: '100%',
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: '0 0.28em',
+      overflow: 'hidden',
+      lineHeight: 1.08
+    }}>
+        <h1 style={{
+        margin: 0,
+        padding: 0,
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '0 0.28em',
+        overflow: 'hidden',
+        lineHeight: 1.08
+      }}>
+          {HERO_LINE_1_WORDS.map((word, wi) => <span key={`l1w-${wi}`} style={{
+          display: 'block',
+          overflow: 'hidden',
+          lineHeight: 1.08
+        }}>
+              <motion.span initial={{
+            y: '110%',
+            opacity: 0
+          }} animate={{
+            y: '0%',
+            opacity: 1
+          }} transition={{
+            duration: 0.72,
+            delay: 0.05 + wi * 0.12,
+            ease: [0.16, 1, 0.3, 1]
+          }} style={{
+            display: 'block',
+            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontWeight: 700,
+            letterSpacing: '-0.04em',
+            color: word.color,
+            whiteSpace: 'nowrap'
+          }}>
+                {word.text}
+              </motion.span>
+            </span>)}
+        </h1>
+
+        {/* Ticker */}
+        <div style={{
+        width: '100vw',
+        overflow: 'hidden',
+        borderTop: '1px solid rgba(30,26,23,0.1)',
+        borderBottom: '1px solid rgba(30,26,23,0.1)',
+        background: COLOR.charBlack,
+        margin: '0.4em 0'
+      }} aria-hidden="true">
+          <motion.div animate={{
+          x: ['0%', '-50%']
+        }} transition={{
+          duration: 28,
+          repeat: Infinity,
+          ease: 'linear'
+        }} style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0,
+          whiteSpace: 'nowrap',
+          width: 'max-content',
+          padding: '10px 0'
+        }}>
+            {TICKER_ITEMS.map((item, i) => <div key={`tick-${i}`} style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}>
+                <div style={{
+              width: 5,
+              height: 5,
+              background: item.hex,
+              marginRight: 10,
+              flexShrink: 0
+            }} aria-hidden="true" />
+                <span style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: item.hex,
+              marginRight: 6
+            }}>{item.name}</span>
+                <span style={{
+              fontSize: 10,
+              fontWeight: 400,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'rgba(232,225,207,0.3)',
+              marginRight: 32
+            }}>{item.role}</span>
+                <div style={{
+              width: 1,
+              height: 14,
+              background: 'rgba(232,225,207,0.1)',
+              marginRight: 32
+            }} />
+              </div>)}
+          </motion.div>
+        </div>
+
+        <p style={{
+        margin: 0,
+        padding: 0,
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '0 0.28em',
+        overflow: 'hidden',
+        lineHeight: 1.0
+      }}>
+          {HERO_LINE_2_WORDS.map((word, wi) => <span key={`l2w-${wi}`} style={{
+          display: 'block',
+          overflow: 'hidden',
+          lineHeight: 1.08
+        }}>
+              <motion.span initial={{
+            y: '110%',
+            opacity: 0
+          }} animate={{
+            y: '0%',
+            opacity: 1
+          }} transition={{
+            duration: 0.72,
+            delay: 0.05 + (LINE_1_COUNT + wi) * 0.12,
+            ease: [0.16, 1, 0.3, 1]
+          }} style={{
+            display: 'block',
+            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontWeight: 700,
+            letterSpacing: '-0.04em',
+            color: word.color,
+            whiteSpace: 'nowrap'
+          }}>
+                {word.text}
+              </motion.span>
+            </span>)}
+        </p>
+
+        <p style={{
+        margin: 0,
+        marginTop: '0.05em',
+        padding: 0,
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '0 0.28em',
+        overflow: 'hidden',
+        lineHeight: 1.0
+      }}>
+          {HERO_LINE_3_WORDS.map((word, wi) => <span key={`l3w-${wi}`} style={{
+          display: 'block',
+          overflow: 'hidden',
+          lineHeight: 1.08
+        }}>
+              <motion.span initial={{
+            y: '110%',
+            opacity: 0
+          }} animate={{
+            y: '0%',
+            opacity: 0.18
+          }} transition={{
+            duration: 0.72,
+            delay: 0.05 + (LINE_1_COUNT + LINE_2_COUNT + wi) * 0.12,
+            ease: [0.16, 1, 0.3, 1]
+          }} style={{
+            display: 'block',
+            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontWeight: 700,
+            letterSpacing: '-0.04em',
+            color: word.color,
+            whiteSpace: 'nowrap'
+          }}>
+                {word.text}
+              </motion.span>
+            </span>)}
+          {/* Blinking cursor */}
+          <span style={{
+          display: 'block',
+          overflow: 'hidden',
+          lineHeight: 1.08
+        }} aria-hidden="true">
+            <motion.span initial={{
+            opacity: 0,
+            y: '110%'
+          }} animate={{
+            opacity: [0, 0, 0.45, 0, 0.45],
+            y: '0%'
+          }} transition={{
+            y: {
+              duration: 0.72,
+              delay: 0.05 + (LINE_1_COUNT + LINE_2_COUNT + HERO_LINE_3_WORDS.length - 1) * 0.12 + 0.68,
+              ease: [0.16, 1, 0.3, 1]
+            },
+            opacity: {
+              duration: 1.1,
+              delay: 0.05 + (LINE_1_COUNT + LINE_2_COUNT + HERO_LINE_3_WORDS.length - 1) * 0.12 + 0.68,
+              repeat: Infinity,
+              ease: 'linear'
+            }
+          }} style={{
+            display: 'inline-block',
+            width: 'clamp(0.22rem, 0.65vw, 0.55rem)',
+            height: '0.72em',
+            background: COLOR.ochreOrange,
+            verticalAlign: 'baseline',
+            marginLeft: '0.08em',
+            marginBottom: '0.06em',
+            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            lineHeight: 1.08,
+            flexShrink: 0
+          }} />
+          </span>
+        </p>
+      </div>
+
+      {/* Bottom anchor */}
+      <div style={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 5,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      paddingBottom: '2.5rem',
+      gap: 14
+    }}>
+        <motion.p initial={{
+        opacity: 0,
+        y: 10
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 1.0,
+        duration: 0.6
+      }} style={{
+        fontSize: 'clamp(0.82rem, 1.3vw, 0.95rem)',
+        color: 'rgba(30,26,23,0.48)',
+        letterSpacing: '0.01em',
+        lineHeight: 1.7,
+        textAlign: 'center',
+        maxWidth: 440,
+        padding: '0 1.5rem'
+      }}>
+          Five systems. One sovereign lab. Intelligence built from millet, clay, bark, and ochre.
+        </motion.p>
+        <motion.div initial={{
+        opacity: 0,
+        y: 8
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 1.15,
+        duration: 0.5
+      }} style={{
+        display: 'flex',
+        gap: 10,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}>
+          <PixelButton href="#systems" variant="primary">
+            <span>Explore systems</span>
+            <Px size={12} viewBox="0 0 8 8">
+              <rect x="0" y="3" width="6" height="2" fill="currentColor" />
+              <rect x="4" y="1" width="2" height="2" fill="currentColor" />
+              <rect x="4" y="5" width="2" height="2" fill="currentColor" />
+            </Px>
+          </PixelButton>
+          <PixelButton href="#brand-guide" variant="ghost">Brand guide</PixelButton>
+        </motion.div>
+        <motion.div initial={{
+        opacity: 0
+      }} animate={{
+        opacity: 1
+      }} transition={{
+        delay: 1.4,
+        duration: 0.5
+      }} style={{
+        display: 'flex',
+        gap: 3,
+        alignItems: 'center',
+        marginTop: 4
+      }} aria-hidden="true">
+          {[0, 1, 2, 3, 4].map(i => <div key={`sh-${i}`} className="w-2 h-2" style={{
+          background: HERO_DITHER_COLORS[i],
+          opacity: 0.4
+        }} />)}
+        </motion.div>
+      </div>
+    </header>;
+};
+
+// ─── ResearchSignals ─────────────────────────────────────────────────────────
+export const ResearchSignals = () => <section className="w-full border-y border-[#1E1A17]/10 bg-[#F3E8C3]">
+    <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-[#1E1A17]/10">
+        {STATS.map(stat => <StatCard key={stat.label} stat={stat} />)}
+      </div>
+    </div>
+  </section>;
+
+// ─── PixelTerminal ────────────────────────────────────────────────────────────
+export const PixelTerminal = () => <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+    <SectionHeader label="Developer Surface" headline="Code that speaks Oshiwambo." />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {TERMINAL_BLOCKS.map(block => <TerminalCard key={block.title} block={block} />)}
+    </div>
+    <div className="mt-6 flex items-center gap-4">
+      <div className="flex-1 h-px bg-[#1E1A17]/8" />
+      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/30 shrink-0">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
+      <div className="flex-1 h-px bg-[#1E1A17]/8" />
+    </div>
+    <CodeSnippetBlock label="TerminalCard · Developer Surface" lines={SNIPPET_DEVELOPER_SURFACE} accentHex="#8F3E21" />
+  </section>;
+
+// ─── SystemConnectionDiagram ─────────────────────────────────────────────────
+export const SystemConnectionDiagram = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, {
+    once: true,
+    margin: '-60px'
+  });
+  const [activeNode, setActiveNode] = useState<string | null>(null);
+  const [activatedEdges, setActivatedEdges] = useState<number[]>([]);
+  const controls = useAnimation();
+  useEffect(() => {
+    if (!isInView) return;
+    controls.start('visible');
+    CONNECTION_EDGES.forEach((_, i) => {
+      setTimeout(() => setActivatedEdges(prev => [...prev, i]), 400 + i * 220);
+    });
+  }, [isInView, controls]);
+  const getNodeById = (id: string) => DIAGRAM_NODES.find(n => n.id === id);
+  const isEdgeActive = (idx: number) => activatedEdges.includes(idx);
+  const isEdgeHighlighted = (edge: ConnectionEdge) => activeNode === null || edge.from === activeNode || edge.to === activeNode;
+  const nodePos = (id: string) => {
+    const n = getNodeById(id);
+    return n ? {
+      x: n.cx,
+      y: n.cy
+    } : {
+      x: 50,
+      y: 50
+    };
+  };
+  return <section id="connection-diagram" className="max-w-7xl mx-auto px-6 pb-24 md:px-12" ref={containerRef}>
+      <SectionHeader label="System Connections" headline="How the workshop talks to itself." />
+      <div className="flex flex-col lg:flex-row gap-10 items-start">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex gap-1" aria-hidden="true">
+              {([COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum] as string[]).map((c, i) => <div key={`cd-leg-${i}`} className="h-1.5" style={{
+              width: 8,
+              background: c,
+              opacity: 0.12 + i * 0.1
+            }} />)}
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/35">Pixel Connection Map — Data Flow</span>
+          </div>
+          <div className="bg-[#1E1A17]" style={{
+          position: 'relative',
+          width: '100%',
+          paddingBottom: '82%'
+        }}>
+            <WeaveOverlay isDark opacity={0.05} />
+            <svg style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%'
+          }} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                {CONNECTION_EDGES.map((edge, i) => <marker key={`marker-${i}`} id={`arrowhead-${i}`} markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
+                    <polygon points="0 0, 4 2, 0 4" fill={edge.color} fillOpacity={isEdgeActive(i) ? 0.85 : 0.2} />
+                  </marker>)}
+              </defs>
+              {CONNECTION_EDGES.map((edge, i) => {
+              const from = nodePos(edge.from);
+              const to = nodePos(edge.to);
+              const highlighted = isEdgeHighlighted(edge);
+              const active = isEdgeActive(i);
+              const midX = (from.x + to.x) / 2 + (i % 2 === 0 ? 6 : -6);
+              const midY = (from.y + to.y) / 2 + (i % 3 === 0 ? -8 : 5);
+              const pathD = `M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`;
+              return <g key={`edge-${i}`}>
+                    <path d={pathD} stroke={edge.color} strokeWidth="0.4" strokeOpacity={highlighted ? 0.15 : 0.05} fill="none" strokeDasharray="1.5 2" />
+                    {active && <motion.path d={pathD} stroke={edge.color} strokeWidth={highlighted ? 0.7 : 0.35} strokeOpacity={highlighted ? 0.9 : 0.3} fill="none" strokeDasharray="2 3" strokeLinecap="square" markerEnd={`url(#arrowhead-${i})`} initial={{
+                  pathLength: 0,
+                  opacity: 0
+                }} animate={{
+                  pathLength: 1,
+                  opacity: 1
+                }} transition={{
+                  duration: 0.7,
+                  ease: 'easeOut'
+                }} />}
+                    {active && <motion.circle r="0.9" fill={edge.color} fillOpacity={highlighted ? 0.95 : 0.35} animate={{
+                  opacity: [0, 1, 1, 0]
+                }} transition={{
+                  duration: 2.4,
+                  delay: 0.7 + i * 0.18,
+                  repeat: Infinity,
+                  repeatDelay: 1.2
+                }}>
+                        <animateMotion dur="2.4s" repeatCount="indefinite" begin={`${0.7 + i * 0.18}s`} path={pathD} />
+                      </motion.circle>}
+                  </g>;
+            })}
+            </svg>
+            <div style={{
+            position: 'absolute',
+            inset: 0,
+            overflow: 'visible'
+          }}>
+              {DIAGRAM_NODES.map(node => {
+              const isActive = activeNode === node.id;
+              const isLinked = activeNode !== null && CONNECTION_EDGES.some(e => e.from === activeNode && e.to === node.id || e.to === activeNode && e.from === node.id);
+              const tooltip = DIAGRAM_NODE_TOOLTIPS[node.id];
+              const tooltipAbove = node.cy > 55;
+              let tooltipLeft: string | undefined = '50%';
+              let tooltipTransform = 'translateX(-50%)';
+              if (node.cx > 70) {
+                tooltipLeft = 'auto';
+                tooltipTransform = 'translateX(-100%)';
+              }
+              if (node.cx < 30) {
+                tooltipLeft = '0';
+                tooltipTransform = 'translateX(0)';
+              }
+              return <motion.button key={`dn-${node.id}`} initial={{
+                opacity: 0,
+                scale: 0.7
+              }} animate={isInView ? {
+                opacity: 1,
+                scale: 1
+              } : {
+                opacity: 0,
+                scale: 0.7
+              }} transition={{
+                delay: 0.15 + DIAGRAM_NODES.indexOf(node) * 0.1,
+                duration: 0.4
+              }} onMouseEnter={() => setActiveNode(node.id)} onMouseLeave={() => setActiveNode(null)} className="flex flex-col items-center cursor-default focus:outline-none" style={{
+                position: 'absolute',
+                left: `${node.cx}%`,
+                top: `${node.cy}%`,
+                transform: 'translate(-50%, -50%)',
+                zIndex: isActive ? 50 : 5
+              }} aria-label={`${node.label} — ${node.sublabel}`}>
+                    <div style={{
+                  background: isActive || isLinked ? node.hex : COLOR.charBlack,
+                  border: `2px solid ${node.hex}`,
+                  padding: '6px 8px',
+                  transition: 'background 0.18s, border-color 0.18s, box-shadow 0.18s',
+                  boxShadow: isActive ? `0 0 0 3px ${node.hex}44, 0 4px 16px ${node.hex}33` : 'none'
+                }}>
+                      <div className="text-[8px] font-bold uppercase tracking-[0.18em] mb-1 text-center" style={{
+                    color: isActive || isLinked ? COLOR.milletClay : node.hex
+                  }}>{node.tag}</div>
+                      <div className="w-6 h-6 mx-auto flex items-center justify-center" aria-hidden="true" style={{
+                    background: isActive || isLinked ? 'rgba(30,26,23,0.4)' : `${node.hex}22`,
+                    border: `1px solid ${node.hex}55`
+                  }}>
+                        <div className="w-2 h-2" style={{
+                      background: isActive || isLinked ? COLOR.charBlack : node.hex
+                    }} />
+                      </div>
+                    </div>
+                    <div className="mt-1.5 text-center leading-tight" style={{
+                  minWidth: 64
+                }}>
+                      <p className="text-[10px] font-semibold tracking-tight" style={{
+                    color: isActive || isLinked ? node.hex : COLOR.milletClay
+                  }}>{node.label}</p>
+                      <p className="text-[9px] uppercase tracking-[0.1em]" style={{
+                    color: COLOR.milletClay,
+                    opacity: isActive || isLinked ? 0.7 : 0.3
+                  }}>{tooltip.role}</p>
+                    </div>
+                    {isActive && tooltip && <motion.div initial={{
+                  opacity: 0,
+                  y: tooltipAbove ? 6 : -6,
+                  scale: 0.96
+                }} animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1
+                }} transition={{
+                  duration: 0.18,
+                  ease: 'easeOut'
+                }} style={{
+                  position: 'absolute',
+                  left: tooltipLeft === '50%' ? '50%' : tooltipLeft === '0' ? 24 : undefined,
+                  right: tooltipLeft === 'auto' ? 24 : undefined,
+                  transform: tooltipTransform,
+                  ...(tooltipAbove ? {
+                    bottom: 'calc(100% + 10px)'
+                  } : {
+                    top: 'calc(100% + 10px)'
+                  }),
+                  zIndex: 60,
+                  pointerEvents: 'none',
+                  minWidth: 200,
+                  maxWidth: 232,
+                  background: COLOR.charBlack,
+                  border: `2px solid ${node.hex}`,
+                  padding: '10px 12px',
+                  boxShadow: `0 8px 32px rgba(30,26,23,0.65), 0 0 0 1px ${node.hex}22`
+                }}>
+                        <PixelCornerMarks hex={node.hex} size={6} />
+                        <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 6
+                  }}>
+                          <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}>
+                            <PixelDot color={node.hex} size={6} />
+                            <span style={{
+                        fontSize: 9,
+                        fontWeight: 700,
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase',
+                        color: node.hex
+                      }}>{node.tag}</span>
+                          </div>
+                          <span style={{
+                      fontSize: 9,
+                      fontWeight: 700,
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(232,225,207,0.3)'
+                    }}>NODE</span>
+                        </div>
+                        <p style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    letterSpacing: '-0.01em',
+                    color: COLOR.milletClay,
+                    lineHeight: 1.1,
+                    marginBottom: 4
+                  }}>{node.label}</p>
+                        <p style={{
+                    fontSize: 10,
+                    fontWeight: 500,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: node.hex,
+                    opacity: 0.75,
+                    marginBottom: 8
+                  }}>{tooltip.role}</p>
+                        {tooltip.connects.length > 0 && <div>
+                            <p style={{
+                      fontSize: 9,
+                      fontWeight: 700,
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(232,225,207,0.3)',
+                      marginBottom: 4
+                    }}>Connects to</p>
+                            <div style={{
+                      display: 'flex',
+                      gap: 4,
+                      flexWrap: 'wrap'
+                    }}>
+                              {tooltip.connects.map(c => <span key={`tt-conn-${node.id}-${c}`} style={{
+                        fontSize: 9,
+                        fontWeight: 700,
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase',
+                        padding: '2px 6px',
+                        background: `${node.hex}22`,
+                        border: `1px solid ${node.hex}55`,
+                        color: node.hex
+                      }}>{c}</span>)}
+                            </div>
+                          </div>}
+                        <DitherBar color={node.hex} segments={16} height={2} opacity={0.55} className="mt-2" />
+                        <div aria-hidden="true" style={{
+                    position: 'absolute',
+                    left: tooltipLeft === '50%' ? '50%' : tooltipLeft === '0' ? 24 : undefined,
+                    right: tooltipLeft === 'auto' ? 24 : undefined,
+                    transform: tooltipLeft === '50%' ? 'translateX(-50%)' : 'none',
+                    ...(tooltipAbove ? {
+                      bottom: -6,
+                      borderTop: `6px solid ${node.hex}`,
+                      borderLeft: '5px solid transparent',
+                      borderRight: '5px solid transparent'
+                    } : {
+                      top: -6,
+                      borderBottom: `6px solid ${node.hex}`,
+                      borderLeft: '5px solid transparent',
+                      borderRight: '5px solid transparent'
+                    }),
+                    width: 0,
+                    height: 0
+                  }} />
+                      </motion.div>}
+                  </motion.button>;
+            })}
+            </div>
+          </div>
+        </div>
+        <AnnotationPanel annotations={GUIDE_ANNOTATIONS} rules={PIXEL_RULES} />
+      </div>
+      <CodeSnippetBlock label="DiagramNode · System Connections" lines={SNIPPET_SYSTEM_CONNECTIONS} accentHex="#DFAE2B" />
+    </section>;
+};
+
+// ─── PixelHeatmap ─────────────────────────────────────────────────────────────
+export const PixelHeatmap = () => {
+  const getHeatColor = (intensity: number) => {
+    if (intensity > 0.85) return COLOR.firedRed;
+    if (intensity > 0.65) return COLOR.ochreOrange;
+    if (intensity > 0.45) return COLOR.mahanguGold;
+    if (intensity > 0.25) return COLOR.barkRust;
+    if (intensity > 0.1) return COLOR.mopaneBrown;
+    return COLOR.charBlack;
+  };
+  return <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader label="Research Signals" headline="Activity across systems." />
+      <div className="flex flex-col lg:flex-row gap-12 items-start">
+        <motion.div initial={{
+        opacity: 0
+      }} whileInView={{
+        opacity: 1
+      }} viewport={{
+        once: true
+      }} transition={{
+        duration: 0.6
+      }} className="bg-[#1E1A17] p-6 md:p-8 flex-1">
+          <div className="relative">
+            <WeaveOverlay isDark opacity={0.06} />
+            <div className="relative flex gap-1.5 mb-2 pl-24">
+              {HEATMAP_LABELS_X.map((label, i) => <div key={`hx-${i}`} className="flex-1 text-center text-[9px] font-bold uppercase tracking-widest" style={{
+              color: COLOR.milletClay,
+              opacity: 0.25
+            }}>{label}</div>)}
+            </div>
+            <div className="relative flex flex-col gap-1.5">
+              {HEATMAP_LABELS_Y.map((yLabel, rowIdx) => <div key={`hr-${rowIdx}`} className="flex items-center gap-1.5">
+                  <div className="w-24 shrink-0 text-[9px] font-bold uppercase tracking-[0.12em] text-right pr-3" style={{
+                color: COLOR.milletClay,
+                opacity: 0.35
+              }}>{yLabel}</div>
+                  {HEATMAP_CELLS.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={{
+                opacity: 0,
+                scale: 0.5
+              }} whileInView={{
+                opacity: 1,
+                scale: 1
+              }} viewport={{
+                once: true
+              }} transition={{
+                delay: (cell.row * 8 + cell.col) * 0.012,
+                duration: 0.25
+              }} className="flex-1 aspect-square" style={{
+                background: getHeatColor(cell.intensity)
+              }} title={`${yLabel} · ${HEATMAP_LABELS_X[cell.col]}: ${Math.round(cell.intensity * 100)}%`} />)}
+                </div>)}
+            </div>
+            <div className="relative flex items-center gap-3 mt-6">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/25">Low</span>
+              {([COLOR.charBlack, COLOR.mopaneBrown, COLOR.barkRust, COLOR.mahanguGold, COLOR.ochreOrange, COLOR.firedRed] as string[]).map((c, i) => <div key={`hl-${i}`} className="w-4 h-4" style={{
+              background: c
+            }} aria-hidden="true" />)}
+              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/25">High</span>
+            </div>
+          </div>
+        </motion.div>
+        <div className="lg:w-72 xl:w-80 shrink-0">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/40 mb-5">How to read</p>
+          <div className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
+            {[{
+            label: 'Rows',
+            body: 'Each row maps to one of the five named systems, plus a cross-system channel.'
+          }, {
+            label: 'Columns',
+            body: 'Quarterly time periods across a two-year research horizon.'
+          }, {
+            label: 'Color',
+            body: 'Intensity corresponds to relative research and development activity. Material palette — no arbitrary hues.'
+          }].map(item => <div key={item.label} className="py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#D9791F] mb-1">{item.label}</p>
+                <p className="text-sm text-[#1E1A17]/65 leading-relaxed">{item.body}</p>
+              </div>)}
+          </div>
+        </div>
+      </div>
+      <CodeSnippetBlock label="HeatCell · Research Signals" lines={SNIPPET_RESEARCH_SIGNALS} accentHex="#C84A1B" />
+    </section>;
+};
+
+// ─── RoadmapTimeline ──────────────────────────────────────────────────────────
+export const RoadmapTimeline = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, {
+    once: true,
+    margin: '-60px'
+  });
+  const STATUS_LEGEND = [{
+    status: 'complete' as const,
+    label: 'Complete'
+  }, {
+    status: 'active' as const,
+    label: 'In progress'
+  }, {
+    status: 'upcoming' as const,
+    label: 'Upcoming'
+  }];
+  return <section id="roadmap" ref={sectionRef} className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader label="Development Roadmap" headline="Five phases. One direction." />
+      <div className="hidden lg:block relative mb-14" aria-hidden="true">
+        <div className="h-px bg-[#1E1A17]/12 w-full" />
+        <div className="absolute top-0 left-0 w-full flex">
+          {TIMELINE_PHASES.map(phase => <div key={`spine-tick-${phase.tag}`} className="flex-1 flex flex-col items-center" style={{
+          transform: 'translateY(-50%)'
+        }}>
+              <div className="w-2.5 h-2.5" style={{
+            background: phase.status === 'upcoming' ? 'transparent' : phase.hex,
+            border: `2px solid ${phase.hex}`
+          }} />
+            </div>)}
+        </div>
+        <div className="flex mt-3">
+          {TIMELINE_PHASES.map(phase => <div key={`spine-label-${phase.tag}`} className="flex-1 text-center">
+              <span className="text-[9px] font-bold uppercase tracking-[0.14em]" style={{
+            color: phase.hex,
+            opacity: 0.7
+          }}>{phase.period}</span>
+            </div>)}
+        </div>
+      </div>
+      <div className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
+        {TIMELINE_PHASES.map((phase, idx) => <motion.div key={phase.tag} initial={{
+        opacity: 0,
+        y: 14
+      }} animate={isInView ? {
+        opacity: 1,
+        y: 0
+      } : {
+        opacity: 0,
+        y: 14
+      }} transition={{
+        delay: 0.1 + idx * 0.11,
+        duration: 0.5
+      }} className="flex flex-col lg:flex-row gap-6 lg:gap-10 py-8 group">
+            <div className="lg:w-40 shrink-0 flex flex-row lg:flex-col gap-3 lg:gap-2 items-center lg:items-start">
+              <PixelTag hex={phase.hex} label={phase.tag} />
+              <div className="flex items-center gap-1.5">
+                <div className="flex gap-0.5" aria-hidden="true">
+                  {[0, 1, 2].map(k => <div key={`st-${phase.tag}-${k}`} className="w-1.5 h-1.5" style={{
+                background: phase.status === 'upcoming' ? 'transparent' : phase.hex,
+                border: `1px solid ${phase.hex}`,
+                opacity: phase.status === 'upcoming' ? 0.4 : 1
+              }} />)}
+                </div>
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em]" style={{
+              color: phase.status !== 'upcoming' ? phase.hex : COLOR.charBlack,
+              opacity: phase.status === 'upcoming' ? 0.35 : 1
+            }}>{phase.status}</span>
+              </div>
+              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-[#1E1A17]/35 mt-1">{phase.period}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline gap-2.5 mb-1">
+                <h3 className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">{phase.oshiwambo}</h3>
+                <span className="text-sm text-[#1E1A17]/60 font-normal">{phase.english}</span>
+              </div>
+              <p className="text-sm text-[#1E1A17]/65 leading-relaxed mb-5 max-w-xl">{phase.desc}</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-3 bg-[#1E1A17]/8 overflow-hidden relative" role="progressbar" aria-valuenow={phase.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`${phase.oshiwambo} progress: ${phase.progress}%`}>
+                  <motion.div className="h-full relative overflow-hidden" initial={{
+                width: 0
+              }} animate={{
+                width: `${phase.progress}%`
+              }} transition={{
+                delay: 0.35 + idx * 0.12,
+                duration: 0.9,
+                ease: [0.16, 1, 0.3, 1]
+              }} style={{
+                background: phase.hex
+              }}>
+                    <div aria-hidden="true" className="absolute inset-0" style={{
+                  backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(30,26,23,0.12) 3px, rgba(30,26,23,0.12) 4px)'
+                }} />
+                    {phase.status === 'active' && <motion.div aria-hidden="true" className="absolute right-0 top-0 bottom-0 w-3" style={{
+                  background: COLOR.charBlack
+                }} animate={{
+                  opacity: [1, 0.3, 1]
+                }} transition={{
+                  duration: 1.4,
+                  repeat: Infinity,
+                  ease: 'easeInOut'
+                }} />}
+                  </motion.div>
+                  {[25, 50, 75].map(tick => <div key={`tick-${phase.tag}-${tick}`} aria-hidden="true" className="absolute top-0 bottom-0 w-px" style={{
+                left: `${tick}%`,
+                background: COLOR.charBlack,
+                opacity: 0.08
+              }} />)}
+                </div>
+                <span className="text-[11px] font-bold tabular-nums shrink-0" style={{
+              color: phase.progress === 0 ? COLOR.charBlack : phase.hex,
+              opacity: phase.progress === 0 ? 0.3 : 1
+            }}>{phase.progress}%</span>
+              </div>
+            </div>
+            <div className="lg:w-60 xl:w-72 shrink-0">
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/35 mb-3">Milestones</p>
+              <ul className="flex flex-col gap-2">
+                {phase.milestones.map(ms => <li key={`ms-${phase.tag}-${ms}`} className="flex items-start gap-2">
+                    <div aria-hidden="true" className="w-1.5 h-1.5 mt-1 shrink-0" style={{
+                background: phase.status === 'upcoming' ? 'transparent' : phase.hex,
+                border: `1px solid ${phase.hex}`,
+                opacity: phase.status === 'upcoming' ? 0.4 : 1
+              }} />
+                    <span className="text-xs leading-snug" style={{
+                color: COLOR.charBlack,
+                opacity: phase.status === 'upcoming' ? 0.35 : 0.65
+              }}>{ms}</span>
+                  </li>)}
+              </ul>
+            </div>
+          </motion.div>)}
+      </div>
+      <div aria-hidden="true" className="flex mt-4 h-1">
+        {TIMELINE_PHASES.map(phase => [0, 1, 2, 3, 4, 5, 6, 7].map(i => <div key={`btm-${phase.tag}-${i}`} className="flex-1 h-full" style={{
+        background: i % 2 === 0 ? phase.hex : 'transparent',
+        opacity: 0.45
+      }} />))}
+      </div>
+      <div className="flex items-center gap-6 mt-5 flex-wrap">
+        {STATUS_LEGEND.map(item => <div key={item.status} className="flex items-center gap-2">
+            <div className="flex gap-0.5" aria-hidden="true">
+              {[0, 1, 2].map(k => <div key={`leg-${item.status}-${k}`} className="w-1.5 h-1.5" style={{
+            background: item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' && k < 2 ? COLOR.barkRust : 'transparent',
+            border: `1px solid ${item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' ? COLOR.barkRust : '#1E1A1744'}`
+          }} />)}
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/45">{item.label}</span>
+          </div>)}
+      </div>
+      <CodeSnippetBlock label="TimelinePhase · Development Roadmap" lines={SNIPPET_ROADMAP} accentHex="#D9791F" />
+    </section>;
+};
+
+// ─── FieldApplications ────────────────────────────────────────────────────────
+export const FieldApplications = () => <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+    <SectionHeader label="Field Applications" headline="Intelligence carried to where it is needed." />
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {SECTOR_APPS.map((app, idx) => <FieldAppCard key={app.tag} app={app} idx={idx} />)}
+    </div>
+    <motion.div initial={{
+    opacity: 0
+  }} whileInView={{
+    opacity: 1
+  }} viewport={{
+    once: true
+  }} transition={{
+    duration: 0.5
+  }} className="relative mt-5 bg-[#1E1A17] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden">
+      <WeaveOverlay isDark opacity={0.04} />
+      <div className="relative">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#D9791F] mb-1">Partner with us</p>
+        <p className="text-sm text-[#E8E1CF]/50 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
+      </div>
+      <button className="relative shrink-0 px-5 py-2.5 bg-[#D9791F] text-[#E8E1CF] font-medium text-sm hover:bg-[#C84A1B] transition-colors duration-200">Propose a pilot</button>
+    </motion.div>
+    <CodeSnippetBlock label="FieldAppCard · Field Applications" lines={SNIPPET_FIELD_APPS} accentHex="#6F4A6E" />
+  </section>;
+
+// ─── PixelFlowchart ───────────────────────────────────────────────────────────
+export const PixelFlowchart = () => {
+  const rootNode = FLOW_NODES[0];
+  const childNodes = FLOW_NODES.slice(1);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  return <section id="brand-guide" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader label="Brand Guide" headline="Naming hierarchy. One root. Five branches." />
+      <div className="flex flex-col lg:flex-row gap-16 items-start">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-10">
+            <div className="flex gap-1" aria-hidden="true">
+              {[8, 16, 24, 16, 8].map((w, idx) => <div key={`leg-seg-${idx}`} className="h-1.5" style={{
+              width: w,
+              background: COLOR.ochreOrange,
+              opacity: 0.12 + idx * 0.1
+            }} />)}
+            </div>
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/35">Pixel Flowchart — Naming Architecture</span>
+          </div>
+          <motion.div initial={{
+          opacity: 0,
+          y: 12
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }}>
+            {/* Root node */}
+            <div className="relative border-2 bg-[#1E1A17] flex items-center gap-5 px-6 py-5 overflow-hidden" style={{
+            borderColor: rootNode.hex
+          }}>
+              <WeaveOverlay isDark opacity={0.06} />
+              <PixelCornerMarks hex={rootNode.hex} size={10} />
+              <div className="relative flex items-center gap-4">
+                <FlowNodeIcon id="root" hex={rootNode.hex} />
+                <div>
+                  <div className="flex items-baseline gap-2.5">
+                    <h3 className="text-xl font-semibold tracking-tight text-[#E8E1CF] leading-none">{rootNode.oshiwambo}</h3>
+                    <PixelTag hex="transparent" label={rootNode.pixelTag} />
+                  </div>
+                  <p className="text-sm text-[#E8E1CF]/55 mt-1">{rootNode.english}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.13em] mt-1.5" style={{
+                  color: rootNode.hex
+                }}>{rootNode.role}</p>
+                </div>
+              </div>
+              <DitherBar color={rootNode.hex} segments={40} height={2} opacity={1} className="absolute bottom-0 left-0 right-0" />
+            </div>
+            {/* Connector SVG — xl only */}
+            <div aria-hidden="true" className="hidden xl:block w-full" style={{
+            height: 52,
+            position: 'relative'
+          }}>
+              {/* 
+                3-column grid: each column is (600 - 2*16) / 3 = 189.3px wide
+                col centers: 189.3/2 = 94.7, 94.7+16+189.3 = 300, 300+16+189.3 = 505.3
+                Round to: 95, 300, 505
+               */}
+              <svg width="100%" height="52" viewBox="0 0 600 52" preserveAspectRatio="none">
+                <line x1="300" y1="0" x2="300" y2="20" stroke={rootNode.hex} strokeWidth="1.5" strokeDasharray="4 3" strokeOpacity="0.55" />
+                <line x1="95" y1="20" x2="505" y2="20" stroke={rootNode.hex} strokeWidth="1.5" strokeDasharray="6 4" strokeOpacity="0.35" />
+                {([95, 300, 505] as number[]).map((cx, i) => <line key={`drop-${i}`} x1={cx} y1="20" x2={cx} y2="52" stroke={childNodes[i]?.hex ?? rootNode.hex} strokeWidth="1.5" strokeDasharray="3 3" strokeOpacity="0.5" />)}
+              </svg>
+            </div>
+            {/* Simple trunk — non-xl */}
+            <div className="xl:hidden flex justify-center py-3" aria-hidden="true">
+              <div className="w-px h-8" style={{
+              background: `repeating-linear-gradient(to bottom, ${rootNode.hex} 0px, ${rootNode.hex} 3px, transparent 3px, transparent 6px)`
+            }} />
+            </div>
+            {/* Child nodes */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-0 mt-0">
+              {childNodes.map((node, idx) => <motion.div key={node.id} initial={{
+              opacity: 0,
+              y: 14
+            }} whileInView={{
+              opacity: 1,
+              y: 0
+            }} viewport={{
+              once: true,
+              margin: '-30px'
+            }} transition={{
+              delay: 0.1 + idx * 0.08,
+              duration: 0.45
+            }} className="flex flex-col items-center" onMouseEnter={() => setHoveredId(node.id)} onMouseLeave={() => setHoveredId(null)}>
+                  <div aria-hidden="true" className="xl:hidden" style={{
+                width: 2,
+                height: 20,
+                background: `repeating-linear-gradient(to bottom, ${node.hex} 0px, ${node.hex} 3px, transparent 3px, transparent 6px)`
+              }} />
+                  <div aria-hidden="true" className="flex flex-col items-center mb-1"><PixelArrowDown color={node.hex} /></div>
+                  <div className="w-full" style={{
+                minHeight: 160
+              }}>
+                    <FlowNodeCard node={node} isHovered={hoveredId === node.id} />
+                  </div>
+                </motion.div>)}
+            </div>
+          </motion.div>
+        </div>
+        <AnnotationPanel annotations={GUIDE_ANNOTATIONS} rules={PIXEL_RULES} />
+      </div>
+      <CodeSnippetBlock label="FlowNode · Pixel Flowchart" lines={SNIPPET_BRAND_GUIDE} accentHex="#8F3E21" />
+    </section>;
+};
+
+// ─── IconShowcase ─────────────────────────────────────────────────────────────
+export const IconShowcase = () => {
+  const [activeCategory, setActiveCategory] = useState<IconCategory | 'All'>('All');
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const {
+    isDark
+  } = useDark();
+  const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
+  const borderColor = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const labelColor = isDark ? 'rgba(232,225,207,0.38)' : 'rgba(30,26,23,0.45)';
+  const headlineColor = isDark ? COLOR.milletClay : COLOR.charBlack;
+  const bodyColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.58)';
+  const CATEGORY_TABS: Array<IconCategory | 'All'> = ['All', ...ICON_CATEGORIES];
+  const filtered = activeCategory === 'All' ? ICON_REGISTRY : ICON_REGISTRY.filter(i => i.category === activeCategory);
+  const handleCopy = (name: string, id: string) => {
+    navigator.clipboard.writeText(`<Icon${name} size={16} />`).catch(() => {});
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1400);
+  };
+
+  // Style spec lines — data outside JSX, no inline array literals
+  const STYLE_SPEC = [{
+    label: 'Grid',
+    value: '12 × 12 pixel grid — all coordinates snap to integer units'
+  }, {
+    label: 'Shapes',
+    value: 'Rect-only — no paths, no strokes, no curves. Pure filled rectangles'
+  }, {
+    label: 'Color',
+    value: 'currentColor by default — override with color prop. Depth via fillOpacity layers'
+  }, {
+    label: 'Scale',
+    value: 'Uniform size prop (default 16px) — crisp at any integer multiple'
+  }, {
+    label: 'Usage',
+    value: 'import { IconName } from "./okaanda-icons"; size, color, opacity props'
+  }];
+  return <section id="icon-bank" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <div className="border-b pb-8 mb-10" style={{
+      borderColor
+    }}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{
+        color: labelColor
+      }}>
+          Icon Bank
+        </h2>
+        <p className="text-2xl md:text-3xl font-medium tracking-tight mb-5" style={{
+        color: headlineColor
+      }}>
+          Pixel icons. Every shape you need.
+        </p>
+
+        {/* Style description blurb */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-16 items-start">
+          <p className="text-sm leading-relaxed max-w-xl" style={{
+          color: bodyColor
+        }}>
+            Every icon in this system is drawn on a strict <strong style={{
+            color: isDark ? COLOR.milletClay : COLOR.charBlack,
+            fontWeight: 600
+          }}>12 × 12 pixel grid</strong> using only filled rectangles — no paths, no strokes, no curves. The result is a cohesive pixel-art language that reads crisply at 16px and scales cleanly to any integer multiple. Depth is achieved through <strong style={{
+            color: isDark ? COLOR.milletClay : COLOR.charBlack,
+            fontWeight: 600
+          }}>fillOpacity layering</strong> — a foreground rect at full opacity over a background rect at 0.15–0.45 — giving form without gradients. All icons use <strong style={{
+            color: isDark ? COLOR.milletClay : COLOR.charBlack,
+            fontWeight: 600
+          }}>currentColor</strong> so they adapt to any surface; pass a color prop to pin them. This is a material language — deliberate, structured, reproducible.
+          </p>
+          <div className="flex flex-col gap-0 divide-y shrink-0 lg:min-w-72" style={{
+          borderColor
+        }}>
+            {STYLE_SPEC.map(spec => <div key={spec.label} className="flex gap-3 py-2.5 items-start">
+                <span className="text-[9px] font-bold uppercase tracking-[0.18em] shrink-0 mt-0.5 w-16" style={{
+              color: COLOR.ochreOrange
+            }}>{spec.label}</span>
+                <span className="text-[11px] leading-snug" style={{
+              color: bodyColor
+            }}>{spec.value}</span>
+              </div>)}
+          </div>
+        </div>
+      </div>
+
+      {/* Category tabs */}
+      <div className="flex flex-wrap gap-2 mb-10" role="tablist" aria-label="Icon categories">
+        {CATEGORY_TABS.map(cat => {
+        const isActive = activeCategory === cat;
+        return <button key={cat} role="tab" aria-selected={isActive} onClick={() => setActiveCategory(cat)} style={{
+          padding: '5px 14px',
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          border: `1px solid ${isActive ? COLOR.ochreOrange : borderColor}`,
+          background: isActive ? COLOR.ochreOrange : 'transparent',
+          color: isActive ? COLOR.milletClay : labelColor,
+          cursor: 'pointer',
+          transition: 'background 0.18s, border-color 0.18s, color 0.18s'
+        }}>
+              {cat}
+            </button>;
+      })}
+      </div>
+
+      {/* Icon grid */}
+      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+        {filtered.map((entry, idx) => {
+        const isHovered = hoveredId === entry.id;
+        const isCopied = copiedId === entry.id;
+        return <motion.button key={entry.id} initial={{
+          opacity: 0,
+          scale: 0.8
+        }} animate={{
+          opacity: 1,
+          scale: 1
+        }} transition={{
+          delay: idx * 0.012,
+          duration: 0.22
+        }} onMouseEnter={() => setHoveredId(entry.id)} onMouseLeave={() => setHoveredId(null)} onClick={() => handleCopy(entry.name, entry.id)} aria-label={`Copy ${entry.name} icon import`} title={`${entry.name} · click to copy`} style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 6,
+          padding: '12px 6px 8px',
+          background: isHovered ? isDark ? COLOR.darkCardAlt : '#EDE0C4' : cardBg,
+          border: `1px solid ${isHovered ? COLOR.ochreOrange : borderColor}`,
+          cursor: 'pointer',
+          transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
+          boxShadow: isHovered ? `0 0 0 2px ${COLOR.ochreOrange}22` : 'none'
+        }}>
+              <span style={{
+            color: isCopied ? COLOR.ochreOrange : isDark ? COLOR.milletClay : COLOR.charBlack,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'color 0.18s'
+          }}>
+                <entry.component size={20} />
+              </span>
+              <span style={{
+            fontSize: 8,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: isCopied ? COLOR.ochreOrange : labelColor,
+            lineHeight: 1.2,
+            textAlign: 'center',
+            transition: 'color 0.18s'
+          }}>
+                {isCopied ? 'Copied!' : entry.name}
+              </span>
+            </motion.button>;
+      })}
+      </div>
+
+      {/* Footer rule */}
+      <div className="mt-10 flex items-center gap-4">
+        <div className="flex-1 h-px" style={{
+        background: borderColor
+      }} />
+        <span style={{
+        fontSize: 9,
+        fontWeight: 700,
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase',
+        color: labelColor,
+        whiteSpace: 'nowrap'
+      }}>
+          {ICON_REGISTRY.length} icons · Pixel grid · 12×12 viewBox · currentColor
+        </span>
+        <div className="flex-1 h-px" style={{
+        background: borderColor
+      }} />
+      </div>
+
+      {/* Usage snippet */}
+      <div className="mt-6 p-5 font-mono text-[11px] leading-6" style={{
+      background: COLOR.charBlack,
+      color: 'rgba(232,225,207,0.55)',
+      borderLeft: `3px solid ${COLOR.ochreOrange}`
+    }}>
+        <span style={{
+        color: COLOR.mopaneBrown
+      }}>{'// import from okaanda-icons'}</span>
+        <br />
+        <span style={{
+        color: COLOR.ochreOrange
+      }}>import</span>
+        <span>{' { IconSearch, IconUser, IconCheck } '}</span>
+        <span style={{
+        color: COLOR.ochreOrange
+      }}>from</span>
+        <span style={{
+        color: COLOR.mahanguGold
+      }}>{" './okaanda-icons'"}</span>
+        <br />
+        <br />
+        <span style={{
+        color: COLOR.mopaneBrown
+      }}>{'// render with size + color props'}</span>
+        <br />
+        <span>{'<'}</span>
+        <span style={{
+        color: COLOR.ochreOrange
+      }}>IconSearch</span>
+        <span style={{
+        color: COLOR.mahanguGold
+      }}>{' size'}</span>
+        <span>{'={16} '}</span>
+        <span style={{
+        color: COLOR.mahanguGold
+      }}>color</span>
+        <span>{"='"}</span>
+        <span style={{
+        color: COLOR.firedRed
+      }}>{'#D9791F'}</span>
+        <span>{"' />"}</span>
+      </div>
+      <CodeSnippetBlock label="Icon · Icon Bank" lines={SNIPPET_ICON_BANK} accentHex="#D9791F" />
+    </section>;
+};
