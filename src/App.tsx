@@ -1,12 +1,23 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Container, Theme } from './settings/types';
-import { NamibiaAISystemsHub } from './components/generated/okaanda-design-system';
+import {
+  NamibiaAISystemsHub,
+  OkaandaPublicSite,
+} from './components/generated/okaanda-design-system';
 
 const theme: Theme = 'light';
 // only use 'centered' container for standalone components, never for full page apps or websites.
 const container: Container = 'none';
 
 function App() {
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const handlePopState = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   function setTheme(theme: Theme) {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -18,9 +29,12 @@ function App() {
   setTheme(theme);
 
   const generatedComponent = useMemo(() => {
-    // THIS IS WHERE THE TOP LEVEL GENRATED COMPONENT WILL BE RETURNED!
-    return <NamibiaAISystemsHub />;
-  }, []);
+    if (path === '/showcase') return <NamibiaAISystemsHub />;
+    if (path === '/systems') return <OkaandaPublicSite page="systems" />;
+    if (path === '/contact') return <OkaandaPublicSite page="contact" />;
+    if (path === '/full') return <OkaandaPublicSite page="full" />;
+    return <OkaandaPublicSite page="home" />;
+  }, [path]);
 
   if (container === 'centered') {
     return (

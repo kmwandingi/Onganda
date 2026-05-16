@@ -5,4 +5,5 @@ export * from './okaanda-sections';
 export * from './okaanda-publications';
 export * from './okaanda-document-editor';
 export * from './okaanda-slide-editor';
+export * from './okaanda-public-sites';
 export * from './NamibiaAISystemsHub';

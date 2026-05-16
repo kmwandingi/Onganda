@@ -137,6 +137,15 @@ Use this barrel for new components unless you are editing one of the underlying 
 ### Reuse Status
 This project is currently an **internal Vite React design system**, not a packaged npm library. Components can be imported inside this app through the `@/components/generated/okaanda-design-system` barrel. To reuse it in another repository, copy or package the `src/components/generated/` directory together with `src/index.css`, Tailwind/Vite configuration, and the runtime dependencies listed in `package.json` (`framer-motion`, `react`, `recharts`, etc.).
 
+### Current Public Surfaces
+The current app intentionally has multiple public surfaces:
+
+*   `/`: selective public homepage for the current live posture.
+*   `/systems`: concise public systems page.
+*   `/contact`: selective inquiry page.
+*   `/full`: fuller future-facing website version for later release.
+*   `/showcase`: the existing design-system showcase and capability demo. Preserve this page as-is unless the task explicitly asks to change showcase behavior.
+
 ### Stability Tiers
 *   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar`, `DitherStrip`, `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `okaanda-icons.tsx`.
 *   **Reusable but page-shaped**: `OkaandaNav`, `OkaandaHero`, `ResearchSignals`, `SystemConnectionDiagram`, `PixelHeatmap`, `RoadmapTimeline`, `FieldApplications`, `PixelFlowchart`, `IconShowcase`, and `Publications`.
