@@ -5,8 +5,8 @@ You are working in the Onganda project repository. This project has a very stric
 ## CRITICAL INSTRUCTION BEFORE WRITING ANY CODE
 Before you make any changes to UI, styling, components, or layout, you MUST:
 1. Read the `DESIGN_GUIDELINES.md` file located in the root of this project.
-2. Read the available exports in `src/components/generated/okaanda-design-system.ts`.
-3. Read the available tokens in `src/components/generated/okaanda-tokens.ts` when adding or changing design data.
+2. Read the available exports in `src/components/generated/onganda-design-system.ts`.
+3. Read the available tokens in `src/components/generated/onganda-tokens.ts` when adding or changing design data.
 
 ## Hard Rules
 1. **Never use standard Tailwind colors** (e.g., `text-blue-500`, `bg-red-500`, `border-gray-200`). You must use the semantic colors provided by the Onganda design system (e.g., Millet Clay, Char Black, Ochre Orange).

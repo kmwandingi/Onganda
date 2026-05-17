@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { COLOR, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './okaanda-tokens';
+import { COLOR, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
 import {
   DarkContext,
   DitherBar,
-  OkaandaLogoMark,
+  OngandaLogoMark,
   PixelCornerMarks,
   PixelDot,
   PixelTag,
@@ -15,7 +15,7 @@ import {
   IconOmbiga,
   IconEtiti,
   IconOshitoo
-} from './okaanda-primitives';
+} from './onganda-primitives';
 import {
   IconArrowRight,
   IconCheck,
@@ -27,7 +27,7 @@ import {
   IconTarget,
   IconTerminal,
   IconUsers
-} from './okaanda-icons';
+} from './onganda-icons';
 
 type PublicPage = 'home' | 'full';
 
@@ -93,7 +93,7 @@ const PublicNav = () => (
   }}>
     <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
       <a href="/" className="flex items-center gap-3 no-underline" style={{ color: COLOR.charBlack }}>
-        <OkaandaLogoMark size={24} />
+        <OngandaLogoMark size={24} />
         <div>
           <p className="text-sm font-semibold leading-none">{BRAND}</p>
           <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{LAB_LABEL}</p>
@@ -467,8 +467,10 @@ const FullPage = () => (
   </>
 );
 
-export const OkaandaPublicSite = ({ page }: { page: PublicPage }) => (
+export const OngandaPublicSite = ({ page }: { page: PublicPage }) => (
   <PublicShell>
     {page === 'full' ? <FullPage /> : <HomePage />}
   </PublicShell>
 );
+
+export const OkaandaPublicSite = OngandaPublicSite;

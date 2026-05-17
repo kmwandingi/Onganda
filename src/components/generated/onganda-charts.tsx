@@ -1,13 +1,13 @@
-// ─── Okaanda Design System — Chart Gallery ────────────────────────────────────
+// ─── Onganda Design System — Chart Gallery ────────────────────────────────────
 // Self-contained chart showcase. 15+ chart types rendered with Recharts,
-// styled strictly within the Okaanda material palette. Light card backgrounds.
+// styled strictly within the Onganda material palette. Light card backgrounds.
 // Each chart ships with an inline legend. Category filter for navigation.
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
-import { COLOR } from './okaanda-tokens';
-import { SectionHeader, DitherBar, PixelTag, PixelDot } from './okaanda-primitives';
+import { COLOR } from './onganda-tokens';
+import { SectionHeader, DitherBar, PixelTag, PixelDot } from './onganda-primitives';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
 const C = {
@@ -1205,7 +1205,7 @@ export const ChartGallery = () => {
         color: labelColor,
         whiteSpace: 'nowrap'
       }}>
-          {CHART_PANELS.length} chart types · Recharts · Okaanda palette
+          {CHART_PANELS.length} chart types · Recharts · Onganda palette
         </span>
         <div className="flex-1 h-px" style={{
         background: borderColor

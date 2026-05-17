@@ -1,12 +1,12 @@
-// ─── Okaanda Publications — Document & Presentation Formats ──────────────────
+// ─── Onganda Publications — Document & Presentation Formats ──────────────────
 // Section presenting the two publication creation tools: Oshitaandwa (Document)
 // and Oshilongifano (Presentation). Uses only existing design-system primitives
 // and tokens — no new design decisions introduced.
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { COLOR, PUBLICATION_FORMATS, PublicationFormat } from './okaanda-tokens';
-import { Px, PixelDot, DitherBar, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './okaanda-primitives';
+import { COLOR, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
+import { Px, PixelDot, DitherBar, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './onganda-primitives';
 
 // ─── Document mockup — pixel-art A4 page preview ──────────────────────────────
 const DocumentMockup = ({
@@ -580,7 +580,7 @@ export const Publications = ({
         <p className="mt-4 text-sm leading-relaxed max-w-2xl" style={{
         color: isDark ? 'rgba(232,225,207,0.50)' : 'rgba(30,26,23,0.55)'
       }}>
-          Two authoring formats — structured documents and slide decks — both living natively on the website with the full Okaanda design language, and both exportable to standard formats whenever you need to share offline.
+          Two authoring formats — structured documents and slide decks — both living natively on the website with the full Onganda design language, and both exportable to standard formats whenever you need to share offline.
         </p>
       </div>
 
@@ -622,7 +622,7 @@ export const Publications = ({
         color: subColor,
         whiteSpace: 'nowrap'
       }}>
-          Oshitaandwa · Oshilongifano · PDF · DOCX · PPTX
+          Oshitaandwa · Oshilongifano · PDF · Word · PPT
         </span>
         <div style={{
         flex: 1,

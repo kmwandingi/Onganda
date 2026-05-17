@@ -1,18 +1,18 @@
-// ─── Okaanda — Namibia AI Systems Hub ────────────────────────────────────────
+// ─── Onganda — Namibia AI Systems Hub ────────────────────────────────────────
 // Top-level page component. Composes sections and primitives from the
-// Okaanda design system. All tokens live in okaanda-tokens.ts,
-// all atomic primitives in okaanda-primitives.tsx,
-// all page sections in okaanda-sections.tsx.
+// Onganda design system. All tokens live in onganda-tokens.ts,
+// all atomic primitives in onganda-primitives.tsx,
+// all page sections in onganda-sections.tsx.
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './okaanda-tokens';
-import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, OkaandaFooter } from './okaanda-primitives';
-import { OkaandaNav, OkaandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase } from './okaanda-sections';
-import { ChartGallery } from './okaanda-charts';
-import { Publications } from './okaanda-publications';
-import { DocumentEditor } from './okaanda-document-editor';
-import { SlideEditor } from './okaanda-slide-editor';
+import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
+import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, OngandaFooter } from './onganda-primitives';
+import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase } from './onganda-sections';
+import { ChartGallery } from './onganda-charts';
+import { Publications } from './onganda-publications';
+import { DocumentEditor } from './onganda-document-editor';
+import { SlideEditor } from './onganda-slide-editor';
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export const NamibiaAISystemsHub = () => {
@@ -50,10 +50,10 @@ export const NamibiaAISystemsHub = () => {
       transition: 'background 0.35s, color 0.35s'
     }}>
         {/* ── Navigation ── */}
-        <OkaandaNav />
+        <OngandaNav />
 
         {/* ── Hero ── */}
-        <OkaandaHero />
+        <OngandaHero />
 
         {/* ── Research Signals stats bar ── */}
         <ResearchSignals />
@@ -168,7 +168,7 @@ export const NamibiaAISystemsHub = () => {
                   <div className="flex items-center gap-4 py-4 border-b border-[#1E1A17]/10">
                     <div className="w-2 h-8 bg-[#D9791F] shrink-0" aria-hidden="true" />
                     <div>
-                      <p className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">Okaanda</p>
+                      <p className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">Onganda</p>
                       <p className="text-xs text-[#1E1A17]/50 mt-0.5">Parent brand · Namibia Applied AI Lab</p>
                     </div>
                   </div>
@@ -203,7 +203,7 @@ export const NamibiaAISystemsHub = () => {
         <PixelFlowchart />
 
         {/* ── Footer ── */}
-        <OkaandaFooter />
+        <OngandaFooter />
       </div>
     </DarkContext.Provider>;
 };

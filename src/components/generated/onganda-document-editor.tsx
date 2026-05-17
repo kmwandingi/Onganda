@@ -1,13 +1,13 @@
-// ─── Okaanda Document Editor — Full Editing Shell ─────────────────────────────
+// ─── Onganda Document Editor — Full Editing Shell ─────────────────────────────
 // Block-based document editor: click any block to select, drag to reorder,
 // double-click text to edit inline. All design-system components insertable,
 // configurable, deletable. "New Document" = blank canvas, templates pre-filled.
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './okaanda-tokens';
-import { OkaandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './okaanda-primitives';
-import { ChartGallery } from './okaanda-charts';
+import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
+import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
+import { ChartGallery } from './onganda-charts';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ const INSERT_PALETTE: InsertPaletteItem[] = [{
   label: 'Signature Block',
   desc: 'Author attribution footer',
   type: 'signature',
-  defaultContent: 'Okaanda · Namibia AI Systems Lab · 2025',
+  defaultContent: 'Onganda · Namibia AI Systems Lab · 2025',
   hex: COLOR.mopaneBrown,
   category: 'Text'
 }, {
@@ -218,7 +218,7 @@ const wrapWordDocument = (title: string, bodyHtml: string) => `<!doctype html>
     @page { size: A4 portrait; margin: 18mm; }
     body { margin: 0; background: ${COLOR.milletClay}; color: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
     article { box-shadow: none !important; border: 0 !important; margin: 0 auto; max-width: 760px; background: ${COLOR.dustLight}; }
-    button, input, textarea, [data-okaanda-export-ui="true"] { display: none !important; }
+    button, input, textarea, [data-onganda-export-ui="true"] { display: none !important; }
     svg { max-width: 100%; }
   </style>
 </head>
@@ -472,7 +472,7 @@ const TEMPLATE_BLOCKS: DocBlock[] = [{
 }, {
   id: 'b-sig',
   type: 'signature',
-  content: 'Okaanda · Namibia AI Systems Lab · 2025'
+  content: 'Onganda · Namibia AI Systems Lab · 2025'
 }];
 
 // ─── Drag reorder state ───────────────────────────────────────────────────────
@@ -2128,7 +2128,7 @@ function DocBlockView({
         gap: 10,
         padding: '12px 0'
       }}>
-          <OkaandaLogoMark size={18} />
+          <OngandaLogoMark size={18} />
           {isEditing ? <InlineInput value={block.content} onChange={v => onEdit({
           content: v
         })} onBlur={onStopEdit} style={{
@@ -2683,7 +2683,7 @@ const DocExportModal = ({
   onClose
 }: {
   isDark: boolean;
-  format: 'PDF' | 'DOCX';
+  format: 'PDF' | 'WORD';
   docTitle: string;
   blockCount: number;
   onGenerate: () => void;
@@ -2779,7 +2779,7 @@ const DocExportModal = ({
           alignItems: 'center',
           gap: 10
         }}>
-            <OkaandaLogoMark size={18} />
+            <OngandaLogoMark size={18} />
             <PixelTag hex={formatColor} label={format === 'PDF' ? 'Export PDF' : 'Export Word'} />
           </div>
           <button onClick={onClose} style={{
@@ -2812,7 +2812,7 @@ const DocExportModal = ({
               margin: 0,
               lineHeight: 1.6
             }}>
-                  {format === 'PDF' ? 'Opens the browser PDF print flow with only the document canvas visible.' : 'Downloads a Word-compatible .doc file with the current Okaanda document layout.'}
+                  {format === 'PDF' ? 'Opens the browser PDF print flow with only the document canvas visible.' : 'Downloads a Word-compatible .doc file with the current Onganda document layout.'}
                 </p>
               </div>
               <div style={{
@@ -2871,7 +2871,7 @@ const DocExportModal = ({
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-                <OkaandaLogoMark size={28} />
+                <OngandaLogoMark size={28} />
               </div>
               <div style={{
             width: '100%',
@@ -3006,7 +3006,7 @@ const DocExportModal = ({
 };
 
 // ─── Session storage keys ─────────────────────────────────────────────────────
-const DOC_SESSION_KEY = 'okaanda_doc_editor_session';
+const DOC_SESSION_KEY = 'onganda_doc_editor_session';
 interface DocSession {
   stage: 'picker' | 'editor';
   blocks: DocBlock[];
@@ -3091,7 +3091,7 @@ const DocToolbar = ({
   blockCount: number;
   docTitle: string;
   onTitleChange: (t: string) => void;
-  onExport: (fmt: 'PDF' | 'DOCX') => void;
+  onExport: (fmt: 'PDF' | 'WORD') => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
@@ -3103,7 +3103,7 @@ const DocToolbar = ({
   const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
   const mutedFg = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';
-  const fmtBtns: Array<'PDF' | 'DOCX'> = ['PDF', 'DOCX'];
+  const fmtBtns: Array<'PDF' | 'WORD'> = ['PDF', 'WORD'];
   const btnBase: React.CSSProperties = {
     padding: '4px 10px',
     background: 'transparent',
@@ -3325,7 +3325,7 @@ const DocLetterhead = ({
         alignItems: 'center',
         gap: 10
       }}>
-          <OkaandaLogoMark size={32} />
+          <OngandaLogoMark size={32} />
           <div>
             <p style={{
             fontSize: 14,
@@ -3333,7 +3333,7 @@ const DocLetterhead = ({
             letterSpacing: '-0.01em',
             color: COLOR.ochreOrange,
             lineHeight: 1.1
-          }}>Okaanda</p>
+          }}>Onganda</p>
             <p style={{
             fontSize: 10,
             color: muted,
@@ -3456,7 +3456,7 @@ const TemplatePicker = ({
         gap: 12,
         marginBottom: 48
       }}>
-          <OkaandaLogoMark size={24} />
+          <OngandaLogoMark size={24} />
           <div style={{
           flex: 1
         }}>
@@ -3598,7 +3598,7 @@ export const DocumentEditor = ({
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [configuringBlockId, setConfiguringBlockId] = useState<string | null>(null);
-  const [exportModal, setExportModal] = useState<'PDF' | 'DOCX' | null>(null);
+  const [exportModal, setExportModal] = useState<'PDF' | 'WORD' | null>(null);
   const [dragState, setDragState] = useState<DragState>({
     draggingId: null,
     overIdx: null
@@ -3752,7 +3752,7 @@ export const DocumentEditor = ({
     setEditingBlockId(null);
     setConfiguringBlockId(null);
   };
-  const handleGenerateExport = useCallback((format: 'PDF' | 'DOCX') => {
+  const handleGenerateExport = useCallback((format: 'PDF' | 'WORD') => {
     setSelectedBlockId(null);
     setEditingBlockId(null);
     setConfiguringBlockId(null);
@@ -3774,13 +3774,13 @@ export const DocumentEditor = ({
     transition: 'background 0.35s',
     display: 'flex',
     flexDirection: 'column'
-  }} data-okaanda-document-editor>
+  }} data-onganda-document-editor>
       <style>{`
         @media print {
           @page { size: A4 portrait; margin: 16mm; }
           body * { visibility: hidden !important; }
-          [data-okaanda-print-document], [data-okaanda-print-document] * { visibility: visible !important; }
-          [data-okaanda-print-document] {
+          [data-onganda-print-document], [data-onganda-print-document] * { visibility: visible !important; }
+          [data-onganda-print-document] {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
@@ -3789,7 +3789,7 @@ export const DocumentEditor = ({
             border: 0 !important;
             background: ${COLOR.dustLight} !important;
           }
-          [data-okaanda-export-ui="true"], [data-okaanda-export-ui="true"] * {
+          [data-onganda-export-ui="true"], [data-onganda-export-ui="true"] * {
             display: none !important;
             visibility: hidden !important;
           }
@@ -3814,7 +3814,7 @@ export const DocumentEditor = ({
           maxWidth: 780,
           margin: '0 auto'
         }}>
-            <motion.article ref={documentPaperRef} data-okaanda-print-document initial={{
+            <motion.article ref={documentPaperRef} data-onganda-print-document initial={{
             opacity: 0,
             y: 20
           }} animate={{
@@ -3907,12 +3907,12 @@ export const DocumentEditor = ({
                   alignItems: 'center',
                   gap: 6
                 }}>
-                    <OkaandaLogoMark size={14} />
+                    <OngandaLogoMark size={14} />
                     <span style={{
                     fontSize: 9,
                     color: isDark ? 'rgba(232,225,207,0.30)' : 'rgba(30,26,23,0.30)',
                     letterSpacing: '0.08em'
-                  }}>Okaanda · Namibia AI Systems Lab</span>
+                  }}>Onganda · Namibia AI Systems Lab</span>
                   </div>
                   <span style={{
                   fontSize: 9,

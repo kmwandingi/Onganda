@@ -15,7 +15,7 @@ This document serves as the single source of truth for the design language of **
 
 ## 2. Core Principles
 
-The design of Onganda is governed by five unwavering principles (defined in `okaanda-tokens.ts`):
+The design of Onganda is governed by five unwavering principles (defined in `onganda-tokens.ts`):
 
 1.  **Language**: *Oshiwambo first. English second.*
     *   In UI and documentation, the primary name is always the Oshiwambo term, followed by the English translation for functional clarity.
@@ -32,7 +32,7 @@ The design of Onganda is governed by five unwavering principles (defined in `oka
 
 ## 3. Color Palette
 
-The Onganda color palette is strictly defined. **Do not use generic Tailwind colors (e.g., `bg-red-500`, `text-blue-500`).** Always use the semantic tokens defined in `okaanda-tokens.ts`.
+The Onganda color palette is strictly defined. **Do not use generic Tailwind colors (e.g., `bg-red-500`, `text-blue-500`).** Always use the semantic tokens defined in `onganda-tokens.ts`.
 
 ### Base & Backgrounds
 *   **Millet Clay** (`#E8E1CF`): The primary light background. Used as the canvas for the `light` theme.
@@ -137,13 +137,13 @@ import {
 
 Use `@onganda/design-system` for app-level imports and future reusable surfaces unless you are editing one of the underlying design-system files directly. The package entry lives at `src/design-system/index.ts` and re-exports:
 
-1.  `okaanda-tokens.ts`: color constants, cultural system data, charts, publication formats, guide annotations, and TypeScript interfaces.
-2.  `okaanda-primitives.tsx`: atomic Okaanda UI primitives such as pixel marks, dither bars, tags, overlays, cards, buttons, logo marks, and dark-mode context.
-3.  `okaanda-icons.tsx`: pixel-art interface and system icons.
-4.  `okaanda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
-5.  `okaanda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
-6.  `okaanda-publications.tsx`, `okaanda-document-editor.tsx`, and `okaanda-slide-editor.tsx`: larger product surfaces built on the same system.
-7.  `okaanda-public-sites.tsx`: public Home and Full site surfaces built from the system.
+1.  `onganda-tokens.ts`: color constants, cultural system data, charts, publication formats, guide annotations, and TypeScript interfaces.
+2.  `onganda-primitives.tsx`: atomic Onganda UI primitives such as pixel marks, dither bars, tags, overlays, cards, buttons, logo marks, and dark-mode context.
+3.  `onganda-icons.tsx`: pixel-art interface and system icons.
+4.  `onganda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
+5.  `onganda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
+6.  `onganda-publications.tsx`, `onganda-document-editor.tsx`, and `onganda-slide-editor.tsx`: larger product surfaces built on the same system.
+7.  `onganda-public-sites.tsx`: public Home and Full site surfaces built from the system.
 8.  `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
 
 ### Reuse Status
@@ -170,8 +170,8 @@ The homepage should avoid repeated editorial sections. If "What we are building"
 *   Contact areas should feel as rich and intentional as other sections. A compact contact block is acceptable only for a small footer; the main Home contact should include the full inquiry surface.
 
 ### Stability Tiers
-*   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar`, `DitherStrip`, `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `okaanda-icons.tsx`.
-*   **Reusable but page-shaped**: `OkaandaNav`, `OkaandaHero`, `ResearchSignals`, `SystemConnectionDiagram`, `PixelHeatmap`, `RoadmapTimeline`, `FieldApplications`, `PixelFlowchart`, `IconShowcase`, and `Publications`.
+*   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar`, `DitherStrip`, `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `onganda-icons.tsx`.
+*   **Reusable but page-shaped**: `OngandaNav`, `OngandaHero`, `ResearchSignals`, `SystemConnectionDiagram`, `PixelHeatmap`, `RoadmapTimeline`, `FieldApplications`, `PixelFlowchart`, `IconShowcase`, and `Publications`.
 *   **Product shells**: `DocumentEditor` and `SlideEditor`. These are usable surfaces, but they are larger, stateful modules and should not be treated as small primitives.
 
 ---
@@ -180,14 +180,14 @@ The homepage should avoid repeated editorial sections. If "What we are building"
 
 ### Working with `src/components/generated/`
 The design system is implemented via modular files in the `generated` directory:
-1.  `okaanda-design-system.ts`: Preferred import surface for new app code.
-2.  `okaanda-tokens.ts`: **Do not hardcode new colors or constant data.** If you need a color or system definition, import `COLOR`, `SYSTEMS`, `SWATCHES`, or a typed data constant from this file through the barrel.
-3.  `okaanda-primitives.tsx`: Base UI elements (section headers, dither strips, standard cards, overlays). When building a new page section, compose it using these primitives.
-4.  `okaanda-sections.tsx`: Large, composed page sections (hero, timelines, heatmaps).
-5.  `okaanda-icons.tsx`: All pixel-art SVG icons.
+1.  `onganda-design-system.ts`: Preferred import surface for new app code.
+2.  `onganda-tokens.ts`: **Do not hardcode new colors or constant data.** If you need a color or system definition, import `COLOR`, `SYSTEMS`, `SWATCHES`, or a typed data constant from this file through the barrel.
+3.  `onganda-primitives.tsx`: Base UI elements (section headers, dither strips, standard cards, overlays). When building a new page section, compose it using these primitives.
+4.  `onganda-sections.tsx`: Large, composed page sections (hero, timelines, heatmaps).
+5.  `onganda-icons.tsx`: All pixel-art SVG icons.
 
 ### Dark Mode Context
-*   The application handles dark mode via the `DarkContext` provider (found in `okaanda-primitives.tsx`).
+*   The application handles dark mode via the `DarkContext` provider (found in `onganda-primitives.tsx`).
 *   Always respect the `isDark` value from `useDark()` when applying inline styles for colors that are not perfectly mapped by Tailwind classes.
 *   Example:
     ```tsx
@@ -198,12 +198,12 @@ The design system is implemented via modular files in the `generated` directory:
     ```
 
 ### Writing New Code
-1.  **Surgical Changes**: Do not refactor whole files unless necessary. If adding a stat, add it to `STATS` in `okaanda-tokens.ts` rather than hardcoding HTML.
+1.  **Surgical Changes**: Do not refactor whole files unless necessary. If adding a stat, add it to `STATS` in `onganda-tokens.ts` rather than hardcoding HTML.
 2.  **Minimalism**: Prefer elegant improvements over verbosity. If a piece of UI feels cluttered, you are violating the "Anthropic-level whitespace discipline" rule.
 3.  **Comment Minimally**: Only document what is not obvious. Rely on the strong naming conventions provided by the Oshiwambo + English system roles.
 4.  **No Generic Colors**: New code must not introduce generic Tailwind color classes or unrelated hex values. Use `COLOR`, existing data constants, or add a named semantic token first.
 5.  **Sharp Brand Geometry**: Do not add rounded corners to brand cards, diagrams, icons, or major Onganda surfaces. Small utility controls may remain rectangular or stepped.
-6.  **Use Existing Icons**: If a section has system cards, contact actions, focus areas, navigation affordances, or tool/product concepts, use the existing pixel icons from `okaanda-icons.tsx` or system icons from `okaanda-primitives.tsx`. Do not introduce generic icon styles.
+6.  **Use Existing Icons**: If a section has system cards, contact actions, focus areas, navigation affordances, or tool/product concepts, use the existing pixel icons from `onganda-icons.tsx` or system icons from `onganda-primitives.tsx`. Do not introduce generic icon styles.
 7.  **Validate Every UI Change**: Before shipping UI work, run a code pass for design-system drift and a Playwright pass for rendered layout, motion, hover states, mobile fit, and console errors.
 
 ### Required Design Validation
@@ -222,7 +222,7 @@ The core design language is present and importable, but the repository still con
 
 *   Several generated components hardcode approved Onganda palette values directly in JSX. Treat those as migration debt, not as a pattern to copy.
 *   `DocumentEditor` and `SlideEditor` include additional light-surface variants for paper/editor canvases. These should be promoted into named tokens before further expansion.
-*   `src/index.css` maps global Tailwind/shadcn-style variables to the Okaanda palette so generic utilities such as `bg-background`, `text-foreground`, and `border-border` remain brand-aligned.
+*   `src/index.css` maps global Tailwind/shadcn-style variables to the Onganda palette so generic utilities such as `bg-background`, `text-foreground`, and `border-border` remain brand-aligned.
 *   `npm run lint` may report Fast Refresh warnings because some generated files export both components and constants. These warnings do not block use, but a future library extraction should split contexts/constants into separate files.
 
 ---

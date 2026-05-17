@@ -1,1 +1,1 @@
-export * from '../components/generated/okaanda-design-system';
+export * from '../components/generated/onganda-design-system';

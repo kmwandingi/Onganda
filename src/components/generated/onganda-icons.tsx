@@ -1,15 +1,15 @@
-// ─── Okaanda Design System — Icon Bank ───────────────────────────────────────
-// All pixel-art icons in the Okaanda system. Every icon follows the same rules:
+// ─── Onganda Design System — Icon Bank ───────────────────────────────────────
+// All pixel-art icons in the Onganda system. Every icon follows the same rules:
 //   · Built on the Px primitive (rect-only SVG, 12×12 or 16×16 grid)
 //   · currentColor for monochrome; can be overridden with color prop
 //   · size prop scales uniformly (default 16)
-//   · No strokes — only filled rects, consistent with the Okaanda pixel language
+//   · No strokes — only filled rects, consistent with the Onganda pixel language
 //
 // Categories mirror ShadCN icon needs:
 //   Navigation, Actions, Status, Data, Media, Communication, System, Brand
 
 import React from 'react';
-import { Px } from './okaanda-primitives';
+import { Px } from './onganda-primitives';
 
 // ─── Shared prop type ─────────────────────────────────────────────────────────
 export interface IconProps {

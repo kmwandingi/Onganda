@@ -1,12 +1,12 @@
-// ─── Okaanda Design System — Primitives ──────────────────────────────────────
+// ─── Onganda Design System — Primitives ──────────────────────────────────────
 // All reusable atomic UI components: pixel SVGs, icons, context, section header,
 // dither bar, stat card, swatch chip, terminal block, progress bar, flowchart
 // node card, field app card, annotation panel, and dark-mode context.
-// Import from this file in any Okaanda project.
+// Import from this file in any Onganda project.
 
 import React, { createContext, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { WEAVE, COLOR, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './okaanda-tokens';
+import { WEAVE, COLOR, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
 export const DarkContext = createContext<{
@@ -387,9 +387,9 @@ export const IconMoon = () => <Px size={16} viewBox="0 0 12 12">
     <rect x="4" y="2" width="4" height="8" fill="currentColor" />
   </Px>;
 
-// ─── OkaandaLogoMark — brand pixel granary icon ───────────────────────────────
-// Usage: <OkaandaLogoMark size={28} />
-export const OkaandaLogoMark = ({
+// ─── OngandaLogoMark — brand pixel granary icon ───────────────────────────────
+// Usage: <OngandaLogoMark size={28} />
+export const OngandaLogoMark = ({
   size = 28
 }: {
   size?: number;
@@ -977,15 +977,15 @@ export const CodeSnippetBlock = ({
     </motion.div>;
 };
 
-// ─── OkaandaFooter — site-wide footer ────────────────────────────────────────
-export const OkaandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[#E8E1CF] py-16 px-6 md:px-12 border-t-[3px] border-[#D9791F]">
+// ─── OngandaFooter — site-wide footer ────────────────────────────────────────
+export const OngandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[#E8E1CF] py-16 px-6 md:px-12 border-t-[3px] border-[#D9791F]">
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start gap-10 md:gap-0">
         <div>
           <div className="flex items-center gap-2.5 mb-3">
-            <OkaandaLogoMark size={22} />
+            <OngandaLogoMark size={22} />
             <span className="font-semibold tracking-tight text-base">
-              <span className="text-[#D9791F]">Okaanda</span>
+              <span className="text-[#D9791F]">Onganda</span>
               <span className="text-[#E8E1CF]/40 mx-1.5">·</span>
               <span className="text-[#E8E1CF]/70 font-normal text-sm">Namibia AI Systems Lab</span>
             </span>
@@ -1010,3 +1010,6 @@ export const OkaandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[
       </div>
     </div>
   </footer>;
+
+export const OkaandaLogoMark = OngandaLogoMark;
+export const OkaandaFooter = OngandaFooter;

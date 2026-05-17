@@ -1,12 +1,12 @@
-// ─── Okaanda Design System — Sections ────────────────────────────────────────
+// ─── Onganda Design System — Sections ────────────────────────────────────────
 // All page-level section components. Each is self-contained and composable.
-// Imports only from okaanda-tokens and okaanda-primitives.
+// Imports only from onganda-tokens and onganda-primitives.
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge } from './okaanda-tokens';
-import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OkaandaFooter, OkaandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './okaanda-primitives';
-import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './okaanda-icons';
+import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge } from './onganda-tokens';
+import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -17,10 +17,10 @@ const SNIPPET_SYSTEM_ARCH: CodeSnippetLine[] = [{
   text: '// System Architecture — render a SystemCard'
 }, {
   type: 'import',
-  text: "import { SystemCard } from './okaanda-primitives';"
+  text: "import { SystemCard } from './onganda-primitives';"
 }, {
   type: 'import',
-  text: "import { SYSTEMS } from './okaanda-tokens';"
+  text: "import { SYSTEMS } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -60,10 +60,10 @@ const SNIPPET_DEVELOPER_SURFACE: CodeSnippetLine[] = [{
   text: '// Developer Surface — render a TerminalCard'
 }, {
   type: 'import',
-  text: "import { TerminalCard } from './okaanda-primitives';"
+  text: "import { TerminalCard } from './onganda-primitives';"
 }, {
   type: 'import',
-  text: "import { TERMINAL_BLOCKS } from './okaanda-tokens';"
+  text: "import { TERMINAL_BLOCKS } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -109,7 +109,7 @@ const SNIPPET_SYSTEM_CONNECTIONS: CodeSnippetLine[] = [{
   text: '// System Connections — render a connection map'
 }, {
   type: 'import',
-  text: "import { DIAGRAM_NODES, CONNECTION_EDGES } from './okaanda-tokens';"
+  text: "import { DIAGRAM_NODES, CONNECTION_EDGES } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -152,10 +152,10 @@ const SNIPPET_MATERIAL_PALETTE: CodeSnippetLine[] = [{
   text: '// Material Palette — render SwatchChips'
 }, {
   type: 'import',
-  text: "import { SwatchChip } from './okaanda-primitives';"
+  text: "import { SwatchChip } from './onganda-primitives';"
 }, {
   type: 'import',
-  text: "import { SWATCHES } from './okaanda-tokens';"
+  text: "import { SWATCHES } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -194,7 +194,7 @@ const SNIPPET_MATERIAL_PALETTE: CodeSnippetLine[] = [{
   text: '// COLOR token reference'
 }, {
   type: 'import',
-  text: "import { COLOR } from './okaanda-tokens';"
+  text: "import { COLOR } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: "// COLOR.ochreOrange → '#D9791F'"
@@ -210,7 +210,7 @@ const SNIPPET_RESEARCH_SIGNALS: CodeSnippetLine[] = [{
   text: '// Research Signals — heatmap grid'
 }, {
   type: 'import',
-  text: "import { HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from './okaanda-tokens';"
+  text: "import { HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -265,7 +265,7 @@ const SNIPPET_ROADMAP: CodeSnippetLine[] = [{
   text: '// Development Roadmap — timeline phase'
 }, {
   type: 'import',
-  text: "import { TIMELINE_PHASES } from './okaanda-tokens';"
+  text: "import { TIMELINE_PHASES } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -314,10 +314,10 @@ const SNIPPET_BRAND_PRINCIPLES: CodeSnippetLine[] = [{
   text: '// Brand Principles — render PrincipleRow'
 }, {
   type: 'import',
-  text: "import { PrincipleRow } from './okaanda-primitives';"
+  text: "import { PrincipleRow } from './onganda-primitives';"
 }, {
   type: 'import',
-  text: "import { PRINCIPLES } from './okaanda-tokens';"
+  text: "import { PRINCIPLES } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -357,7 +357,7 @@ const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
   text: '// Icon Bank — import and use pixel icons'
 }, {
   type: 'import',
-  text: "import { IconSearch, IconUser, IconCheck } from './okaanda-icons';"
+  text: "import { IconSearch, IconUser, IconCheck } from './onganda-icons';"
 }, {
   type: 'plain',
   text: ''
@@ -393,17 +393,17 @@ const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
   text: '// Browse all icons (click any to copy import)'
 }, {
   type: 'import',
-  text: "import { ICON_REGISTRY, ICON_CATEGORIES } from './okaanda-icons';"
+  text: "import { ICON_REGISTRY, ICON_CATEGORIES } from './onganda-icons';"
 }];
 const SNIPPET_FIELD_APPS: CodeSnippetLine[] = [{
   type: 'comment',
   text: '// Field Applications — render FieldAppCard'
 }, {
   type: 'import',
-  text: "import { FieldAppCard } from './okaanda-primitives';"
+  text: "import { FieldAppCard } from './onganda-primitives';"
 }, {
   type: 'import',
-  text: "import { SECTOR_APPS } from './okaanda-tokens';"
+  text: "import { SECTOR_APPS } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -449,10 +449,10 @@ const SNIPPET_BRAND_GUIDE: CodeSnippetLine[] = [{
   text: '// Brand Guide — FlowNodeCard naming hierarchy'
 }, {
   type: 'import',
-  text: "import { FlowNodeCard, FlowNodeIcon } from './okaanda-primitives';"
+  text: "import { FlowNodeCard, FlowNodeIcon } from './onganda-primitives';"
 }, {
   type: 'import',
-  text: "import { FLOW_NODES } from './okaanda-tokens';"
+  text: "import { FLOW_NODES } from './onganda-tokens';"
 }, {
   type: 'plain',
   text: ''
@@ -494,8 +494,8 @@ const SNIPPET_BRAND_GUIDE: CodeSnippetLine[] = [{
   text: '/>'
 }];
 
-// ─── OkaandaNav ───────────────────────────────────────────────────────────────
-export const OkaandaNav = () => {
+// ─── OngandaNav ───────────────────────────────────────────────────────────────
+export const OngandaNav = () => {
   const {
     isDark,
     toggle
@@ -536,7 +536,7 @@ export const OkaandaNav = () => {
       alignItems: 'center',
       gap: 12
     }}>
-        <OkaandaLogoMark size={28} />
+        <OngandaLogoMark size={28} />
         <span style={{
         fontWeight: 600,
         letterSpacing: '-0.01em',
@@ -545,7 +545,7 @@ export const OkaandaNav = () => {
       }}>
           <span style={{
           color: COLOR.ochreOrange
-        }}>Okaanda</span>
+        }}>Onganda</span>
           <span style={{
           color: dotColor,
           margin: '0 8px',
@@ -623,8 +623,8 @@ export const OkaandaNav = () => {
     </nav>;
 };
 
-// ─── OkaandaHero ─────────────────────────────────────────────────────────────
-export const OkaandaHero = () => {
+// ─── OngandaHero ─────────────────────────────────────────────────────────────
+export const OngandaHero = () => {
   const CORNER_CHIPS = [{
     text: 'Applied Sovereign AI',
     hex: COLOR.ochreOrange,
@@ -1900,7 +1900,7 @@ export const IconShowcase = () => {
     value: 'Uniform size prop (default 16px) — crisp at any integer multiple'
   }, {
     label: 'Usage',
-    value: 'import { IconName } from "./okaanda-icons"; size, color, opacity props'
+    value: 'import { IconName } from "./onganda-icons"; size, color, opacity props'
   }];
   return <section id="icon-bank" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <div className="border-b pb-8 mb-10" style={{
@@ -2048,7 +2048,7 @@ export const IconShowcase = () => {
     }}>
         <span style={{
         color: COLOR.mopaneBrown
-      }}>{'// import from okaanda-icons'}</span>
+      }}>{'// import from onganda-icons'}</span>
         <br />
         <span style={{
         color: COLOR.ochreOrange
@@ -2059,7 +2059,7 @@ export const IconShowcase = () => {
       }}>from</span>
         <span style={{
         color: COLOR.mahanguGold
-      }}>{" './okaanda-icons'"}</span>
+      }}>{" './onganda-icons'"}</span>
         <br />
         <br />
         <span style={{
@@ -2086,3 +2086,6 @@ export const IconShowcase = () => {
       <CodeSnippetBlock label="Icon · Icon Bank" lines={SNIPPET_ICON_BANK} accentHex="#D9791F" />
     </section>;
 };
+
+export const OkaandaNav = OngandaNav;
+export const OkaandaHero = OngandaHero;

@@ -1,4 +1,4 @@
-// ─── Okaanda Design System — Tokens ──────────────────────────────────────────
+// ─── Onganda Design System — Tokens ──────────────────────────────────────────
 // Single source of truth for all design tokens, data constants, and types.
 // Import from this file in any component that needs brand values.
 
@@ -522,7 +522,7 @@ export const TERMINAL_BLOCKS: TerminalBlock[] = [{
     text: '    api_key=os.environ['
   }, {
     type: 'string',
-    text: '"OKAANDA_API_KEY"'
+    text: '"ONGANDA_API_KEY"'
   }, {
     type: 'plain',
     text: ']'
@@ -903,9 +903,9 @@ export const PUBLICATION_FORMATS: PublicationFormat[] = [{
   tag: 'DOC',
   hex: '#D9791F',
   role: 'White Papers, Letters & Reports',
-  desc: 'Compose structured documents with branded letterheads, section dividers, and editorial typography. Everything authored here is a living page on the site — export to PDF or DOCX whenever you are ready.',
+  desc: 'Compose structured documents with branded letterheads, section dividers, and editorial typography. Everything authored here is a living page on the site — export to PDF or Word whenever you are ready.',
   hint: 'White papers · Partner letters · Research reports · Technical briefs',
-  exports: ['PDF', 'DOCX'],
+  exports: ['PDF', 'Word'],
   useCases: ['White paper', 'Partner letter', 'Technical brief', 'Policy report']
 }, {
   id: 'presentation',
@@ -914,9 +914,9 @@ export const PUBLICATION_FORMATS: PublicationFormat[] = [{
   tag: 'DECK',
   hex: '#6F4A6E',
   role: 'Decks for Partners, Investors & Pilots',
-  desc: 'Build slide decks with Okaanda-branded layouts — cover slide, section dividers, content slides, and closing marks. The deck lives on the website as a first-class page and exports to PDF or PPTX for offline sharing.',
+  desc: 'Build slide decks with Onganda-branded layouts — cover slide, section dividers, content slides, and closing marks. The deck lives on the website as a first-class page and exports to PDF or PPT for offline sharing.',
   hint: 'Investor pitch · Partner overview · Pilot proposal · Systems walkthrough',
-  exports: ['PDF', 'PPTX'],
+  exports: ['PDF', 'PPT'],
   useCases: ['Investor deck', 'Partner overview', 'Pilot proposal', 'Systems brief']
 }];
 
@@ -925,7 +925,7 @@ export const GUIDE_PALETTE_SWATCHES = ['#D9791F', '#8F3E21', '#DFAE2B', '#6A4B2E
 export const FOOTER_DITHER_SWATCHES = ['#D9791F', '#C84A1B', '#DFAE2B', '#8F3E21', '#6A4B2E', '#1E1A17'];
 export const HERO_DITHER_COLORS = ['#D9791F', '#C84A1B', '#DFAE2B', '#8F3E21', '#6A4B2E'];
 export const TICKER_ITEMS = [{
-  name: 'Okaanda',
+  name: 'Onganda',
   role: 'Namibia AI Systems Lab',
   hex: '#D9791F'
 }, {

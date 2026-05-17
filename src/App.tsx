@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Container, Theme } from './settings/types';
 import {
   NamibiaAISystemsHub,
-  OkaandaPublicSite,
+  OngandaPublicSite,
 } from '@onganda/design-system';
 
 const theme: Theme = 'light';
@@ -31,8 +31,8 @@ function App() {
 
   const generatedComponent = useMemo(() => {
     if (routePath === '/showcase') return <NamibiaAISystemsHub />;
-    if (routePath === '/full') return <OkaandaPublicSite page="full" />;
-    return <OkaandaPublicSite page="home" />;
+    if (routePath === '/full') return <OngandaPublicSite page="full" />;
+    return <OngandaPublicSite page="home" />;
   }, [routePath]);
 
   if (container === 'centered') {

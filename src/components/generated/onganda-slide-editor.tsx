@@ -1,12 +1,12 @@
-// ─── Okaanda Slide Editor — Full Editing Shell ─────────────────────────────
+// ─── Onganda Slide Editor — Full Editing Shell ─────────────────────────────
 // Presentation editor: drag to place & move components on canvas, alignment
 // guides when dragging, drag-to-reorder slides, Inspector for all properties.
 // "New Presentation" = blank slides, Templates = pre-filled decks.
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS } from './okaanda-tokens';
-import { OkaandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './okaanda-primitives';
+import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS } from './onganda-tokens';
+import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ const wrapPowerPointDeck = (title: string, bodyHtml: string) => `<!doctype html>
   <title>${title}</title>
   <style>
     body { margin: 0; background: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
-    .okaanda-print-slide { width: 13.333in; height: 7.5in; page-break-after: always; overflow: hidden; }
+    .onganda-print-slide { width: 13.333in; height: 7.5in; page-break-after: always; overflow: hidden; }
     button, input, textarea { display: none !important; }
     svg { max-width: 100%; }
   </style>
@@ -101,7 +101,7 @@ const wrapPowerPointDeck = (title: string, bodyHtml: string) => `<!doctype html>
 </html>`;
 
 // ─── Session storage ──────────────────────────────────────────────────────────
-const SLIDE_SESSION_KEY = 'okaanda_slide_editor_session';
+const SLIDE_SESSION_KEY = 'onganda_slide_editor_session';
 interface SlideSession {
   stage: 'picker' | 'editor';
   slides: SlideEntry[];
@@ -4080,7 +4080,7 @@ const SlideCanvas = ({
         alignItems: 'center',
         gap: 10
       }}>
-        <OkaandaLogoMark size={16} />
+        <OngandaLogoMark size={16} />
         <span style={{
           fontSize: 9,
           color: COLOR.ochreOrange,
@@ -4575,7 +4575,7 @@ const ExportModal = ({
   onClose
 }: {
   isDark: boolean;
-  format: 'PDF' | 'PPTX';
+  format: 'PDF' | 'PPT';
   slideCount: number;
   deckTitle: string;
   onGenerate: () => void;
@@ -4671,7 +4671,7 @@ const ExportModal = ({
           alignItems: 'center',
           gap: 10
         }}>
-          <OkaandaLogoMark size={18} />
+          <OngandaLogoMark size={18} />
           <PixelTag hex={formatColor} label={format === 'PDF' ? 'Export PDF' : 'Export PPT'} />
         </div>
         <button onClick={onClose} style={{
@@ -4763,7 +4763,7 @@ const ExportModal = ({
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <OkaandaLogoMark size={28} />
+            <OngandaLogoMark size={28} />
           </div>
           <div style={{
             width: '100%',
@@ -4919,7 +4919,7 @@ const EditorToolbar = ({
   deckTitle: string;
   onDeckTitleChange: (t: string) => void;
   onClose: () => void;
-  onExport: (fmt: 'PDF' | 'PPTX') => void;
+  onExport: (fmt: 'PDF' | 'PPT') => void;
   onAddSlide: () => void;
   canUndo: boolean;
   canRedo: boolean;
@@ -4933,7 +4933,7 @@ const EditorToolbar = ({
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
   const muted = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';
   const activeIdx = slides.findIndex(s => s.id === activeSlide);
-  const fmtBtns: Array<'PDF' | 'PPTX'> = ['PDF', 'PPTX'];
+  const fmtBtns: Array<'PDF' | 'PPT'> = ['PDF', 'PPT'];
   const btnBase: React.CSSProperties = {
     padding: '4px 10px',
     background: 'transparent',
@@ -5196,7 +5196,7 @@ const SlidePicker = ({
         gap: 12,
         marginBottom: 48
       }}>
-        <OkaandaLogoMark size={24} />
+        <OngandaLogoMark size={24} />
         <div style={{
           flex: 1
         }}>
@@ -5340,8 +5340,8 @@ const PrintDeck = ({
 }) => {
   const noop = () => {};
   const noopDrop = () => {};
-  return <div data-okaanda-print-deck className="okaanda-print-deck" aria-hidden="true">
-      {slides.map(slide => <div key={`print-${slide.id}`} className="okaanda-print-slide">
+  return <div data-onganda-print-deck className="onganda-print-deck" aria-hidden="true">
+      {slides.map(slide => <div key={`print-${slide.id}`} className="onganda-print-slide">
         <SlideCanvas
           slideId={slide.id}
           isDark={isDark}
@@ -5380,7 +5380,7 @@ export const SlideEditor = ({
   const [activeSlideId, setActiveSlideId] = useState<string>(savedSession?.activeSlideId ?? '');
   const [deckTitle, setDeckTitle] = useState(savedSession?.deckTitle ?? 'Untitled Presentation');
   const [activeCategory, setActiveCategory] = useState('Icons');
-  const [exportModal, setExportModal] = useState<'PDF' | 'PPTX' | null>(null);
+  const [exportModal, setExportModal] = useState<'PDF' | 'PPT' | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [slideDragState, setSlideDragState] = useState<SlideDragState>({
     draggingId: null,
@@ -5662,7 +5662,7 @@ export const SlideEditor = ({
       };
     });
   }, [setSlides]);
-  const handleGenerateExport = useCallback((format: 'PDF' | 'PPTX') => {
+  const handleGenerateExport = useCallback((format: 'PDF' | 'PPT') => {
     setSelectedBlockId(null);
     setSlideBlocks(prev => ({
       ...prev,
@@ -5678,7 +5678,7 @@ export const SlideEditor = ({
         window.print();
         return;
       }
-      const deckHtml = document.querySelector('[data-okaanda-print-deck]')?.innerHTML ?? '';
+      const deckHtml = document.querySelector('[data-onganda-print-deck]')?.innerHTML ?? '';
       downloadOfficeHtml(`${safeFileName(deckTitle)}.ppt`, wrapPowerPointDeck(deckTitle, deckHtml), 'application/vnd.ms-powerpoint;charset=utf-8');
     }, 100);
   }, [activeSlideId, deckTitle, setSlideBlocks]);
@@ -5694,12 +5694,12 @@ export const SlideEditor = ({
     transition: 'background 0.35s'
   }}>
     <style>{`
-      .okaanda-print-deck { display: none; }
+      .onganda-print-deck { display: none; }
       @media print {
         @page { size: landscape; margin: 0; }
         body * { visibility: hidden !important; }
-        [data-okaanda-print-deck], [data-okaanda-print-deck] * { visibility: visible !important; }
-        [data-okaanda-print-deck] {
+        [data-onganda-print-deck], [data-onganda-print-deck] * { visibility: visible !important; }
+        [data-onganda-print-deck] {
           display: block !important;
           position: absolute !important;
           left: 0 !important;
@@ -5707,7 +5707,7 @@ export const SlideEditor = ({
           width: 100% !important;
           background: ${COLOR.charBlack} !important;
         }
-        .okaanda-print-slide {
+        .onganda-print-slide {
           display: block !important;
           width: 100vw !important;
           height: 56.25vw !important;
