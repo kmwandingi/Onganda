@@ -2,6 +2,7 @@ export * from './onganda-tokens';
 export * from './onganda-primitives';
 export * from './onganda-icons';
 export * from './onganda-charts';
+export * from './onganda-ai-authoring';
 export * from './onganda-sections';
 export * from './onganda-publications';
 export * from './onganda-document-editor';

@@ -143,8 +143,9 @@ Use `@onganda/design-system` for app-level imports and future reusable surfaces 
 4.  `onganda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
 5.  `onganda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
 6.  `onganda-publications.tsx`, `onganda-document-editor.tsx`, and `onganda-slide-editor.tsx`: larger product surfaces built on the same system.
-7.  `onganda-public-sites.tsx`: public Home and Full site surfaces built from the system.
-8.  `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
+7.  `onganda-ai-authoring.tsx`: the lightweight AI authoring rail and endpoint adapter for generating editable documents and decks.
+8.  `onganda-public-sites.tsx`: public Home and Full site surfaces built from the system.
+9.  `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
 
 ### Reuse Status
 This project is now structured around a first-class design-system import boundary: `@onganda/design-system`. Inside this repository, Vite and TypeScript resolve that package name to `src/design-system/index.ts`. The package entry exports the full system: tokens, primitives, icons, charts, composed sections, product surfaces, and public site surfaces.
@@ -173,6 +174,7 @@ The homepage should avoid repeated editorial sections. If "What we are building"
 *   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar`, `DitherStrip`, `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `onganda-icons.tsx`.
 *   **Reusable but page-shaped**: `OngandaNav`, `OngandaHero`, `ResearchSignals`, `SystemConnectionDiagram`, `PixelHeatmap`, `RoadmapTimeline`, `FieldApplications`, `PixelFlowchart`, `IconShowcase`, and `Publications`.
 *   **Product shells**: `DocumentEditor` and `SlideEditor`. These are usable surfaces, but they are larger, stateful modules and should not be treated as small primitives.
+*   **AI authoring surface**: `AiAuthoringPanel`. Use it as the starting pattern for chat-like generation workflows: schema-first output, endpoint configured by the user, deterministic apply-to-editor behavior, and generated content that becomes normal editable blocks/slides.
 
 ---
 
@@ -185,6 +187,7 @@ The design system is implemented via modular files in the `generated` directory:
 3.  `onganda-primitives.tsx`: Base UI elements (section headers, dither strips, standard cards, overlays). When building a new page section, compose it using these primitives.
 4.  `onganda-sections.tsx`: Large, composed page sections (hero, timelines, heatmaps).
 5.  `onganda-icons.tsx`: All pixel-art SVG icons.
+6.  `onganda-ai-authoring.tsx`: AI/chat authoring rail. Keep it lightweight, local/endpoint-driven, and visually constrained to the Onganda rail pattern.
 
 ### Dark Mode Context
 *   The application handles dark mode via the `DarkContext` provider (found in `onganda-primitives.tsx`).
@@ -205,6 +208,7 @@ The design system is implemented via modular files in the `generated` directory:
 5.  **Sharp Brand Geometry**: Do not add rounded corners to brand cards, diagrams, icons, or major Onganda surfaces. Small utility controls may remain rectangular or stepped.
 6.  **Use Existing Icons**: If a section has system cards, contact actions, focus areas, navigation affordances, or tool/product concepts, use the existing pixel icons from `onganda-icons.tsx` or system icons from `onganda-primitives.tsx`. Do not introduce generic icon styles.
 7.  **Validate Every UI Change**: Before shipping UI work, run a code pass for design-system drift and a Playwright pass for rendered layout, motion, hover states, mobile fit, and console errors.
+8.  **AI Generation Contract**: Generated documents and decks must land as normal editor data, not as static images or opaque blobs. The assistant may call any user-configured endpoint, but it must keep a schema-first response contract and ask for missing brief context before generation.
 
 ### Required Design Validation
 For any UI, page, or component change, run the following checks:

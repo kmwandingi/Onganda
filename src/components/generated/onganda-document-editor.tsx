@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
 import { ChartGallery } from './onganda-charts';
+import { AiAuthoringPanel, AiAuthoringResult } from './onganda-ai-authoring';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -195,7 +196,14 @@ const INSERT_PALETTE: InsertPaletteItem[] = [{
 }];
 const PALETTE_CATEGORIES = ['Text', 'Data', 'System'];
 
-const safeFileName = (name: string) => name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'onganda-document';
+const docBlockFromAi = (block: NonNullable<AiAuthoringResult['blocks']>[number], idx: number): DocBlock => ({
+  id: `ai-doc-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 6)}`,
+  type: block.type,
+  content: block.content,
+  statHex: block.type === 'callout' ? COLOR.ochreOrange : undefined
+});
+
+const safeFileName = (name: string) => (name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 84).replace(/-$/g, '') || 'onganda-document');
 
 const downloadOfficeHtml = (filename: string, html: string, mime: string) => {
   const blob = new Blob(['\ufeff', html], { type: mime });
@@ -3765,6 +3773,15 @@ export const DocumentEditor = ({
       downloadOfficeHtml(`${safeFileName(docTitle)}.doc`, wrapWordDocument(docTitle, paperHtml), 'application/msword;charset=utf-8');
     }, 80);
   }, [docTitle]);
+  const handleApplyAiResult = useCallback((result: AiAuthoringResult) => {
+    const nextBlocks = (result.blocks ?? []).map(docBlockFromAi);
+    if (!nextBlocks.length) return;
+    setDocTitle(result.title);
+    setBlocks(nextBlocks);
+    setSelectedBlockId(null);
+    setEditingBlockId(null);
+    setConfiguringBlockId(null);
+  }, [setBlocks]);
   if (stage === 'picker') {
     return <TemplatePicker isDark={isDark} onSelect={handleTemplateSelect} onBack={onClose} />;
   }
@@ -3923,6 +3940,7 @@ export const DocumentEditor = ({
             </motion.article>
           </div>
         </div>
+        <AiAuthoringPanel mode="document" isDark={isDark} onApply={handleApplyAiResult} />
       </div>
 
       <AnimatePresence>

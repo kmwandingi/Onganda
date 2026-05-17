@@ -7,6 +7,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
+import { AiAuthoringPanel, AiAuthoringResult, AiSlideBlock } from './onganda-ai-authoring';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -71,7 +72,39 @@ interface SlideDragState {
   overIdx: number | null;
 }
 
-const safeFileName = (name: string) => name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'onganda-deck';
+const AI_SYSTEM_INDEX: Record<string, number> = {
+  Okaanda: 0,
+  Oshini: 1,
+  Ombiga: 2,
+  Etiti: 3,
+  Oshitoo: 4
+};
+
+const aiBlockType = (block: AiSlideBlock) => {
+  if (block.type === 'headline') return 'text-headline';
+  if (block.type === 'label') return 'text-label';
+  if (block.type === 'quote') return 'text-quote';
+  if (block.type === 'system') return `sys-card-${AI_SYSTEM_INDEX[block.systemName ?? 'Okaanda'] ?? 0}`;
+  if (block.type === 'chart') return 'chart-progress';
+  if (block.type === 'divider') return 'divider-dither';
+  return 'text-body';
+};
+
+const aiSlideBlock = (block: AiSlideBlock, slideIdx: number, blockIdx: number): DroppedBlock => ({
+  id: `ai-slide-${Date.now()}-${slideIdx}-${blockIdx}-${Math.random().toString(36).slice(2, 6)}`,
+  type: aiBlockType(block),
+  label: block.type,
+  x: block.type === 'headline' ? 9 : block.type === 'system' ? 10 + blockIdx * 17 : 12,
+  y: block.type === 'headline' ? 18 : 28 + blockIdx * 13,
+  w: block.type === 'headline' ? 74 : block.type === 'body' ? 68 : block.type === 'system' ? 30 : undefined,
+  selected: false,
+  editingText: false,
+  textContent: ['headline', 'body', 'label', 'quote'].includes(block.type) ? block.content : undefined,
+  systemIdx: block.type === 'system' ? AI_SYSTEM_INDEX[block.systemName ?? 'Okaanda'] ?? 0 : undefined,
+  chartTitle: block.type === 'chart' ? block.content : undefined
+});
+
+const safeFileName = (name: string) => (name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 84).replace(/-$/g, '') || 'onganda-deck');
 
 const downloadOfficeHtml = (filename: string, html: string, mime: string) => {
   const blob = new Blob(['\ufeff', html], { type: mime });
@@ -5682,6 +5715,28 @@ export const SlideEditor = ({
       downloadOfficeHtml(`${safeFileName(deckTitle)}.ppt`, wrapPowerPointDeck(deckTitle, deckHtml), 'application/vnd.ms-powerpoint;charset=utf-8');
     }, 100);
   }, [activeSlideId, deckTitle, setSlideBlocks]);
+  const handleApplyAiResult = useCallback((result: AiAuthoringResult) => {
+    const generatedSlides: SlideEntry[] = (result.slides ?? []).map((slide, idx) => ({
+      id: `ai-deck-${Date.now()}-${idx}`,
+      tag: String(idx + 1).padStart(2, '0'),
+      title: slide.title,
+      subtitle: slide.subtitle
+    }));
+    if (!generatedSlides.length) return;
+    const generatedBlocks = generatedSlides.reduce<Record<string, DroppedBlock[]>>((acc, slide, idx) => {
+      acc[slide.id] = (result.slides?.[idx]?.blocks ?? []).map((block, blockIdx) => aiSlideBlock(block, idx, blockIdx));
+      return acc;
+    }, {});
+    const snapshot: SlideHistorySnapshot = {
+      slides: generatedSlides,
+      slideBlocks: generatedBlocks,
+      deckTitle: result.title
+    };
+    history.reset(snapshot);
+    setDeckTitle(result.title);
+    setActiveSlideId(generatedSlides[0].id);
+    setSelectedBlockId(null);
+  }, [history]);
   if (stage === 'picker') {
     return <SlidePicker isDark={isDark} onSelect={handlePickerSelect} onBack={onClose} />;
   }
@@ -5911,6 +5966,7 @@ export const SlideEditor = ({
       </div>
 
       {/* Right: inspector */}
+      <AiAuthoringPanel mode="deck" isDark={isDark} onApply={handleApplyAiResult} />
       <InspectorPanel isDark={isDark} selectedBlock={selectedBlock} onUpdateBlock={handleUpdateBlock} onDeleteBlock={handleDeleteBlock} activeSlide={slides.find(s => s.id === activeSlideId) ?? null} onUpdateSlideTitle={(slideId, title) => {
         setSlides(prev => prev.map(s => s.id === slideId ? {
           ...s,
