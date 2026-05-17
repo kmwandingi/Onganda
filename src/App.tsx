@@ -11,6 +11,7 @@ const container: Container = 'none';
 
 function App() {
   const [path, setPath] = useState(window.location.pathname);
+  const routePath = path.replace(/\/+$/, '') || '/';
 
   useEffect(() => {
     const handlePopState = () => setPath(window.location.pathname);
@@ -29,10 +30,10 @@ function App() {
   setTheme(theme);
 
   const generatedComponent = useMemo(() => {
-    if (path === '/showcase') return <NamibiaAISystemsHub />;
-    if (path === '/full') return <OkaandaPublicSite page="full" />;
+    if (routePath === '/showcase') return <NamibiaAISystemsHub />;
+    if (routePath === '/full') return <OkaandaPublicSite page="full" />;
     return <OkaandaPublicSite page="home" />;
-  }, [path]);
+  }, [routePath]);
 
   if (container === 'centered') {
     return (

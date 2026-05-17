@@ -120,7 +120,7 @@ const PublicShell = ({ children }: { children: React.ReactNode }) => (
 );
 
 const Ticker = ({ className = '' }: { className?: string }) => (
-  <div className={`w-screen overflow-hidden border-y ${className}`} style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
+  <div className={`w-full overflow-hidden border-y ${className}`} style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
     <motion.div
       data-onganda-ticker
       animate={{ x: ['0%', '-50%'] }}
