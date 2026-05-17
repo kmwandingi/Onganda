@@ -1,8 +1,12 @@
 {
-  "name": "component-forge",
+  "name": "@onganda/design-system",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Onganda design system, showcase, and public site surfaces.",
+  "exports": {
+    ".": "./src/design-system/index.ts"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

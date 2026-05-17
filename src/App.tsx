@@ -3,7 +3,7 @@ import { Container, Theme } from './settings/types';
 import {
   NamibiaAISystemsHub,
   OkaandaPublicSite,
-} from './components/generated/okaanda-design-system';
+} from '@onganda/design-system';
 
 const theme: Theme = 'light';
 // only use 'centered' container for standalone components, never for full page apps or websites.

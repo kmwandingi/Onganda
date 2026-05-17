@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './okaanda-tokens';
 import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, OkaandaFooter } from './okaanda-primitives';
 import { OkaandaNav, OkaandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase } from './okaanda-sections';
+import { ChartGallery } from './okaanda-charts';
 import { Publications } from './okaanda-publications';
 import { DocumentEditor } from './okaanda-document-editor';
 import { SlideEditor } from './okaanda-slide-editor';
@@ -131,6 +132,9 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Research Heatmap ── */}
         <PixelHeatmap />
+
+        {/* ── Chart Gallery ── */}
+        <ChartGallery />
 
         {/* ── Roadmap Timeline ── */}
         <RoadmapTimeline />

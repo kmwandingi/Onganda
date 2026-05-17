@@ -1,6 +1,7 @@
 export * from './okaanda-tokens';
 export * from './okaanda-primitives';
 export * from './okaanda-icons';
+export * from './okaanda-charts';
 export * from './okaanda-sections';
 export * from './okaanda-publications';
 export * from './okaanda-document-editor';

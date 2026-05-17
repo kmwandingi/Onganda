@@ -132,20 +132,24 @@ import {
   SystemCard,
   PixelButton,
   IconSearch,
-} from '@/components/generated/okaanda-design-system';
+} from '@onganda/design-system';
 ```
 
-Use this barrel for new components unless you are editing one of the underlying design-system files directly. It re-exports:
+Use `@onganda/design-system` for app-level imports and future reusable surfaces unless you are editing one of the underlying design-system files directly. The package entry lives at `src/design-system/index.ts` and re-exports:
 
 1.  `okaanda-tokens.ts`: color constants, cultural system data, charts, publication formats, guide annotations, and TypeScript interfaces.
 2.  `okaanda-primitives.tsx`: atomic Okaanda UI primitives such as pixel marks, dither bars, tags, overlays, cards, buttons, logo marks, and dark-mode context.
 3.  `okaanda-icons.tsx`: pixel-art interface and system icons.
-4.  `okaanda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
-5.  `okaanda-publications.tsx`, `okaanda-document-editor.tsx`, and `okaanda-slide-editor.tsx`: larger product surfaces built on the same system.
-6.  `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
+4.  `okaanda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
+5.  `okaanda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
+6.  `okaanda-publications.tsx`, `okaanda-document-editor.tsx`, and `okaanda-slide-editor.tsx`: larger product surfaces built on the same system.
+7.  `okaanda-public-sites.tsx`: public Home and Full site surfaces built from the system.
+8.  `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
 
 ### Reuse Status
-This project is currently an **internal Vite React design system**, not a packaged npm library. Components can be imported inside this app through the `@/components/generated/okaanda-design-system` barrel. To reuse it in another repository, copy or package the `src/components/generated/` directory together with `src/index.css`, Tailwind/Vite configuration, and the runtime dependencies listed in `package.json` (`framer-motion`, `react`, `recharts`, etc.).
+This project is now structured around a first-class design-system import boundary: `@onganda/design-system`. Inside this repository, Vite and TypeScript resolve that package name to `src/design-system/index.ts`. The package entry exports the full system: tokens, primitives, icons, charts, composed sections, product surfaces, and public site surfaces.
+
+The repository is still a Vite app and showcase, so publishing as a clean external npm package requires a later packaging pass that emits compiled JS and `.d.ts` files. Until then, external reuse should consume the GitHub repository as the remote source of truth and import through `@onganda/design-system`, not through deep generated paths.
 
 ### Current Public Surfaces
 The current app intentionally has multiple public surfaces:
@@ -187,7 +191,7 @@ The design system is implemented via modular files in the `generated` directory:
 *   Always respect the `isDark` value from `useDark()` when applying inline styles for colors that are not perfectly mapped by Tailwind classes.
 *   Example:
     ```tsx
-    import { COLOR, useDark } from '@/components/generated/okaanda-design-system';
+    import { COLOR, useDark } from '@onganda/design-system';
 
     const { isDark } = useDark();
     const bg = isDark ? COLOR.darkCard : COLOR.milletClay;
