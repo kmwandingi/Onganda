@@ -13,5 +13,9 @@ Before you make any changes to UI, styling, components, or layout, you MUST:
 2. **Never hardcode new hex values** in component files. Always import from `@/components/generated/okaanda-design-system` or add a named semantic token first. Existing generated files still contain legacy approved palette literals; do not copy that pattern.
 3. **Respect the Pixel vs. Type dichotomy**: Icons, diagrams, and brand elements must be pixelated (stepped corners, dither, basket-weave textures). Typography and reading interfaces must be clean sans-serif (Inter/Arial).
 4. **Oshiwambo First**: Respect the naming hierarchy. Use the Oshiwambo names for systems (Okaanda, Oshini, Ombiga, Etiti, Oshitoo) first, followed by English translations if necessary.
+5. **Use the showcase as the reference implementation**: public pages must feel like peers of `/showcase`, including its pixel primitives, system icons, black ticker/lab-card language, and subtle motion patterns.
+6. **Validate UI changes twice**: run a code pass for design-system drift and a Playwright pass for rendered desktop/mobile layout, motion, hover/tap states, and console errors before considering UI work complete.
+7. **Keep public IA intentional**: `/` is the current one-page public home, `/full` is the fuller future-facing version, and `/showcase` is the preserved design-system showcase. Do not add thin `/systems` or `/contact` routes unless explicitly asked.
+8. **Hero and contact quality bar**: hero elements must fit intentionally at desktop and mobile sizes; the main Home contact section must be a rich inquiry surface, not a stripped footer.
 
 Failure to follow these rules will result in visual regressions and break the cultural and architectural alignment of the project.

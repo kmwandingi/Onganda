@@ -119,8 +119,8 @@ const PublicShell = ({ children }: { children: React.ReactNode }) => (
   </DarkContext.Provider>
 );
 
-const Ticker = () => (
-  <div className="w-screen overflow-hidden border-y" style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
+const Ticker = ({ className = '' }: { className?: string }) => (
+  <div className={`w-screen overflow-hidden border-y ${className}`} style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
     <motion.div
       data-onganda-ticker
       animate={{ x: ['0%', '-50%'] }}
@@ -186,7 +186,7 @@ const PublicHero = ({
         <PixelTag hex={COLOR.ochreOrange} label={tag} />
         <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: quiet }}>{LAB_LABEL}</span>
       </div>
-      <h1 className="flex max-w-6xl flex-col items-center text-center font-bold leading-[0.95]" style={{ color: COLOR.charBlack, fontSize: 'clamp(3.1rem, 8vw, 7.6rem)' }}>
+      <h1 className="flex max-w-6xl flex-col items-center text-center font-bold leading-[0.98]" style={{ color: COLOR.charBlack, fontSize: 'clamp(3rem, 7.4vw, 7.1rem)' }}>
         {[line1, line2, line3].map((line, index) => (
           <span key={line} className="block overflow-hidden">
             <motion.span
@@ -201,7 +201,7 @@ const PublicHero = ({
           </span>
         ))}
       </h1>
-      <Ticker />
+      <Ticker className="mt-6 md:mt-8" />
       <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
         <a href={primary.href} className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold no-underline" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
@@ -415,9 +415,8 @@ const HomePage = () => (
       secondary={{ label: 'View the systems', href: '#systems' }}
     />
     <SignalBand />
-    <WhatBuildingBand />
     <SystemsGrid />
-    <ContactBand compact />
+    <ContactBand />
   </>
 );
 

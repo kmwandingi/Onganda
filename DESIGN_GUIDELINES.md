@@ -60,6 +60,8 @@ The Onganda color palette is strictly defined. **Do not use generic Tailwind col
 ### Layout & Sizing
 *   **Whitespace**: Use Tailwind spacing utilities aggressively (`p-8`, `px-12`, `mb-24`). Sections should have distinct breathing room.
 *   **Borders**: Keep borders subtle and thin (`border-[#1E1A17]/10` in light mode, `border-[#E8E1CF]/10` in dark mode).
+*   **Hero Fit**: Hero compositions may layer type, tickers, tags, and pixel textures, but overlap must be intentional, balanced, and verified at desktop and mobile sizes. If a ticker, tag, or CTA reads as accidentally colliding with the headline, add spacing or reduce scale before shipping.
+*   **No Viewport Guessing**: Do not scale typography directly with viewport width alone. Use `clamp()` with conservative bounds and verify real rendered line breaks.
 
 ---
 
@@ -74,6 +76,14 @@ All visual flair must be pixelated.
 ### Core Textures
 *   **Dither & Checker Fills**: Use these for texture, not just decoration. They represent digital processing and raw material.
 *   **Basket-Weave (`WEAVE`)**: Derived from Oshiwambo coil strands + stepped diamond patterns. Use the `WeaveOverlay` primitive to add depth to cards and hero sections. It comes in both `light` and `dark` variants.
+
+### Motion & Interaction
+Motion is part of the design language, not a garnish.
+
+*   Use existing showcase patterns first: moving black system tickers, subtle dither-column motion, staggered headline entrances, card entrance motion, card hover lifts, tap feedback on buttons, and animated diagram/flow affordances.
+*   Motion should be quiet, mechanical, and pixel-system aligned. Avoid springy, glossy, floating, or generic SaaS animation.
+*   Every card or control with an interactive affordance should have a small, clear response: hover lift/slide, dither reveal, state highlight, or tap compression.
+*   Do not remove showcase motion from public surfaces unless a specific accessibility or layout issue requires it.
 
 ---
 
@@ -141,10 +151,19 @@ This project is currently an **internal Vite React design system**, not a packag
 The current app intentionally has multiple public surfaces:
 
 *   `/`: selective public homepage for the current live posture.
-*   `/systems`: concise public systems page.
-*   `/contact`: selective inquiry page.
 *   `/full`: fuller future-facing website version for later release.
 *   `/showcase`: the existing design-system showcase and capability demo. Preserve this page as-is unless the task explicitly asks to change showcase behavior.
+
+The live homepage is a compact one-page public site. It must include the hero, Why Onganda, systems overview, and a rich contact area on the page itself. Do not split Home into thin `/systems` or `/contact` pages unless the information architecture is explicitly changed.
+
+The homepage should avoid repeated editorial sections. If "What we are building" is already explained inside the Why Onganda block, do not add a second standalone section with the same point. The fuller `/full` page may include the standalone "What we are building" section because it is intended for a later, more detailed release.
+
+### Public Page Composition
+*   The public site is not a brand guide. Do not expose pixel asset libraries, palette explanations, internal component inventories, or design-system prose to public visitors.
+*   Public pages should explain why Onganda exists, what it is building, how the five systems fit together, and how to start a conversation.
+*   Use the showcase as the visual reference implementation. New public sections should feel like peers of the showcase, not simplified imitations.
+*   The black Onganda lab card is part of the systems composition. Keep it in Home and Full systems grids unless a new systems layout replaces it with an equally strong compound signal.
+*   Contact areas should feel as rich and intentional as other sections. A compact contact block is acceptable only for a small footer; the main Home contact should include the full inquiry surface.
 
 ### Stability Tiers
 *   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar`, `DitherStrip`, `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `okaanda-icons.tsx`.
@@ -180,6 +199,19 @@ The design system is implemented via modular files in the `generated` directory:
 3.  **Comment Minimally**: Only document what is not obvious. Rely on the strong naming conventions provided by the Oshiwambo + English system roles.
 4.  **No Generic Colors**: New code must not introduce generic Tailwind color classes or unrelated hex values. Use `COLOR`, existing data constants, or add a named semantic token first.
 5.  **Sharp Brand Geometry**: Do not add rounded corners to brand cards, diagrams, icons, or major Onganda surfaces. Small utility controls may remain rectangular or stepped.
+6.  **Use Existing Icons**: If a section has system cards, contact actions, focus areas, navigation affordances, or tool/product concepts, use the existing pixel icons from `okaanda-icons.tsx` or system icons from `okaanda-primitives.tsx`. Do not introduce generic icon styles.
+7.  **Validate Every UI Change**: Before shipping UI work, run a code pass for design-system drift and a Playwright pass for rendered layout, motion, hover states, mobile fit, and console errors.
+
+### Required Design Validation
+For any UI, page, or component change, run the following checks:
+
+1.  Search the changed files for forbidden drift: generic Tailwind palette classes, new raw hex colors, `oklch`, `tracking-tight`, rounded brand geometry, and stale public links.
+2.  Run `npm run lint` and `npm run build`.
+3.  Start the app and use Playwright on the affected routes.
+4.  Verify no document-level horizontal overflow on desktop and mobile.
+5.  Verify hero text, tickers, CTAs, and contact/forms do not collide or overflow.
+6.  Verify expected motion actually changes over time or on hover/tap.
+7.  Verify `/showcase` still works when the task did not explicitly target it.
 
 ### Current Compliance Notes
 The core design language is present and importable, but the repository still contains legacy generated code that predates the stricter token rule:
