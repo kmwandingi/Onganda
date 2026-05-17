@@ -71,6 +71,35 @@ interface SlideDragState {
   overIdx: number | null;
 }
 
+const safeFileName = (name: string) => name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'onganda-deck';
+
+const downloadOfficeHtml = (filename: string, html: string, mime: string) => {
+  const blob = new Blob(['\ufeff', html], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+};
+
+const wrapPowerPointDeck = (title: string, bodyHtml: string) => `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${title}</title>
+  <style>
+    body { margin: 0; background: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
+    .okaanda-print-slide { width: 13.333in; height: 7.5in; page-break-after: always; overflow: hidden; }
+    button, input, textarea { display: none !important; }
+    svg { max-width: 100%; }
+  </style>
+</head>
+<body>${bodyHtml}</body>
+</html>`;
+
 // ─── Session storage ──────────────────────────────────────────────────────────
 const SLIDE_SESSION_KEY = 'okaanda_slide_editor_session';
 interface SlideSession {
@@ -4541,11 +4570,15 @@ const ExportModal = ({
   isDark,
   format,
   slideCount,
+  deckTitle,
+  onGenerate,
   onClose
 }: {
   isDark: boolean;
   format: 'PDF' | 'PPTX';
   slideCount: number;
+  deckTitle: string;
+  onGenerate: () => void;
   onClose: () => void;
 }) => {
   const [phase, setPhase] = useState<'options' | 'exporting' | 'done'>('options');
@@ -4560,7 +4593,10 @@ const ExportModal = ({
         setProgress(steps[i]);
         i++;
         setTimeout(tick, 220 + Math.random() * 180);
-      } else setTimeout(() => setPhase('done'), 300);
+      } else setTimeout(() => {
+        onGenerate();
+        setPhase('done');
+      }, 300);
     };
     setTimeout(tick, 300);
   };
@@ -4574,13 +4610,13 @@ const ExportModal = ({
     value: `${slideCount} slides`
   }, {
     label: 'Format',
-    value: format === 'PDF' ? 'A4 Landscape · 16:9' : 'Widescreen 16:9'
+    value: format === 'PDF' ? 'Landscape PDF print' : 'PowerPoint-compatible .ppt'
   }, {
-    label: 'Quality',
-    value: format === 'PDF' ? '150 dpi · Embedded fonts' : 'Editable shapes'
+    label: 'Deck',
+    value: deckTitle
   }, {
-    label: 'File size',
-    value: format === 'PDF' ? '~2.4 MB' : '~3.1 MB'
+    label: 'Layout',
+    value: '16:9 Onganda slides'
   }];
   const exportSteps = [{
     label: 'Rendering slides',
@@ -4636,7 +4672,7 @@ const ExportModal = ({
           gap: 10
         }}>
           <OkaandaLogoMark size={18} />
-          <PixelTag hex={formatColor} label={`Export ${format}`} />
+          <PixelTag hex={formatColor} label={format === 'PDF' ? 'Export PDF' : 'Export PPT'} />
         </div>
         <button onClick={onClose} style={{
           background: 'transparent',
@@ -4661,14 +4697,14 @@ const ExportModal = ({
               fontWeight: 600,
               color: fg,
               margin: '0 0 4px'
-            }}>Export as {format}</p>
+            }}>Export as {format === 'PDF' ? 'PDF' : 'PPT'}</p>
             <p style={{
               fontSize: 12,
               color: muted,
               margin: 0,
               lineHeight: 1.6
             }}>
-              {format === 'PDF' ? `All ${slideCount} slides exported as high-quality PDF. Aspect ratio 16:9, print-ready layout.` : `All ${slideCount} slides packaged as a PPTX file compatible with PowerPoint and Keynote.`}
+              {format === 'PDF' ? `Opens the browser PDF print flow for all ${slideCount} slides.` : `Downloads all ${slideCount} slides as a PowerPoint-compatible .ppt file.`}
             </p>
           </div>
           <div style={{
@@ -4708,7 +4744,7 @@ const ExportModal = ({
             color: COLOR.milletClay,
             textTransform: 'uppercase' as const
           }} onMouseEnter={e => e.currentTarget.style.background = COLOR.firedRed} onMouseLeave={e => e.currentTarget.style.background = formatColor}>
-            Generate {format} →
+            Generate {format === 'PDF' ? 'PDF' : 'PPT'} →
           </button>
         </div>}
         {phase === 'exporting' && <div style={{
@@ -4744,7 +4780,7 @@ const ExportModal = ({
                 fontSize: 12,
                 color: fg,
                 fontWeight: 500
-              }}>Generating {format}…</span>
+              }}>Generating {format === 'PDF' ? 'PDF' : 'PPT'}…</span>
               <span style={{
                 fontSize: 11,
                 color: formatColor,
@@ -4823,7 +4859,7 @@ const ExportModal = ({
               color: muted,
               margin: 0,
               lineHeight: 1.6
-            }}>Your {format} has been prepared.</p>
+            }}>{format === 'PDF' ? 'Use Save as PDF in the print dialog.' : 'Your PowerPoint-compatible deck has downloaded.'}</p>
           </div>
           <DitherBar color={COLOR.mahanguGold} segments={16} height={3} opacity={0.6} />
           <div style={{
@@ -4841,7 +4877,7 @@ const ExportModal = ({
               fontWeight: 500,
               color: muted
             }}>Close</button>
-            <button style={{
+            <button onClick={onGenerate} style={{
               flex: 2,
               padding: '10px',
               background: COLOR.mahanguGold,
@@ -4852,7 +4888,7 @@ const ExportModal = ({
               letterSpacing: '0.08em',
               color: COLOR.charBlack,
               textTransform: 'uppercase' as const
-            }}>↓ Download {format}</button>
+            }}>{format === 'PDF' ? 'Open PDF Dialog' : '↓ Download PPT'}</button>
           </div>
         </div>}
       </div>
@@ -5105,7 +5141,7 @@ const EditorToolbar = ({
         }
       }}>
         <PixelDot color="currentColor" size={4} />
-        <span>Export {fmt}</span>
+        <span>{fmt === 'PDF' ? 'Export PDF' : 'Export PPT'}</span>
       </button>)}
     </div>
   </div>;
@@ -5291,6 +5327,41 @@ const SlidePicker = ({
       <DitherBar color={COLOR.dyePlum} segments={30} height={2} opacity={0.2} />
     </div>
   </div>;
+};
+
+const PrintDeck = ({
+  isDark,
+  slides,
+  slideBlocks
+}: {
+  isDark: boolean;
+  slides: SlideEntry[];
+  slideBlocks: Record<string, DroppedBlock[]>;
+}) => {
+  const noop = () => {};
+  const noopDrop = () => {};
+  return <div data-okaanda-print-deck className="okaanda-print-deck" aria-hidden="true">
+      {slides.map(slide => <div key={`print-${slide.id}`} className="okaanda-print-slide">
+        <SlideCanvas
+          slideId={slide.id}
+          isDark={isDark}
+          droppedBlocks={(slideBlocks[slide.id] ?? []).map(block => ({
+            ...block,
+            selected: false,
+            editingText: false,
+            editingField: undefined
+          }))}
+          onDrop={noopDrop}
+          onSelectBlock={noop}
+          onDeleteBlock={noop}
+          onUpdateBlock={noop}
+          onDoubleClickBlock={noop}
+          onMoveBlock={noopDrop}
+          onUpdateSlideTitle={noopDrop}
+          slides={slides}
+        />
+      </div>)}
+    </div>;
 };
 
 // ─── Main Export ──────────────────────────────────────────────────────────────
@@ -5591,6 +5662,26 @@ export const SlideEditor = ({
       };
     });
   }, [setSlides]);
+  const handleGenerateExport = useCallback((format: 'PDF' | 'PPTX') => {
+    setSelectedBlockId(null);
+    setSlideBlocks(prev => ({
+      ...prev,
+      [activeSlideId]: (prev[activeSlideId] ?? []).map(block => ({
+        ...block,
+        selected: false,
+        editingText: false,
+        editingField: undefined
+      }))
+    }));
+    window.setTimeout(() => {
+      if (format === 'PDF') {
+        window.print();
+        return;
+      }
+      const deckHtml = document.querySelector('[data-okaanda-print-deck]')?.innerHTML ?? '';
+      downloadOfficeHtml(`${safeFileName(deckTitle)}.ppt`, wrapPowerPointDeck(deckTitle, deckHtml), 'application/vnd.ms-powerpoint;charset=utf-8');
+    }, 100);
+  }, [activeSlideId, deckTitle, setSlideBlocks]);
   if (stage === 'picker') {
     return <SlidePicker isDark={isDark} onSelect={handlePickerSelect} onBack={onClose} />;
   }
@@ -5602,6 +5693,32 @@ export const SlideEditor = ({
     flexDirection: 'column',
     transition: 'background 0.35s'
   }}>
+    <style>{`
+      .okaanda-print-deck { display: none; }
+      @media print {
+        @page { size: landscape; margin: 0; }
+        body * { visibility: hidden !important; }
+        [data-okaanda-print-deck], [data-okaanda-print-deck] * { visibility: visible !important; }
+        [data-okaanda-print-deck] {
+          display: block !important;
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 100% !important;
+          background: ${COLOR.charBlack} !important;
+        }
+        .okaanda-print-slide {
+          display: block !important;
+          width: 100vw !important;
+          height: 56.25vw !important;
+          max-height: 100vh !important;
+          page-break-after: always;
+          break-after: page;
+          overflow: hidden !important;
+        }
+      }
+    `}</style>
+    <PrintDeck isDark={isDark} slides={slides} slideBlocks={slideBlocks} />
     <EditorToolbar isDark={isDark} activeSlide={activeSlideId} slides={slides} deckTitle={deckTitle} onDeckTitleChange={t => {
       setDeckTitle(t);
       mutate(snap => ({
@@ -5802,7 +5919,7 @@ export const SlideEditor = ({
       }} />
     </div>
     <AnimatePresence>
-      {exportModal && <ExportModal isDark={isDark} format={exportModal} slideCount={slides.length} onClose={() => setExportModal(null)} />}
+      {exportModal && <ExportModal isDark={isDark} format={exportModal} slideCount={slides.length} deckTitle={deckTitle} onGenerate={() => handleGenerateExport(exportModal)} onClose={() => setExportModal(null)} />}
     </AnimatePresence>
   </div>;
 };

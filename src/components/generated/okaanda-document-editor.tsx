@@ -7,10 +7,11 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './okaanda-tokens';
 import { OkaandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './okaanda-primitives';
+import { ChartGallery } from './okaanda-charts';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type DocBlockType = 'heading' | 'body' | 'pullquote' | 'divider' | 'callout' | 'list' | 'signature' | 'stat' | 'terminal' | 'heatmap' | 'timeline' | 'systemcard' | 'flowchart' | 'principles' | 'swatchrow' | 'chart-market' | 'chart-bar';
+type DocBlockType = 'heading' | 'body' | 'pullquote' | 'divider' | 'callout' | 'list' | 'signature' | 'stat' | 'terminal' | 'heatmap' | 'timeline' | 'systemcard' | 'flowchart' | 'principles' | 'swatchrow' | 'chart-market' | 'chart-bar' | 'chart-gallery';
 interface DocBlock {
   id: string;
   type: DocBlockType;
@@ -128,6 +129,14 @@ const INSERT_PALETTE: InsertPaletteItem[] = [{
   hex: COLOR.barkRust,
   category: 'Data'
 }, {
+  id: 'insert-chart-gallery',
+  label: 'Chart Gallery',
+  desc: 'Reusable design-system chart set',
+  type: 'chart-gallery',
+  defaultContent: 'Design System Charts',
+  hex: COLOR.dyePlum,
+  category: 'Data'
+}, {
   id: 'insert-heatmap',
   label: 'Research Heatmap',
   desc: 'Activity heatmap across systems',
@@ -185,6 +194,36 @@ const INSERT_PALETTE: InsertPaletteItem[] = [{
   category: 'System'
 }];
 const PALETTE_CATEGORIES = ['Text', 'Data', 'System'];
+
+const safeFileName = (name: string) => name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'onganda-document';
+
+const downloadOfficeHtml = (filename: string, html: string, mime: string) => {
+  const blob = new Blob(['\ufeff', html], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+};
+
+const wrapWordDocument = (title: string, bodyHtml: string) => `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${title}</title>
+  <style>
+    @page { size: A4 portrait; margin: 18mm; }
+    body { margin: 0; background: ${COLOR.milletClay}; color: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
+    article { box-shadow: none !important; border: 0 !important; margin: 0 auto; max-width: 760px; background: ${COLOR.dustLight}; }
+    button, input, textarea, [data-okaanda-export-ui="true"] { display: none !important; }
+    svg { max-width: 100%; }
+  </style>
+</head>
+<body>${bodyHtml}</body>
+</html>`;
 
 // ─── Chart Data ───────────────────────────────────────────────────────────────
 const DEFAULT_AI_MARKET_DATA = [{
@@ -1968,6 +2007,45 @@ const SwatchRowBlock = ({
     </div>;
 };
 
+const DesignChartGalleryBlock = ({ isDark }: { isDark: boolean }) => (
+  <div style={{
+    background: isDark ? COLOR.darkCard : COLOR.dustLight,
+    border: `1px solid ${isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'}`,
+    overflow: 'hidden'
+  }}>
+    <div style={{
+      padding: '14px 18px',
+      borderBottom: `1px solid ${isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <PixelDot color={COLOR.dyePlum} size={5} />
+        <span style={{
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: COLOR.dyePlum
+        }}>Reusable Chart System</span>
+      </div>
+      <span style={{
+        fontSize: 9,
+        color: isDark ? 'rgba(232,225,207,0.35)' : 'rgba(30,26,23,0.35)'
+      }}>from @onganda/design-system</span>
+    </div>
+    <div style={{
+      maxHeight: 760,
+      overflow: 'auto',
+      paddingTop: 22
+    }}>
+      <ChartGallery />
+    </div>
+  </div>
+);
+
 // ─── Block renderer ───────────────────────────────────────────────────────────
 function DocBlockView({
   block,
@@ -2013,7 +2091,7 @@ function DocBlockView({
   const selBorder = `${COLOR.ochreOrange}60`;
   const ACCENT_COLORS = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
   const accent = ACCENT_COLORS[idx % ACCENT_COLORS.length];
-  const isDesignBlock = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar'].includes(block.type);
+  const isDesignBlock = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar', 'chart-gallery'].includes(block.type);
   const isTextBlock = ['heading', 'body', 'pullquote', 'callout', 'list', 'signature'].includes(block.type);
   const isDragging = dragState.draggingId === block.id;
   const isDragOver = dragState.overIdx === idx && dragState.draggingId !== block.id;
@@ -2037,6 +2115,7 @@ function DocBlockView({
     if (block.type === 'swatchrow') return <SwatchRowBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'chart-market') return <MarketChartBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'chart-bar') return <BarChartBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
+    if (block.type === 'chart-gallery') return <DesignChartGalleryBlock isDark={isDark} />;
     if (block.type === 'divider') {
       return <div style={{
         padding: '8px 0'
@@ -2598,10 +2677,16 @@ const InsertPanel = ({
 const DocExportModal = ({
   isDark,
   format,
+  docTitle,
+  blockCount,
+  onGenerate,
   onClose
 }: {
   isDark: boolean;
   format: 'PDF' | 'DOCX';
+  docTitle: string;
+  blockCount: number;
+  onGenerate: () => void;
   onClose: () => void;
 }) => {
   const [phase, setPhase] = useState<'options' | 'exporting' | 'done'>('options');
@@ -2616,7 +2701,10 @@ const DocExportModal = ({
         setProgress(steps[i]);
         i++;
         setTimeout(tick, 200 + Math.random() * 200);
-      } else setTimeout(() => setPhase('done'), 300);
+      } else setTimeout(() => {
+        onGenerate();
+        setPhase('done');
+      }, 300);
     };
     setTimeout(tick, 280);
   };
@@ -2630,13 +2718,13 @@ const DocExportModal = ({
     value: 'Auto-paginated'
   }, {
     label: 'Format',
-    value: format === 'PDF' ? 'A4 Portrait' : 'DOCX 2016+'
+    value: format === 'PDF' ? 'A4 Portrait · Print PDF' : 'Word-compatible .doc'
   }, {
-    label: 'Fonts',
-    value: 'Inter + Georgia embedded'
+    label: 'Blocks',
+    value: `${blockCount} block${blockCount !== 1 ? 's' : ''}`
   }, {
-    label: 'Branding',
-    value: 'Letterhead + footer'
+    label: 'Document',
+    value: docTitle
   }];
   const exportSteps = [{
     label: 'Composing document layout',
@@ -2645,7 +2733,7 @@ const DocExportModal = ({
     label: 'Rendering typography & brand',
     done: progress >= 60
   }, {
-    label: format === 'PDF' ? 'Generating PDF stream' : 'Packaging DOCX archive',
+    label: format === 'PDF' ? 'Opening PDF print dialog' : 'Writing Word-compatible file',
     done: progress >= 90
   }];
   return <div style={{
@@ -2692,7 +2780,7 @@ const DocExportModal = ({
           gap: 10
         }}>
             <OkaandaLogoMark size={18} />
-            <PixelTag hex={formatColor} label={`Export ${format}`} />
+            <PixelTag hex={formatColor} label={format === 'PDF' ? 'Export PDF' : 'Export Word'} />
           </div>
           <button onClick={onClose} style={{
           background: 'transparent',
@@ -2717,14 +2805,14 @@ const DocExportModal = ({
               fontWeight: 600,
               color: fg,
               margin: '0 0 4px'
-            }}>Export as {format}</p>
+            }}>Export as {format === 'PDF' ? 'PDF' : 'Word'}</p>
                 <p style={{
               fontSize: 12,
               color: muted,
               margin: 0,
               lineHeight: 1.6
             }}>
-                  {format === 'PDF' ? 'High-fidelity PDF with embedded fonts and branded letterhead.' : 'Editable DOCX file with Okaanda branded styles applied.'}
+                  {format === 'PDF' ? 'Opens the browser PDF print flow with only the document canvas visible.' : 'Downloads a Word-compatible .doc file with the current Okaanda document layout.'}
                 </p>
               </div>
               <div style={{
@@ -2764,7 +2852,7 @@ const DocExportModal = ({
             color: formatColor === COLOR.mahanguGold ? COLOR.charBlack : COLOR.milletClay,
             textTransform: 'uppercase' as const
           }} onMouseEnter={e => e.currentTarget.style.background = COLOR.firedRed} onMouseLeave={e => e.currentTarget.style.background = formatColor}>
-                Generate {format} →
+                Generate {format === 'PDF' ? 'PDF' : 'Word'} →
               </button>
             </div>}
           {phase === 'exporting' && <div style={{
@@ -2800,7 +2888,7 @@ const DocExportModal = ({
                 fontSize: 12,
                 color: fg,
                 fontWeight: 500
-              }}>Generating {format}…</span>
+              }}>Generating {format === 'PDF' ? 'PDF' : 'Word'}…</span>
                   <span style={{
                 fontSize: 11,
                 color: formatColor,
@@ -2879,7 +2967,7 @@ const DocExportModal = ({
               color: muted,
               margin: 0,
               lineHeight: 1.6
-            }}>Your {format} has been prepared.</p>
+            }}>{format === 'PDF' ? 'Use Save as PDF in the print dialog.' : 'Your Word-compatible document has downloaded.'}</p>
               </div>
               <DitherBar color={COLOR.mahanguGold} segments={14} height={3} opacity={0.6} />
               <div style={{
@@ -2897,7 +2985,7 @@ const DocExportModal = ({
               fontWeight: 500,
               color: muted
             }}>Close</button>
-                <button style={{
+                <button onClick={onGenerate} style={{
               flex: 2,
               padding: '10px',
               background: COLOR.mahanguGold,
@@ -2908,7 +2996,7 @@ const DocExportModal = ({
               letterSpacing: '0.08em',
               color: COLOR.charBlack,
               textTransform: 'uppercase' as const
-            }}>↓ Download {format}</button>
+            }}>{format === 'PDF' ? 'Open PDF Dialog' : '↓ Download Word'}</button>
               </div>
             </div>}
         </div>
@@ -3199,7 +3287,7 @@ const DocToolbar = ({
         }
       }}>
             <PixelDot color="currentColor" size={4} />
-            <span>Export {fmt}</span>
+            <span>{fmt === 'PDF' ? 'Export PDF' : 'Export Word'}</span>
           </button>)}
       </div>
     </div>;
@@ -3516,6 +3604,7 @@ export const DocumentEditor = ({
     overIdx: null
   });
   const [sessionSaved, setSessionSaved] = useState(false);
+  const documentPaperRef = useRef<HTMLElement | null>(null);
   const history = useDocHistory(savedSession?.blocks ?? []);
   const blocks = history.current;
   const setBlocks = useCallback((updater: DocBlock[] | ((prev: DocBlock[]) => DocBlock[])) => {
@@ -3593,7 +3682,7 @@ export const DocumentEditor = ({
     };
     setBlocks(prev => [...prev, newBlock]);
     setSelectedBlockId(newBlock.id);
-    const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar'].includes(item.type);
+    const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar', 'chart-gallery'].includes(item.type);
     if (isDesign) setConfiguringBlockId(newBlock.id);else if (['heading', 'body', 'pullquote', 'callout', 'list', 'signature'].includes(item.type)) setEditingBlockId(newBlock.id);
   }, [setBlocks]);
   const handleEdit = useCallback((id: string, updates: Partial<DocBlock>) => {
@@ -3625,7 +3714,7 @@ export const DocumentEditor = ({
       [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
       return next;
     });
-  }, []);
+  }, [setBlocks]);
 
   // Drag reorder
   const handleDragStart = useCallback((id: string) => {
@@ -3663,6 +3752,19 @@ export const DocumentEditor = ({
     setEditingBlockId(null);
     setConfiguringBlockId(null);
   };
+  const handleGenerateExport = useCallback((format: 'PDF' | 'DOCX') => {
+    setSelectedBlockId(null);
+    setEditingBlockId(null);
+    setConfiguringBlockId(null);
+    window.setTimeout(() => {
+      if (format === 'PDF') {
+        window.print();
+        return;
+      }
+      const paperHtml = documentPaperRef.current?.outerHTML ?? '';
+      downloadOfficeHtml(`${safeFileName(docTitle)}.doc`, wrapWordDocument(docTitle, paperHtml), 'application/msword;charset=utf-8');
+    }, 80);
+  }, [docTitle]);
   if (stage === 'picker') {
     return <TemplatePicker isDark={isDark} onSelect={handleTemplateSelect} onBack={onClose} />;
   }
@@ -3672,7 +3774,27 @@ export const DocumentEditor = ({
     transition: 'background 0.35s',
     display: 'flex',
     flexDirection: 'column'
-  }}>
+  }} data-okaanda-document-editor>
+      <style>{`
+        @media print {
+          @page { size: A4 portrait; margin: 16mm; }
+          body * { visibility: hidden !important; }
+          [data-okaanda-print-document], [data-okaanda-print-document] * { visibility: visible !important; }
+          [data-okaanda-print-document] {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            box-shadow: none !important;
+            border: 0 !important;
+            background: ${COLOR.dustLight} !important;
+          }
+          [data-okaanda-export-ui="true"], [data-okaanda-export-ui="true"] * {
+            display: none !important;
+            visibility: hidden !important;
+          }
+        }
+      `}</style>
       <DocToolbar onClose={onClose} isDark={isDark} blockCount={blocks.length} docTitle={docTitle} onTitleChange={setDocTitle} onExport={fmt => setExportModal(fmt)} canUndo={history.canUndo} canRedo={history.canRedo} onUndo={history.undo} onRedo={history.redo} sessionSaved={sessionSaved} />
 
       <div style={{
@@ -3692,7 +3814,7 @@ export const DocumentEditor = ({
           maxWidth: 780,
           margin: '0 auto'
         }}>
-            <motion.article initial={{
+            <motion.article ref={documentPaperRef} data-okaanda-print-document initial={{
             opacity: 0,
             y: 20
           }} animate={{
@@ -3716,7 +3838,7 @@ export const DocumentEditor = ({
                 <AnimatePresence>
                   {blocks.map((block, idx) => <DocBlockView key={block.id} block={block} idx={idx} isDark={isDark} isSelected={selectedBlockId === block.id} isEditing={editingBlockId === block.id} isConfiguring={configuringBlockId === block.id} dragState={dragState} onSelect={() => setSelectedBlockId(block.id)} onStartEdit={() => {
                   setSelectedBlockId(block.id);
-                  const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar'].includes(block.type);
+                  const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar', 'chart-gallery'].includes(block.type);
                   if (isDesign) {
                     setConfiguringBlockId(block.id);
                     setEditingBlockId(null);
@@ -3804,7 +3926,7 @@ export const DocumentEditor = ({
       </div>
 
       <AnimatePresence>
-        {exportModal && <DocExportModal isDark={isDark} format={exportModal} onClose={() => setExportModal(null)} />}
+        {exportModal && <DocExportModal isDark={isDark} format={exportModal} docTitle={docTitle} blockCount={blocks.length} onGenerate={() => handleGenerateExport(exportModal)} onClose={() => setExportModal(null)} />}
       </AnimatePresence>
     </div>;
 };
