@@ -90,9 +90,18 @@ const cleanResult = (result: AiAuthoringResult, mode: AuthoringMode): AiAuthorin
 };
 
 const shortTitle = (brief: string, fallback: string) => {
-  const first = brief.split(/[.\n]/)[0]?.replace(/^about\s+/i, '').trim();
+  const first = brief.split(/[.\n]/)[0]
+    ?.replace(/^about\s+/i, '')
+    .replace(/^(create|write|draft|generate)\s+(a|an)?\s*/i, '')
+    .replace(/^(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+/i, '')
+    .replace(/^(slide|slides|page|pages)\s+/i, '')
+    .replace(/^(partner|public|internal|short|concise)\s+/i, '')
+    .replace(/^(deck|presentation|document|brief|report|memo)\s+(for|about|on)\s+/i, '')
+    .replace(/^(deck|presentation|document|brief|report|memo)\s+/i, '')
+    .replace(/^for\s+/i, '')
+    .trim();
   if (!first) return fallback;
-  return first.length > 74 ? `${first.slice(0, 71).trim()}...` : first;
+  return first.length > 74 ? first.slice(0, 74).trim() : first;
 };
 
 const requiredGaps = (brief: string, mode: AuthoringMode) => {
@@ -118,6 +127,9 @@ Design and product constraints:
 - Keep the tone calm, precise, specific, and non-generic.
 - Prefer sovereignty, control, capability, evaluation, deployment, interfaces, and useful systems.
 - Output must be editable inside the existing editor, so use short blocks and clear section titles.
+- For decks, use "less is more" presentation writing: one idea per slide, no dense paragraphs, large phrases, deliberate whitespace, and at most 1-3 blocks per slide.
+- Deck headlines should be 2-8 words. Body blocks should be one short sentence. Never make bullet-heavy or paragraph-heavy slides.
+- Deck slides should vary tastefully: a title slide, a section/number slide, a chart-focused slide, a system-focused slide, and a closing ask when appropriate.
 
 Allowed document block types:
 heading, body, pullquote, callout, list, divider, signature, chart-gallery.
@@ -208,10 +220,11 @@ const offlineDraft = (mode: AuthoringMode, brief: string): AiAuthoringResult => 
     title: topic,
     summary: 'Offline deck scaffold prepared from the current brief.',
     slides: [
-      { title: topic, subtitle: 'Namibia AI Systems Lab', blocks: [{ type: 'headline', content: topic }, { type: 'body', content: 'AI systems that Namibia can shape, run, and build on.' }] },
-      { title: 'Why Onganda', subtitle: 'Capability before dependency', blocks: [{ type: 'body', content: 'Onganda builds the layer between models and use: evaluation, adaptation, containers, interfaces, and applications.' }] },
-      { title: 'Five systems', subtitle: 'One compound', blocks: [{ type: 'system', content: 'Granary', systemName: 'Okaanda' }, { type: 'system', content: 'Mill', systemName: 'Oshini' }, { type: 'chart', content: 'System readiness' }] },
-      { title: 'Next step', subtitle: 'Start the conversation', blocks: [{ type: 'quote', content: 'Move from interest to a practical pilot path.' }] }
+      { title: topic, subtitle: 'Namibia AI Systems Lab', blocks: [{ type: 'label', content: 'Onganda' }, { type: 'headline', content: topic }, { type: 'body', content: 'AI systems Namibia can shape, run, and build on.' }] },
+      { title: '01', subtitle: 'Why this exists', blocks: [{ type: 'label', content: '01' }, { type: 'headline', content: 'Capability before dependency.' }] },
+      { title: 'Readiness', subtitle: 'What needs to be built', blocks: [{ type: 'label', content: 'System readiness' }, { type: 'chart', content: 'Adaptation, evaluation, deployment, and delivery.' }] },
+      { title: 'Five systems', subtitle: 'One compound', blocks: [{ type: 'system', content: 'Granary', systemName: 'Okaanda' }, { type: 'system', content: 'Mill', systemName: 'Oshini' }, { type: 'system', content: 'Surface', systemName: 'Etiti' }] },
+      { title: 'Next', subtitle: 'Collaboration', blocks: [{ type: 'quote', content: 'Start with one serious pilot conversation.' }] }
     ]
   };
 };

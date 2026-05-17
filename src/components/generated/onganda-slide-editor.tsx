@@ -34,6 +34,7 @@ interface DroppedBlock {
   statSub?: string;
   statHex?: string;
   textContent?: string;
+  textSize?: number;
   timelineIdx?: number;
   systemIdx?: number;
   flowNodeIdx?: number;
@@ -90,19 +91,31 @@ const aiBlockType = (block: AiSlideBlock) => {
   return 'text-body';
 };
 
-const aiSlideBlock = (block: AiSlideBlock, slideIdx: number, blockIdx: number): DroppedBlock => ({
-  id: `ai-slide-${Date.now()}-${slideIdx}-${blockIdx}-${Math.random().toString(36).slice(2, 6)}`,
-  type: aiBlockType(block),
-  label: block.type,
-  x: block.type === 'headline' ? 9 : block.type === 'system' ? 10 + blockIdx * 17 : 12,
-  y: block.type === 'headline' ? 18 : 28 + blockIdx * 13,
-  w: block.type === 'headline' ? 74 : block.type === 'body' ? 68 : block.type === 'system' ? 30 : undefined,
-  selected: false,
-  editingText: false,
-  textContent: ['headline', 'body', 'label', 'quote'].includes(block.type) ? block.content : undefined,
-  systemIdx: block.type === 'system' ? AI_SYSTEM_INDEX[block.systemName ?? 'Okaanda'] ?? 0 : undefined,
-  chartTitle: block.type === 'chart' ? block.content : undefined
-});
+const aiBlockLayout = (block: AiSlideBlock, slideIdx: number, blockIdx: number) => {
+  if (block.type === 'label') return { x: 50, y: 18, w: 34, h: 6, textSize: 12 };
+  if (block.type === 'headline') return { x: 50, y: slideIdx === 0 ? 42 : 38, w: 78, h: 24, textSize: slideIdx === 0 ? 44 : 36 };
+  if (block.type === 'body') return { x: 50, y: slideIdx === 0 ? 66 : 62, w: 58, h: 13, textSize: 16 };
+  if (block.type === 'quote') return { x: 50, y: 52, w: 66, h: 20, textSize: 22 };
+  if (block.type === 'chart') return { x: 50, y: 58, w: 72, h: 44 };
+  if (block.type === 'system') return { x: 24 + blockIdx * 26, y: 62, w: 24, h: 24 };
+  if (block.type === 'divider') return { x: 50, y: 80, w: 58, h: 3 };
+  return { x: 50, y: 58, w: 58, h: 13, textSize: 16 };
+};
+
+const aiSlideBlock = (block: AiSlideBlock, slideIdx: number, blockIdx: number): DroppedBlock => {
+  const layout = aiBlockLayout(block, slideIdx, blockIdx);
+  return {
+    id: `ai-slide-${Date.now()}-${slideIdx}-${blockIdx}-${Math.random().toString(36).slice(2, 6)}`,
+    type: aiBlockType(block),
+    label: block.type,
+    ...layout,
+    selected: false,
+    editingText: false,
+    textContent: ['headline', 'body', 'label', 'quote'].includes(block.type) ? block.content : undefined,
+    systemIdx: block.type === 'system' ? AI_SYSTEM_INDEX[block.systemName ?? 'Okaanda'] ?? 0 : undefined,
+    chartTitle: block.type === 'chart' ? block.content : undefined
+  };
+};
 
 const safeFileName = (name: string) => (name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 84).replace(/-$/g, '') || 'onganda-deck');
 
@@ -1751,6 +1764,7 @@ const CanvasTextEdit = ({
 function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock: (id: string, updates: Partial<DroppedBlock>) => void) {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
   const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.50)';
+  const isAiSlideBlock = block.id.startsWith('ai-slide-');
   const colorMap: Record<string, string> = {
     comment: '#6A4B2E',
     keyword: '#D9791F',
@@ -1955,29 +1969,30 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
   }
   if (block.type === 'chart-progress') {
     return <div style={{
-      width: 220,
-      height: 130,
+      width: isAiSlideBlock ? '100%' : 220,
+      height: isAiSlideBlock ? '100%' : 130,
       background: isDark ? COLOR.darkCard : '#FDFAF2',
-      padding: '10px 12px',
-      border: `1px solid ${COLOR.barkRust}30`
+      padding: isAiSlideBlock ? '18px 22px' : '10px 12px',
+      border: `1px solid ${COLOR.barkRust}30`,
+      boxSizing: 'border-box' as const
     }}>
       <div style={{
-        fontSize: 8,
+        fontSize: isAiSlideBlock ? 11 : 8,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
         color: COLOR.barkRust,
-        marginBottom: 6
-      }}>System Progress</div>
-      <ResponsiveContainer width="100%" height={90}>
+        marginBottom: isAiSlideBlock ? 12 : 6
+      }}>{block.chartTitle ?? 'System Progress'}</div>
+      <ResponsiveContainer width="100%" height={isAiSlideBlock ? '82%' : 90}>
         <BarChart data={BAR_CHART_DATA} margin={{
           top: 2,
-          right: 4,
+          right: isAiSlideBlock ? 10 : 4,
           left: 0,
           bottom: 0
         }}>
           <XAxis dataKey="name" tick={{
-            fontSize: 7,
+            fontSize: isAiSlideBlock ? 10 : 7,
             fill: muted
           }} axisLine={false} tickLine={false} />
           <YAxis hide domain={[0, 100]} />
@@ -2125,11 +2140,11 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       })} isHeadline={true} />;
     }
     return <h2 style={{
-      fontSize: 22,
+      fontSize: block.textSize ?? 22,
       fontWeight: 700,
       color: fg,
-      letterSpacing: '-0.02em',
-      lineHeight: 1.2,
+      letterSpacing: 0,
+      lineHeight: isAiSlideBlock ? 1.04 : 1.2,
       margin: 0,
       cursor: 'inherit',
       userSelect: 'none'
@@ -2144,11 +2159,11 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       })} isHeadline={false} />;
     }
     return <p style={{
-      fontSize: 12,
+      fontSize: block.textSize ?? 12,
       color: muted,
-      lineHeight: 1.8,
+      lineHeight: isAiSlideBlock ? 1.42 : 1.8,
       margin: 0,
-      maxWidth: 320,
+      maxWidth: isAiSlideBlock ? '100%' : 320,
       cursor: 'inherit',
       userSelect: 'none'
     }}>{block.textContent ?? 'A two-track model for local AI capability, applied tooling, and institutional deployment across Namibian sectors.'}</p>;
@@ -2162,17 +2177,17 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       })} isHeadline={false} />;
     }
     return <div style={{
-      padding: '12px 16px',
+      padding: isAiSlideBlock ? '16px 24px' : '12px 16px',
       borderLeft: `3px solid ${COLOR.ochreOrange}`,
       background: `${COLOR.ochreOrange}08`
     }}>
       <p style={{
-        fontSize: 13,
+        fontSize: block.textSize ?? 13,
         color: COLOR.ochreOrange,
         fontStyle: 'italic',
         fontWeight: 500,
         margin: 0,
-        lineHeight: 1.65,
+        lineHeight: isAiSlideBlock ? 1.25 : 1.65,
         cursor: 'inherit',
         userSelect: 'none'
       }}>
@@ -2189,7 +2204,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       })} isHeadline={true} />;
     }
     return <span style={{
-      fontSize: 9,
+      fontSize: block.textSize ?? 9,
       fontWeight: 700,
       letterSpacing: '0.18em',
       textTransform: 'uppercase' as const,
