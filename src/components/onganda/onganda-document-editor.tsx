@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
 import { ChartGallery } from './onganda-charts';
-import { AiAuthoringPanel } from './onganda-ai-authoring';
+import { AiAuthoringPanel, regenerateDocBlock } from './onganda-ai-authoring';
 import { DocBlockType, DocBlock, InsertPaletteItem, AiAuthoringResult } from './onganda-block-types';
 import { DOC_INSERT_PALETTE, DOC_PALETTE_CATEGORIES } from './onganda-block-palette';
 import type { DocumentExportPayload } from './onganda-export-api';
@@ -1891,7 +1891,9 @@ function DocBlockView({
   onDragOver,
   onDragEnd,
   onMoveUp,
-  onMoveDown
+  onMoveDown,
+  onRegenerate,
+  regenerating = false
 }: {
   block: DocBlock;
   isDark: boolean;
@@ -1910,6 +1912,8 @@ function DocBlockView({
   onDragEnd: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onRegenerate?: () => void;
+  regenerating?: boolean;
 }) {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
   const bodyColor = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
@@ -2298,6 +2302,23 @@ function DocBlockView({
         e.currentTarget.style.borderColor = border;
         e.currentTarget.style.color = muted;
       }}>Edit</button>}
+          {['heading','body','pullquote','callout','list','signature','chart-gallery'].includes(block.type) && !isEditing && !isConfiguring && onRegenerate && <button onClick={e => {
+        e.stopPropagation();
+        onRegenerate();
+      }} disabled={regenerating} style={{
+        padding: '4px 10px',
+        background: 'transparent',
+        border: `1px solid ${border}`,
+        cursor: regenerating ? 'wait' : 'pointer',
+        fontSize: 9,
+        fontWeight: 600,
+        color: regenerating ? COLOR.ochreOrange : muted,
+        opacity: regenerating ? 0.7 : 1
+      }} onMouseEnter={e => {
+        if (!regenerating) { e.currentTarget.style.borderColor = COLOR.mahanguGold; e.currentTarget.style.color = COLOR.mahanguGold; }
+      }} onMouseLeave={e => {
+        e.currentTarget.style.borderColor = border; e.currentTarget.style.color = regenerating ? COLOR.ochreOrange : muted;
+      }}>{regenerating ? '↺ …' : '↺ Regen'}</button>}
           {isDesignBlock && !isConfiguring && <button onClick={e => {
         e.stopPropagation();
         onStartEdit();
@@ -3425,6 +3446,7 @@ export const DocumentEditor = ({
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [configuringBlockId, setConfiguringBlockId] = useState<string | null>(null);
+  const [regeneratingBlockId, setRegeneratingBlockId] = useState<string | null>(null);
   const [exportModal, setExportModal] = useState<'PDF' | 'WORD' | null>(null);
   const [dragState, setDragState] = useState<DragState>({
     draggingId: null,
@@ -3579,6 +3601,18 @@ export const DocumentEditor = ({
     setEditingBlockId(null);
     setConfiguringBlockId(null);
   };
+  const handleRegenerate = useCallback(async (id: string, block: DocBlock) => {
+    const { type } = block;
+    const aiTypes = ['heading','body','pullquote','callout','list','divider','signature','chart-gallery'] as const;
+    if (!aiTypes.includes(type as typeof aiTypes[number])) return;
+    setRegeneratingBlockId(id);
+    try {
+      const result = await regenerateDocBlock(type as typeof aiTypes[number], block.content);
+      setBlocks(prev => prev.map(b => b.id === id ? { ...b, content: result.content } : b));
+    } finally {
+      setRegeneratingBlockId(null);
+    }
+  }, [setBlocks]);
   const handleGenerateExport = useCallback((format: DocumentExportPayload['format']) => {
     setSelectedBlockId(null);
     setEditingBlockId(null);
@@ -3685,7 +3719,7 @@ export const DocumentEditor = ({
                 }} onStopEdit={() => {
                   setEditingBlockId(null);
                   setConfiguringBlockId(null);
-                }} onEdit={updates => handleEdit(block.id, updates)} onDelete={() => handleDelete(block.id)} onDragStart={() => handleDragStart(block.id)} onDragOver={() => handleDragOver(idx)} onDragEnd={handleDragEnd} onMoveUp={() => handleMoveUp(block.id)} onMoveDown={() => handleMoveDown(block.id)} />)}
+                }} onEdit={updates => handleEdit(block.id, updates)} onDelete={() => handleDelete(block.id)} onDragStart={() => handleDragStart(block.id)} onDragOver={() => handleDragOver(idx)} onDragEnd={handleDragEnd} onMoveUp={() => handleMoveUp(block.id)} onMoveDown={() => handleMoveDown(block.id)} onRegenerate={() => handleRegenerate(block.id, block)} regenerating={regeneratingBlockId === block.id} />)}
                 </AnimatePresence>
 
                 {blocks.length === 0 && <div style={{

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR } from './onganda-tokens';
 import { DitherBar, OngandaLogoMark, PixelDot, PixelTag } from './onganda-primitives';
 import { IconCheck, IconRefresh, IconSettings, IconTerminal } from './onganda-icons';
-import type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult } from './onganda-block-types';
+import type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult, AiGeneratableDocBlockType } from './onganda-block-types';
 
 export type AuthoringMode = 'document' | 'deck';
 export type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult } from './onganda-block-types';
@@ -206,6 +206,46 @@ const offlineDraft = (mode: AuthoringMode, brief: string): AiAuthoringResult => 
     ]
   };
 };
+
+// ─── Single-block regeneration ────────────────────────────────────────────────
+// Regenerates a single doc block in isolation. Uses the same endpoint config
+// as the main authoring panel. Falls back to a branded offline block when no
+// endpoint is configured. The document editor calls this from its toolbar.
+
+const OFFLINE_REGEN: Record<string, string> = {
+  heading:     'Onganda — AI Systems for Namibia',
+  body:        'Onganda connects model readiness, adaptation, containers, interfaces, and delivery into one sovereign AI capability stack.',
+  pullquote:   'Useful AI begins when the people who need it can shape, test, and run it themselves.',
+  callout:     'Configure an AI endpoint in the Authoring Panel to generate context-specific content.',
+  list:        'Sovereign data · Domestic adaptation · Secure containers · Local interfaces · Field delivery',
+  divider:     '',
+  signature:   'Onganda · Namibia AI Systems Lab · 2026',
+  'chart-gallery': 'Reusable chart system',
+};
+
+export const regenerateDocBlock = async (
+  blockType: AiGeneratableDocBlockType,
+  currentContent: string
+): Promise<AiDocBlock> => {
+  const config = loadConfig();
+  if (config.endpoint.trim()) {
+    try {
+      const brief = `Rewrite or improve this single "${blockType}" block for an Onganda document. Keep it concise, calm, and specific to Namibia's sovereign AI capability. Current content: "${currentContent}"`;
+      const prompt = `${buildPrompt('document', brief)}\n\nIMPORTANT: Return a JSON object containing ONLY ONE block of type "${blockType}": {"title":"","summary":"","blocks":[{"type":"${blockType}","content":"..."}]}`;
+      const result = await callEndpoint('document', brief, { ...config, endpoint: config.endpoint });
+      const block = result.blocks?.find(b => b.type === blockType) ?? result.blocks?.[0];
+      if (block?.content?.trim()) return { type: blockType, content: block.content.trim() };
+    } catch {
+      // fall through to offline
+    }
+  }
+  return {
+    type: blockType,
+    content: OFFLINE_REGEN[blockType] ?? currentContent
+  };
+};
+
+export type { AiGeneratableDocBlockType } from './onganda-block-types';
 
 const inputStyle = (isDark: boolean): React.CSSProperties => ({
   width: '100%',
