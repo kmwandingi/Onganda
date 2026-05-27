@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge } from './onganda-tokens';
+import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
 import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
@@ -576,22 +576,20 @@ export const OngandaNav = () => {
               {item.label}
             </a>)}
         </div>
-        <motion.button onClick={toggle} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} whileTap={{
+        {/* TODO: dark mode — remove disabled attribute and wire toggle once COLOR token audit is complete */}
+        <motion.button disabled title="Dark mode — coming soon" aria-label="Dark mode — coming soon" whileTap={{
         scale: 0.88
       }} style={{
         display: 'flex',
         alignItems: 'center',
         gap: 6,
         padding: '6px 10px',
-        border: `1px solid ${isDark ? 'rgba(217,121,31,0.45)' : 'rgba(30,26,23,0.18)'}`,
-        background: isDark ? 'rgba(217,121,31,0.10)' : 'rgba(30,26,23,0.04)',
-        color: isDark ? COLOR.ochreOrange : 'rgba(30,26,23,0.55)',
-        cursor: 'pointer',
+        border: `1px solid rgba(30,26,23,0.18)`,
+        background: 'rgba(30,26,23,0.04)',
+        color: 'rgba(30,26,23,0.55)',
+        cursor: 'not-allowed',
+        opacity: 0.45,
         transition: 'background 0.25s, border-color 0.25s, color 0.25s'
-      }} onMouseEnter={e => {
-        (e.currentTarget as HTMLButtonElement).style.background = isDark ? 'rgba(217,121,31,0.18)' : 'rgba(30,26,23,0.08)';
-      }} onMouseLeave={e => {
-        (e.currentTarget as HTMLButtonElement).style.background = isDark ? 'rgba(217,121,31,0.10)' : 'rgba(30,26,23,0.04)';
       }}>
           <motion.span key={isDark ? 'moon' : 'sun'} initial={{
           opacity: 0,
@@ -1196,7 +1194,15 @@ export const PixelTerminal = () => <section className="max-w-7xl mx-auto px-6 pb
   </section>;
 
 // ─── SystemConnectionDiagram ─────────────────────────────────────────────────
-export const SystemConnectionDiagram = () => {
+export const SystemConnectionDiagram = ({
+  nodes = DIAGRAM_NODES,
+  edges = CONNECTION_EDGES,
+  tooltips = DIAGRAM_NODE_TOOLTIPS
+}: {
+  nodes?: DiagramNode[];
+  edges?: ConnectionEdge[];
+  tooltips?: Record<string, NodeTooltipData>;
+} = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, {
     once: true,
@@ -1208,13 +1214,14 @@ export const SystemConnectionDiagram = () => {
   useEffect(() => {
     if (!isInView) return;
     controls.start('visible');
-    CONNECTION_EDGES.forEach((_, i) => {
+    edges.forEach((_, i) => {
       setTimeout(() => setActivatedEdges(prev => [...prev, i]), 400 + i * 220);
     });
-  }, [isInView, controls]);
-  const getNodeById = (id: string) => DIAGRAM_NODES.find(n => n.id === id);
+  }, [isInView, controls, edges]);
+  const getNodeById = (id: string) => nodes.find(n => n.id === id);
   const isEdgeActive = (idx: number) => activatedEdges.includes(idx);
   const isEdgeHighlighted = (edge: ConnectionEdge) => activeNode === null || edge.from === activeNode || edge.to === activeNode;
+
   const nodePos = (id: string) => {
     const n = getNodeById(id);
     return n ? {
@@ -1252,11 +1259,11 @@ export const SystemConnectionDiagram = () => {
             height: '100%'
           }} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
               <defs>
-                {CONNECTION_EDGES.map((edge, i) => <marker key={`marker-${i}`} id={`arrowhead-${i}`} markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
+                {edges.map((edge, i) => <marker key={`marker-${i}`} id={`arrowhead-${i}`} markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
                     <polygon points="0 0, 4 2, 0 4" fill={edge.color} fillOpacity={isEdgeActive(i) ? 0.85 : 0.2} />
                   </marker>)}
               </defs>
-              {CONNECTION_EDGES.map((edge, i) => {
+              {edges.map((edge, i) => {
               const from = nodePos(edge.from);
               const to = nodePos(edge.to);
               const highlighted = isEdgeHighlighted(edge);
@@ -1294,10 +1301,10 @@ export const SystemConnectionDiagram = () => {
             inset: 0,
             overflow: 'visible'
           }}>
-              {DIAGRAM_NODES.map(node => {
+              {nodes.map(node => {
               const isActive = activeNode === node.id;
-              const isLinked = activeNode !== null && CONNECTION_EDGES.some(e => e.from === activeNode && e.to === node.id || e.to === activeNode && e.from === node.id);
-              const tooltip = DIAGRAM_NODE_TOOLTIPS[node.id];
+              const isLinked = activeNode !== null && edges.some(e => e.from === activeNode && e.to === node.id || e.to === activeNode && e.from === node.id);
+              const tooltip = tooltips[node.id];
               const tooltipAbove = node.cy > 55;
               let tooltipLeft: string | undefined = '50%';
               let tooltipTransform = 'translateX(-50%)';
@@ -1319,7 +1326,7 @@ export const SystemConnectionDiagram = () => {
                 opacity: 0,
                 scale: 0.7
               }} transition={{
-                delay: 0.15 + DIAGRAM_NODES.indexOf(node) * 0.1,
+                delay: 0.15 + nodes.indexOf(node) * 0.1,
                 duration: 0.4
               }} onMouseEnter={() => setActiveNode(node.id)} onMouseLeave={() => setActiveNode(null)} className="flex flex-col items-center cursor-default focus:outline-none" style={{
                 position: 'absolute',
@@ -1493,7 +1500,15 @@ export const SystemConnectionDiagram = () => {
 };
 
 // ─── PixelHeatmap ─────────────────────────────────────────────────────────────
-export const PixelHeatmap = () => {
+export const PixelHeatmap = ({
+  data = HEATMAP_CELLS,
+  rowLabels = HEATMAP_LABELS_Y,
+  colLabels = HEATMAP_LABELS_X
+}: {
+  data?: HeatCell[];
+  rowLabels?: string[];
+  colLabels?: string[];
+} = {}) => {
   const getHeatColor = (intensity: number) => {
     if (intensity > 0.85) return COLOR.firedRed;
     if (intensity > 0.65) return COLOR.ochreOrange;
@@ -1517,18 +1532,18 @@ export const PixelHeatmap = () => {
           <div className="relative">
             <WeaveOverlay isDark opacity={0.06} />
             <div className="relative flex gap-1.5 mb-2 pl-24">
-              {HEATMAP_LABELS_X.map((label, i) => <div key={`hx-${i}`} className="flex-1 text-center text-[9px] font-bold uppercase tracking-widest" style={{
+              {colLabels.map((label, i) => <div key={`hx-${i}`} className="flex-1 text-center text-[9px] font-bold uppercase tracking-widest" style={{
               color: COLOR.milletClay,
               opacity: 0.25
             }}>{label}</div>)}
             </div>
             <div className="relative flex flex-col gap-1.5">
-              {HEATMAP_LABELS_Y.map((yLabel, rowIdx) => <div key={`hr-${rowIdx}`} className="flex items-center gap-1.5">
+              {rowLabels.map((yLabel, rowIdx) => <div key={`hr-${rowIdx}`} className="flex items-center gap-1.5">
                   <div className="w-24 shrink-0 text-[9px] font-bold uppercase tracking-[0.12em] text-right pr-3" style={{
                 color: COLOR.milletClay,
                 opacity: 0.35
               }}>{yLabel}</div>
-                  {HEATMAP_CELLS.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={{
+                  {data.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={{
                 opacity: 0,
                 scale: 0.5
               }} whileInView={{
@@ -1541,7 +1556,7 @@ export const PixelHeatmap = () => {
                 duration: 0.25
               }} className="flex-1 aspect-square" style={{
                 background: getHeatColor(cell.intensity)
-              }} title={`${yLabel} · ${HEATMAP_LABELS_X[cell.col]}: ${Math.round(cell.intensity * 100)}%`} />)}
+              }} title={`${yLabel} · ${colLabels[cell.col]}: ${Math.round(cell.intensity * 100)}%`} />)}
                 </div>)}
             </div>
             <div className="relative flex items-center gap-3 mt-6">
@@ -1577,7 +1592,11 @@ export const PixelHeatmap = () => {
 };
 
 // ─── RoadmapTimeline ──────────────────────────────────────────────────────────
-export const RoadmapTimeline = () => {
+export const RoadmapTimeline = ({
+  phases = TIMELINE_PHASES
+}: {
+  phases?: TimelinePhase[];
+} = {}) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, {
     once: true,
@@ -1598,7 +1617,7 @@ export const RoadmapTimeline = () => {
       <div className="hidden lg:block relative mb-14" aria-hidden="true">
         <div className="h-px bg-[#1E1A17]/12 w-full" />
         <div className="absolute top-0 left-0 w-full flex">
-          {TIMELINE_PHASES.map(phase => <div key={`spine-tick-${phase.tag}`} className="flex-1 flex flex-col items-center" style={{
+          {phases.map(phase => <div key={`spine-tick-${phase.tag}`} className="flex-1 flex flex-col items-center" style={{
           transform: 'translateY(-50%)'
         }}>
               <div className="w-2.5 h-2.5" style={{
@@ -1608,7 +1627,7 @@ export const RoadmapTimeline = () => {
             </div>)}
         </div>
         <div className="flex mt-3">
-          {TIMELINE_PHASES.map(phase => <div key={`spine-label-${phase.tag}`} className="flex-1 text-center">
+          {phases.map(phase => <div key={`spine-label-${phase.tag}`} className="flex-1 text-center">
               <span className="text-[9px] font-bold uppercase tracking-[0.14em]" style={{
             color: phase.hex,
             opacity: 0.7
@@ -1617,7 +1636,7 @@ export const RoadmapTimeline = () => {
         </div>
       </div>
       <div className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
-        {TIMELINE_PHASES.map((phase, idx) => <motion.div key={phase.tag} initial={{
+        {phases.map((phase, idx) => <motion.div key={phase.tag} initial={{
         opacity: 0,
         y: 14
       }} animate={isInView ? {
@@ -1710,7 +1729,7 @@ export const RoadmapTimeline = () => {
           </motion.div>)}
       </div>
       <div aria-hidden="true" className="flex mt-4 h-1">
-        {TIMELINE_PHASES.map(phase => [0, 1, 2, 3, 4, 5, 6, 7].map(i => <div key={`btm-${phase.tag}-${i}`} className="flex-1 h-full" style={{
+        {phases.map(phase => [0, 1, 2, 3, 4, 5, 6, 7].map(i => <div key={`btm-${phase.tag}-${i}`} className="flex-1 h-full" style={{
         background: i % 2 === 0 ? phase.hex : 'transparent',
         opacity: 0.45
       }} />))}

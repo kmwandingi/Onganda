@@ -8,193 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
 import { ChartGallery } from './onganda-charts';
-import { AiAuthoringPanel, AiAuthoringResult } from './onganda-ai-authoring';
+import { AiAuthoringPanel } from './onganda-ai-authoring';
+import { DocBlockType, DocBlock, InsertPaletteItem, AiAuthoringResult } from './onganda-block-types';
+import { DOC_INSERT_PALETTE, DOC_PALETTE_CATEGORIES } from './onganda-block-palette';
+import type { DocumentExportPayload } from './onganda-export-api';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-type DocBlockType = 'heading' | 'body' | 'pullquote' | 'divider' | 'callout' | 'list' | 'signature' | 'stat' | 'terminal' | 'heatmap' | 'timeline' | 'systemcard' | 'flowchart' | 'principles' | 'swatchrow' | 'chart-market' | 'chart-bar' | 'chart-gallery';
-interface DocBlock {
-  id: string;
-  type: DocBlockType;
-  content: string;
-  statValue?: string;
-  statLabel?: string;
-  statSub?: string;
-  statHex?: string;
-  timelinePhaseIdx?: number;
-  systemIdx?: number;
-  flowNodeIdx?: number;
-  terminalIdx?: number;
-  // For chart-market editable labels
-  chartTitle?: string;
-  // For chart-market editable data points
-  marketData?: string; // JSON stringified [{year,value}]
-  // For chart-bar editable values
-  barValues?: string; // JSON stringified array of {name,progress}
-  // For heatmap editable intensities
-  heatmapData?: string; // JSON stringified [{row,col,intensity}]
-  // For principles editable entries
-  principlesData?: string; // JSON stringified [{label,value}]
-  // For swatch row editable entries
-  swatchData?: string; // JSON stringified [{name,hex}]
-}
-interface InsertPaletteItem {
-  id: string;
-  label: string;
-  desc: string;
-  type: DocBlockType;
-  defaultContent: string;
-  hex: string;
-  category: string;
-}
-
-// ─── Insert palette ───────────────────────────────────────────────────────────
-const INSERT_PALETTE: InsertPaletteItem[] = [{
-  id: 'insert-heading',
-  label: 'Section Heading',
-  desc: 'Named section with dashed rule',
-  type: 'heading',
-  defaultContent: 'New Section',
-  hex: COLOR.ochreOrange,
-  category: 'Text'
-}, {
-  id: 'insert-body',
-  label: 'Body Paragraph',
-  desc: 'Editorial body text in Georgia',
-  type: 'body',
-  defaultContent: 'Start writing here…',
-  hex: COLOR.charBlack,
-  category: 'Text'
-}, {
-  id: 'insert-pullquote',
-  label: 'Pull Quote',
-  desc: 'Highlighted branded quotation',
-  type: 'pullquote',
-  defaultContent: 'Build domestic AI capability first.',
-  hex: COLOR.ochreOrange,
-  category: 'Text'
-}, {
-  id: 'insert-callout',
-  label: 'Callout Box',
-  desc: 'Accented info or note block',
-  type: 'callout',
-  defaultContent: 'Note: Key finding.',
-  hex: COLOR.firedRed,
-  category: 'Text'
-}, {
-  id: 'insert-list',
-  label: 'Bullet List',
-  desc: 'Pixel-dot list items',
-  type: 'list',
-  defaultContent: 'First item · Second item · Third item',
-  hex: COLOR.ochreOrange,
-  category: 'Text'
-}, {
-  id: 'insert-divider',
-  label: 'Section Divider',
-  desc: 'Dither bar visual separator',
-  type: 'divider',
-  defaultContent: '',
-  hex: COLOR.ochreOrange,
-  category: 'Text'
-}, {
-  id: 'insert-signature',
-  label: 'Signature Block',
-  desc: 'Author attribution footer',
-  type: 'signature',
-  defaultContent: 'Onganda · Namibia AI Systems Lab · 2025',
-  hex: COLOR.mopaneBrown,
-  category: 'Text'
-}, {
-  id: 'insert-stat',
-  label: 'Stat Card',
-  desc: 'Editable KPI / metric card',
-  type: 'stat',
-  defaultContent: 'New Metric',
-  hex: COLOR.ochreOrange,
-  category: 'Data'
-}, {
-  id: 'insert-chart-market',
-  label: 'Market Chart',
-  desc: 'AI market growth area chart',
-  type: 'chart-market',
-  defaultContent: 'Market Growth',
-  hex: COLOR.ochreOrange,
-  category: 'Data'
-}, {
-  id: 'insert-chart-bar',
-  label: 'Bar Chart',
-  desc: 'System progress bar chart',
-  type: 'chart-bar',
-  defaultContent: 'System Progress',
-  hex: COLOR.barkRust,
-  category: 'Data'
-}, {
-  id: 'insert-chart-gallery',
-  label: 'Chart Gallery',
-  desc: 'Reusable design-system chart set',
-  type: 'chart-gallery',
-  defaultContent: 'Design System Charts',
-  hex: COLOR.dyePlum,
-  category: 'Data'
-}, {
-  id: 'insert-heatmap',
-  label: 'Research Heatmap',
-  desc: 'Activity heatmap across systems',
-  type: 'heatmap',
-  defaultContent: 'Research Activity',
-  hex: COLOR.firedRed,
-  category: 'Data'
-}, {
-  id: 'insert-terminal',
-  label: 'Code Terminal',
-  desc: 'Syntax-highlighted terminal block',
-  type: 'terminal',
-  defaultContent: 'Oshini Pipeline',
-  hex: COLOR.barkRust,
-  category: 'System'
-}, {
-  id: 'insert-timeline',
-  label: 'Roadmap Phase',
-  desc: 'Single roadmap timeline phase',
-  type: 'timeline',
-  defaultContent: 'Foundation Phase',
-  hex: COLOR.ochreOrange,
-  category: 'System'
-}, {
-  id: 'insert-systemcard',
-  label: 'System Card',
-  desc: 'One of the five named systems',
-  type: 'systemcard',
-  defaultContent: 'Okaanda',
-  hex: COLOR.ochreOrange,
-  category: 'System'
-}, {
-  id: 'insert-flowchart',
-  label: 'Flow Node',
-  desc: 'Pixel flowchart node card',
-  type: 'flowchart',
-  defaultContent: 'Granary',
-  hex: COLOR.ochreOrange,
-  category: 'System'
-}, {
-  id: 'insert-principles',
-  label: 'Principles Table',
-  desc: 'Brand principles definition list',
-  type: 'principles',
-  defaultContent: 'Brand Principles',
-  hex: COLOR.charBlack,
-  category: 'System'
-}, {
-  id: 'insert-swatchrow',
-  label: 'Swatch Row',
-  desc: 'Material colour palette strip',
-  type: 'swatchrow',
-  defaultContent: 'Material Palette',
-  hex: COLOR.mahanguGold,
-  category: 'System'
-}];
-const PALETTE_CATEGORIES = ['Text', 'Data', 'System'];
 
 const docBlockFromAi = (block: NonNullable<AiAuthoringResult['blocks']>[number], idx: number): DocBlock => ({
   id: `ai-doc-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 6)}`,
@@ -2576,7 +2395,7 @@ const InsertPanel = ({
   const muted = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';
   const itemBg = isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.6)';
   const itemHoverBg = isDark ? 'rgba(232,225,207,0.08)' : '#FDFAF2';
-  const filtered = INSERT_PALETTE.filter(item => item.category === activeCat);
+  const filtered = DOC_INSERT_PALETTE.filter(item => item.category === activeCat);
   return <div style={{
     width: 210,
     flexShrink: 0,
@@ -2612,7 +2431,7 @@ const InsertPanel = ({
         gap: 4,
         flexWrap: 'wrap' as const
       }}>
-          {PALETTE_CATEGORIES.map(cat => <button key={`doc-cat-${cat}`} onClick={() => setActiveCat(cat)} style={{
+          {DOC_PALETTE_CATEGORIES.map(cat => <button key={`doc-cat-${cat}`} onClick={() => setActiveCat(cat)} style={{
           padding: '3px 8px',
           fontSize: 9,
           fontWeight: 700,
@@ -3760,7 +3579,7 @@ export const DocumentEditor = ({
     setEditingBlockId(null);
     setConfiguringBlockId(null);
   };
-  const handleGenerateExport = useCallback((format: 'PDF' | 'WORD') => {
+  const handleGenerateExport = useCallback((format: DocumentExportPayload['format']) => {
     setSelectedBlockId(null);
     setEditingBlockId(null);
     setConfiguringBlockId(null);

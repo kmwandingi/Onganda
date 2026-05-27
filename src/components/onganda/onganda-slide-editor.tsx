@@ -8,6 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
 import { AiAuthoringPanel, AiAuthoringResult, AiSlideBlock } from './onganda-ai-authoring';
+import { SLIDE_COMPONENT_PALETTE, SLIDE_PALETTE_CATEGORIES } from './onganda-block-palette';
+import type { ComponentPaletteItem } from './onganda-block-types';
+import type { DeckExportPayload } from './onganda-export-api';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -56,13 +59,6 @@ interface DroppedBlock {
   customAppDesc?: string;
   customNodeName?: string;
   customNodeRole?: string;
-}
-interface ComponentPaletteItem {
-  id: string;
-  category: string;
-  label: string;
-  desc: string;
-  hex: string;
 }
 interface AlignGuide {
   orientation: 'h' | 'v';
@@ -212,285 +208,6 @@ function useSlideHistory(initial: SlideHistorySnapshot) {
   };
 }
 
-// ─── Component palette ────────────────────────────────────────────────────────
-const COMPONENT_PALETTE: ComponentPaletteItem[] = [{
-  id: 'icon-okaanda',
-  category: 'Icons',
-  label: 'Okaanda Icon',
-  desc: 'Granary system icon',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'icon-oshini',
-  category: 'Icons',
-  label: 'Oshini Icon',
-  desc: 'Mill system icon',
-  hex: COLOR.barkRust
-}, {
-  id: 'icon-ombiga',
-  category: 'Icons',
-  label: 'Ombiga Icon',
-  desc: 'Vessel system icon',
-  hex: COLOR.mahanguGold
-}, {
-  id: 'icon-etiti',
-  category: 'Icons',
-  label: 'Etiti Icon',
-  desc: 'Surface system icon',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'icon-oshitoo',
-  category: 'Icons',
-  label: 'Oshitoo Icon',
-  desc: 'Delivery system icon',
-  hex: COLOR.dyePlum
-}, {
-  id: 'stat-systems',
-  category: 'Stats',
-  label: 'Stat: 5 Systems',
-  desc: 'Active systems count',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'stat-models',
-  category: 'Stats',
-  label: 'Stat: 3 Models',
-  desc: 'Adapted language models',
-  hex: COLOR.barkRust
-}, {
-  id: 'stat-pilots',
-  category: 'Stats',
-  label: 'Stat: 12 Pilots',
-  desc: 'Sector pilots running',
-  hex: COLOR.mahanguGold
-}, {
-  id: 'stat-lab',
-  category: 'Stats',
-  label: 'Stat: 1 Lab',
-  desc: 'Sovereign lab location',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'stat-custom',
-  category: 'Stats',
-  label: 'Custom Stat',
-  desc: 'Editable KPI number',
-  hex: COLOR.dyePlum
-}, {
-  id: 'chart-market',
-  category: 'Charts',
-  label: 'Market Growth Chart',
-  desc: 'AI market area chart (2023–2033)',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'chart-progress',
-  category: 'Charts',
-  label: 'System Progress',
-  desc: 'Bar chart of system build progress',
-  hex: COLOR.barkRust
-}, {
-  id: 'chart-heatmap',
-  category: 'Charts',
-  label: 'Research Heatmap',
-  desc: 'Activity heatmap across systems',
-  hex: COLOR.firedRed
-}, {
-  id: 'chart-radar',
-  category: 'Charts',
-  label: 'Capability Radar',
-  desc: 'Radar chart of AI capabilities',
-  hex: COLOR.dyePlum
-}, {
-  id: 'chart-timeline',
-  category: 'Charts',
-  label: 'Phase Progress',
-  desc: 'Roadmap phase mini-bar',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'text-headline',
-  category: 'Text',
-  label: 'Headline',
-  desc: 'Large section heading',
-  hex: COLOR.charBlack
-}, {
-  id: 'text-body',
-  category: 'Text',
-  label: 'Body Text',
-  desc: 'Paragraph text block',
-  hex: COLOR.charBlack
-}, {
-  id: 'text-quote',
-  category: 'Text',
-  label: 'Pull Quote',
-  desc: 'Highlighted quotation',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'text-label',
-  category: 'Text',
-  label: 'Pixel Label',
-  desc: 'Small uppercase label',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'sys-card-0',
-  category: 'Systems',
-  label: 'Okaanda Card',
-  desc: 'Granary system card',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'sys-card-1',
-  category: 'Systems',
-  label: 'Oshini Card',
-  desc: 'Mill system card',
-  hex: COLOR.barkRust
-}, {
-  id: 'sys-card-2',
-  category: 'Systems',
-  label: 'Ombiga Card',
-  desc: 'Vessel system card',
-  hex: COLOR.mahanguGold
-}, {
-  id: 'sys-card-3',
-  category: 'Systems',
-  label: 'Etiti Card',
-  desc: 'Surface system card',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'sys-card-4',
-  category: 'Systems',
-  label: 'Oshitoo Card',
-  desc: 'Delivery system card',
-  hex: COLOR.dyePlum
-}, {
-  id: 'flow-node-0',
-  category: 'Systems',
-  label: 'Flow: Root',
-  desc: 'Root org node',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'flow-node-1',
-  category: 'Systems',
-  label: 'Flow: Granary',
-  desc: 'Data platform node',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'flow-node-2',
-  category: 'Systems',
-  label: 'Flow: Mill',
-  desc: 'Adaptation node',
-  hex: COLOR.barkRust
-}, {
-  id: 'flow-node-3',
-  category: 'Systems',
-  label: 'Flow: Vessel',
-  desc: 'Container node',
-  hex: COLOR.mahanguGold
-}, {
-  id: 'flow-node-4',
-  category: 'Systems',
-  label: 'Flow: Surface',
-  desc: 'Interface node',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'flow-node-5',
-  category: 'Systems',
-  label: 'Flow: Delivery',
-  desc: 'Deployment node',
-  hex: COLOR.dyePlum
-}, {
-  id: 'timeline-0',
-  category: 'Timeline',
-  label: 'Phase: Foundation',
-  desc: 'P–01 roadmap card',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'timeline-1',
-  category: 'Timeline',
-  label: 'Phase: Adaptation',
-  desc: 'P–02 roadmap card',
-  hex: COLOR.barkRust
-}, {
-  id: 'timeline-2',
-  category: 'Timeline',
-  label: 'Phase: Containment',
-  desc: 'P–03 roadmap card',
-  hex: COLOR.mahanguGold
-}, {
-  id: 'timeline-3',
-  category: 'Timeline',
-  label: 'Phase: Surface',
-  desc: 'P–04 roadmap card',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'timeline-4',
-  category: 'Timeline',
-  label: 'Phase: Delivery',
-  desc: 'P–05 roadmap card',
-  hex: COLOR.dyePlum
-}, {
-  id: 'field-0',
-  category: 'Field',
-  label: 'OshitooHealth',
-  desc: 'Healthcare application',
-  hex: COLOR.dyePlum
-}, {
-  id: 'field-1',
-  category: 'Field',
-  label: 'OshiniAgro',
-  desc: 'Agriculture application',
-  hex: COLOR.barkRust
-}, {
-  id: 'field-2',
-  category: 'Field',
-  label: 'OkaandaEdu',
-  desc: 'Education application',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'field-3',
-  category: 'Field',
-  label: 'EtitiGov',
-  desc: 'Public sector application',
-  hex: COLOR.mopaneBrown
-}, {
-  id: 'swatch-row',
-  category: 'Brand',
-  label: 'Swatch Row',
-  desc: 'Brand colour palette',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'badge-okaanda',
-  category: 'Brand',
-  label: 'Badge: Okaanda',
-  desc: 'System name badge',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'badge-oshini',
-  category: 'Brand',
-  label: 'Badge: Oshini',
-  desc: 'System name badge',
-  hex: COLOR.barkRust
-}, {
-  id: 'divider-dither',
-  category: 'Brand',
-  label: 'Dither Divider',
-  desc: 'Pixel dither accent bar',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'divider-dot',
-  category: 'Brand',
-  label: 'Dot Row',
-  desc: 'Pixel dot accent row',
-  hex: COLOR.ochreOrange
-}, {
-  id: 'terminal-0',
-  category: 'Brand',
-  label: 'Terminal: Oshini',
-  desc: 'Fine-tune pipeline code',
-  hex: COLOR.barkRust
-}, {
-  id: 'terminal-1',
-  category: 'Brand',
-  label: 'Terminal: Okaanda',
-  desc: 'Granary query code',
-  hex: COLOR.ochreOrange
-}];
-const PALETTE_CATEGORIES = ['Icons', 'Stats', 'Charts', 'Text', 'Systems', 'Timeline', 'Field', 'Brand'];
 
 // ─── Chart data ───────────────────────────────────────────────────────────────
 const AI_MARKET_DATA = [{
@@ -4376,7 +4093,7 @@ const ComponentPanel = ({
   const muted = isDark ? 'rgba(232,225,207,0.40)' : 'rgba(30,26,23,0.40)';
   const itemBg = isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.6)';
   const itemHoverBg = isDark ? 'rgba(232,225,207,0.08)' : '#FDFAF2';
-  const filtered = COMPONENT_PALETTE.filter(i => i.category === activeCategory);
+  const filtered = SLIDE_COMPONENT_PALETTE.filter(i => i.category === activeCategory);
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: ComponentPaletteItem) => {
     e.dataTransfer.setData('component-type', item.id);
     e.dataTransfer.setData('component-label', item.label);
@@ -4417,7 +4134,7 @@ const ComponentPanel = ({
         flexWrap: 'wrap' as const,
         gap: 3
       }}>
-        {PALETTE_CATEGORIES.map(cat => <button key={`cat-${cat}`} onClick={() => onCategoryChange(cat)} style={{
+        {SLIDE_PALETTE_CATEGORIES.map(cat => <button key={`cat-${cat}`} onClick={() => onCategoryChange(cat)} style={{
           padding: '2px 6px',
           fontSize: 8,
           fontWeight: 700,
@@ -5710,7 +5427,7 @@ export const SlideEditor = ({
       };
     });
   }, [setSlides]);
-  const handleGenerateExport = useCallback((format: 'PDF' | 'PPT') => {
+  const handleGenerateExport = useCallback((format: DeckExportPayload['format']) => {
     setSelectedBlockId(null);
     setSlideBlocks(prev => ({
       ...prev,

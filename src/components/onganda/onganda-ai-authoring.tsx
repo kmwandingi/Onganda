@@ -3,32 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR } from './onganda-tokens';
 import { DitherBar, OngandaLogoMark, PixelDot, PixelTag } from './onganda-primitives';
 import { IconCheck, IconRefresh, IconSettings, IconTerminal } from './onganda-icons';
+import type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult } from './onganda-block-types';
 
 export type AuthoringMode = 'document' | 'deck';
-
-export interface AiDocBlock {
-  type: 'heading' | 'body' | 'pullquote' | 'callout' | 'list' | 'divider' | 'signature' | 'chart-gallery';
-  content: string;
-}
-
-export interface AiSlideBlock {
-  type: 'headline' | 'body' | 'label' | 'quote' | 'system' | 'chart' | 'divider';
-  content: string;
-  systemName?: 'Okaanda' | 'Oshini' | 'Ombiga' | 'Etiti' | 'Oshitoo';
-}
-
-export interface AiSlide {
-  title: string;
-  subtitle?: string;
-  blocks: AiSlideBlock[];
-}
-
-export interface AiAuthoringResult {
-  title: string;
-  summary: string;
-  blocks?: AiDocBlock[];
-  slides?: AiSlide[];
-}
+export type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult } from './onganda-block-types';
 
 interface EndpointConfig {
   provider: 'openai-compatible' | 'gemini-rest' | 'custom-json';
