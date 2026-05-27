@@ -11,5 +11,6 @@ export * from './onganda-sections';
 export * from './onganda-publications';
 export * from './onganda-document-editor';
 export * from './onganda-slide-editor';
+export * from './onganda-slide-inspector';
 export * from './onganda-public-sites';
 export * from './NamibiaAISystemsHub';

@@ -642,3 +642,26 @@ export const TICKER_ITEMS: TickerItem[] = [{
 export const HERO_LINE_1_WORDS: HeroWord[] = [{ text: 'A', color: '#1E1A17' }, { text: 'workshop', color: '#1E1A17' }];
 export const HERO_LINE_2_WORDS: HeroWord[] = [{ text: 'of', color: '#D9791F' }, { text: 'intelligence.', color: '#D9791F' }];
 export const HERO_LINE_3_WORDS: HeroWord[] = [{ text: 'Pixelated', color: '#1E1A17' }, { text: 'by', color: '#1E1A17' }, { text: 'design.', color: '#1E1A17' }];
+
+// ─── Slide editor chart data ──────────────────────────────────────────────────
+// Used in both the slide canvas renderer and the SlideInspector panel.
+export const SLIDE_MARKET_DATA: { year: string; value: number }[] = [
+  { year: '2023', value: 189 },
+  { year: '2026', value: 1100 },
+  { year: '2030', value: 2900 },
+  { year: '2033', value: 4800 },
+];
+export const SLIDE_BAR_DATA: { name: string; progress: number }[] = [
+  { name: 'Okaanda', progress: 100 },
+  { name: 'Oshini',  progress: 78  },
+  { name: 'Ombiga',  progress: 34  },
+  { name: 'Etiti',   progress: 12  },
+  { name: 'Oshitoo', progress: 0   },
+];
+export const SLIDE_RADAR_DATA: { subject: string; value: number }[] = [
+  { subject: 'Data',       value: 85 },
+  { subject: 'Models',     value: 72 },
+  { subject: 'Agents',     value: 55 },
+  { subject: 'Interfaces', value: 40 },
+  { subject: 'Deployment', value: 28 },
+];

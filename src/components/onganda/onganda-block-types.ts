@@ -80,6 +80,57 @@ export interface ComponentPaletteItem {
   hex: string;
 }
 
+// ─── Slide editor entity types ────────────────────────────────────────────────
+// Shared between the slide editor canvas and the SlideInspector panel.
+
+export interface SlideEntry {
+  id: string;
+  tag: string;
+  title: string;
+  subtitle?: string;
+  customTitle?: string;
+}
+
+export interface DroppedBlock {
+  id: string;
+  type: string;
+  label: string;
+  x: number;
+  y: number;
+  selected: boolean;
+  editingText: boolean;
+  editingField?: string;
+  w?: number;
+  h?: number;
+  statValue?: string;
+  statLabel?: string;
+  statSub?: string;
+  statHex?: string;
+  textContent?: string;
+  textSize?: number;
+  timelineIdx?: number;
+  systemIdx?: number;
+  flowNodeIdx?: number;
+  terminalIdx?: number;
+  sectorAppIdx?: number;
+  marketData?: string;
+  radarData?: string;
+  heatmapData?: string;
+  chartTitle?: string;
+  customName?: string;
+  customRole?: string;
+  customDesc?: string;
+  customEnglish?: string;
+  customPhaseName?: string;
+  customPeriod?: string;
+  customProgress?: number;
+  customAppName?: string;
+  customSector?: string;
+  customAppDesc?: string;
+  customNodeName?: string;
+  customNodeRole?: string;
+}
+
 // ─── Slide block types ────────────────────────────────────────────────────────
 export type SlideBlockType =
   | 'text-headline'
