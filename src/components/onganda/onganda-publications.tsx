@@ -19,7 +19,7 @@ const DocumentMockup = ({
   width: '100%',
   maxWidth: 200,
   aspectRatio: '1 / 1.414',
-  background: '#F3E8C3',
+  background: COLOR.dustLight,
   border: `1px solid ${hex}55`,
   position: 'relative',
   overflow: 'hidden',
@@ -270,7 +270,7 @@ const PublicationCard = ({
   const {
     isDark
   } = useDark();
-  const cardBg = isDark ? COLOR.darkCard : '#F3E8C3';
+  const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
   const borderColor = hovered ? fmt.hex : isDark ? `${fmt.hex}28` : 'rgba(30,26,23,0.10)';
   const titleColor = isDark ? COLOR.milletClay : COLOR.charBlack;
   const subColor = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';

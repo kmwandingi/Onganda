@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
-import { COLOR } from './onganda-tokens';
+import { COLOR } from './onganda-colors';
 import { SectionHeader, DitherBar, PixelTag, PixelDot } from './onganda-primitives';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────

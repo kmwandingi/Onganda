@@ -5,12 +5,16 @@ You are working in the Onganda project repository. This project has a very stric
 ## CRITICAL INSTRUCTION BEFORE WRITING ANY CODE
 Before you make any changes to UI, styling, components, or layout, you MUST:
 1. Read the `DESIGN_GUIDELINES.md` file located in the root of this project.
-2. Read the available exports in `src/components/generated/onganda-design-system.ts`.
-3. Read the available tokens in `src/components/generated/onganda-tokens.ts` when adding or changing design data.
+2. Read the available exports in `src/components/onganda/onganda-design-system.ts`.
+3. When adding or changing design data, read the split token files:
+   - `src/components/onganda/onganda-colors.ts` — COLOR, WEAVE, SWATCHES, color arrays
+   - `src/components/onganda/onganda-types.ts` — all TypeScript interfaces
+   - `src/components/onganda/onganda-content.ts` — SYSTEMS, TIMELINE_PHASES, and all data arrays
+   - `src/components/onganda/onganda-tokens.ts` re-exports all three for backwards compatibility.
 
 ## Hard Rules
 1. **Never use standard Tailwind colors** (e.g., `text-blue-500`, `bg-red-500`, `border-gray-200`). You must use the semantic colors provided by the Onganda design system (e.g., Millet Clay, Char Black, Ochre Orange).
-2. **Never hardcode new hex values** in component files. Always import from `@onganda/design-system` or add a named semantic token first. Existing generated files still contain legacy approved palette literals; do not copy that pattern.
+2. **Never hardcode new hex values** in component files. Always import from `@onganda/design-system` or add a named semantic token to `onganda-colors.ts` first. Existing component files still contain legacy approved palette literals; do not copy that pattern.
 3. **Respect the Pixel vs. Type dichotomy**: Icons, diagrams, and brand elements must be pixelated (stepped corners, dither, basket-weave textures). Typography and reading interfaces must be clean sans-serif (Inter/Arial).
 4. **Oshiwambo First**: Respect the naming hierarchy. Use the Oshiwambo names for systems (Okaanda, Oshini, Ombiga, Etiti, Oshitoo) first, followed by English translations if necessary.
 5. **Use the showcase as the reference implementation**: public pages must feel like peers of `/showcase`, including its pixel primitives, system icons, black ticker/lab-card language, and subtle motion patterns.

@@ -10,11 +10,7 @@ import {
   PixelTag,
   TerminalCard,
   WeaveOverlay,
-  IconOkaanda,
-  IconOshini,
-  IconOmbiga,
-  IconEtiti,
-  IconOshitoo
+  systemIconForName
 } from './onganda-primitives';
 import {
   IconArrowRight,
@@ -44,31 +40,7 @@ const navItems = [
   { href: '/showcase', label: 'Showcase' }
 ];
 
-const systemIcon = (name: string, size = 46) => {
-  if (name === 'Okaanda') return <IconOkaanda size={size} />;
-  if (name === 'Oshini') return <IconOshini size={size} />;
-  if (name === 'Ombiga') return <IconOmbiga size={size} />;
-  if (name === 'Etiti') return <IconEtiti size={size} />;
-  return <IconOshitoo size={size} />;
-};
-
 const systemEnglish = (sys: SystemEntry) => sys.name === 'Okaanda' ? 'Granary' : sys.english;
-
-const systemLine = (name: string) => {
-  if (name === 'Okaanda') return 'Storage, readiness, and model organization.';
-  if (name === 'Oshini') return 'Adaptation, transformation, and workflow.';
-  if (name === 'Ombiga') return 'Containers, agents, and held systems.';
-  if (name === 'Etiti') return 'User surfaces, dashboards, and interfaces.';
-  return 'Applications, outputs, and delivered tools.';
-};
-
-const systemLong = (name: string) => {
-  if (name === 'Okaanda') return 'Okaanda is the granary: the storage and readiness layer. It holds datasets, evaluation structures, model organization, and the internal order that makes the rest of the stack usable.';
-  if (name === 'Oshini') return 'Oshini is where raw material becomes usable capability. It carries the workflows for fine-tuning, distillation, compression, evaluation, and model adaptation.';
-  if (name === 'Ombiga') return 'Ombiga holds systems in a form that can travel. It is the layer for containers, agent runtimes, memory, and portable units of work.';
-  if (name === 'Etiti') return 'Etiti is the surface where people meet the system. It turns model work into dashboards, review spaces, workbenches, and interfaces that can be understood and controlled.';
-  return 'Oshitoo is the delivery layer. It is where the lab turns internal capability into pilots, applications, and sector-facing products prepared for real use.';
-};
 
 const focusItems = [
   { icon: IconDatabase, label: 'Adapt models', body: 'Select, adapt, evaluate, and organize models for local use.', hex: COLOR.ochreOrange },
@@ -263,7 +235,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           <WeaveOverlay opacity={0.035} />
           <div className="relative mb-8 flex items-start justify-between">
             <div className="border p-3" style={{ borderColor: `${sys.borderHex}40`, background: `${sys.borderHex}14` }}>
-              {systemIcon(sys.name, 50)}
+              {systemIconForName(sys.name, 50)}
             </div>
             <PixelTag hex={sys.borderHex} label={String(index + 1).padStart(2, '0')} />
           </div>
@@ -271,7 +243,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
             <h3 className="text-2xl font-semibold">{sys.name}</h3>
             <p className="mt-1 text-sm font-medium" style={{ color: sys.borderHex }}>{systemEnglish(sys)}</p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>{sys.role}</p>
-            <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{detailed ? systemLong(sys.name) : systemLine(sys.name)}</p>
+            <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{detailed ? sys.long : sys.line}</p>
           </div>
           <div className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} aria-hidden="true" />
           <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />

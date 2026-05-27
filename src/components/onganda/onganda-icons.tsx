@@ -16,6 +16,8 @@ export interface IconProps {
   size?: number;
   color?: string;
   opacity?: number;
+  className?: string;
+  'aria-label'?: string;
 }
 const ic = (color?: string, opacity?: number): React.CSSProperties => color ? {
   color,

@@ -337,13 +337,14 @@ export const IconOshitoo = ({
     <rect x="8" y="19" width="8" height="1" fill="#1E1A17" fillOpacity="0.15" />
   </Px>;
 
-// ─── SYSTEM_ICONS — lookup map for system name → icon node ───────────────────
-export const SYSTEM_ICONS: Record<string, React.ReactNode> = {
-  Okaanda: <IconOkaanda size={48} />,
-  Oshini: <IconOshini size={48} />,
-  Ombiga: <IconOmbiga size={48} />,
-  Etiti: <IconEtiti size={48} />,
-  Oshitoo: <IconOshitoo size={48} />
+// ─── systemIconForName — single source for system name → icon component ───────
+// Accepts an optional size so callers never need their own mapping.
+export const systemIconForName = (name: string, size = 48): React.ReactElement => {
+  if (name === 'Okaanda') return <IconOkaanda size={size} />;
+  if (name === 'Oshini')  return <IconOshini  size={size} />;
+  if (name === 'Ombiga')  return <IconOmbiga  size={size} />;
+  if (name === 'Etiti')   return <IconEtiti   size={size} />;
+  return <IconOshitoo size={size} />;
 };
 
 // ─── FlowNodeIcon — small icon for flowchart nodes ───────────────────────────
@@ -619,7 +620,7 @@ export const SystemCard = ({
       background: `${sys.borderHex}18`,
       border: `1px solid ${sys.borderHex}40`
     } : {}}>
-        {isDark ? SYSTEM_ICONS[sys.name] : <div className={`w-full h-full flex items-center justify-center border ${sys.accent}`}>{SYSTEM_ICONS[sys.name]}</div>}
+        {isDark ? systemIconForName(sys.name) : <div className={`w-full h-full flex items-center justify-center border ${sys.accent}`}>{systemIconForName(sys.name)}</div>}
       </div>
 
       <div className="mb-1">
