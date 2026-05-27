@@ -903,7 +903,7 @@ export const OngandaHero = () => {
             ease: [0.16, 1, 0.3, 1]
           }} style={{
             display: 'block',
-            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontSize: 'var(--type-hero)',
             fontWeight: 700,
             letterSpacing: '-0.04em',
             color: word.color,
@@ -1002,7 +1002,7 @@ export const OngandaHero = () => {
             ease: [0.16, 1, 0.3, 1]
           }} style={{
             display: 'block',
-            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontSize: 'var(--type-hero)',
             fontWeight: 700,
             letterSpacing: '-0.04em',
             color: word.color,
@@ -1041,7 +1041,7 @@ export const OngandaHero = () => {
             ease: [0.16, 1, 0.3, 1]
           }} style={{
             display: 'block',
-            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontSize: 'var(--type-hero)',
             fontWeight: 700,
             letterSpacing: '-0.04em',
             color: word.color,
@@ -1076,13 +1076,13 @@ export const OngandaHero = () => {
             }
           }} style={{
             display: 'inline-block',
-            width: 'clamp(0.22rem, 0.65vw, 0.55rem)',
+            width: 'var(--type-hero-gap)',
             height: '0.72em',
             background: COLOR.ochreOrange,
             verticalAlign: 'baseline',
             marginLeft: '0.08em',
             marginBottom: '0.06em',
-            fontSize: 'clamp(3.2rem, 10vw, 9rem)',
+            fontSize: 'var(--type-hero)',
             lineHeight: 1.08,
             flexShrink: 0
           }} />
@@ -1113,7 +1113,7 @@ export const OngandaHero = () => {
         delay: 1.0,
         duration: 0.6
       }} style={{
-        fontSize: 'clamp(0.82rem, 1.3vw, 0.95rem)',
+        fontSize: 'var(--type-subhead)',
         color: 'rgba(30,26,23,0.48)',
         letterSpacing: '0.01em',
         lineHeight: 1.7,

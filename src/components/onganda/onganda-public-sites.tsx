@@ -158,7 +158,7 @@ const PublicHero = ({
         <PixelTag hex={COLOR.ochreOrange} label={tag} />
         <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: quiet }}>{LAB_LABEL}</span>
       </div>
-      <h1 className="flex max-w-6xl flex-col items-center text-center font-bold leading-[0.98]" style={{ color: COLOR.charBlack, fontSize: 'clamp(3rem, 7.4vw, 7.1rem)' }}>
+      <h1 className="flex max-w-6xl flex-col items-center text-center font-bold leading-[0.98]" style={{ color: COLOR.charBlack, fontSize: 'var(--type-hero-public)' }}>
         {[line1, line2, line3].map((line, index) => (
           <span key={line} className="block overflow-hidden">
             <motion.span

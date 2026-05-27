@@ -63,6 +63,17 @@ body {
   --radius: 0;
   --font-body: Inter, Arial, sans-serif;
   --font-heading: Inter, Arial, sans-serif;
+
+  /* ─── Onganda typography scale ─────────────────────────────────────────────
+   * Fluid clamp() values for hero and section text. Use these tokens instead
+   * of bare clamp() literals so that the scale can be tuned in one place.
+   * Hero sizes: showcase/home hero words and public-site h1.
+   * Subhead: the subtitle/byline text beneath hero copy.
+   */
+  --type-hero: clamp(3.2rem, 10vw, 9rem);
+  --type-hero-public: clamp(3rem, 7.4vw, 7.1rem);
+  --type-hero-gap: clamp(0.22rem, 0.65vw, 0.55rem);
+  --type-subhead: clamp(0.82rem, 1.3vw, 0.95rem);
   --background: #e8e1cf;
   --foreground: #1e1a17;
   --card: #f3e8c3;
