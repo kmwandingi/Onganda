@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&family=Arial&family=Helvetica&family=Times+New+Roman&family=Georgia&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
@@ -61,8 +61,8 @@ body {
 
 :root {
   --radius: 0;
-  --font-body: Inter, Arial, sans-serif;
-  --font-heading: Inter, Arial, sans-serif;
+  --font-body: 'Inter', Arial, Helvetica, sans-serif;
+  --font-heading: 'Inter', Arial, Helvetica, sans-serif;
 
   /* ─── Onganda typography scale ─────────────────────────────────────────────
    * Fluid clamp() values for hero and section text. Use these tokens instead

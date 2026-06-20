@@ -8,6 +8,9 @@ import type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult, AiGeneratabl
 export type AuthoringMode = 'document' | 'deck';
 export type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult } from './onganda-block-types';
 
+const CURRENT_YEAR = new Date().getFullYear();
+const AUTHOR_NAME = 'Kenneth Mwandingi';
+
 interface EndpointConfig {
   provider: 'openai-compatible' | 'gemini-rest' | 'custom-json';
   endpoint: string;
@@ -190,7 +193,7 @@ const offlineDraft = (mode: AuthoringMode, brief: string): AiAuthoringResult => 
         { type: 'body', content: 'The work connects model readiness, adaptation workflows, containers, interfaces, and delivered applications into one practical stack.' },
         { type: 'callout', content: 'Use the assistant endpoint to replace this scaffold with a model-generated version once the local or hosted endpoint is configured.' },
         { type: 'chart-gallery', content: 'Reusable chart system' },
-        { type: 'signature', content: 'Onganda · Namibia AI Systems Lab · 2026' }
+        { type: 'signature', content: `Prepared by ${AUTHOR_NAME} · ${CURRENT_YEAR}` }
       ]
     };
   }
@@ -219,7 +222,7 @@ const OFFLINE_REGEN: Record<string, string> = {
   callout:     'Configure an AI endpoint in the Authoring Panel to generate context-specific content.',
   list:        'Sovereign data · Domestic adaptation · Secure containers · Local interfaces · Field delivery',
   divider:     '',
-  signature:   'Onganda · Namibia AI Systems Lab · 2026',
+  signature:   `Prepared by ${AUTHOR_NAME} · ${CURRENT_YEAR}`,
   'chart-gallery': 'Reusable chart system',
 };
 

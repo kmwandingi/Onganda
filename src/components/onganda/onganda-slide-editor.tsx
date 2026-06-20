@@ -3,7 +3,7 @@
 // guides when dragging, drag-to-reorder slides, Inspector for all properties.
 // "New Presentation" = blank slides, Templates = pre-filled decks.
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
@@ -89,8 +89,9 @@ const wrapPowerPointDeck = (title: string, bodyHtml: string) => `<!doctype html>
   <meta charset="utf-8" />
   <title>${title}</title>
   <style>
-    body { margin: 0; background: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
-    .onganda-print-slide { width: 13.333in; height: 7.5in; page-break-after: always; overflow: hidden; }
+    @page { size: 13.333in 7.5in; margin: 0; }
+    html, body { margin: 0; background: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .onganda-print-slide { width: 13.333in; height: 7.5in; page-break-after: always; break-after: page; overflow: hidden; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
     button, input, textarea { display: none !important; }
     svg { max-width: 100%; }
   </style>
@@ -1374,8 +1375,8 @@ const CanvasTextEdit = ({
     width: '100%',
     minWidth: isHeadline ? 200 : 240,
     minHeight: isHeadline ? 40 : 64,
-    resize: 'none',
-    overflow: 'hidden',
+    resize: 'both',
+    overflow: 'auto',
     background: 'transparent',
     border: `1px solid ${COLOR.ochreOrange}80`,
     outline: 'none',
@@ -1384,9 +1385,20 @@ const CanvasTextEdit = ({
     fontSize: isHeadline ? 22 : 12,
     fontWeight: isHeadline ? 700 : 400,
     color: isHeadline ? 'inherit' : 'rgba(30,26,23,0.80)',
-    lineHeight: isHeadline ? 1.2 : 1.8
+    lineHeight: isHeadline ? 1.2 : 1.8,
+    whiteSpace: 'pre-wrap'
   }} />;
 };
+
+const renderSlideTextWithCitations = (text: string) => text.split(/(\[\d+\])/g).map((part, i) => {
+  if (!/^\[\d+\]$/.test(part)) return part;
+  return <sup key={`slide-cite-${i}`} style={{
+    color: COLOR.ochreOrange,
+    fontSize: '0.72em',
+    fontWeight: 800,
+    marginLeft: 2
+  }}>{part}</sup>;
+});
 
 // ─── Dropped block renderer ───────────────────────────────────────────────────
 function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock: (id: string, updates: Partial<DroppedBlock>) => void) {
@@ -1775,8 +1787,9 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       lineHeight: isAiSlideBlock ? 1.04 : 1.2,
       margin: 0,
       cursor: 'inherit',
-      userSelect: 'none'
-    }}>{block.textContent ?? 'Namibia AI Platform'}</h2>;
+      userSelect: 'none',
+      whiteSpace: 'pre-wrap'
+    }}>{renderSlideTextWithCitations(block.textContent ?? 'Namibia AI Platform')}</h2>;
   }
   if (block.type === 'text-body') {
     if (block.editingText) {
@@ -1793,8 +1806,9 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       margin: 0,
       maxWidth: isAiSlideBlock ? '100%' : 320,
       cursor: 'inherit',
-      userSelect: 'none'
-    }}>{block.textContent ?? 'A two-track model for local AI capability, applied tooling, and institutional deployment across Namibian sectors.'}</p>;
+      userSelect: 'none',
+      whiteSpace: 'pre-wrap'
+    }}>{renderSlideTextWithCitations(block.textContent ?? 'A two-track model for local AI capability, applied tooling, and institutional deployment across Namibian sectors.')}</p>;
   }
   if (block.type === 'text-quote') {
     if (block.editingText) {
@@ -1817,9 +1831,10 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         margin: 0,
         lineHeight: isAiSlideBlock ? 1.25 : 1.65,
         cursor: 'inherit',
-        userSelect: 'none'
+        userSelect: 'none',
+        whiteSpace: 'pre-wrap'
       }}>
-        {block.textContent ?? 'Build domestic AI capability first.'}
+        {renderSlideTextWithCitations(block.textContent ?? 'Build domestic AI capability first.')}
       </p>
     </div>;
   }
@@ -1838,8 +1853,9 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       textTransform: 'uppercase' as const,
       color: COLOR.ochreOrange,
       cursor: 'inherit',
-      userSelect: 'none'
-    }}>{block.textContent ?? 'LABEL'}</span>;
+      userSelect: 'none',
+      whiteSpace: 'pre-wrap'
+    }}>{renderSlideTextWithCitations(block.textContent ?? 'LABEL')}</span>;
   }
 
   // System cards
@@ -2428,7 +2444,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       <DitherBar color={terminal.tagHex} segments={20} height={2} opacity={0.55} />
     </div>;
   }
-  return <div style={{
+  return <div data-onganda-export-ui="true" data-onganda-export-modal="true" style={{
     fontSize: 11,
     color: muted
   }}>{block.label}</div>;
@@ -3476,7 +3492,7 @@ const ExportModal = ({
         setTimeout(tick, 220 + Math.random() * 180);
       } else setTimeout(() => {
         onGenerate();
-        setPhase('done');
+        if (format !== 'PDF') setPhase('done');
       }, 300);
     };
     setTimeout(tick, 300);
@@ -4032,10 +4048,12 @@ const EditorToolbar = ({
 const SlidePicker = ({
   isDark,
   onSelect,
+  onResume,
   onBack
 }: {
   isDark: boolean;
   onSelect: (templateId: string, deckTitle: string, slides: SlideEntry[]) => void;
+  onResume?: () => void;
   onBack: () => void;
 }) => {
   const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
@@ -4126,6 +4144,36 @@ const SlidePicker = ({
           <span>Back</span>
         </button>
       </div>
+      {onResume && <button onClick={onResume} style={{
+        width: '100%',
+        background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.55)',
+        border: `1px solid ${COLOR.dyePlum}45`,
+        color: fg,
+        padding: '14px 16px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        marginBottom: 16,
+        textAlign: 'left'
+      }}>
+        <span style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3
+        }}>
+          <strong style={{ fontSize: 12 }}>Resume last presentation</strong>
+          <span style={{ fontSize: 10, color: muted }}>Continue the autosaved slide deck.</span>
+        </span>
+        <span style={{
+          color: COLOR.dyePlum,
+          fontSize: 9,
+          fontWeight: 800,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase'
+        }}>Open</span>
+      </button>}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
@@ -4256,8 +4304,8 @@ export const SlideEditor = ({
   } = useDark();
 
   // Session restore
-  const savedSession = loadSlideSession();
-  const [stage, setStage] = useState<'picker' | 'editor'>(savedSession?.stage ?? 'picker');
+  const savedSession = useMemo(() => loadSlideSession(), []);
+  const [stage, setStage] = useState<'picker' | 'editor'>(savedSession?.stage === 'editor' ? 'editor' : 'picker');
   const [activeSlideId, setActiveSlideId] = useState<string>(savedSession?.activeSlideId ?? '');
   const [deckTitle, setDeckTitle] = useState(savedSession?.deckTitle ?? 'Untitled Presentation');
   const [activeCategory, setActiveCategory] = useState('Icons');
@@ -4297,26 +4345,47 @@ export const SlideEditor = ({
   const currentBlocks: DroppedBlock[] = (activeSlideId ? slideBlocks[activeSlideId] : null) ?? [];
   const selectedBlock = currentBlocks.find(b => b.id === selectedBlockId) ?? null;
 
+  const persistSession = useCallback(() => {
+    if (stage !== 'editor') return;
+    saveSlideSession({
+      stage,
+      slides,
+      slideBlocks,
+      deckTitle,
+      activeSlideId
+    });
+  }, [activeSlideId, deckTitle, slideBlocks, slides, stage]);
+
   // Auto-save session (debounced)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (stage !== 'editor') return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveSlideSession({
-        stage,
-        slides,
-        slideBlocks,
-        deckTitle,
-        activeSlideId
-      });
+      persistSession();
       setSessionSaved(true);
       setTimeout(() => setSessionSaved(false), 1800);
     }, 800);
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [slides, slideBlocks, deckTitle, stage, activeSlideId]);
+  }, [persistSession, stage]);
+
+  useEffect(() => {
+    if (stage !== 'editor') return;
+    const flush = () => persistSession();
+    const flushOnVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+    window.addEventListener('beforeunload', flush);
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', flushOnVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', flush);
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', flushOnVisibilityChange);
+    };
+  }, [persistSession, stage]);
 
   // Keyboard undo/redo
   useEffect(() => {
@@ -4364,6 +4433,19 @@ export const SlideEditor = ({
       activeSlideId: initialSlides[0]?.id ?? ''
     });
   };
+  const handleResume = useCallback(() => {
+    if (!savedSession) return;
+    const snapshot: SlideHistorySnapshot = {
+      slides: savedSession.slides ?? [],
+      slideBlocks: savedSession.slideBlocks ?? {},
+      deckTitle: savedSession.deckTitle ?? 'Untitled Presentation'
+    };
+    history.reset(snapshot);
+    setDeckTitle(snapshot.deckTitle);
+    setActiveSlideId(savedSession.activeSlideId || snapshot.slides[0]?.id || '');
+    setSelectedBlockId(null);
+    setStage('editor');
+  }, [history, savedSession]);
   const handleAddSlide = () => {
     const num = String(slides.length + 1).padStart(2, '0');
     const newSlide: SlideEntry = {
@@ -4545,6 +4627,7 @@ export const SlideEditor = ({
   }, [setSlides]);
   const handleGenerateExport = useCallback((format: DeckExportPayload['format']) => {
     setSelectedBlockId(null);
+    setExportModal(null);
     setSlideBlocks(prev => ({
       ...prev,
       [activeSlideId]: (prev[activeSlideId] ?? []).map(block => ({
@@ -4554,11 +4637,13 @@ export const SlideEditor = ({
         editingField: undefined
       }))
     }));
+    if (format === 'PDF') {
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+        window.setTimeout(() => window.print(), 160);
+      }));
+      return;
+    }
     window.setTimeout(() => {
-      if (format === 'PDF') {
-        window.print();
-        return;
-      }
       const deckHtml = document.querySelector('[data-onganda-print-deck]')?.innerHTML ?? '';
       downloadOfficeHtml(`${safeFileName(deckTitle)}.ppt`, wrapPowerPointDeck(deckTitle, deckHtml), 'application/vnd.ms-powerpoint;charset=utf-8');
     }, 100);
@@ -4586,20 +4671,31 @@ export const SlideEditor = ({
     setSelectedBlockId(null);
   }, [history]);
   if (stage === 'picker') {
-    return <SlidePicker isDark={isDark} onSelect={handlePickerSelect} onBack={onClose} />;
+    return <SlidePicker isDark={isDark} onSelect={handlePickerSelect} onResume={savedSession ? handleResume : undefined} onBack={onClose} />;
   }
   const activeIdx = slides.findIndex(s => s.id === activeSlideId);
   return <div style={{
     height: '100vh',
+    width: '100%',
+    maxWidth: '100vw',
     background: pageBg,
     display: 'flex',
     flexDirection: 'column',
-    transition: 'background 0.35s'
+    transition: 'background 0.35s',
+    overflow: 'hidden'
   }}>
     <style>{`
       .onganda-print-deck { display: none; }
       @media print {
-        @page { size: landscape; margin: 0; }
+        @page { size: 13.333in 7.5in; margin: 0; }
+        html, body {
+          width: 13.333in;
+          height: 7.5in;
+          margin: 0 !important;
+          background: ${COLOR.charBlack} !important;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
         body * { visibility: hidden !important; }
         [data-onganda-print-deck], [data-onganda-print-deck] * { visibility: visible !important; }
         [data-onganda-print-deck] {
@@ -4612,12 +4708,19 @@ export const SlideEditor = ({
         }
         .onganda-print-slide {
           display: block !important;
-          width: 100vw !important;
-          height: 56.25vw !important;
-          max-height: 100vh !important;
+          width: 13.333in !important;
+          height: 7.5in !important;
           page-break-after: always;
           break-after: page;
           overflow: hidden !important;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+        .onganda-print-slide button,
+        .onganda-print-slide input,
+        .onganda-print-slide textarea {
+          display: none !important;
+          visibility: hidden !important;
         }
       }
     `}</style>

@@ -154,7 +154,7 @@ export const WeaveOverlay = ({
 }: {
   isDark?: boolean;
   opacity?: number;
-}) => <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{
+}) => <div aria-hidden="true" data-onganda-paper-texture className="absolute inset-0 pointer-events-none" style={{
   backgroundImage: isDark ? WEAVE.dark : WEAVE.light,
   backgroundSize: WEAVE.size,
   opacity
@@ -978,6 +978,8 @@ export const CodeSnippetBlock = ({
     </motion.div>;
 };
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 // ─── OngandaFooter — site-wide footer ────────────────────────────────────────
 export const OngandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[#E8E1CF] py-16 px-6 md:px-12 border-t-[3px] border-[#D9791F]">
     <div className="max-w-7xl mx-auto">
@@ -1001,7 +1003,7 @@ export const OngandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[
         </nav>
       </div>
       <div className="mt-12 pt-6 border-t border-[#E8E1CF]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <p className="text-[11px] text-[#E8E1CF]/30">© Namibia AI Systems Lab. Names pending linguistic validation.</p>
+        <p className="text-[11px] text-[#E8E1CF]/30">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
         <div aria-hidden="true" className="flex gap-0.5">
           {FOOTER_DITHER_SWATCHES.map((c, i) => <div key={`foot-sw-${i}`} className="w-3 h-3" style={{
           background: c,

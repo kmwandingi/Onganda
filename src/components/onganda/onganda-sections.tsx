@@ -520,6 +520,9 @@ export const OngandaNav = () => {
   }, {
     label: 'Brand Guide',
     href: '#brand-guide'
+  }, {
+    label: 'Documents',
+    href: '#publications'
   }];
   return <nav style={{
     width: '100%',

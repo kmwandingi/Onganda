@@ -14,6 +14,8 @@ export type DocBlockType =
   | 'callout'
   | 'list'
   | 'signature'
+  | 'letterhead'
+  | 'spacer'
   | 'stat'
   | 'terminal'
   | 'heatmap'
@@ -22,6 +24,7 @@ export type DocBlockType =
   | 'flowchart'
   | 'principles'
   | 'swatchrow'
+  | 'sources'
   | 'chart-market'
   | 'chart-bar'
   | 'chart-gallery';
@@ -48,6 +51,10 @@ export interface DocBlock {
   statLabel?: string;
   statSub?: string;
   statHex?: string;
+  marginBefore?: number;
+  marginAfter?: number;
+  pageBreakBefore?: boolean;
+  spacerHeight?: number;
   timelinePhaseIdx?: number;
   systemIdx?: number;
   flowNodeIdx?: number;
@@ -58,6 +65,10 @@ export interface DocBlock {
   heatmapData?: string;  // JSON: { row: number; col: number; intensity: number }[]
   principlesData?: string; // JSON: { label: string; value: string }[]
   swatchData?: string;   // JSON: { name: string; hex: string }[]
+  sourcesData?: string;  // JSON: { label: string; detail: string; url?: string; links?: { label: string; url: string }[] }[]
+  sigAuthor?: string;
+  sigYear?: string;
+  letterheadData?: string; // JSON: { title?: string; subtitle?: string; label?: string; status?: string; byline?: string; year?: string }
 }
 
 // ─── Insert palette item (document editor) ───────────────────────────────────

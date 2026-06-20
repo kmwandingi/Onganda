@@ -3,7 +3,7 @@
 // double-click text to edit inline. All design-system components insertable,
 // configurable, deletable. "New Document" = blank canvas, templates pre-filled.
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
@@ -23,6 +23,33 @@ const docBlockFromAi = (block: NonNullable<AiAuthoringResult['blocks']>[number],
 });
 
 const safeFileName = (name: string) => (name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 84).replace(/-$/g, '') || 'onganda-document');
+const CURRENT_YEAR = new Date().getFullYear();
+const AUTHOR_NAME = 'Kenneth Mwandingi';
+const DOCUMENT_STATUS = 'Confidential draft';
+const COPYRIGHT_NOTICE = `© ${CURRENT_YEAR} Onganda · Namibia AI Systems Lab. All rights reserved.`;
+const DOCUMENT_BYLINE = `Prepared by ${AUTHOR_NAME}`;
+const A4_PAGE_HEIGHT_MM = 297;
+const A4_PAGE_HEIGHT_PX = 1122.52;
+const PAGE_BREAK_PREVIEW_TOP_PX = 44;
+const PAPER_BACKGROUNDS = [{
+  id: 'white',
+  label: 'White',
+  hex: '#FFFFFF'
+}, {
+  id: 'warm',
+  label: 'Warm',
+  hex: '#FDFAF2'
+}, {
+  id: 'dust',
+  label: 'Dust',
+  hex: COLOR.dustLight
+}, {
+  id: 'clay',
+  label: 'Clay',
+  hex: COLOR.milletClay
+}] as const;
+type PaperBackgroundId = typeof PAPER_BACKGROUNDS[number]['id'];
+const paperBackgroundHex = (id: PaperBackgroundId) => PAPER_BACKGROUNDS.find(bg => bg.id === id)?.hex ?? PAPER_BACKGROUNDS[1].hex;
 
 const downloadOfficeHtml = (filename: string, html: string, mime: string) => {
   const blob = new Blob(['\ufeff', html], { type: mime });
@@ -36,15 +63,28 @@ const downloadOfficeHtml = (filename: string, html: string, mime: string) => {
   URL.revokeObjectURL(url);
 };
 
-const wrapWordDocument = (title: string, bodyHtml: string) => `<!doctype html>
+const wrapWordDocument = (title: string, bodyHtml: string, paperBg: string) => `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
   <title>${title}</title>
   <style>
-    @page { size: A4 portrait; margin: 18mm; }
-    body { margin: 0; background: ${COLOR.milletClay}; color: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
-    article { box-shadow: none !important; border: 0 !important; margin: 0 auto; max-width: 760px; background: ${COLOR.dustLight}; }
+    @page { size: A4 portrait; margin: 0; }
+    html, body { margin: 0; background: ${COLOR.milletClay}; color: ${COLOR.charBlack}; font-family: Inter, Arial, sans-serif; }
+    article { box-shadow: none !important; border: 0 !important; margin: 0 auto; width: 210mm !important; min-height: 297mm; box-sizing: border-box; background: ${paperBg}; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    [data-onganda-block] { outline: none !important; outline-offset: 0 !important; box-shadow: none !important; break-inside: auto; page-break-inside: auto; }
+    [data-onganda-avoid-page-break="true"] { break-inside: avoid; page-break-inside: avoid; }
+    [data-onganda-block-type="heading"] { break-after: avoid; page-break-after: avoid; }
+    [data-onganda-block-type="signature"] { break-before: avoid; page-break-before: avoid; }
+    [data-onganda-block] p, [data-onganda-block] li { orphans: 3; widows: 3; }
+    [data-onganda-block-type="sources"] { margin-bottom: 6px !important; }
+    [data-onganda-block-type="sources"] ol { gap: 6px !important; }
+    [data-onganda-block-type="sources"] li { line-height: 1.45 !important; }
+    [data-onganda-block-type="sources"] li { break-inside: avoid; page-break-inside: avoid; }
+    [data-onganda-block-type="signature"] { margin-top: 0 !important; }
+    [data-onganda-document-content] { box-decoration-break: clone; -webkit-box-decoration-break: clone; padding-top: 44px !important; }
+    [data-onganda-page-break-before="true"] { break-before: page; page-break-before: always; margin-top: 0 !important; padding-top: ${PAGE_BREAK_PREVIEW_TOP_PX}px !important; }
+    [data-onganda-paper-texture] { opacity: 0.024 !important; }
     button, input, textarea, [data-onganda-export-ui="true"] { display: none !important; }
     svg { max-width: 100%; }
   </style>
@@ -82,6 +122,21 @@ const DEFAULT_BAR_DATA = [{
   name: 'Oshitoo',
   progress: 0
 }];
+
+const renderWithCitations = (text: string) => text.split(/(\[\d+\])/g).map((part, i) => {
+  if (!/^\[\d+\]$/.test(part)) return part;
+  const citationNumber = part.slice(1, -1);
+  return <sup key={`cite-${i}`} style={{
+    color: COLOR.ochreOrange,
+    fontFamily: 'Inter, Arial, sans-serif',
+    fontSize: '0.72em',
+    fontWeight: 700,
+    marginLeft: 2
+  }}><a href={`#source-${citationNumber}`} style={{
+    color: 'inherit',
+    textDecoration: 'none'
+  }}>{part}</a></sup>;
+});
 
 // ─── Template Blocks ──────────────────────────────────────────────────────────
 const TEMPLATE_BLOCKS: DocBlock[] = [{
@@ -299,8 +354,298 @@ const TEMPLATE_BLOCKS: DocBlock[] = [{
 }, {
   id: 'b-sig',
   type: 'signature',
-  content: 'Onganda · Namibia AI Systems Lab · 2025'
+  content: `${DOCUMENT_BYLINE} · ${CURRENT_YEAR}`,
+  sigAuthor: AUTHOR_NAME,
+  sigYear: String(CURRENT_YEAR)
 }];
+
+const MEMO_SECTIONS: Array<{ heading: string; paragraphs: string[] }> = [
+  {
+    heading: 'Purpose',
+    paragraphs: [
+      'This memo summarizes the concept for a Namibia-focused AI capability and tooling platform. The idea is to build a local institution that develops practical AI capability for Namibian contexts and converts that capability into tools for government, universities, NGOs, companies, and other institutions.',
+      'The concept sits between a research lab, an applied technology studio, and a startup-paced delivery organization. Its role is to build domestic know-how in AI systems and then use that know-how to create useful tools. Namibia should not only consume AI systems designed elsewhere. It should develop the ability to understand, adapt, evaluate, deploy, and maintain AI systems for its own institutional and economic needs.',
+      'This does not require Namibia to train frontier foundation models from scratch at the beginning. The realistic starting point is open-source model selection, fine-tuning, steering, evaluation, distillation, compression, local datasets, and efficient deployment. These capabilities can then become document intelligence, workflow assistants, onboarding systems, internal knowledge tools, public-service tools, sector-specific assistants, and decision-support systems.'
+    ]
+  },
+  {
+    heading: 'Core Thesis',
+    paragraphs: [
+      'Artificial intelligence is becoming a structural layer in software, public administration, education, business operations, health, finance, energy, logistics, and research. Countries and institutions that build local capability early will be better positioned to shape how these systems are used, how data is handled, how risks are managed, and how economic value is captured. Early computers occupied entire rooms and performed tasks that seem trivial by modern standards [12].',
+      'For Namibia, the opportunity is specific. The country already has AI-related policy momentum, institutional activity, and research interest. Namibia has completed an AI Readiness Assessment through NCRST and UNESCO [1]. NUST has launched an AI and Robotics Accelerator with support from the Bank of Namibia [2]. UNAM\'s Green Hydrogen Research Institute provides a local precedent for a university-industry-government institute that links research, skills, infrastructure, piloting, and commercialization [3].',
+      'The gap is the absence of a coordinated AI capability layer that can connect research, model adaptation, local datasets, deployment methods, governance, institutional use cases, and applied tooling. The proposed platform is intended to fill that gap.'
+    ]
+  },
+  {
+    heading: 'Why This Matters',
+    paragraphs: [
+      'The business and development case has several parts. The global AI market is growing rapidly [4], and Africa is expected to see substantial annual economic value from generative AI adoption [5]. Namibia will be part of this trend through the software, cloud, workflow, and sector tools its institutions adopt.',
+      'AI spending will increasingly be embedded inside ordinary digital services. Organisations will buy software subscriptions, cloud systems, workflow platforms, document tools, analytics tools, enterprise copilots, and sector applications that include AI features. Without a local capability layer, much of this spending will flow outward to foreign technology providers [6].',
+      'Namibia also has a labour-market and graduate-readiness problem [7]. The platform will not solve unemployment by hiring large numbers of people directly. Its wider role is to create tools and training environments that help institutions onboard graduates faster and make them productive sooner.',
+      'The AI Readiness Assessment points to gaps around regulatory readiness, data protection, AI-related skills, public-sector capacity, local-language data, and implementation [1]. These are technical and institutional design issues as much as policy issues.'
+    ]
+  },
+  {
+    heading: 'Two-Track Operating Model',
+    paragraphs: [
+      'The first track is capability. This track builds the technical base: open-source model selection, fine-tuning, steering, evaluation, distillation, compression, local datasets, language and context tuning, deployment recipes, and model operations. The output is practical know-how for making AI work under Namibian constraints.',
+      'The second track is tooling and deployment. This turns the capability layer into usable institutional systems: document intelligence, internal workflow tools, knowledge systems, planning tools, decision-support systems, onboarding and training tools, local-language systems, and sector-specific applications.',
+      'Capability creates the know-how. Tooling converts that know-how into value. The first track prevents the platform from becoming a shallow services shop. The second track prevents it from becoming an isolated research group.'
+    ]
+  },
+  {
+    heading: 'Useful Analogues',
+    paragraphs: [
+      'Mistral AI is useful as a sequencing analogue: build technical credibility, create visible proof points, add a platform layer, then broaden into products and deployments [8].',
+      'AI Singapore is useful as an institutional analogue because it combines national capability-building, engineering capacity, talent development, applied projects, and ecosystem development [9].',
+      'AI Sweden is useful as a public-private operating model. It shows how applied AI capacity can be built through a shared ecosystem rather than a single isolated institution [10].',
+      'Lelapa AI is useful as an African technical and product analogue because it focuses on resource-efficient language AI for African contexts [11]. UNAM\'s Namibia Green Hydrogen Research Institute is useful as a local institutional analogue for structuring research, workforce development, applied infrastructure, piloting, technology transfer, and commercialization [3].'
+    ]
+  },
+  {
+    heading: 'Possible Institutional Form',
+    paragraphs: [
+      'The platform should be university-linked, but startup-paced. It should have the credibility and public-interest orientation of an academic or national institute while operating with short build cycles, practical milestones, and delivery discipline.',
+      'A plausible structure would include a core capability centre and a separate applied tooling or commercialization layer. The centre would focus on research, model work, evaluation, training, governance, datasets, and shared infrastructure. The applied layer would focus on paid pilots, institutional deployments, productization, training tools, and later spinouts where appropriate.'
+    ]
+  },
+  {
+    heading: 'Why Namibia',
+    paragraphs: [
+      'Namibia is small enough for a focused platform to matter, and complex enough to need contextual systems. It has public institutions that need better digital tools, companies that need productivity gains, universities that need stronger applied pathways, graduates who need better work-readiness routes, and sectors where AI can support decision-making, documentation, planning, training, and service delivery.',
+      'The AI Readiness Assessment gives the platform a policy basis [1]. It identifies readiness gaps around governance, data protection, skills, infrastructure, and local-language data. A platform that builds model capability and tooling directly addresses these areas.',
+      'As AI becomes embedded into global software and cloud services, Namibian institutions will increasingly pay for AI-enabled functionality whether or not local capacity exists [6]. The platform creates a pathway for Namibia to capture some of that value through local adaptation, implementation, support, and product development.'
+    ]
+  },
+  {
+    heading: 'Partners and Stakeholders',
+    paragraphs: [
+      'A Dutch university partner could support research design, AI evaluation, governance frameworks, technical supervision, student exchange, access to European research networks, and credibility with EU-facing funders. Its value should be practical: methods, reusable implementation patterns, governance templates, evaluation practices, and funded research pathways.',
+      'A Namibian university partner is essential because the platform has to build local capability rather than operate as an external consultancy. NUST is relevant because of its AI and Robotics Accelerator, computing faculty, AI-related programmes, and emerging technology momentum [2]. UNAM is relevant because of its national reach and institute model [3].',
+      'With government, the conversation should focus on national capability, implementation, governance, employability, and value retention. With business and investors, the conversation should focus on practical tools, paid pilots, productivity, internal training, and local service delivery.'
+    ]
+  },
+  {
+    heading: 'Early Focus Areas',
+    paragraphs: [
+      'The first visible use cases should be narrow enough to build and broad enough to matter. Good early candidates include document intelligence for public institutions and NGOs, internal knowledge assistants for organisations with large document stores, workflow copilots for operational teams, graduate onboarding and training tools, and local-language or local-context demonstrators.',
+      'A second set of use cases can focus on energy, water, health, education, public administration, logistics, mining, and climate-related planning. Examples include climate and weather readiness systems for droughts, floods, and extreme weather events associated with El Niño cycles; wildfire and bushfire monitoring and response support [13]. These sectors already appear in Namibia’s AI readiness and development discussions, and they have institutional demand [14]. The platform should begin where data access is feasible, user workflows are clear, and outputs can be evaluated.'
+    ]
+  },
+  {
+    heading: 'Milestone Logic',
+    paragraphs: [
+      'The first milestone is a small founding group with a clear technical doctrine, institutional doctrine, partner map, and compute plan. The second milestone is a reusable AI stack: model registry, evaluation harness, fine-tuning workflows, steering methods, distillation paths, deployment recipes, and initial datasets.',
+      'The third milestone is public proof: a tuned model family, a local benchmark or evaluation result, a local-language or local-domain demonstrator, and one or two working tools. The fourth milestone is applied tooling. The fifth milestone is platformization: repeatable modules, deployment templates, evaluation standards, and a pipeline for paid deployments and spinouts.'
+    ]
+  },
+  {
+    heading: 'Risks and Design Principles',
+    paragraphs: [
+      'The first risk is becoming too academic. The platform should produce research and training, but it should also build working systems. The second risk is becoming a consulting shop. The platform should solve problems for partners, but it should also build reusable capability and tools.',
+      'The third risk is over-investing in hardware before workloads are clear. Compute matters, but the more important early assets are people, evaluation methods, partner access, data workflows, and deployment experience. The fourth risk is using sovereign AI as a slogan without operational meaning. In this concept, sovereignty means local capacity to choose, adapt, evaluate, deploy, and maintain AI systems.',
+      'The guiding principles are straightforward: build capability before broad productization; use open models where appropriate; evaluate before deployment; design for local constraints; create tools from real institutional pain points; keep the team small and execution-oriented; and make each pilot contribute to the reusable stack.'
+    ]
+  },
+  {
+    heading: 'Summary',
+    paragraphs: [
+      'The proposed platform is a Namibia-based AI capability and tooling institution. It builds local expertise in model adaptation, evaluation, deployment, and governance, then converts that expertise into practical tools for institutions.',
+      'The concept can speak to several audiences at once. For government, it is a capability, implementation, and employability platform. For universities, it is an applied research and training bridge. For a Dutch university, it is a responsible AI and international collaboration lighthouse. For companies and investors, it is a route to practical tools and local commercial value. For Namibian thought leaders, it is a way to participate in the AI era as builders, not only as buyers.',
+      'The next step is to test the concept with a small number of serious stakeholders, refine the institutional structure, identify two or three early use cases, and define the first six-month capability build.'
+    ]
+  }
+];
+
+const MEMO_SOURCES = [
+  {
+    label: 'NCRST and UNESCO',
+    detail: 'Namibia AI Readiness Assessment and related implementation agenda.',
+    links: [
+      { label: 'A', url: 'https://unesdoc.unesco.org/ark:/48223/pf0000394686' },
+      { label: 'B', url: 'https://www.unesco.org/en/articles/namibia-launches-artificial-intelligence-readiness-assessment-report' },
+      { label: 'C', url: 'https://www.unesco.org/ethics-ai/en/namibia' }
+    ]
+  },
+  {
+    label: 'NUST and Bank of Namibia',
+    detail: 'AI and Robotics Accelerator reference point for local institutional momentum.',
+    links: [
+      { label: 'A', url: 'https://www.nust.na/nust-bank-namibia-partner-launch-ai-and-robotics-accelerator' },
+      { label: 'B', url: 'https://www.bon.com.na/Informations/Media/Media-Releases/2024-Media-Releases/Articles/LAUNCH-OF-THE-BANK-OF-NAMIBIA-ARTIFICIAL-INTELLIGE.aspx' }
+    ]
+  },
+  {
+    label: 'UNAM Namibia Green Hydrogen Research Institute',
+    detail: 'Local institute model for university-industry-government collaboration.',
+    links: [
+      { label: 'A', url: 'https://www.unam.edu.na/nghri' },
+      { label: 'B', url: 'https://forumonline.unam.edu.na/unam-leads-the-establishment-of-namibias-green-hydrogen-research-institute/' },
+      { label: 'C', url: 'https://neweralive.na/unam-leads-green-hydrogen-research-institute/' }
+    ]
+  },
+  {
+    label: 'International AI market estimates',
+    detail: 'Global AI market growth context used for the business and development case.',
+    links: [
+      { label: 'A', url: 'https://unctad.org/news/ai-market-projected-hit-48-trillion-2033-emerging-dominant-frontier-technology' }
+    ]
+  },
+  {
+    label: 'McKinsey Africa generative AI estimate',
+    detail: 'Africa annual generative AI value estimate used for the opportunity framing.',
+    links: [
+      { label: 'A', url: 'https://www.mckinsey.com/capabilities/quantumblack/our-insights/leading-not-lagging-africas-gen-ai-opportunity' }
+    ]
+  },
+  {
+    label: 'Namibia digital-services import analysis',
+    detail: 'Outward software, cloud, application, and digital-services spending context.',
+    links: [
+      { label: 'A', url: 'https://www.imf.org/en/search#q=Harnessing%20Card%20Data%20to%20Measure%20Namibia%27s%20Cross-Border%20Digital%20Services%20Imports&sort=relevancy' }
+    ]
+  },
+  {
+    label: 'Namibia labour-market and graduate-readiness data',
+    detail: 'Unemployment, graduate-employment targets, and graduate-readiness context for the employability case.',
+    links: [
+      { label: 'A', url: 'https://www.reuters.com/world/africa/namibias-unemployment-rate-rises-369-2025-01-29/' },
+      { label: 'B', url: 'https://nsa.org.na/wp-content/uploads/2025/01/2023PHC-Labour-Force-Report-_Media-Statement.pdf' },
+      { label: 'C', url: 'https://www.npc.gov.na/wp-content/uploads/2025/07/NDP6-Booklet.pdf' },
+      { label: 'D', url: 'https://documents1.worldbank.org/curated/en/099081224051035127/pdf/P171994-2b4ffc58-d328-4002-a65a-8df0a178573e.pdf' },
+      { label: 'E', url: 'https://www.ilo.org/media/358336/download' }
+    ]
+  },
+  {
+    label: 'Mistral AI',
+    detail: 'Sequencing analogue: model credibility, platform layer, enterprise/product expansion.',
+    links: [
+      { label: 'A', url: 'https://mistral.ai/about/' },
+      { label: 'B', url: 'https://mistral.ai/news/announcing-mistral-7b' },
+      { label: 'C', url: 'https://mistral.ai/news/la-plateforme' },
+      { label: 'D', url: 'https://mistral.ai/news/mistral-compute' }
+    ]
+  },
+  {
+    label: 'AI Singapore',
+    detail: 'Institutional analogue for national AI capability-building and applied projects.',
+    links: [
+      { label: 'A', url: 'https://aisingapore.org/' },
+      { label: 'B', url: 'https://aisingapore.org/innovation/100e/' },
+      { label: 'C', url: 'https://aisingapore.org/research/' },
+      { label: 'D', url: 'https://aisingapore.org/innovation/' }
+    ]
+  },
+  {
+    label: 'AI Sweden',
+    detail: 'Public-private applied AI operating-model analogue.',
+    links: [
+      { label: 'A', url: 'https://www.ai.se/en/accelerating-applied-ai-sweden' }
+    ]
+  },
+  {
+    label: 'Lelapa AI',
+    detail: 'African technical and product analogue for resource-efficient language AI.',
+    links: [
+      { label: 'A', url: 'https://lelapa.ai/' },
+      { label: 'B', url: 'https://lelapa.ai/blog/the-future-of-ai-is-resource-efficient' },
+      { label: 'C', url: 'https://arxiv.org/abs/2408.17024' }
+    ]
+  },
+  {
+    label: 'Early computing analogy',
+    detail: 'Historical reference for room-sized early computers.',
+    links: [
+      { label: 'A', url: 'https://www.seas.upenn.edu/about/history-heritage/eniac/' }
+    ]
+  },
+  {
+    label: 'Namibia climate and weather risk context',
+    detail: 'Droughts, floods, water scarcity, extreme heat, wildfires, and El Niño-related climate variability.',
+    links: [
+      { label: 'A', url: 'https://climateknowledgeportal.worldbank.org/sites/default/files/2021-08/15931-WB_Namibia%20Country%20Profile-WEB.pdf' },
+      { label: 'B', url: 'https://www.climatecentre.org/wp-content/uploads/Climate-Profiles-of-Countries-in-Southern-Africa-Namibia.pdf' }
+    ]
+  },
+  {
+    label: 'Namibia AI priority sectors',
+    detail: 'Sectoral basis for early focus areas.',
+    links: [
+      { label: 'A', url: 'https://www.unesco.org/ethics-ai/en/namibia' }
+    ]
+  }
+];
+
+const MEMO_TEMPLATE_BLOCKS: DocBlock[] = [
+  {
+    id: 'memo-title-heading',
+    type: 'heading',
+    content: 'Memo: Namibia AI Capability and Tooling Platform'
+  },
+  {
+    id: 'memo-subtitle-body',
+    type: 'body',
+    content: 'A working paper for a Namibia-focused AI capability institution that connects research, model adaptation, local datasets, deployment methods, governance, institutional use cases, and applied tooling.'
+  },
+  {
+    id: 'memo-div0',
+    type: 'divider',
+    content: ''
+  },
+  ...MEMO_SECTIONS.flatMap((section, sectionIdx) => [
+    {
+      id: `memo-h-${sectionIdx}`,
+      type: 'heading' as const,
+      content: section.heading
+    },
+    ...section.paragraphs.map((paragraph, paragraphIdx) => ({
+      id: `memo-b-${sectionIdx}-${paragraphIdx}`,
+      type: 'body' as const,
+      content: paragraph
+    }))
+  ]),
+  {
+    id: 'memo-div-sources',
+    type: 'divider',
+    content: ''
+  },
+  {
+    id: 'memo-sources',
+    type: 'sources',
+    content: 'Sources',
+    sourcesData: JSON.stringify(MEMO_SOURCES)
+  },
+  {
+    id: 'memo-sig',
+    type: 'signature',
+    content: `${DOCUMENT_BYLINE} · ${CURRENT_YEAR}`,
+    sigAuthor: AUTHOR_NAME,
+    sigYear: String(CURRENT_YEAR)
+  }
+];
+
+const OLD_MEMO_CORE_THESIS = 'Artificial intelligence is becoming a structural layer in software, public administration, education, business operations, health, finance, energy, logistics, and research. Countries and institutions that build local capability early will be better positioned to shape how these systems are used, how data is handled, how risks are managed, and how economic value is captured.';
+const NEW_MEMO_CORE_THESIS = MEMO_SECTIONS[1].paragraphs[0];
+const OLD_MEMO_EARLY_FOCUS = 'A second set of use cases can focus on energy, water, health, education, public administration, logistics, mining, and climate-related planning. The platform should begin where data access is feasible, user workflows are clear, and outputs can be evaluated.';
+const NEW_MEMO_EARLY_FOCUS = MEMO_SECTIONS[8].paragraphs[1];
+const OLD_MEMO_SIGNATURE = `Prepared by ${AUTHOR_NAME} · Onganda · Namibia AI Systems Lab · ${CURRENT_YEAR}`;
+const migrateMemoBlocks = (blocks: DocBlock[]) => blocks.map(block => {
+  if (block.type === 'sources' && (block.id === 'memo-sources' || block.content === 'Sources')) {
+    const sources = parseSources(block.sourcesData);
+    const isOldMemoSources = sources.length <= 11 && sources.some(source => source.label === 'NCRST and UNESCO') && !sources.some(source => source.links?.length);
+    if (isOldMemoSources) return { ...block, sourcesData: JSON.stringify(MEMO_SOURCES) };
+  }
+  if (block.type === 'body' && block.content === OLD_MEMO_CORE_THESIS) {
+    return { ...block, content: NEW_MEMO_CORE_THESIS };
+  }
+  if (block.type === 'body' && block.content === OLD_MEMO_EARLY_FOCUS) {
+    return { ...block, content: NEW_MEMO_EARLY_FOCUS };
+  }
+  if (block.type === 'signature' && block.content === OLD_MEMO_SIGNATURE) {
+    return { ...block, content: `${DOCUMENT_BYLINE} · ${CURRENT_YEAR}`, sigAuthor: AUTHOR_NAME, sigYear: String(CURRENT_YEAR) };
+  }
+  return block;
+});
 
 // ─── Drag reorder state ───────────────────────────────────────────────────────
 interface DragState {
@@ -329,7 +674,8 @@ const InlineTextArea = ({
     if (e.key === 'Escape') onBlur();
   }} style={{
     ...style,
-    resize: 'vertical'
+    resize: 'vertical',
+    whiteSpace: 'pre-wrap'
   }} />;
 };
 const InlineInput = ({
@@ -451,7 +797,7 @@ const StatBlock = ({
         </div>
       </div>;
   }
-  return <div style={{
+  return <div data-onganda-export-ui="true" data-onganda-export-modal="true" style={{
     display: 'inline-flex',
     flexDirection: 'column',
     gap: 4,
@@ -534,7 +880,7 @@ const TerminalBlock = ({
         </div>
       </div>;
   }
-  return <div style={{
+  return <div data-onganda-export-ui="true" style={{
     background: '#1E1A17',
     overflow: 'hidden'
   }}>
@@ -1834,6 +2180,529 @@ const SwatchRowBlock = ({
     </div>;
 };
 
+interface SourceLink {
+  label: string;
+  url: string;
+}
+interface SourceEntry {
+  label: string;
+  detail: string;
+  url?: string;
+  links?: SourceLink[];
+}
+const DEFAULT_SOURCES: SourceEntry[] = [
+  { label: 'Source name', detail: 'What this source supports in the paper.', url: '' }
+];
+const sourceLinks = (source: SourceEntry): SourceLink[] => {
+  if (source.links?.length) return source.links.filter(link => link.url.trim());
+  if (!source.url?.trim()) return [];
+  return source.url.split(/\s+/).filter(Boolean).map((url, idx) => ({
+    label: String.fromCharCode(65 + idx),
+    url
+  }));
+};
+const parseSources = (sourcesData?: string): SourceEntry[] => {
+  if (!sourcesData) return DEFAULT_SOURCES;
+  try {
+    const parsed = JSON.parse(sourcesData);
+    return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_SOURCES;
+  } catch {
+    return DEFAULT_SOURCES;
+  }
+};
+
+const SourcesBlock = ({
+  block,
+  isDark,
+  isConfiguring,
+  onEditChange
+}: {
+  block: DocBlock;
+  isDark: boolean;
+  isConfiguring: boolean;
+  onEditChange: (u: Partial<DocBlock>) => void;
+}) => {
+  const muted = isDark ? 'rgba(232,225,207,0.40)' : 'rgba(30,26,23,0.40)';
+  const fg = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
+  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const sources = parseSources(block.sourcesData);
+  const updateSource = (idx: number, updates: Partial<(typeof sources)[number]>) => {
+    onEditChange({
+      sourcesData: JSON.stringify(sources.map((source, sourceIdx) => sourceIdx === idx ? {
+        ...source,
+        ...updates
+      } : source))
+    });
+  };
+  if (isConfiguring) {
+    return <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10
+    }}>
+        <label style={{
+        fontSize: 8,
+        fontWeight: 700,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const,
+        color: muted
+      }}>Edit Sources</label>
+        <p style={{
+        fontSize: 10,
+        lineHeight: 1.45,
+        color: muted,
+        margin: 0
+      }}>Use citation markers like [1]–[{sources.length}] in body text. The source order below controls the numbers.</p>
+        {sources.map((source, i) => <div key={`source-edit-${i}`} style={{
+        display: 'grid',
+        gridTemplateColumns: '42px 1fr 1.3fr',
+        gap: 8,
+        padding: 10,
+        border: `1px solid ${border}`
+      }}>
+            <div style={{
+          fontSize: 10,
+          fontWeight: 800,
+          color: COLOR.ochreOrange,
+          alignSelf: 'center'
+        }}>{`[${i + 1}]`}</div>
+            <input value={source.label} onChange={e => updateSource(i, {
+          label: e.target.value
+        })} style={{
+          fontSize: 10,
+          fontWeight: 700,
+          color: COLOR.mopaneBrown,
+          background: 'transparent',
+          border: `1px solid ${border}`,
+          outline: 'none',
+          padding: '5px 7px'
+        }} placeholder="Source name" />
+            <input value={(source.links?.map(link => link.url).join(' ') || source.url) ?? ''} onChange={e => updateSource(i, {
+          links: e.target.value.split(/\s+/).filter(Boolean).map((url, linkIdx) => ({
+            label: String.fromCharCode(65 + linkIdx),
+            url
+          })),
+          url: e.target.value
+        })} style={{
+          fontSize: 10,
+          color: muted,
+          background: 'transparent',
+          border: `1px solid ${border}`,
+          outline: 'none',
+          padding: '5px 7px'
+        }} placeholder="URL or citation" />
+            <textarea value={source.detail} onChange={e => updateSource(i, {
+          detail: e.target.value
+        })} style={{
+          gridColumn: '1 / -1',
+          fontSize: 11,
+          lineHeight: 1.55,
+          color: fg,
+          background: 'transparent',
+          border: `1px solid ${border}`,
+          outline: 'none',
+          padding: '6px 8px',
+          minHeight: 54,
+          resize: 'vertical',
+          whiteSpace: 'pre-wrap'
+        }} placeholder="What this source supports" />
+            <button onClick={() => onEditChange({
+          sourcesData: JSON.stringify(sources.filter((_, sourceIdx) => sourceIdx !== i))
+        })} style={{
+          gridColumn: '1 / -1',
+          justifySelf: 'start',
+          fontSize: 9,
+          color: COLOR.firedRed,
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0
+        }}>Remove source</button>
+          </div>)}
+        <button onClick={() => onEditChange({
+        sourcesData: JSON.stringify([...sources, {
+          label: 'New source',
+          detail: 'What this source supports.',
+          links: []
+        }])
+      })} style={{
+        fontSize: 9,
+        fontWeight: 600,
+        color: COLOR.ochreOrange,
+        background: 'transparent',
+        border: `1px solid ${COLOR.ochreOrange}50`,
+        cursor: 'pointer',
+        padding: '4px 10px',
+        alignSelf: 'flex-start'
+      }}>+ Add Source</button>
+      </div>;
+  }
+  return <section style={{
+    borderTop: `1px solid ${border}`,
+    paddingTop: 14
+  }}>
+      <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 10
+    }}>
+        <PixelDot color={COLOR.mopaneBrown} size={5} />
+        <span style={{
+        fontSize: 9,
+        fontWeight: 700,
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase' as const,
+        color: COLOR.mopaneBrown
+      }}>{block.content || 'Sources'}</span>
+      </div>
+      <p style={{
+      fontSize: 10,
+      lineHeight: 1.45,
+      color: muted,
+      margin: '0 0 10px'
+    }}>Inline citations use bracket markers: [1]–[{sources.length}].</p>
+      <ol style={{
+      margin: 0,
+      paddingLeft: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8,
+      listStyle: 'none'
+    }}>
+        {sources.map((source, i) => {
+      const links = sourceLinks(source);
+      return <li id={`source-${i + 1}`} key={`source-${i}`} style={{
+        fontSize: 11,
+        lineHeight: 1.55,
+        color: fg,
+        display: 'grid',
+        gridTemplateColumns: '34px 1fr',
+        gap: 8,
+        whiteSpace: 'nowrap',
+        scrollMarginTop: 24
+      }}>
+            <a href={`#source-${i + 1}`} style={{
+          color: COLOR.ochreOrange,
+          fontWeight: 800,
+          fontFamily: 'Inter, Arial, sans-serif',
+          textDecoration: 'none'
+        }}>{`[${i + 1}]`}</a>
+            <span style={{
+          display: 'inline-flex',
+          alignItems: 'baseline',
+          maxWidth: '100%',
+          minWidth: 0,
+          overflow: 'hidden',
+        }}>
+              <span style={{
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}>
+                <strong style={{ color: isDark ? COLOR.milletClay : COLOR.charBlack }}>{source.label}</strong>
+                <span>{source.detail ? ` — ${source.detail}` : ''}</span>
+              </span>
+              {links.length > 0 && <span style={{
+          display: 'inline-flex',
+          flexShrink: 0,
+          gap: 5,
+          marginLeft: 8,
+          verticalAlign: 'baseline'
+        }}>{links.map(link => <a key={`${source.label}-${link.label}-${link.url}`} href={link.url} target="_blank" rel="noreferrer" title={link.url} style={{
+            color: COLOR.ochreOrange,
+            fontFamily: 'Inter, Arial, sans-serif',
+            fontSize: 9,
+            fontWeight: 800,
+            textDecoration: 'none'
+          }}>{link.label}</a>)}</span>}
+            </span>
+          </li>;
+    })}
+      </ol>
+    </section>;
+};
+
+const SpacerBlock = ({
+  block,
+  isDark,
+  isConfiguring,
+  onEditChange
+}: {
+  block: DocBlock;
+  isDark: boolean;
+  isConfiguring: boolean;
+  onEditChange: (u: Partial<DocBlock>) => void;
+}) => {
+  const height = block.spacerHeight ?? 48;
+  const muted = isDark ? 'rgba(232,225,207,0.40)' : 'rgba(30,26,23,0.40)';
+  const border = isDark ? 'rgba(232,225,207,0.12)' : 'rgba(30,26,23,0.12)';
+  if (isConfiguring) {
+    return <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8
+    }}>
+      <label style={{
+        fontSize: 8,
+        fontWeight: 700,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const,
+        color: muted
+      }}>Spacer Height</label>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10
+      }}>
+        <input type="range" min={12} max={180} step={4} value={height} onChange={e => onEditChange({
+          spacerHeight: Number(e.target.value)
+        })} style={{ flex: 1 }} />
+        <input type="number" min={12} max={240} value={height} onChange={e => onEditChange({
+          spacerHeight: Math.max(12, Math.min(240, Number(e.target.value) || 12))
+        })} style={{
+          width: 62,
+          fontSize: 10,
+          color: isDark ? COLOR.milletClay : COLOR.charBlack,
+          background: 'transparent',
+          border: `1px solid ${border}`,
+          padding: '4px 6px'
+        }} />
+      </div>
+    </div>;
+  }
+  return <div style={{
+    height,
+    position: 'relative'
+  }}>
+    <div data-onganda-export-ui="true" style={{
+      position: 'absolute',
+      inset: 0,
+      borderTop: `1px dashed ${COLOR.ochreOrange}55`,
+      borderBottom: `1px dashed ${COLOR.ochreOrange}30`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: muted,
+      fontSize: 8,
+      fontWeight: 700,
+      letterSpacing: '0.12em',
+      textTransform: 'uppercase' as const
+    }}>{`${height}px space`}</div>
+  </div>;
+};
+
+const SignatureBlock = ({
+  block,
+  isDark,
+  isConfiguring,
+  onEditChange,
+  onStartEdit
+}: {
+  block: DocBlock;
+  isDark: boolean;
+  isConfiguring: boolean;
+  onEditChange: (u: Partial<DocBlock>) => void;
+  onStartEdit?: () => void;
+}) => {
+  const muted = isDark ? 'rgba(232,225,207,0.40)' : 'rgba(30,26,23,0.40)';
+  const fg = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
+  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const author = block.sigAuthor ?? '';
+  const year = block.sigYear ?? String(CURRENT_YEAR);
+  if (isConfiguring) {
+    return <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <label style={{
+        fontSize: 8,
+        fontWeight: 700,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const,
+        color: muted
+      }}>Edit Attribution</label>
+      <input value={author} onChange={e => onEditChange({
+        sigAuthor: e.target.value,
+        content: `Prepared by ${e.target.value} · ${year}`
+      })} style={{
+        fontSize: 11,
+        color: fg,
+        background: 'transparent',
+        border: `1px solid ${border}`,
+        outline: 'none',
+        padding: '6px 8px',
+        letterSpacing: '0.06em'
+      }} placeholder="Author name" />
+      <input value={year} onChange={e => onEditChange({
+        sigYear: e.target.value,
+        content: `Prepared by ${author} · ${e.target.value}`
+      })} style={{
+        fontSize: 11,
+        color: fg,
+        background: 'transparent',
+        border: `1px solid ${border}`,
+        outline: 'none',
+        padding: '6px 8px',
+        letterSpacing: '0.06em',
+        width: 80
+      }} placeholder="Year" />
+    </div>;
+  }
+  const displayText = block.sigAuthor
+    ? `Prepared by ${block.sigAuthor} · ${block.sigYear ?? CURRENT_YEAR}`
+    : block.content;
+  return <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '12px 0'
+  }}>
+    <OngandaLogoMark size={18} />
+    <span style={{
+      fontSize: 11,
+      color: muted,
+      letterSpacing: '0.06em',
+      cursor: 'text',
+      whiteSpace: 'pre-wrap'
+    }} onDoubleClick={() => onStartEdit?.()}>{displayText}</span>
+  </div>;
+};
+
+const DEFAULT_LETTERHEAD = {
+  title: 'Document Title',
+  subtitle: 'A two-track model for local AI capability, applied tooling, and institutional deployment.',
+  label: 'Concept Paper',
+  status: DOCUMENT_STATUS,
+  byline: DOCUMENT_BYLINE,
+  year: String(CURRENT_YEAR)
+};
+
+const parseLetterhead = (data?: string) => {
+  if (!data) return DEFAULT_LETTERHEAD;
+  try { return { ...DEFAULT_LETTERHEAD, ...JSON.parse(data) }; }
+  catch { return DEFAULT_LETTERHEAD; }
+};
+
+const LetterheadBlock = ({
+  block,
+  isDark,
+  isConfiguring,
+  onEditChange
+}: {
+  block: DocBlock;
+  isDark: boolean;
+  isConfiguring: boolean;
+  onEditChange: (u: Partial<DocBlock>) => void;
+}) => {
+  const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
+  const muted = isDark ? 'rgba(232,225,207,0.40)' : 'rgba(30,26,23,0.40)';
+  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const dotColors = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
+  const lh = parseLetterhead(block.letterheadData);
+  const update = (patch: Partial<typeof DEFAULT_LETTERHEAD>) => {
+    const next = { ...lh, ...patch };
+    onEditChange({ letterheadData: JSON.stringify(next) });
+  };
+
+  if (isConfiguring) {
+    return <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <label style={{
+        fontSize: 8, fontWeight: 700, letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const, color: muted
+      }}>Edit Letterhead</label>
+      <input value={lh.title} onChange={e => update({ title: e.target.value })} style={{
+        fontSize: 13, fontWeight: 700, color: fg, background: 'transparent',
+        border: `1px solid ${border}`, outline: 'none', padding: '6px 8px',
+        letterSpacing: '-0.01em'
+      }} placeholder="Title" />
+      <input value={lh.subtitle} onChange={e => update({ subtitle: e.target.value })} style={{
+        fontSize: 11, color: muted, background: 'transparent',
+        border: `1px solid ${border}`, outline: 'none', padding: '6px 8px'
+      }} placeholder="Subtitle" />
+      <div style={{ display: 'flex', gap: 10 }}>
+        <input value={lh.label} onChange={e => update({ label: e.target.value })} style={{
+          flex: 1, fontSize: 10, fontWeight: 700, color: COLOR.ochreOrange,
+          background: 'transparent', border: `1px solid ${border}`, outline: 'none',
+          padding: '6px 8px', letterSpacing: '0.14em', textTransform: 'uppercase'
+        }} placeholder="Label" />
+        <input value={lh.status} onChange={e => update({ status: e.target.value })} style={{
+          flex: 1, fontSize: 10, fontWeight: 700, color: muted,
+          background: 'transparent', border: `1px solid ${border}`, outline: 'none',
+          padding: '6px 8px', letterSpacing: '0.12em', textTransform: 'uppercase'
+        }} placeholder="Status" />
+      </div>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <input value={lh.byline} onChange={e => update({ byline: e.target.value })} style={{
+          flex: 2, fontSize: 11, color: muted, background: 'transparent',
+          border: `1px solid ${border}`, outline: 'none', padding: '6px 8px',
+          letterSpacing: '0.06em'
+        }} placeholder="Byline" />
+        <input value={lh.year} onChange={e => update({ year: e.target.value })} style={{
+          width: 80, fontSize: 11, color: muted, background: 'transparent',
+          border: `1px solid ${border}`, outline: 'none', padding: '6px 8px',
+          letterSpacing: '0.06em'
+        }} placeholder="Year" />
+      </div>
+    </div>;
+  }
+
+  return <div>
+    <div style={{ height: 3, background: COLOR.ochreOrange, width: '100%' }} />
+    <DitherBar color={COLOR.ochreOrange} segments={48} height={2} opacity={0.25} />
+    <div style={{
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+      padding: '28px 56px 24px', borderBottom: `1px solid ${border}`, gap: 20
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <OngandaLogoMark size={32} />
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em', color: COLOR.ochreOrange, lineHeight: 1.1 }}>Onganda</p>
+          <p style={{ fontSize: 10, color: muted, letterSpacing: '0.05em', marginTop: 2 }}>Namibia AI Systems Lab</p>
+        </div>
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '3px 10px', border: `1px solid ${COLOR.ochreOrange}50`, marginBottom: 8
+        }}>
+          <PixelDot color={COLOR.ochreOrange} size={5} />
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+            textTransform: 'uppercase' as const, color: COLOR.ochreOrange
+          }}>{lh.label}</span>
+        </div>
+        <p style={{
+          fontSize: 8.5, fontWeight: 700, color: muted,
+          letterSpacing: '0.12em', textTransform: 'uppercase' as const
+        }}>{lh.status}</p>
+      </div>
+    </div>
+    <div style={{ padding: '36px 56px 28px' }}>
+      <h1 style={{
+        fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em',
+        color: fg, lineHeight: 1.2, marginBottom: 10, maxWidth: 600
+      }}>{lh.title}</h1>
+      <p style={{
+        fontSize: 13.5, color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.55)',
+        lineHeight: 1.6, maxWidth: 520, marginBottom: 22
+      }}>{lh.subtitle}</p>
+      <div style={{
+        display: 'flex', flexWrap: 'wrap' as const,
+        alignItems: 'center', gap: '7px 10px',
+        color: muted, fontSize: 9.5, letterSpacing: '0.06em',
+        marginTop: -10, marginBottom: 24
+      }}>
+        <span>{lh.byline}</span>
+        <span aria-hidden="true">·</span>
+        <span>{lh.year}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {dotColors.map((c, i) => <div key={`lh-dot-${i}`} style={{ width: 5, height: 5, background: c }} />)}
+        <div style={{ flex: 1, height: 1, background: border }} />
+      </div>
+    </div>
+  </div>;
+};
+
 const DesignChartGalleryBlock = ({ isDark }: { isDark: boolean }) => (
   <div style={{
     background: isDark ? COLOR.darkCard : COLOR.dustLight,
@@ -1881,6 +2750,7 @@ function DocBlockView({
   isEditing,
   isConfiguring,
   dragState,
+  citationCount,
   idx,
   onSelect,
   onStartEdit,
@@ -1892,6 +2762,8 @@ function DocBlockView({
   onDragEnd,
   onMoveUp,
   onMoveDown,
+  onMoveToNextPage,
+  onMoveToPreviousPage,
   onRegenerate,
   regenerating = false
 }: {
@@ -1901,6 +2773,7 @@ function DocBlockView({
   isEditing: boolean;
   isConfiguring: boolean;
   dragState: DragState;
+  citationCount: number;
   idx: number;
   onSelect: () => void;
   onStartEdit: () => void;
@@ -1912,6 +2785,8 @@ function DocBlockView({
   onDragEnd: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onMoveToNextPage: () => void;
+  onMoveToPreviousPage: () => void;
   onRegenerate?: () => void;
   regenerating?: boolean;
 }) {
@@ -1922,8 +2797,8 @@ function DocBlockView({
   const selBorder = `${COLOR.ochreOrange}60`;
   const ACCENT_COLORS = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
   const accent = ACCENT_COLORS[idx % ACCENT_COLORS.length];
-  const isDesignBlock = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar', 'chart-gallery'].includes(block.type);
-  const isTextBlock = ['heading', 'body', 'pullquote', 'callout', 'list', 'signature'].includes(block.type);
+  const isDesignBlock = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'sources', 'spacer', 'chart-market', 'chart-bar', 'chart-gallery', 'signature', 'letterhead'].includes(block.type);
+  const isTextBlock = ['heading', 'body', 'pullquote', 'callout', 'list'].includes(block.type);
   const isDragging = dragState.draggingId === block.id;
   const isDragOver = dragState.overIdx === idx && dragState.draggingId !== block.id;
   const sharedTextareaStyle: React.CSSProperties = {
@@ -1944,6 +2819,8 @@ function DocBlockView({
     if (block.type === 'heatmap') return <HeatmapBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'principles') return <PrinciplesBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'swatchrow') return <SwatchRowBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
+    if (block.type === 'sources') return <SourcesBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
+    if (block.type === 'spacer') return <SpacerBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'chart-market') return <MarketChartBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'chart-bar') return <BarChartBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     if (block.type === 'chart-gallery') return <DesignChartGalleryBlock isDark={isDark} />;
@@ -1953,33 +2830,10 @@ function DocBlockView({
       }}><DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.35} /></div>;
     }
     if (block.type === 'signature') {
-      return <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        padding: '12px 0'
-      }}>
-          <OngandaLogoMark size={18} />
-          {isEditing ? <InlineInput value={block.content} onChange={v => onEdit({
-          content: v
-        })} onBlur={onStopEdit} style={{
-          flex: 1,
-          fontSize: 11,
-          color: muted,
-          background: 'transparent',
-          border: 'none',
-          borderBottom: `1px solid ${COLOR.ochreOrange}80`,
-          outline: 'none',
-          letterSpacing: '0.06em'
-        }} /> : <span style={{
-          fontSize: 11,
-          color: muted,
-          letterSpacing: '0.06em',
-          cursor: 'text'
-        }} onDoubleClick={() => {
-          onStartEdit();
-        }} title="Double-click to rename">{block.content}</span>}
-        </div>;
+      return <SignatureBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} onStartEdit={onStartEdit} />;
+    }
+    if (block.type === 'letterhead') {
+      return <LetterheadBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} />;
     }
     if (block.type === 'heading') {
       const headingAccent = ACCENT_COLORS[Math.floor(idx / 2) % ACCENT_COLORS.length];
@@ -2020,10 +2874,11 @@ function DocBlockView({
           lineHeight: 1.2,
           flex: 1,
           margin: 0,
-          cursor: 'text'
+          cursor: 'text',
+          whiteSpace: 'pre-wrap'
         }} onDoubleClick={() => {
           onStartEdit();
-        }}>{block.content}</h2>}
+        }}>{renderWithCitations(block.content)}</h2>}
           <div style={{
           flex: 0.3,
           height: 1,
@@ -2047,10 +2902,11 @@ function DocBlockView({
         color: bodyColor,
         margin: 0,
         fontFamily: 'Georgia, serif',
-        cursor: 'text'
+        cursor: 'text',
+        whiteSpace: 'pre-wrap'
       }} onDoubleClick={() => {
         onStartEdit();
-      }}>{block.content}</p>;
+      }}>{renderWithCitations(block.content)}</p>;
     }
     if (block.type === 'pullquote') {
       return <div style={{
@@ -2077,10 +2933,11 @@ function DocBlockView({
           color: COLOR.ochreOrange,
           lineHeight: 1.7,
           margin: 0,
-          cursor: 'text'
+          cursor: 'text',
+          whiteSpace: 'pre-wrap'
         }} onDoubleClick={() => {
           onStartEdit();
-        }}>{block.content}</p>}
+        }}>{renderWithCitations(block.content)}</p>}
         </div>;
     }
     if (block.type === 'callout') {
@@ -2122,10 +2979,11 @@ function DocBlockView({
           lineHeight: 1.65,
           color: bodyColor,
           margin: 0,
-          cursor: 'text'
+          cursor: 'text',
+          whiteSpace: 'pre-wrap'
         }} onDoubleClick={() => {
           onStartEdit();
-        }}>{block.content}</p>}
+        }}>{renderWithCitations(block.content)}</p>}
         </div>;
     }
     if (block.type === 'list') {
@@ -2180,39 +3038,59 @@ function DocBlockView({
               lineHeight: 1.7,
               color: bodyColor,
               fontFamily: 'Georgia, serif',
-              cursor: 'text'
-            }}>{item}</span>
+              cursor: 'text',
+              whiteSpace: 'pre-wrap'
+            }}>{renderWithCitations(item)}</span>
                   </li>)}
               </ul>}
         </div>;
     }
     return null;
   })();
-  const showToolbar = isSelected && block.type !== 'divider';
-  const showDividerRemove = isSelected && block.type === 'divider';
-  return <div draggable onDragStart={e => {
-    e.stopPropagation();
-    onDragStart();
-  }} onDragOver={e => {
+  const showToolbar = isSelected;
+  const showDividerRemove = false;
+  const baseMargin = block.type === 'heading' ? 14 : block.type === 'divider' ? 16 : block.type === 'spacer' ? 4 : 18;
+  const marginBefore = block.pageBreakBefore ? block.marginBefore ?? 0 : 0;
+  const marginAfter = block.marginAfter ?? 0;
+  const canSplitAcrossPages = ['body', 'list', 'sources'].includes(block.type);
+  const shouldAvoidPageBreak = block.pageBreakBefore || !canSplitAcrossPages;
+  const toolbarButtonStyle: React.CSSProperties = {
+    padding: '4px 8px',
+    background: 'transparent',
+    border: `1px solid ${border}`,
+    cursor: 'pointer',
+    fontSize: 9,
+    fontWeight: 600,
+    color: muted
+  };
+  const insertCitation = (citationNumber: number) => {
+    const marker = `[${citationNumber}]`;
+    const content = block.content.trimEnd();
+    onEdit({
+      content: content ? `${content} ${marker}` : marker
+    });
+  };
+  return <div onDragOver={e => {
     e.preventDefault();
     e.stopPropagation();
     onDragOver();
-  }} onDragEnd={onDragEnd} style={{
+  }} style={{
     position: 'relative',
     outline: isSelected ? `1.5px solid ${selBorder}` : isDragOver ? `1.5px dashed ${COLOR.ochreOrange}90` : '1.5px solid transparent',
     outlineOffset: 2,
     padding: '4px 0',
-    marginBottom: block.type === 'heading' ? 14 : block.type === 'divider' ? 16 : 18,
+    marginTop: marginBefore,
+    marginBottom: baseMargin + marginAfter,
     cursor: 'default',
     transition: 'outline 0.15s',
     opacity: isDragging ? 0.35 : 1,
     background: isDragOver ? isDark ? 'rgba(232,225,207,0.04)' : 'rgba(30,26,23,0.03)' : 'transparent'
-  }} onClick={e => {
+  }} data-onganda-block data-onganda-block-id={block.id} data-onganda-block-type={block.type} data-onganda-avoid-page-break={shouldAvoidPageBreak ? 'true' : undefined} data-onganda-page-break-before={block.pageBreakBefore ? 'true' : undefined} onClick={e => {
     e.stopPropagation();
     onSelect();
   }}>
       {/* Drag handle */}
-      <div style={{
+      <div draggable data-onganda-drag-handle data-onganda-export-ui="true" style={{
       position: 'absolute',
       left: -28,
       top: '50%',
@@ -2227,7 +3105,15 @@ function DocBlockView({
       transition: 'opacity 0.15s',
       paddingTop: 2,
       paddingBottom: 2
-    }} title="Drag to reorder" onMouseEnter={e => {
+    }} title="Drag to reorder" onDragStart={e => {
+      e.stopPropagation();
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', block.id);
+      onDragStart();
+    }} onDragEnd={e => {
+      e.stopPropagation();
+      onDragEnd();
+    }} onMouseEnter={e => {
       (e.currentTarget as HTMLElement).style.opacity = '1';
     }} onMouseLeave={e => {
       (e.currentTarget as HTMLElement).style.opacity = isSelected ? '0.7' : '0';
@@ -2240,7 +3126,7 @@ function DocBlockView({
       }} />)}
       </div>
 
-      {isSelected && <div style={{
+      {isSelected && <div data-onganda-export-ui="true" style={{
       position: 'absolute',
       left: -16,
       top: 0,
@@ -2250,8 +3136,7 @@ function DocBlockView({
     }} />}
 
       {innerContent}
-
-      {showDividerRemove && <div style={{
+      {showDividerRemove && <div data-onganda-export-ui="true" style={{
       display: 'flex',
       justifyContent: 'flex-end',
       marginTop: 4
@@ -2277,7 +3162,7 @@ function DocBlockView({
       }}>✕ Remove</button>
       </div>}
 
-      {showToolbar && <div style={{
+      {showToolbar && <div data-onganda-export-ui="true" style={{
       display: 'flex',
       alignItems: 'center',
       gap: 6,
@@ -2302,6 +3187,21 @@ function DocBlockView({
         e.currentTarget.style.borderColor = border;
         e.currentTarget.style.color = muted;
       }}>Edit</button>}
+          {isTextBlock && !isEditing && !isConfiguring && citationCount > 0 && Array.from({
+        length: Math.min(citationCount, 12)
+      }, (_, citationIdx) => {
+        const citationNumber = citationIdx + 1;
+        return <button key={`cite-btn-${block.id}-${citationNumber}`} onClick={e => {
+          e.stopPropagation();
+          insertCitation(citationNumber);
+        }} style={{
+          ...toolbarButtonStyle,
+          color: COLOR.ochreOrange,
+          borderColor: `${COLOR.ochreOrange}45`,
+          fontFamily: 'Inter, Arial, sans-serif',
+          fontWeight: 800
+        }} title={`Insert citation [${citationNumber}]`}>{`[${citationNumber}]`}</button>;
+      })}
           {['heading','body','pullquote','callout','list','signature','chart-gallery'].includes(block.type) && !isEditing && !isConfiguring && onRegenerate && <button onClick={e => {
         e.stopPropagation();
         onRegenerate();
@@ -2373,6 +3273,32 @@ function DocBlockView({
       }} title="Move down">↓</button>}
           {!isEditing && !isConfiguring && <button onClick={e => {
         e.stopPropagation();
+        onEdit({
+          marginAfter: Math.max(0, marginAfter - 8)
+        });
+      }} style={toolbarButtonStyle} title="Reduce space after this block">Gap -</button>}
+          {!isEditing && !isConfiguring && <button onClick={e => {
+        e.stopPropagation();
+        onEdit({
+          marginAfter: Math.min(160, marginAfter + 8)
+        });
+      }} style={toolbarButtonStyle} title="Add space after this block">Gap +</button>}
+          {!isEditing && !isConfiguring && <button onClick={e => {
+        e.stopPropagation();
+        if (block.pageBreakBefore) {
+          onMoveToPreviousPage();
+        } else {
+          onMoveToNextPage();
+        }
+      }} style={{
+        ...toolbarButtonStyle,
+        color: block.pageBreakBefore ? COLOR.ochreOrange : muted,
+        borderColor: block.pageBreakBefore ? `${COLOR.ochreOrange}60` : border
+      }} title={block.pageBreakBefore ? 'Flow this block back to the previous page' : 'Start this block on the next page'}>
+        {block.pageBreakBefore ? 'Previous page' : 'Next page'}
+      </button>}
+          {!isEditing && !isConfiguring && <button onClick={e => {
+        e.stopPropagation();
         onDelete();
       }} style={{
         padding: '4px 8px',
@@ -2394,7 +3320,7 @@ function DocBlockView({
         color: muted,
         letterSpacing: '0.10em'
       }}>
-            {isEditing ? 'Click Done or click outside to save' : isConfiguring ? 'Select option above, then Done' : isTextBlock ? 'Double-click to edit · drag ⠿ to reorder' : block.type.toUpperCase()}
+            {isEditing ? 'Click Done or click outside to save' : isConfiguring ? 'Select option above, then Done' : isTextBlock ? `Double-click to edit · gap ${marginAfter}px` : `${block.type.toUpperCase()} · gap ${marginAfter}px`}
           </span>
         </div>}
     </div>;
@@ -2551,7 +3477,7 @@ const DocExportModal = ({
         setTimeout(tick, 200 + Math.random() * 200);
       } else setTimeout(() => {
         onGenerate();
-        setPhase('done');
+        if (format !== 'PDF') setPhase('done');
       }, 300);
     };
     setTimeout(tick, 280);
@@ -2859,12 +3785,17 @@ interface DocSession {
   stage: 'picker' | 'editor';
   blocks: DocBlock[];
   docTitle: string;
+  paperBackground?: PaperBackgroundId;
 }
 function loadDocSession(): DocSession | null {
   try {
     const raw = localStorage.getItem(DOC_SESSION_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as DocSession;
+    const session = JSON.parse(raw) as DocSession;
+    return {
+      ...session,
+      blocks: migrateMemoBlocks(session.blocks ?? [])
+    };
   } catch {
     return null;
   }
@@ -2909,6 +3840,16 @@ function useDocHistory(initial: DocBlock[]) {
     setStack([blocks]);
     setCursor(0);
   }, []);
+  // Silently patch the current history entry (no new undo step)
+  const silentPatch = useCallback((updater: (prev: DocBlock[]) => DocBlock[]) => {
+    setStack(prev => {
+      const entry = prev[cursor] ?? [];
+      const patched = updater(entry);
+      const next = [...prev];
+      next[cursor] = patched;
+      return next;
+    });
+  }, [cursor]);
   return {
     current,
     push,
@@ -2916,7 +3857,8 @@ function useDocHistory(initial: DocBlock[]) {
     redo,
     canUndo,
     canRedo,
-    reset
+    reset,
+    silentPatch
   };
 }
 
@@ -2927,24 +3869,32 @@ const DocToolbar = ({
   blockCount,
   docTitle,
   onTitleChange,
+  paperBackground,
+  onPaperBackgroundChange,
   onExport,
   canUndo,
   canRedo,
   onUndo,
   onRedo,
-  sessionSaved
+  sessionSaved,
+  showAutoLetterhead,
+  onToggleAutoLetterhead
 }: {
   onClose: () => void;
   isDark: boolean;
   blockCount: number;
   docTitle: string;
   onTitleChange: (t: string) => void;
+  paperBackground: PaperBackgroundId;
+  onPaperBackgroundChange: (bg: PaperBackgroundId) => void;
   onExport: (fmt: 'PDF' | 'WORD') => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
   sessionSaved: boolean;
+  showAutoLetterhead: boolean;
+  onToggleAutoLetterhead: () => void;
 }) => {
   const [editingTitle, setEditingTitle] = useState(false);
   const bg = isDark ? COLOR.darkCard : '#F3E8C3';
@@ -3110,6 +4060,30 @@ const DocToolbar = ({
         background: border,
         margin: '0 2px'
       }} />
+        <div data-onganda-export-ui="true" style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
+        padding: '2px 4px',
+        border: `1px solid ${border}`
+      }}>
+          {PAPER_BACKGROUNDS.map(bgOpt => <button key={`paper-bg-${bgOpt.id}`} onClick={() => onPaperBackgroundChange(bgOpt.id)} title={`${bgOpt.label} paper`} style={{
+          width: 18,
+          height: 18,
+          background: bgOpt.hex,
+          border: `2px solid ${paperBackground === bgOpt.id ? COLOR.ochreOrange : border}`,
+          cursor: 'pointer',
+          padding: 0
+        }} />)}
+        </div>
+        <button onClick={onToggleAutoLetterhead} title={showAutoLetterhead ? 'Hide auto letterhead' : 'Show auto letterhead'} style={{
+        ...btnBase,
+        borderColor: showAutoLetterhead ? COLOR.ochreOrange : border,
+        color: showAutoLetterhead ? COLOR.ochreOrange : mutedFg
+      }}>
+          <span style={{ fontSize: 11 }}>{showAutoLetterhead ? '⊟' : '⊞'}</span>
+          <span>Letterhead</span>
+        </button>
         {fmtBtns.map(fmt => <button key={`doc-export-${fmt}`} onClick={() => onExport(fmt)} style={{
         display: 'flex',
         alignItems: 'center',
@@ -3199,7 +4173,7 @@ const DocLetterhead = ({
           gap: 6,
           padding: '3px 10px',
           border: `1px solid ${COLOR.ochreOrange}50`,
-          marginBottom: 6
+          marginBottom: 8
         }}>
             <PixelDot color={COLOR.ochreOrange} size={5} />
             <span style={{
@@ -3211,9 +4185,12 @@ const DocLetterhead = ({
           }}>Concept Paper</span>
           </div>
           <p style={{
-          fontSize: 10,
-          color: muted
-        }}>2025</p>
+          fontSize: 8.5,
+          fontWeight: 700,
+          color: muted,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase' as const
+        }}>{DOCUMENT_STATUS}</p>
         </div>
       </div>
       <div style={{
@@ -3237,6 +4214,21 @@ const DocLetterhead = ({
       }}>
           A two-track model for local AI capability, applied tooling, and institutional deployment.
         </p>
+        <div style={{
+        display: 'flex',
+        flexWrap: 'wrap' as const,
+        alignItems: 'center',
+        gap: '7px 10px',
+        color: muted,
+        fontSize: 9.5,
+        letterSpacing: '0.06em',
+        marginTop: -10,
+        marginBottom: 24
+      }}>
+          <span>{DOCUMENT_BYLINE}</span>
+          <span aria-hidden="true">·</span>
+          <span>{CURRENT_YEAR}</span>
+        </div>
         <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -3270,14 +4262,22 @@ const TEMPLATE_OPTIONS = [{
   desc: 'Namibia AI Capability and Tooling Platform — full one-page concept with all sections',
   icon: '▣',
   color: COLOR.barkRust
+}, {
+  id: 'memo',
+  label: 'Platform Memo',
+  desc: 'Long-form stakeholder memo with sources section',
+  icon: '▤',
+  color: COLOR.mopaneBrown
 }];
 const TemplatePicker = ({
   isDark,
   onSelect,
+  onResume,
   onBack
 }: {
   isDark: boolean;
   onSelect: (templateId: string, title: string) => void;
+  onResume?: () => void;
   onBack: () => void;
 }) => {
   const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
@@ -3353,13 +4353,43 @@ const TemplatePicker = ({
             <span>Back</span>
           </button>
         </div>
+        {onResume && <button onClick={onResume} style={{
+        width: '100%',
+        background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.55)',
+        border: `1px solid ${COLOR.ochreOrange}45`,
+        color: fg,
+        padding: '14px 16px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        marginBottom: 16,
+        textAlign: 'left'
+      }}>
+          <span style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3
+        }}>
+            <strong style={{ fontSize: 12 }}>Resume last document</strong>
+            <span style={{ fontSize: 10, color: muted }}>Continue the autosaved editor session.</span>
+          </span>
+          <span style={{
+          color: COLOR.ochreOrange,
+          fontSize: 9,
+          fontWeight: 800,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase'
+        }}>Open</span>
+        </button>}
         <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         gap: 16,
         marginBottom: 32
       }}>
-          {TEMPLATE_OPTIONS.map(opt => <button key={opt.id} onClick={() => onSelect(opt.id, opt.id === 'blank' ? 'Untitled Document' : 'A Namibia-Focused AI Capability and Tooling Platform')} style={{
+          {TEMPLATE_OPTIONS.map(opt => <button key={opt.id} onClick={() => onSelect(opt.id, opt.id === 'blank' ? 'Untitled Document' : opt.id === 'memo' ? 'Memo: Namibia AI Capability and Tooling Platform' : 'A Namibia-Focused AI Capability and Tooling Platform')} style={{
           background: cardBg,
           border: `1px solid ${border}`,
           padding: '28px 24px',
@@ -3429,6 +4459,63 @@ const TemplatePicker = ({
     </div>;
 };
 
+const PageGuideOverlay = ({
+  pageCount,
+  isDark
+}: {
+  pageCount: number;
+  isDark: boolean;
+}) => {
+  const labelBg = isDark ? COLOR.darkCard : '#FDFAF2';
+  const labelFg = COLOR.ochreOrange;
+  return <div data-onganda-page-guide-overlay aria-hidden="true" style={{
+    position: 'absolute',
+    inset: 0,
+    pointerEvents: 'none',
+    zIndex: 1
+  }}>
+      {Array.from({
+      length: Math.max(0, pageCount - 1)
+    }, (_, i) => {
+      const page = i + 1;
+      return <div key={`page-guide-${page}`} data-onganda-page-guide-line style={{
+        position: 'absolute',
+        top: `${page * A4_PAGE_HEIGHT_MM}mm`,
+        left: 0,
+        width: '100%',
+        borderTop: `1px dashed ${COLOR.ochreOrange}80`
+      }}>
+          <span data-onganda-export-ui="true" style={{
+          position: 'absolute',
+          right: 12,
+          top: -10,
+          padding: '2px 8px',
+          background: labelBg,
+          border: `1px solid ${COLOR.ochreOrange}55`,
+          color: labelFg,
+          fontSize: 8,
+          fontWeight: 700,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase' as const
+        }}>{`Page ${page + 1} starts`}</span>
+        </div>;
+    })}
+      {Array.from({
+      length: pageCount
+    }, (_, i) => <div key={`page-label-${i}`} data-onganda-page-guide-label style={{
+      position: 'absolute',
+      top: `${i * A4_PAGE_HEIGHT_MM}mm`,
+      right: 10,
+      paddingTop: 8,
+      color: isDark ? 'rgba(232,225,207,0.26)' : 'rgba(30,26,23,0.26)',
+      fontSize: 8,
+      fontWeight: 700,
+      letterSpacing: '0.12em',
+      textTransform: 'uppercase' as const
+    }}>{`Page ${i + 1}`}</div>)}
+    </div>;
+};
+
 // ─── Main Export ──────────────────────────────────────────────────────────────
 export const DocumentEditor = ({
   onClose
@@ -3440,14 +4527,17 @@ export const DocumentEditor = ({
   } = useDark();
 
   // Session restore
-  const savedSession = loadDocSession();
-  const [stage, setStage] = useState<'picker' | 'editor'>(savedSession?.stage ?? 'picker');
+  const savedSession = useMemo(() => loadDocSession(), []);
+  const [stage, setStage] = useState<'picker' | 'editor'>(savedSession?.stage === 'editor' ? 'editor' : 'picker');
   const [docTitle, setDocTitle] = useState(savedSession?.docTitle ?? 'Untitled Document');
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [configuringBlockId, setConfiguringBlockId] = useState<string | null>(null);
   const [regeneratingBlockId, setRegeneratingBlockId] = useState<string | null>(null);
   const [exportModal, setExportModal] = useState<'PDF' | 'WORD' | null>(null);
+  const [paperBackground, setPaperBackground] = useState<PaperBackgroundId>(savedSession?.paperBackground ?? 'warm');
+  const [showAutoLetterhead, setShowAutoLetterhead] = useState(true);
+  const [pageCount, setPageCount] = useState(1);
   const [dragState, setDragState] = useState<DragState>({
     draggingId: null,
     overIdx: null
@@ -3461,24 +4551,111 @@ export const DocumentEditor = ({
     history.push(next);
   }, [blocks, history]);
 
+  // Fingerprint of content/structure only — excludes marginBefore so recalculation
+  // doesn't re-trigger itself.
+  const blockContentFingerprint = useMemo(
+    () => blocks.map(b => `${b.id}:${b.type}:${b.content ?? ''}:${b.pageBreakBefore ? '1' : '0'}:${b.spacerHeight ?? ''}`).join('|'),
+    [blocks]
+  );
+
+  // Dynamically keep marginBefore in sync with actual rendered block positions.
+  // This ensures the editor simulation always matches what break-before:page produces
+  // in print: if content is added/removed above a pageBreakBefore block, its natural
+  // flow position changes, and this effect recalculates the fill-to-page-boundary margin.
+  const marginRecalcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (stage !== 'editor') return;
+    if (marginRecalcTimerRef.current) clearTimeout(marginRecalcTimerRef.current);
+    marginRecalcTimerRef.current = setTimeout(() => {
+      const paperEl = documentPaperRef.current;
+      if (!paperEl) return;
+      const pbBlocks = blocks.filter(b => b.pageBreakBefore);
+      if (pbBlocks.length === 0) return;
+
+      const paperTop = paperEl.getBoundingClientRect().top;
+      const updates: Record<string, number> = {};
+      let cumulativeCurrentMargins = 0;
+      let anyChanged = false;
+
+      for (const block of pbBlocks) {
+        const blockEl = paperEl.querySelector<HTMLElement>(`[data-onganda-block-id="${block.id}"]`);
+        if (!blockEl) continue;
+        const measured = blockEl.getBoundingClientRect().top - paperTop;
+        const currentMargin = block.marginBefore ?? 0;
+        // Subtract this block's own margin AND all pageBreakBefore margins above it
+        // to recover the block's natural flow position (as if no forced breaks exist).
+        const naturalTop = measured - currentMargin - cumulativeCurrentMargins;
+        const pageOffset = ((naturalTop % A4_PAGE_HEIGHT_PX) + A4_PAGE_HEIGHT_PX) % A4_PAGE_HEIGHT_PX;
+        const newMargin = pageOffset < 1
+          ? PAGE_BREAK_PREVIEW_TOP_PX
+          : Math.ceil(A4_PAGE_HEIGHT_PX - pageOffset + PAGE_BREAK_PREVIEW_TOP_PX);
+        updates[block.id] = newMargin;
+        cumulativeCurrentMargins += currentMargin;
+        if (Math.abs(newMargin - currentMargin) > 1) anyChanged = true;
+      }
+
+      if (anyChanged) {
+        history.silentPatch(prev => prev.map(b => updates[b.id] !== undefined ? { ...b, marginBefore: updates[b.id] } : b));
+      }
+    }, 150);
+    return () => {
+      if (marginRecalcTimerRef.current) clearTimeout(marginRecalcTimerRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockContentFingerprint, stage]);
+
+  const persistSession = useCallback(() => {
+    if (stage !== 'editor') return;
+    saveDocSession({
+      stage,
+      blocks,
+      docTitle,
+      paperBackground
+    });
+  }, [blocks, docTitle, paperBackground, stage]);
+
   // Auto-save session to localStorage (debounced)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (stage !== 'editor') return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveDocSession({
-        stage,
-        blocks,
-        docTitle
-      });
+      persistSession();
       setSessionSaved(true);
       setTimeout(() => setSessionSaved(false), 1800);
     }, 800);
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [blocks, docTitle, stage]);
+  }, [persistSession, stage]);
+
+  useEffect(() => {
+    if (stage !== 'editor') return;
+    const flush = () => persistSession();
+    const flushOnVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+    window.addEventListener('beforeunload', flush);
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', flushOnVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', flush);
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', flushOnVisibilityChange);
+    };
+  }, [persistSession, stage]);
+
+  useEffect(() => {
+    if (stage !== 'editor' || !documentPaperRef.current) return;
+    const paper = documentPaperRef.current;
+    const updatePageCount = () => {
+      setPageCount(Math.max(1, Math.ceil(paper.scrollHeight / A4_PAGE_HEIGHT_PX)));
+    };
+    updatePageCount();
+    const observer = new ResizeObserver(updatePageCount);
+    observer.observe(paper);
+    return () => observer.disconnect();
+  }, [blocks, docTitle, paperBackground, stage]);
 
   // Keyboard undo/redo
   useEffect(() => {
@@ -3498,11 +4675,13 @@ export const DocumentEditor = ({
     return () => window.removeEventListener('keydown', handler);
   }, [history]);
   const pageBg = isDark ? COLOR.darkBg : COLOR.milletClay;
-  const paperBg = isDark ? COLOR.darkCard : '#FDFAF2';
+  const paperBg = isDark ? COLOR.darkCard : paperBackgroundHex(paperBackground);
   const paperBorder = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const citationCount = blocks.reduce((count, block) => block.type === 'sources' ? Math.max(count, parseSources(block.sourcesData).length) : count, 0);
   const handleTemplateSelect = (templateId: string, title: string) => {
     setDocTitle(title);
-    const newBlocks = templateId === 'blank' ? [] : TEMPLATE_BLOCKS.map(b => ({
+    const templateBlocks = templateId === 'memo' ? MEMO_TEMPLATE_BLOCKS : TEMPLATE_BLOCKS;
+    const newBlocks = templateId === 'blank' ? [] : templateBlocks.map(b => ({
       ...b
     }));
     history.reset(newBlocks);
@@ -3510,7 +4689,8 @@ export const DocumentEditor = ({
     saveDocSession({
       stage: 'editor',
       blocks: newBlocks,
-      docTitle: title
+      docTitle: title,
+      paperBackground
     });
   };
   const handleInsert = useCallback((item: InsertPaletteItem) => {
@@ -3527,12 +4707,24 @@ export const DocumentEditor = ({
       systemIdx: item.type === 'systemcard' ? 0 : undefined,
       flowNodeIdx: item.type === 'flowchart' ? 0 : undefined,
       chartTitle: item.type === 'chart-market' ? 'Global AI Market Growth' : undefined,
-      barValues: item.type === 'chart-bar' ? JSON.stringify(DEFAULT_BAR_DATA) : undefined
+      barValues: item.type === 'chart-bar' ? JSON.stringify(DEFAULT_BAR_DATA) : undefined,
+      sourcesData: item.type === 'sources' ? JSON.stringify(DEFAULT_SOURCES) : undefined,
+      spacerHeight: item.type === 'spacer' ? 48 : undefined,
+      sigAuthor: item.type === 'signature' ? AUTHOR_NAME : undefined,
+      sigYear: item.type === 'signature' ? String(CURRENT_YEAR) : undefined,
+      letterheadData: item.type === 'letterhead' ? JSON.stringify({
+        title: docTitle,
+        subtitle: 'A two-track model for local AI capability, applied tooling, and institutional deployment.',
+        label: 'Document',
+        status: DOCUMENT_STATUS,
+        byline: DOCUMENT_BYLINE,
+        year: String(CURRENT_YEAR)
+      }) : undefined
     };
     setBlocks(prev => [...prev, newBlock]);
     setSelectedBlockId(newBlock.id);
-    const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar', 'chart-gallery'].includes(item.type);
-    if (isDesign) setConfiguringBlockId(newBlock.id);else if (['heading', 'body', 'pullquote', 'callout', 'list', 'signature'].includes(item.type)) setEditingBlockId(newBlock.id);
+    const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'sources', 'spacer', 'chart-market', 'chart-bar', 'chart-gallery', 'signature', 'letterhead'].includes(item.type);
+    if (isDesign) setConfiguringBlockId(newBlock.id);else if (['heading', 'body', 'pullquote', 'callout', 'list'].includes(item.type)) setEditingBlockId(newBlock.id);
   }, [setBlocks]);
   const handleEdit = useCallback((id: string, updates: Partial<DocBlock>) => {
     setBlocks(prev => prev.map(b => b.id === id ? {
@@ -3564,6 +4756,23 @@ export const DocumentEditor = ({
       return next;
     });
   }, [setBlocks]);
+  const handleMoveToNextPage = useCallback((id: string) => {
+    const blockEl = document.querySelector<HTMLElement>(`[data-onganda-block-id="${id}"]`);
+    const paperEl = documentPaperRef.current;
+    const y = blockEl && paperEl ? blockEl.getBoundingClientRect().top - paperEl.getBoundingClientRect().top : 0;
+    const pageOffset = (y % A4_PAGE_HEIGHT_PX + A4_PAGE_HEIGHT_PX) % A4_PAGE_HEIGHT_PX;
+    const marginBefore = Math.ceil(A4_PAGE_HEIGHT_PX - pageOffset + PAGE_BREAK_PREVIEW_TOP_PX);
+    handleEdit(id, {
+      pageBreakBefore: true,
+      marginBefore
+    });
+  }, [handleEdit]);
+  const handleMoveToPreviousPage = useCallback((id: string) => {
+    handleEdit(id, {
+      pageBreakBefore: false,
+      marginBefore: 0
+    });
+  }, [handleEdit]);
 
   // Drag reorder
   const handleDragStart = useCallback((id: string) => {
@@ -3601,6 +4810,16 @@ export const DocumentEditor = ({
     setEditingBlockId(null);
     setConfiguringBlockId(null);
   };
+  const handleResume = useCallback(() => {
+    if (!savedSession) return;
+    setDocTitle(savedSession.docTitle ?? 'Untitled Document');
+    setPaperBackground(savedSession.paperBackground ?? 'warm');
+    history.reset(savedSession.blocks ?? []);
+    setSelectedBlockId(null);
+    setEditingBlockId(null);
+    setConfiguringBlockId(null);
+    setStage('editor');
+  }, [history, savedSession]);
   const handleRegenerate = useCallback(async (id: string, block: DocBlock) => {
     const { type } = block;
     const aiTypes = ['heading','body','pullquote','callout','list','divider','signature','chart-gallery'] as const;
@@ -3617,15 +4836,18 @@ export const DocumentEditor = ({
     setSelectedBlockId(null);
     setEditingBlockId(null);
     setConfiguringBlockId(null);
+    setExportModal(null);
+    if (format === 'PDF') {
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+        window.setTimeout(() => window.print(), 160);
+      }));
+      return;
+    }
     window.setTimeout(() => {
-      if (format === 'PDF') {
-        window.print();
-        return;
-      }
       const paperHtml = documentPaperRef.current?.outerHTML ?? '';
-      downloadOfficeHtml(`${safeFileName(docTitle)}.doc`, wrapWordDocument(docTitle, paperHtml), 'application/msword;charset=utf-8');
+      downloadOfficeHtml(`${safeFileName(docTitle)}.doc`, wrapWordDocument(docTitle, paperHtml, paperBg), 'application/msword;charset=utf-8');
     }, 80);
-  }, [docTitle]);
+  }, [docTitle, paperBg]);
   const handleApplyAiResult = useCallback((result: AiAuthoringResult) => {
     const nextBlocks = (result.blocks ?? []).map(docBlockFromAi);
     if (!nextBlocks.length) return;
@@ -3636,28 +4858,127 @@ export const DocumentEditor = ({
     setConfiguringBlockId(null);
   }, [setBlocks]);
   if (stage === 'picker') {
-    return <TemplatePicker isDark={isDark} onSelect={handleTemplateSelect} onBack={onClose} />;
+    return <TemplatePicker isDark={isDark} onSelect={handleTemplateSelect} onResume={savedSession ? handleResume : undefined} onBack={onClose} />;
   }
   return <div style={{
     minHeight: '100vh',
+    width: '100%',
+    maxWidth: '100vw',
     background: pageBg,
     transition: 'background 0.35s',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflow: 'hidden'
   }} data-onganda-document-editor>
       <style>{`
         @media print {
-          @page { size: A4 portrait; margin: 16mm; }
+          @page { size: A4 portrait; margin: 0; }
+          html, body {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 !important;
+            background: ${COLOR.milletClay} !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
           body * { visibility: hidden !important; }
+          [data-onganda-document-editor] {
+            display: block !important;
+            width: 210mm !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            background: transparent !important;
+          }
+          [data-onganda-editor-layout],
+          [data-onganda-editor-scroll],
+          [data-onganda-paper-shell] {
+            display: contents !important;
+            visibility: visible !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
           [data-onganda-print-document], [data-onganda-print-document] * { visibility: visible !important; }
           [data-onganda-print-document] {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 100% !important;
+            width: 210mm !important;
+            min-height: 297mm !important;
+            box-sizing: border-box !important;
             box-shadow: none !important;
             border: 0 !important;
-            background: ${COLOR.dustLight} !important;
+            background: ${paperBg} !important;
+            overflow: visible !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+          [data-onganda-paper-texture] {
+            opacity: 0.024 !important;
+          }
+          [data-onganda-page-guide-overlay],
+          [data-onganda-page-guide-overlay] * {
+            visibility: visible !important;
+          }
+          [data-onganda-block] {
+            outline: none !important;
+            outline-offset: 0 !important;
+            box-shadow: none !important;
+            break-inside: auto;
+            page-break-inside: auto;
+          }
+          [data-onganda-avoid-page-break="true"] {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          [data-onganda-block-type="heading"] {
+            break-after: avoid;
+            page-break-after: avoid;
+          }
+          [data-onganda-block-type="signature"] {
+            break-before: avoid;
+            page-break-before: avoid;
+          }
+          [data-onganda-block] p,
+          [data-onganda-block] li {
+            orphans: 3;
+            widows: 3;
+          }
+          [data-onganda-block-type="sources"] {
+            margin-bottom: 6px !important;
+          }
+          [data-onganda-block-type="sources"] ol {
+            gap: 6px !important;
+          }
+          [data-onganda-block-type="sources"] li {
+            line-height: 1.45 !important;
+          }
+          [data-onganda-block-type="sources"] li {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          [data-onganda-block-type="signature"] {
+            margin-top: 0 !important;
+          }
+          [data-onganda-document-content] {
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            padding-top: 44px !important;
+          }
+          [data-onganda-page-break-before="true"] {
+            break-before: page;
+            page-break-before: always;
+            margin-top: 0 !important;
+            padding-top: ${PAGE_BREAK_PREVIEW_TOP_PX}px !important;
+          }
+          [data-onganda-print-document] button,
+          [data-onganda-print-document] input,
+          [data-onganda-print-document] textarea {
+            display: none !important;
+            visibility: hidden !important;
           }
           [data-onganda-export-ui="true"], [data-onganda-export-ui="true"] * {
             display: none !important;
@@ -3665,9 +4986,9 @@ export const DocumentEditor = ({
           }
         }
       `}</style>
-      <DocToolbar onClose={onClose} isDark={isDark} blockCount={blocks.length} docTitle={docTitle} onTitleChange={setDocTitle} onExport={fmt => setExportModal(fmt)} canUndo={history.canUndo} canRedo={history.canRedo} onUndo={history.undo} onRedo={history.redo} sessionSaved={sessionSaved} />
+      <DocToolbar onClose={onClose} isDark={isDark} blockCount={blocks.length} docTitle={docTitle} onTitleChange={setDocTitle} paperBackground={paperBackground} onPaperBackgroundChange={setPaperBackground} onExport={fmt => setExportModal(fmt)} canUndo={history.canUndo} canRedo={history.canRedo} onUndo={history.undo} onRedo={history.redo} sessionSaved={sessionSaved} showAutoLetterhead={showAutoLetterhead} onToggleAutoLetterhead={() => setShowAutoLetterhead(v => !v)} />
 
-      <div style={{
+      <div data-onganda-editor-layout style={{
       display: 'flex',
       flex: 1,
       minHeight: 0,
@@ -3675,13 +4996,14 @@ export const DocumentEditor = ({
     }}>
         <InsertPanel isDark={isDark} onInsert={handleInsert} />
 
-        <div style={{
+        <div data-onganda-editor-scroll style={{
         flex: 1,
-        overflowY: 'auto',
+        overflow: 'auto',
         padding: '36px 24px 80px'
       }} onClick={handleDeselect}>
-          <div style={{
-          maxWidth: 780,
+          <div data-onganda-paper-shell style={{
+          width: '210mm',
+          maxWidth: 'none',
           margin: '0 auto'
         }}>
             <motion.article ref={documentPaperRef} data-onganda-print-document initial={{
@@ -3694,21 +5016,34 @@ export const DocumentEditor = ({
             duration: 0.5
           }} style={{
             background: paperBg,
-            border: `1px solid ${paperBorder}`,
+            outline: `1px solid ${paperBorder}`,
             boxShadow: isDark ? '0 8px 48px rgba(0,0,0,0.5)' : '0 8px 48px rgba(30,26,23,0.10)',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            width: '210mm',
+            minHeight: '297mm'
           }} onClick={e => e.stopPropagation()}>
-              <WeaveOverlay isDark={isDark} opacity={0.025} />
-              <DocLetterhead isDark={isDark} title={docTitle} />
+              <WeaveOverlay isDark={isDark} opacity={0.024} />
+              <PageGuideOverlay pageCount={pageCount} isDark={isDark} />
+              {showAutoLetterhead && !blocks.some(b => b.type === 'letterhead') && <DocLetterhead isDark={isDark} title={docTitle} />}
+              {blocks.filter(b => b.type === 'letterhead').map(lhBlock => <DocBlockView key={lhBlock.id} block={lhBlock} idx={0} isDark={isDark} isSelected={selectedBlockId === lhBlock.id} isEditing={editingBlockId === lhBlock.id} isConfiguring={configuringBlockId === lhBlock.id} dragState={dragState} citationCount={citationCount} onSelect={() => setSelectedBlockId(lhBlock.id)} onStartEdit={() => {
+                setSelectedBlockId(lhBlock.id);
+                setConfiguringBlockId(lhBlock.id);
+                setEditingBlockId(null);
+              }} onStopEdit={() => {
+                setEditingBlockId(null);
+                setConfiguringBlockId(null);
+              }} onEdit={updates => handleEdit(lhBlock.id, updates)} onDelete={() => handleDelete(lhBlock.id)} onDragStart={() => handleDragStart(lhBlock.id)} onDragOver={() => {}} onDragEnd={handleDragEnd} onMoveUp={() => handleMoveUp(lhBlock.id)} onMoveDown={() => handleMoveDown(lhBlock.id)} onMoveToNextPage={() => handleMoveToNextPage(lhBlock.id)} onMoveToPreviousPage={() => handleMoveToPreviousPage(lhBlock.id)} onRegenerate={() => handleRegenerate(lhBlock.id, lhBlock)} regenerating={regeneratingBlockId === lhBlock.id} />)}
 
-              <div style={{
-              padding: '16px 56px 8px'
+              <div data-onganda-document-content style={{
+              padding: '16px 56px 8px',
+              position: 'relative',
+              zIndex: 2
             }}>
                 <AnimatePresence>
-                  {blocks.map((block, idx) => <DocBlockView key={block.id} block={block} idx={idx} isDark={isDark} isSelected={selectedBlockId === block.id} isEditing={editingBlockId === block.id} isConfiguring={configuringBlockId === block.id} dragState={dragState} onSelect={() => setSelectedBlockId(block.id)} onStartEdit={() => {
+                  {blocks.filter(b => b.type !== 'letterhead').map((block, idx) => <DocBlockView key={block.id} block={block} idx={idx} isDark={isDark} isSelected={selectedBlockId === block.id} isEditing={editingBlockId === block.id} isConfiguring={configuringBlockId === block.id} dragState={dragState} citationCount={citationCount} onSelect={() => setSelectedBlockId(block.id)} onStartEdit={() => {
                   setSelectedBlockId(block.id);
-                  const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'chart-market', 'chart-bar', 'chart-gallery'].includes(block.type);
+                  const isDesign = ['stat', 'terminal', 'heatmap', 'timeline', 'systemcard', 'flowchart', 'principles', 'swatchrow', 'sources', 'spacer', 'chart-market', 'chart-bar', 'chart-gallery', 'signature', 'letterhead'].includes(block.type);
                   if (isDesign) {
                     setConfiguringBlockId(block.id);
                     setEditingBlockId(null);
@@ -3719,10 +5054,10 @@ export const DocumentEditor = ({
                 }} onStopEdit={() => {
                   setEditingBlockId(null);
                   setConfiguringBlockId(null);
-                }} onEdit={updates => handleEdit(block.id, updates)} onDelete={() => handleDelete(block.id)} onDragStart={() => handleDragStart(block.id)} onDragOver={() => handleDragOver(idx)} onDragEnd={handleDragEnd} onMoveUp={() => handleMoveUp(block.id)} onMoveDown={() => handleMoveDown(block.id)} onRegenerate={() => handleRegenerate(block.id, block)} regenerating={regeneratingBlockId === block.id} />)}
+                }} onEdit={updates => handleEdit(block.id, updates)} onDelete={() => handleDelete(block.id)} onDragStart={() => handleDragStart(block.id)} onDragOver={() => handleDragOver(idx)} onDragEnd={handleDragEnd} onMoveUp={() => handleMoveUp(block.id)} onMoveDown={() => handleMoveDown(block.id)} onMoveToNextPage={() => handleMoveToNextPage(block.id)} onMoveToPreviousPage={() => handleMoveToPreviousPage(block.id)} onRegenerate={() => handleRegenerate(block.id, block)} regenerating={regeneratingBlockId === block.id} />)}
                 </AnimatePresence>
 
-                {blocks.length === 0 && <div style={{
+                {blocks.filter(b => b.type !== 'letterhead').length === 0 && <div style={{
                 padding: '80px 0',
                 textAlign: 'center'
               }}>
@@ -3782,12 +5117,12 @@ export const DocumentEditor = ({
                     fontSize: 9,
                     color: isDark ? 'rgba(232,225,207,0.30)' : 'rgba(30,26,23,0.30)',
                     letterSpacing: '0.08em'
-                  }}>Onganda · Namibia AI Systems Lab</span>
+                  }}>{COPYRIGHT_NOTICE}</span>
                   </div>
                   <span style={{
                   fontSize: 9,
                   color: isDark ? 'rgba(232,225,207,0.30)' : 'rgba(30,26,23,0.30)'
-                }}>2025</span>
+                }}>{DOCUMENT_STATUS}</span>
                 </div>
               </div>
             </motion.article>

@@ -1,0 +1,31 @@
+/*
+ * Onganda Design System — CSS Tokens
+ *
+ * Import once in your project entry:
+ *   import '@onganda/design-system/style.css';
+ *
+ * For Tailwind utility support, add the library to your Tailwind content path:
+ *   content: ['./node_modules/@onganda/design-system/dist/index.js']
+ */
+
+:root {
+  /* Typography scale */
+  --type-hero:        clamp(3.2rem, 10vw, 9rem);
+  --type-hero-public: clamp(3rem, 7.4vw, 7.1rem);
+  --type-hero-gap:    clamp(0.22rem, 0.65vw, 0.55rem);
+  --type-subhead:     clamp(0.82rem, 1.3vw, 0.95rem);
+
+  /* Palette tokens */
+  --onganda-millet-clay:   #E8E1CF;
+  --onganda-dust-light:    #F3E8C3;
+  --onganda-mahangu-gold:  #DFAE2B;
+  --onganda-ochre-orange:  #D9791F;
+  --onganda-fired-red:     #C84A1B;
+  --onganda-bark-rust:     #8F3E21;
+  --onganda-mopane-brown:  #6A4B2E;
+  --onganda-char-black:    #1E1A17;
+  --onganda-dye-plum:      #6F4A6E;
+  --onganda-dark-bg:       #120F0D;
+  --onganda-dark-card:     #1C1713;
+  --onganda-dark-card-alt: #271F1A;
+}

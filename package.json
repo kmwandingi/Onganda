@@ -1,19 +1,48 @@
 {
   "name": "@onganda/design-system",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Onganda design system, showcase, and public site surfaces.",
-  "exports": {
-    ".": "./src/design-system/index.ts"
+  "description": "Onganda pixel editorial design system — tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
+  "keywords": ["design-system", "react", "pixel-art", "namibia", "onganda", "tailwindcss"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kmwandingi/Onganda.git"
   },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style.css",
+    "./style": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "USAGE.md"
+  ],
+  "sideEffects": [
+    "dist/style.css"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:lib": "vite build --config vite.lib.config.ts && cp src/design-system/lib-style.css dist/style.css && node -e \"require('fs').writeFileSync('dist/index.d.ts', 'export * from \\\"./design-system/lib-entry\\\";\\n')\"",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
+  },
+  "peerDependencies": {
+    "framer-motion": ">=10.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "recharts": ">=2.0.0"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -64,6 +93,7 @@
     "tw-animate-css": "^1.3.7",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^5.0.2"
   }
 }

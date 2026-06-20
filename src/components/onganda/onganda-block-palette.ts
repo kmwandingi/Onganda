@@ -5,6 +5,9 @@
 import { COLOR } from './onganda-colors';
 import type { InsertPaletteItem, ComponentPaletteItem } from './onganda-block-types';
 
+const CURRENT_YEAR = new Date().getFullYear();
+const AUTHOR_NAME = 'Kenneth Mwandingi';
+
 // ─── Document editor insert palette ──────────────────────────────────────────
 export const DOC_INSERT_PALETTE: InsertPaletteItem[] = [
   { id: 'insert-heading',    label: 'Section Heading',  desc: 'Named section with dashed rule',          type: 'heading',      defaultContent: 'New Section',              hex: COLOR.ochreOrange, category: 'Text'   },
@@ -13,7 +16,10 @@ export const DOC_INSERT_PALETTE: InsertPaletteItem[] = [
   { id: 'insert-callout',    label: 'Callout Box',      desc: 'Accented info or note block',             type: 'callout',      defaultContent: 'Note: Key finding.',       hex: COLOR.firedRed,   category: 'Text'   },
   { id: 'insert-list',       label: 'Bullet List',      desc: 'Pixel-dot list items',                    type: 'list',         defaultContent: 'First item · Second item · Third item', hex: COLOR.ochreOrange, category: 'Text' },
   { id: 'insert-divider',    label: 'Section Divider',  desc: 'Dither bar visual separator',             type: 'divider',      defaultContent: '',                         hex: COLOR.ochreOrange, category: 'Text'   },
-  { id: 'insert-signature',  label: 'Signature Block',  desc: 'Author attribution footer',               type: 'signature',    defaultContent: 'Onganda · Namibia AI Systems Lab · 2026', hex: COLOR.mopaneBrown, category: 'Text' },
+  { id: 'insert-spacer',     label: 'Spacer',           desc: 'Adjustable blank space for page layout',   type: 'spacer',       defaultContent: 'Spacer',                   hex: COLOR.mahanguGold, category: 'Text'   },
+  { id: 'insert-letterhead', label: 'Letterhead',       desc: 'Document title header with branding',     type: 'letterhead',   defaultContent: 'Letterhead',               hex: COLOR.ochreOrange, category: 'Text' },
+  { id: 'insert-signature',  label: 'Signature Block',  desc: 'Author attribution footer',               type: 'signature',    defaultContent: `Prepared by ${AUTHOR_NAME} · ${CURRENT_YEAR}`, hex: COLOR.mopaneBrown, category: 'Text' },
+  { id: 'insert-sources',    label: 'Sources',          desc: 'Editable references and citation links',   type: 'sources',      defaultContent: 'Sources',                  hex: COLOR.mopaneBrown, category: 'Text'   },
   { id: 'insert-stat',       label: 'Stat Card',        desc: 'Editable KPI / metric card',              type: 'stat',         defaultContent: 'New Metric',               hex: COLOR.ochreOrange, category: 'Data'   },
   { id: 'insert-chart-market', label: 'Market Chart',   desc: 'AI market growth area chart',             type: 'chart-market', defaultContent: 'Market Growth',            hex: COLOR.ochreOrange, category: 'Data'   },
   { id: 'insert-chart-bar',  label: 'Bar Chart',        desc: 'System progress bar chart',               type: 'chart-bar',    defaultContent: 'System Progress',          hex: COLOR.barkRust,   category: 'Data'   },
