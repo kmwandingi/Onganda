@@ -2,11 +2,12 @@
 // All page-level section components. Each is self-contained and composable.
 // Imports only from onganda-tokens and onganda-primitives.
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
 import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
+import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -518,6 +519,9 @@ export const OngandaNav = () => {
     label: 'Icons',
     href: '#icon-bank'
   }, {
+    label: 'Factory',
+    href: '#icon-factory'
+  }, {
     label: 'Brand Guide',
     href: '#brand-guide'
   }, {
@@ -567,7 +571,8 @@ export const OngandaNav = () => {
       gap: 32
     }}>
         <div className="hidden md:flex" style={{
-        gap: 32
+        gap: 32,
+        alignItems: 'center'
       }}>
           {NAV_ITEMS.map(item => <a key={item.label} href={item.href} style={{
           fontSize: 13,
@@ -576,6 +581,26 @@ export const OngandaNav = () => {
           textDecoration: 'none',
           transition: 'color 0.2s'
         }} onMouseEnter={e => e.currentTarget.style.color = COLOR.ochreOrange} onMouseLeave={e => e.currentTarget.style.color = linkColor}>
+              {item.label}
+            </a>)}
+          <div aria-hidden="true" style={{
+          width: 1,
+          height: 16,
+          background: border
+        }} />
+          {[{
+          label: 'Home',
+          href: '/'
+        }, {
+          label: 'Full site',
+          href: '/full'
+        }].map(item => <a key={item.label} href={item.href} style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: COLOR.ochreOrange,
+          textDecoration: 'none',
+          transition: 'color 0.2s'
+        }} onMouseEnter={e => e.currentTarget.style.color = COLOR.firedRed} onMouseLeave={e => e.currentTarget.style.color = COLOR.ochreOrange}>
               {item.label}
             </a>)}
         </div>
@@ -2106,6 +2131,200 @@ export const IconShowcase = () => {
         <span>{"' />"}</span>
       </div>
       <CodeSnippetBlock label="Icon · Icon Bank" lines={SNIPPET_ICON_BANK} accentHex="#D9791F" />
+    </section>;
+};
+
+// ─── IconFactoryLab — live pixel-icon editor ──────────────────────────────────
+// Draw on a 12×12 grid, watch createPixelIcon render it live, copy the def.
+// Demonstrates the data-driven icon path from onganda-icon-factory.
+
+const FACTORY_GRID = 12;
+const FACTORY_PALETTE = [COLOR.charBlack, COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown, COLOR.dyePlum];
+
+// Seed doodle: the WEAVE diamond motif — outline in ochre, firedRed core
+const FACTORY_SEED: (string | null)[] = (() => {
+  const cells: (string | null)[] = Array(FACTORY_GRID * FACTORY_GRID).fill(null);
+  const paint = (pts: [number, number][], hex: string) => pts.forEach(([x, y]) => {
+    cells[y * FACTORY_GRID + x] = hex;
+  });
+  paint([[5, 2], [6, 2], [4, 3], [7, 3], [3, 4], [8, 4], [2, 5], [9, 5], [2, 6], [9, 6], [3, 7], [8, 7], [4, 8], [7, 8], [5, 9], [6, 9]], COLOR.ochreOrange);
+  paint([[5, 5], [6, 5], [5, 6], [6, 6]], COLOR.firedRed);
+  return cells;
+})();
+
+// Merge same-colour horizontal runs into rects (charBlack → currentColor)
+const factoryDefFromCells = (cells: (string | null)[]): PixelIconDef => {
+  const rects: PixelRect[] = [];
+  for (let y = 0; y < FACTORY_GRID; y++) {
+    let x = 0;
+    while (x < FACTORY_GRID) {
+      const hex = cells[y * FACTORY_GRID + x];
+      if (!hex) {
+        x++;
+        continue;
+      }
+      let w = 1;
+      while (x + w < FACTORY_GRID && cells[y * FACTORY_GRID + x + w] === hex) w++;
+      rects.push({
+        x,
+        y,
+        w,
+        h: 1,
+        ...(hex === COLOR.charBlack ? {} : {
+          fill: hex
+        })
+      });
+      x += w;
+    }
+  }
+  return {
+    grid: FACTORY_GRID,
+    rects
+  };
+};
+
+const factorySnippetLines = (def: PixelIconDef): CodeSnippetLine[] => {
+  const rectLine = (r: PixelRect) => `    { x: ${r.x}, y: ${r.y}, w: ${r.w}, h: ${r.h}${r.fill ? `, fill: '${r.fill}'` : ''} },`;
+  const shown = def.rects.slice(0, 12).map(r => ({
+    type: 'prop' as const,
+    text: rectLine(r)
+  }));
+  const elided = def.rects.length > 12 ? [{
+    type: 'comment' as const,
+    text: `    // … ${def.rects.length - 12} more rects`
+  }] : [];
+  return [{
+    type: 'import',
+    text: "import { createPixelIcon } from '@onganda/design-system';"
+  }, {
+    type: 'plain',
+    text: ''
+  }, {
+    type: 'keyword',
+    text: 'const def = {'
+  }, {
+    type: 'plain',
+    text: `  grid: ${def.grid},`
+  }, {
+    type: 'plain',
+    text: '  rects: ['
+  }, ...shown, ...elided, {
+    type: 'plain',
+    text: '  ]'
+  }, {
+    type: 'keyword',
+    text: '};'
+  }, {
+    type: 'plain',
+    text: ''
+  }, {
+    type: 'accent',
+    text: 'export const IconDoodle = createPixelIcon(def);'
+  }];
+};
+
+export const IconFactoryLab = () => {
+  const {
+    isDark
+  } = useDark();
+  const [cells, setCells] = useState<(string | null)[]>(FACTORY_SEED);
+  const [activeColor, setActiveColor] = useState<string | null>(COLOR.charBlack);
+  const def = useMemo(() => factoryDefFromCells(cells), [cells]);
+  const Doodle = useMemo(() => createPixelIcon(def), [def]);
+  const problems = useMemo(() => validatePixelIconDef('Doodle', def), [def]);
+  const snippet = useMemo(() => factorySnippetLines(def), [def]);
+  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const muted = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';
+  const cellBg = isDark ? 'rgba(232,225,207,0.05)' : 'rgba(30,26,23,0.04)';
+  const paintCell = (idx: number) => setCells(prev => {
+    const next = [...prev];
+    next[idx] = activeColor === null || prev[idx] === activeColor ? null : activeColor;
+    return next;
+  });
+  return <section id="icon-factory" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader label="Icon Factory" headline="Draw a doodle. Get a component." isDark={isDark} />
+      <div className="grid gap-10 lg:grid-cols-[auto_1fr]">
+        {/* ── Editor ── */}
+        <div>
+          <div className="mb-4 flex items-center gap-2">
+            {FACTORY_PALETTE.map(hex => <button key={hex} onClick={() => setActiveColor(hex)} aria-label={`Paint with ${hex}`} style={{
+            width: 22,
+            height: 22,
+            background: hex,
+            border: activeColor === hex ? `2px solid ${isDark ? COLOR.milletClay : COLOR.charBlack}` : `1px solid ${border}`,
+            cursor: 'pointer'
+          }} />)}
+            <button onClick={() => setActiveColor(null)} aria-label="Eraser" style={{
+            width: 22,
+            height: 22,
+            background: 'transparent',
+            border: activeColor === null ? `2px solid ${isDark ? COLOR.milletClay : COLOR.charBlack}` : `1px dashed ${muted}`,
+            cursor: 'pointer',
+            fontSize: 10,
+            color: muted,
+            lineHeight: 1
+          }}>✕</button>
+            <button onClick={() => setCells(Array(FACTORY_GRID * FACTORY_GRID).fill(null))} style={{
+            marginLeft: 8,
+            padding: '4px 10px',
+            background: 'transparent',
+            border: `1px solid ${border}`,
+            cursor: 'pointer',
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: muted
+          }}>Clear</button>
+          </div>
+          <div style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${FACTORY_GRID}, 24px)`,
+          gap: 1,
+          width: 'fit-content',
+          padding: 8,
+          background: isDark ? COLOR.darkCard : COLOR.dustLight,
+          border: `1px solid ${border}`
+        }}>
+            {cells.map((hex, idx) => <button key={idx} onClick={() => paintCell(idx)} aria-label={`Pixel ${idx % FACTORY_GRID},${Math.floor(idx / FACTORY_GRID)}`} style={{
+            width: 24,
+            height: 24,
+            background: hex ?? cellBg,
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer'
+          }} />)}
+          </div>
+          <p className="mt-3 text-[11px]" style={{
+          color: muted
+        }}>
+            Click to paint · click again to erase · charBlack renders as <code>currentColor</code>
+          </p>
+        </div>
+        {/* ── Preview + code ── */}
+        <div>
+          <div className="flex items-end gap-8 border p-6" style={{
+          borderColor: border,
+          background: isDark ? COLOR.darkCard : COLOR.dustLight,
+          color: isDark ? COLOR.milletClay : COLOR.charBlack
+        }}>
+            {[16, 24, 48, 96].map(size => <div key={size} className="flex flex-col items-center gap-2">
+                <Doodle size={size} />
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{
+              color: muted
+            }}>{size}px</span>
+              </div>)}
+            <div className="ml-auto text-right">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{
+              color: muted
+            }}>{def.rects.length} rects</p>
+              {problems.length > 0 && <p className="mt-1 text-[11px]" style={{
+              color: COLOR.firedRed
+            }}>{problems[0]}</p>}
+            </div>
+          </div>
+          <CodeSnippetBlock label="Icon Factory · live def" lines={snippet} accentHex={COLOR.ochreOrange} />
+        </div>
+      </div>
     </section>;
 };
 

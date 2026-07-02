@@ -204,7 +204,7 @@ const PublicHero = ({
       ))}
     </div>
 
-    <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 py-16 text-center md:px-12">
+    <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-16 text-center md:px-12">
       <div className="mb-7 flex flex-wrap items-center justify-center gap-3">
         <PixelTag hex={COLOR.ochreOrange} label={tag} />
         <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: quiet }}>{LAB_LABEL}</span>
@@ -224,7 +224,10 @@ const PublicHero = ({
           </span>
         ))}
       </h1>
-      <Ticker className="mt-6 md:mt-8" />
+    </div>
+    {/* Full-bleed system ticker — matches the showcase hero stripe */}
+    <Ticker className="relative z-10 mt-6 md:mt-8" />
+    <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pb-16 text-center md:px-12">
       <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
         <a href={primary.href} className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold no-underline" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>

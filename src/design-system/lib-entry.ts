@@ -178,6 +178,7 @@ export {
   FieldApplications,
   PixelFlowchart,
   IconShowcase,
+  IconFactoryLab,
 } from '../components/onganda/onganda-sections';
 
 // ─── Publications section ─────────────────────────────────────────────────────

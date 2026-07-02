@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
 import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, OngandaFooter } from './onganda-primitives';
-import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase } from './onganda-sections';
+import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab } from './onganda-sections';
 import { ChartGallery } from './onganda-charts';
 import { Publications } from './onganda-publications';
 import { DocumentEditor } from './onganda-document-editor';
@@ -149,6 +149,9 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Icon Bank ── */}
         <IconShowcase />
+
+        {/* ── Icon Factory — live pixel editor ── */}
+        <IconFactoryLab />
 
         {/* ── Naming ladder ── */}
         <section className="max-w-7xl mx-auto px-6 pb-32 md:px-12">
