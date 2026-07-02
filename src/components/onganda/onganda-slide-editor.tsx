@@ -855,6 +855,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Okaanda Card',
     x: 12,
     y: 48,
+    w: 18,
+    h: 16,
     selected: false,
     editingText: false,
     systemIdx: 0
@@ -864,6 +866,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Oshini Card',
     x: 31,
     y: 48,
+    w: 18,
+    h: 16,
     selected: false,
     editingText: false,
     systemIdx: 1
@@ -873,6 +877,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Ombiga Card',
     x: 50,
     y: 48,
+    w: 18,
+    h: 16,
     selected: false,
     editingText: false,
     systemIdx: 2
@@ -882,6 +888,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Etiti Card',
     x: 69,
     y: 48,
+    w: 18,
+    h: 16,
     selected: false,
     editingText: false,
     systemIdx: 3
@@ -891,6 +899,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Oshitoo Card',
     x: 88,
     y: 48,
+    w: 18,
+    h: 16,
     selected: false,
     editingText: false,
     systemIdx: 4
@@ -1228,6 +1238,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Phase 0',
     x: 11,
     y: 40,
+    w: 18,
+    h: 20,
     selected: false,
     editingText: false,
     timelineIdx: 0,
@@ -1240,6 +1252,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Phase 1',
     x: 30,
     y: 40,
+    w: 18,
+    h: 20,
     selected: false,
     editingText: false,
     timelineIdx: 1,
@@ -1252,6 +1266,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Phase 2',
     x: 50,
     y: 40,
+    w: 18,
+    h: 20,
     selected: false,
     editingText: false,
     timelineIdx: 2,
@@ -1264,6 +1280,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Phase 3',
     x: 70,
     y: 40,
+    w: 18,
+    h: 20,
     selected: false,
     editingText: false,
     timelineIdx: 3,
@@ -1276,6 +1294,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Phase 4',
     x: 89,
     y: 40,
+    w: 18,
+    h: 20,
     selected: false,
     editingText: false,
     timelineIdx: 4,
@@ -1288,6 +1308,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Body',
     x: 11,
     y: 72,
+    w: 16,
+    h: 11,
     selected: false,
     editingText: false,
     textContent: 'Founding team · doctrine · partners'
@@ -1297,6 +1319,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Body',
     x: 30,
     y: 72,
+    w: 16,
+    h: 11,
     selected: false,
     editingText: false,
     textContent: 'Stack build · registry · eval'
@@ -1306,6 +1330,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Body',
     x: 50,
     y: 72,
+    w: 16,
+    h: 11,
     selected: false,
     editingText: false,
     textContent: 'Tuned models · benchmarks'
@@ -1315,6 +1341,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Body',
     x: 70,
     y: 72,
+    w: 16,
+    h: 11,
     selected: false,
     editingText: false,
     textContent: 'Tools · pilots · deployments'
@@ -1324,6 +1352,8 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     label: 'Body',
     x: 89,
     y: 72,
+    w: 16,
+    h: 11,
     selected: false,
     editingText: false,
     textContent: 'Repeatable modules'
@@ -2758,6 +2788,51 @@ function ComponentPreview({
     }} /></div>;
 }
 
+// ─── ScaledBlockContent — fit intrinsic content into a sized box ──────────────
+// Blocks render at their natural pixel size; when the user (or a template)
+// gives a block w/h, the content is scaled to fit rather than clipped, so
+// resizing always keeps the whole component visible and proportioned.
+const ScaledBlockContent = ({
+  children
+}: {
+  children: React.ReactNode;
+}) => {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const measure = () => {
+      const outer = outerRef.current;
+      const inner = innerRef.current;
+      if (!outer || !inner) return;
+      const iw = inner.offsetWidth;
+      const ih = inner.offsetHeight;
+      if (!iw || !ih) return;
+      setScale(Math.min(outer.clientWidth / iw, outer.clientHeight / ih));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    if (outerRef.current) observer.observe(outerRef.current);
+    if (innerRef.current) observer.observe(innerRef.current);
+    return () => observer.disconnect();
+  }, []);
+  return <div ref={outerRef} style={{
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden'
+  }}>
+      <div ref={innerRef} style={{
+      transform: `scale(${scale})`,
+      transformOrigin: 'center',
+      flexShrink: 0,
+      width: 'max-content'
+    }}>{children}</div>
+    </div>;
+};
+
 // ─── Slide Canvas ─────────────────────────────────────────────────────────────
 const SlideCanvas = ({
   slideId,
@@ -2925,7 +3000,8 @@ const SlideCanvas = ({
       ny = Math.max(2, Math.min(88, ny));
       const SNAP_THRESHOLD = 3;
       const newGuides: AlignGuide[] = [];
-      const gridLines = [25, 50, 75];
+      // Quarters plus the 10/90 margin lines used by the templates
+      const gridLines = [10, 25, 50, 75, 90];
       for (const gl of gridLines) {
         if (Math.abs(nx - gl) < SNAP_THRESHOLD) {
           nx = gl;
@@ -2963,6 +3039,12 @@ const SlideCanvas = ({
       onMoveBlock(draggingBlockId, nx, ny);
     };
     const handleMouseUp = () => {
+      // Quantize the final position to whole percent so layouts stay tidy
+      // and agent/template data reads cleanly.
+      if (draggingBlockId) {
+        const block = droppedBlocks.find(b => b.id === draggingBlockId);
+        if (block) onMoveBlock(draggingBlockId, Math.round(block.x), Math.round(block.y));
+      }
       setDraggingBlockId(null);
       setGuides([]);
       resizingRef.current = null;
@@ -3155,13 +3237,15 @@ const SlideCanvas = ({
             width: '100%',
             height: '100%'
           }}>
-            <div style={{
+            {hasSize && !block.editingText && !block.editingField ? <ScaledBlockContent>
+                {renderDroppedBlock(block, isDark, onUpdateBlock)}
+              </ScaledBlockContent> : <div style={{
               width: '100%',
               height: '100%',
-              overflow: hasSize ? 'hidden' : 'visible'
+              overflow: 'visible'
             }}>
-              {renderDroppedBlock(block, isDark, onUpdateBlock)}
-            </div>
+                {renderDroppedBlock(block, isDark, onUpdateBlock)}
+              </div>}
             {/* Delete button */}
             {block.selected && !block.editingText && <button onClick={e => {
               e.stopPropagation();
@@ -4700,11 +4784,16 @@ export const SlideEditor = ({
       }));
       return;
     }
-    window.setTimeout(() => {
+    // Real .pptx via pptxgenjs — native editable text, shapes, and charts.
+    // Dynamically imported so the library stays out of the editor bundle.
+    import('./onganda-pptx-export').then(({ exportDeckToPptx }) =>
+      exportDeckToPptx(deckTitle, slides, slideBlocks, `${safeFileName(deckTitle)}.pptx`)
+    ).catch(() => {
+      // Fallback: legacy HTML-based .ppt so the user still gets a file
       const deckHtml = document.querySelector('[data-onganda-print-deck]')?.innerHTML ?? '';
       downloadOfficeHtml(`${safeFileName(deckTitle)}.ppt`, wrapPowerPointDeck(deckTitle, deckHtml), 'application/vnd.ms-powerpoint;charset=utf-8');
-    }, 100);
-  }, [activeSlideId, deckTitle, setSlideBlocks]);
+    });
+  }, [activeSlideId, deckTitle, setSlideBlocks, slides, slideBlocks]);
   const handleApplyAiResult = useCallback((result: AiAuthoringResult) => {
     const generatedSlides: SlideEntry[] = (result.slides ?? []).map((slide, idx) => ({
       id: `ai-deck-${Date.now()}-${idx}`,
