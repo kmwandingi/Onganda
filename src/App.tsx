@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { Container, Theme } from './settings/types';
-import {
-  NamibiaAISystemsHub,
-  OngandaPublicSite,
-} from '@onganda/design-system';
+import { OngandaPublicSite } from './components/onganda/onganda-public-sites';
+
+// Showcase pulls in the full hub (editors, charts, authoring); keep it out of
+// the public-page chunk.
+const NamibiaAISystemsHub = lazy(() =>
+  import('./components/onganda/NamibiaAISystemsHub').then(m => ({ default: m.NamibiaAISystemsHub }))
+);
 
 const theme: Theme = 'light';
 // only use 'centered' container for standalone components, never for full page apps or websites.
@@ -30,7 +33,7 @@ function App() {
   setTheme(theme);
 
   const generatedComponent = useMemo(() => {
-    if (routePath === '/showcase') return <NamibiaAISystemsHub />;
+    if (routePath === '/showcase') return <Suspense fallback={null}><NamibiaAISystemsHub /></Suspense>;
     if (routePath === '/full') return <OngandaPublicSite page="full" />;
     return <OngandaPublicSite page="home" />;
   }, [routePath]);

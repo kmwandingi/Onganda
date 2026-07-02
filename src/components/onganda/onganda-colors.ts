@@ -19,6 +19,25 @@ export const COLOR = {
   darkCardAlt: '#271F1A'
 } as const;
 
+// CSS-variable form of COLOR for consumers who theme via stylesheet overrides.
+// Each value resolves to the --onganda-* custom property (shipped in style.css)
+// with the canonical hex as fallback. Use where a plain CSS color string is
+// accepted (background, color, border); keep COLOR for hex math like `${hex}60`.
+export const COLOR_CSS_VARS = {
+  milletClay: 'var(--onganda-millet-clay, #E8E1CF)',
+  dustLight: 'var(--onganda-dust-light, #F3E8C3)',
+  mahanguGold: 'var(--onganda-mahangu-gold, #DFAE2B)',
+  ochreOrange: 'var(--onganda-ochre-orange, #D9791F)',
+  firedRed: 'var(--onganda-fired-red, #C84A1B)',
+  barkRust: 'var(--onganda-bark-rust, #8F3E21)',
+  mopaneBrown: 'var(--onganda-mopane-brown, #6A4B2E)',
+  charBlack: 'var(--onganda-char-black, #1E1A17)',
+  dyePlum: 'var(--onganda-dye-plum, #6F4A6E)',
+  darkBg: 'var(--onganda-dark-bg, #120F0D)',
+  darkCard: 'var(--onganda-dark-card, #1C1713)',
+  darkCardAlt: 'var(--onganda-dark-card-alt, #271F1A)'
+} as const satisfies Record<keyof typeof COLOR, string>;
+
 // ─── Basket-weave texture (Oshiwambo coil strands + stepped diamond) ──────────
 const STRAND_LIGHT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='10'%3E%3Cellipse cx='2' cy='5' rx='4.5' ry='2.8' fill='%231E1A17'/%3E%3Cellipse cx='11' cy='5' rx='4.5' ry='2.8' fill='%231E1A17'/%3E%3C/svg%3E")`;
 const STRAND_DARK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='10'%3E%3Cellipse cx='2' cy='5' rx='4.5' ry='2.8' fill='%23E8E1CF'/%3E%3Cellipse cx='11' cy='5' rx='4.5' ry='2.8' fill='%23E8E1CF'/%3E%3C/svg%3E")`;

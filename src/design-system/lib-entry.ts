@@ -8,6 +8,7 @@
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 export {
   COLOR,
+  COLOR_CSS_VARS,
   WEAVE,
   SWATCHES,
   GUIDE_PALETTE_SWATCHES,
@@ -112,9 +113,13 @@ export type {
   DeckExportPayload,
 } from '../components/onganda/onganda-export-api';
 
+// ─── Motion & spacing tokens ──────────────────────────────────────────────────
+export { MOTION, SPACE } from '../components/onganda/onganda-motion';
+
 // ─── Primitives ───────────────────────────────────────────────────────────────
 export {
   DarkContext,
+  DarkProvider,
   useDark,
   Px,
   PixelDot,
@@ -134,6 +139,9 @@ export {
   systemIconForName,
   FlowNodeIcon,
   PixelButton,
+  PixelInput,
+  PixelTextarea,
+  PixelSelect,
   SystemCard,
   StatCard,
   SwatchChip,
@@ -148,6 +156,10 @@ export {
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 export * from '../components/onganda/onganda-icons';
+
+// ─── Icon factory (data-driven pixel icons) ───────────────────────────────────
+export { createPixelIcon, validatePixelIconDef, pixelIconToSvgString } from '../components/onganda/onganda-icon-factory';
+export type { PixelRect, PixelIconDef } from '../components/onganda/onganda-icon-factory';
 
 // ─── Charts ───────────────────────────────────────────────────────────────────
 export { ChartGallery } from '../components/onganda/onganda-charts';
@@ -173,6 +185,9 @@ export { Publications } from '../components/onganda/onganda-publications';
 
 // ─── AI authoring ─────────────────────────────────────────────────────────────
 export { AiAuthoringPanel, regenerateDocBlock } from '../components/onganda/onganda-ai-authoring';
+
+// ─── Public sites ─────────────────────────────────────────────────────────────
+export { OngandaPublicSite } from '../components/onganda/onganda-public-sites';
 
 // ─── Stateful editor shells ───────────────────────────────────────────────────
 export { DocumentEditor } from '../components/onganda/onganda-document-editor';

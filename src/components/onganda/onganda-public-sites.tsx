@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
 import {
   DarkContext,
@@ -7,7 +7,9 @@ import {
   OngandaLogoMark,
   PixelCornerMarks,
   PixelDot,
+  PixelInput,
   PixelTag,
+  PixelTextarea,
   TerminalCard,
   WeaveOverlay,
   systemIconForName
@@ -15,10 +17,12 @@ import {
 import {
   IconArrowRight,
   IconCheck,
+  IconClose,
   IconCode,
   IconDatabase,
   IconDashboard,
   IconMail,
+  IconMenu,
   IconPackage,
   IconTarget,
   IconTerminal,
@@ -57,36 +61,83 @@ const fadeUp = {
   transition: { duration: 0.45 }
 };
 
-const PublicNav = () => (
-  <nav className="sticky top-0 z-50 w-full border-b" style={{
-    background: 'rgba(232,225,207,0.92)',
-    borderColor: line,
-    backdropFilter: 'blur(14px)'
-  }}>
-    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
-      <a href="/" className="flex items-center gap-3 no-underline" style={{ color: COLOR.charBlack }}>
-        <OngandaLogoMark size={24} />
-        <div>
-          <p className="text-sm font-semibold leading-none">{BRAND}</p>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{LAB_LABEL}</p>
+const PublicNav = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  return (
+    <nav className="sticky top-0 z-50 w-full border-b" style={{
+      background: 'rgba(232,225,207,0.92)',
+      borderColor: line,
+      backdropFilter: 'blur(14px)'
+    }}>
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
+        <a href="/" className="flex items-center gap-3 no-underline" style={{ color: COLOR.charBlack }}>
+          <OngandaLogoMark size={24} />
+          <div>
+            <p className="text-sm font-semibold leading-none">{BRAND}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{LAB_LABEL}</p>
+          </div>
+        </a>
+        <div className="hidden items-center gap-1 md:flex">
+          {navItems.map(item => (
+            <a key={item.href} href={item.href} className="px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] no-underline" style={{ color: quiet }}>
+              {item.label}
+            </a>
+          ))}
         </div>
-      </a>
-      <div className="hidden items-center gap-1 md:flex">
-        {navItems.map(item => (
-          <a key={item.href} href={item.href} className="px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] no-underline" style={{ color: quiet }}>
-            {item.label}
-          </a>
-        ))}
+        <motion.button
+          whileTap={{ scale: 0.94 }}
+          onClick={() => setMenuOpen(open => !open)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          className="flex items-center justify-center border p-2 md:hidden"
+          style={{ background: 'transparent', borderColor: line, color: COLOR.charBlack, cursor: 'pointer' }}
+        >
+          {menuOpen ? <IconClose size={18} /> : <IconMenu size={18} />}
+        </motion.button>
       </div>
-    </div>
-  </nav>
-);
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="overflow-hidden border-t md:hidden"
+            style={{ borderColor: line }}
+          >
+            <div className="flex flex-col px-6 py-3">
+              {navItems.map(item => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 py-3 text-xs font-bold uppercase tracking-[0.14em] no-underline"
+                  style={{ color: quiet }}
+                >
+                  <PixelDot color={COLOR.ochreOrange} size={4} />
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
 
 const PublicShell = ({ children }: { children: React.ReactNode }) => (
   <DarkContext.Provider value={{ isDark: false, toggle: () => {} }}>
     <div className="min-h-screen" style={{ background: COLOR.milletClay, color: COLOR.charBlack, fontFamily: 'Inter, Arial, sans-serif' }}>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:px-4 focus:py-2 focus:text-xs focus:font-bold focus:uppercase focus:tracking-[0.14em]"
+        style={{ background: COLOR.charBlack, color: COLOR.milletClay }}
+      >
+        Skip to content
+      </a>
       <PublicNav />
-      {children}
+      <main id="main">{children}</main>
     </div>
   </DarkContext.Provider>
 );
@@ -353,17 +404,17 @@ const ContactBand = ({ compact = false }: { compact?: boolean }) => (
               <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block">
                   <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Email</span>
-                  <input className="mt-3 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="name@institution.na" />
+                  <PixelInput className="mt-3" type="email" placeholder="name@institution.na" />
                 </label>
                 <label className="block">
                   <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Inquiry type</span>
-                  <input className="mt-3 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="Partnership, pilot, access" />
+                  <PixelInput className="mt-3" placeholder="Partnership, pilot, access" />
                 </label>
               </div>
             )}
             <label className="block">
               <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Short note</span>
-              <textarea className="mt-3 min-h-32 w-full border bg-transparent px-4 py-3 outline-none" style={{ borderColor: line }} placeholder="What would you like to discuss?" />
+              <PixelTextarea className="mt-3" placeholder="What would you like to discuss?" />
             </label>
             <motion.button whileTap={{ scale: 0.98 }} className="inline-flex w-fit items-center gap-2 px-6 py-3 text-sm font-semibold" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
               Contact {BRAND}<IconArrowRight size={14} />

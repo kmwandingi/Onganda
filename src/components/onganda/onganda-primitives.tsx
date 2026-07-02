@@ -4,7 +4,7 @@
 // node card, field app card, annotation panel, and dark-mode context.
 // Import from this file in any Onganda project.
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { WEAVE, COLOR, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
@@ -17,6 +17,38 @@ export const DarkContext = createContext<{
   toggle: () => {}
 });
 export const useDark = () => useContext(DarkContext);
+
+// ─── DarkProvider — ready-made context wrapper with localStorage persistence ──
+// Usage: <DarkProvider><App /></DarkProvider>
+export const DarkProvider = ({
+  children,
+  defaultDark = false,
+  storageKey = 'onganda-dark'
+}: {
+  children: React.ReactNode;
+  defaultDark?: boolean;
+  storageKey?: string;
+}) => {
+  const [isDark, setIsDark] = useState(() => {
+    try {
+      const stored = localStorage.getItem(storageKey);
+      return stored !== null ? stored === '1' : defaultDark;
+    } catch {
+      return defaultDark;
+    }
+  });
+  const toggle = useCallback(() => setIsDark(prev => {
+    const next = !prev;
+    try {
+      localStorage.setItem(storageKey, next ? '1' : '0');
+    } catch { /* storage unavailable (SSR, private mode) */ }
+    return next;
+  }), [storageKey]);
+  return <DarkContext.Provider value={{
+    isDark,
+    toggle
+  }}>{children}</DarkContext.Provider>;
+};
 
 // ─── Px — pixel SVG primitive ─────────────────────────────────────────────────
 // Usage: <Px size={48} viewBox="0 0 24 24">…rects…</Px>
@@ -473,6 +505,83 @@ export const PixelButton = ({
       {children}
     </button>;
 };
+
+// ─── Form primitives — sharp-cornered inputs in the pixel language ────────────
+// Transparent background, 1px line border, ochre focus. Extend native props so
+// callers keep full control (placeholder, value, onChange, className, …).
+const fieldBase = (isDark: boolean): React.CSSProperties => ({
+  width: '100%',
+  background: 'transparent',
+  border: `1px solid ${isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'}`,
+  borderRadius: 0,
+  outline: 'none',
+  padding: '12px 16px',
+  fontFamily: 'Inter, Arial, sans-serif',
+  fontSize: 14,
+  color: isDark ? COLOR.milletClay : COLOR.charBlack,
+  transition: 'border-color 0.2s'
+});
+const fieldFocus = (e: React.FocusEvent<HTMLElement>) => {
+  (e.currentTarget as HTMLElement).style.borderColor = COLOR.ochreOrange;
+};
+const fieldBlur = (isDark: boolean) => (e: React.FocusEvent<HTMLElement>) => {
+  (e.currentTarget as HTMLElement).style.borderColor = isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)';
+};
+
+export const PixelInput = ({
+  isDark = false,
+  style,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & {
+  isDark?: boolean;
+}) => <input {...props} onFocus={e => {
+  fieldFocus(e);
+  props.onFocus?.(e);
+}} onBlur={e => {
+  fieldBlur(isDark)(e);
+  props.onBlur?.(e);
+}} style={{
+  ...fieldBase(isDark),
+  ...style
+}} />;
+
+export const PixelTextarea = ({
+  isDark = false,
+  style,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  isDark?: boolean;
+}) => <textarea {...props} onFocus={e => {
+  fieldFocus(e);
+  props.onFocus?.(e);
+}} onBlur={e => {
+  fieldBlur(isDark)(e);
+  props.onBlur?.(e);
+}} style={{
+  ...fieldBase(isDark),
+  minHeight: 128,
+  resize: 'vertical',
+  ...style
+}} />;
+
+export const PixelSelect = ({
+  isDark = false,
+  style,
+  children,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement> & {
+  isDark?: boolean;
+}) => <select {...props} onFocus={e => {
+  fieldFocus(e);
+  props.onFocus?.(e);
+}} onBlur={e => {
+  fieldBlur(isDark)(e);
+  props.onBlur?.(e);
+}} style={{
+  ...fieldBase(isDark),
+  cursor: 'pointer',
+  ...style
+}}>{children}</select>;
 
 // ─── StatCard — single stat in the research signals bar ──────────────────────
 export const StatCard = ({
