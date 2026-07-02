@@ -185,68 +185,68 @@ const TEMPLATE_SLIDES: SlideEntry[] = [{
 }, {
   id: 'slide-02',
   tag: '02',
-  title: 'Why now',
-  subtitle: 'Global market context'
+  title: 'The idea',
+  subtitle: 'Concept overview'
 }, {
   id: 'slide-03',
   tag: '03',
-  title: "Namibia already has the first pieces",
-  subtitle: 'Institutional readiness'
+  title: 'Why this matters now',
+  subtitle: 'Global market context'
 }, {
   id: 'slide-04',
   tag: '04',
-  title: 'The problem is already documented',
-  subtitle: 'Readiness gaps'
+  title: 'Namibia already has the early pieces',
+  subtitle: 'Institutional readiness'
 }, {
   id: 'slide-05',
   tag: '05',
-  title: 'Why this has economic value',
-  subtitle: 'Digital spend leakage'
+  title: 'The readiness gaps are identified',
+  subtitle: 'Documented gaps'
 }, {
   id: 'slide-06',
   tag: '06',
-  title: 'Why this matters for jobs and employability',
-  subtitle: 'Labour-market case'
+  title: 'The economic and business case',
+  subtitle: 'Digital spend & market'
 }, {
   id: 'slide-07',
   tag: '07',
-  title: 'The two-track operating model',
-  subtitle: 'Architecture'
+  title: 'The labour-market case',
+  subtitle: 'Jobs & employability'
 }, {
   id: 'slide-08',
   tag: '08',
-  title: 'Internal system stack',
-  subtitle: 'Five systems'
+  title: 'The concept in one sentence',
+  subtitle: 'Positioning'
 }, {
   id: 'slide-09',
   tag: '09',
-  title: 'How the stack maps to Namibian pain points',
-  subtitle: 'Problem-to-tool mapping'
+  title: 'The two-track operating model',
+  subtitle: 'Architecture'
 }, {
   id: 'slide-10',
   tag: '10',
-  title: 'Sequencing reference: Mistral',
-  subtitle: 'External analogue'
+  title: 'Internal system architecture',
+  subtitle: 'Five systems'
 }, {
   id: 'slide-11',
   tag: '11',
-  title: 'Initial use cases',
-  subtitle: 'First deployments'
+  title: 'What the tools can address',
+  subtitle: 'Problem-to-tool mapping'
 }, {
   id: 'slide-12',
   tag: '12',
-  title: 'How the institution is structured',
-  subtitle: 'Institutional model'
+  title: 'Sequencing reference: Mistral',
+  subtitle: 'External analogue'
 }, {
   id: 'slide-13',
   tag: '13',
-  title: 'Delivery sequence',
-  subtitle: 'First 24 months'
+  title: 'How the institution is structured',
+  subtitle: 'Institutional model'
 }, {
   id: 'slide-14',
   tag: '14',
-  title: 'Success metrics',
-  subtitle: 'KPI dashboard'
+  title: 'Delivery sequence',
+  subtitle: 'First 24 months'
 }, {
   id: 'slide-15',
   tag: '15',
@@ -522,7 +522,7 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     id: 's05-l2',
     type: 'text-label',
     label: 'Label',
-    x: 68,
+    x: 58,
     y: 32,
     selected: false,
     editingText: false,
@@ -540,7 +540,7 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     id: 's05-l4',
     type: 'text-label',
     label: 'Label',
-    x: 68,
+    x: 58,
     y: 50,
     selected: false,
     editingText: false,
@@ -554,6 +554,30 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     selected: false,
     editingText: false,
     textContent: '05 — Indigenous-Language Data Shortage'
+  }, {
+    id: 's05-r',
+    type: 'chart-radar',
+    label: 'Readiness Radar',
+    x: 86,
+    y: 45,
+    selected: false,
+    editingText: false,
+    radarData: JSON.stringify([{
+      subject: 'Regulation',
+      value: 25
+    }, {
+      subject: 'Data protection',
+      value: 35
+    }, {
+      subject: 'Skills',
+      value: 40
+    }, {
+      subject: 'Infrastructure',
+      value: 45
+    }, {
+      subject: 'Language data',
+      value: 20
+    }])
   }, {
     id: 's05-d',
     type: 'divider-dither',
@@ -961,6 +985,38 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     selected: false,
     editingText: false,
     textContent: 'Utilities · Schools · Hospitals · NGOs · Enterprise tools'
+  }, {
+    id: 's11-i1',
+    type: 'icon-etiti',
+    label: 'Etiti Icon',
+    x: 6,
+    y: 28,
+    selected: false,
+    editingText: false
+  }, {
+    id: 's11-i2',
+    type: 'icon-okaanda',
+    label: 'Okaanda Icon',
+    x: 6,
+    y: 46,
+    selected: false,
+    editingText: false
+  }, {
+    id: 's11-i3',
+    type: 'icon-oshini',
+    label: 'Oshini Icon',
+    x: 6,
+    y: 63,
+    selected: false,
+    editingText: false
+  }, {
+    id: 's11-i4',
+    type: 'icon-oshitoo',
+    label: 'Oshitoo Icon',
+    x: 6,
+    y: 80,
+    selected: false,
+    editingText: false
   }],
   'slide-12': [{
     id: 's12-h',
@@ -4305,7 +4361,8 @@ export const SlideEditor = ({
 
   // Session restore
   const savedSession = useMemo(() => loadSlideSession(), []);
-  const [stage, setStage] = useState<'picker' | 'editor'>(savedSession?.stage === 'editor' ? 'editor' : 'picker');
+  // Always land on the picker — a saved session surfaces there as "Resume"
+  const [stage, setStage] = useState<'picker' | 'editor'>('picker');
   const [activeSlideId, setActiveSlideId] = useState<string>(savedSession?.activeSlideId ?? '');
   const [deckTitle, setDeckTitle] = useState(savedSession?.deckTitle ?? 'Untitled Presentation');
   const [activeCategory, setActiveCategory] = useState('Icons');

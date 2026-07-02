@@ -4528,7 +4528,8 @@ export const DocumentEditor = ({
 
   // Session restore
   const savedSession = useMemo(() => loadDocSession(), []);
-  const [stage, setStage] = useState<'picker' | 'editor'>(savedSession?.stage === 'editor' ? 'editor' : 'picker');
+  // Always land on the picker — a saved session surfaces there as "Resume"
+  const [stage, setStage] = useState<'picker' | 'editor'>('picker');
   const [docTitle, setDocTitle] = useState(savedSession?.docTitle ?? 'Untitled Document');
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
