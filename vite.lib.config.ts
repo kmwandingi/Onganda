@@ -38,6 +38,7 @@ export default defineConfig({
         'react/jsx-runtime',
         'framer-motion',
         'recharts',
+        'pptxgenjs',
       ],
       output: {
         globals: {

@@ -40,6 +40,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:lib": "vite build --config vite.lib.config.ts && cp src/design-system/lib-style.css dist/style.css && node -e \"require('fs').writeFileSync('dist/index.d.ts', 'export * from \\\"./design-system/lib-entry\\\";\\n')\"",
+    "prepack": "npm run build:lib",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
