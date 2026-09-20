@@ -2693,9 +2693,8 @@ export const ProductPatterns = () => {
               <DensityProvider value="compact">
                 <PixelPanel
                   isDark={isDark}
-                  eyebrow="Practice — MCQ"
+                  eyebrow="Practice — MCQ · data splitting"
                   title="What happens if train_test_split uses shuffle=True without random_state?"
-                  note="data splitting"
                   footer={
                     <PixelActions align="between">
                       <PixelButton variant="primary" isDark={isDark}>Send answer</PixelButton>

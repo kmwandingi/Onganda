@@ -444,7 +444,7 @@ export const PixelPanel = ({
 }: {
   eyebrow?: string;
   title?: React.ReactNode;
-  /** one quiet line under the title */
+  /** a quiet subtitle under the title */
   note?: React.ReactNode;
   /** left rule colour; defaults to the accent ink */
   accent?: string;
@@ -468,12 +468,13 @@ export const PixelPanel = ({
             {eyebrow}
           </p>
         )}
-        {note && <p className="text-xs leading-relaxed" style={{ color: c.textMuted, margin: '4px 0 0' }}>{note}</p>}
         {title && (
-          <h2 className="text-base font-semibold tracking-tight" style={{ color: c.text, margin: (eyebrow || note) ? '6px 0 0' : 0 }}>
+          <h2 className="text-base font-semibold tracking-tight" style={{ color: c.text, margin: eyebrow ? '6px 0 0' : 0 }}>
             {title}
           </h2>
         )}
+        {/* A subtitle reads under the title, not above it. */}
+        {note && <p className="text-xs leading-relaxed" style={{ color: c.textMuted, margin: '5px 0 0' }}>{note}</p>}
         {(eyebrow || title || note) && (
           // DitherBar has no margin of its own, so it needs its own row or it
           // collides with the line above it.
