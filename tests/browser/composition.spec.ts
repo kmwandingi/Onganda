@@ -307,6 +307,36 @@ test('a notice is visible the moment it renders, not only once scrolled past', a
   }
 });
 
+test('the choice list gives a radiogroup its keyboard contract', async ({ page }) => {
+  // One tab stop into the group, arrows move and select, Home and End jump.
+  // Products were rebuilding this per surface, which is how it goes missing.
+  await page.goto('/showcase');
+  const group = page.getByRole('radiogroup').first();
+  await group.scrollIntoViewIfNeeded();
+
+  const radios = group.getByRole('radio');
+  await expect(radios).toHaveCount(4);
+
+  // Exactly one tab stop.
+  const tabbable = await group.evaluate(el =>
+    [...el.querySelectorAll('[role="radio"]')].filter(r => r.getAttribute('tabindex') === '0').length
+  );
+  expect(tabbable, 'a radiogroup has one tab stop').toBe(1);
+
+  await radios.nth(1).focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(radios.nth(2)).toBeFocused();
+  await expect(radios.nth(2)).toHaveAttribute('aria-checked', 'true');
+
+  await page.keyboard.press('ArrowUp');
+  await expect(radios.nth(1)).toBeFocused();
+
+  await page.keyboard.press('End');
+  await expect(radios.nth(3)).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(radios.nth(0)).toBeFocused();
+});
+
 test('the dialog traps focus, closes on escape, and restores focus', async ({ page }) => {
   await page.goto('/showcase');
   const open = page.getByRole('button', { name: 'Delete dataset' });

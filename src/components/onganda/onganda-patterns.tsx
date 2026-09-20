@@ -503,7 +503,8 @@ export const PixelChoice = ({
   disabled = false,
   state,
   isDark = false,
-  name
+  name,
+  tabIndex
 }: {
   label: React.ReactNode;
   selected: boolean;
@@ -513,6 +514,8 @@ export const PixelChoice = ({
   state?: 'correct' | 'incorrect';
   isDark?: boolean;
   name?: string;
+  /** override the roving tab stop; the list normally handles this */
+  tabIndex?: number;
 }) => {
   const c = roles(isDark);
   const d = useDensity();
@@ -525,6 +528,8 @@ export const PixelChoice = ({
       role="radio"
       name={name}
       aria-checked={selected}
+      // One tab stop for the whole group; arrows move within it.
+      tabIndex={tabIndex ?? (selected ? 0 : -1)}
       disabled={disabled}
       onClick={onSelect}
       className="onganda-focus relative w-full overflow-hidden text-left"
@@ -556,7 +561,13 @@ export const PixelChoice = ({
   );
 };
 
-/** The radiogroup wrapper. Keeps arrow-key semantics and even spacing. */
+/** The radiogroup wrapper.
+ *
+ *  It owns the keyboard contract so no product has to rebuild it: a single tab
+ *  stop into the group, then Arrow keys move and select, Home and End jump to
+ *  the ends. That is what `role="radiogroup"` promises, and re-deriving it per
+ *  product is how it ends up missing.
+ */
 export const PixelChoiceList = ({
   label,
   children,
@@ -567,7 +578,36 @@ export const PixelChoiceList = ({
   isDark?: boolean;
 }) => {
   const d = useDensity();
-  return <div role="radiogroup" aria-label={label} style={{ display: 'grid', gap: d.labelGap }}>{children}</div>;
+  const group = useRef<HTMLDivElement>(null);
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const keys = ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'];
+    if (!keys.includes(e.key)) return;
+    const radios = Array.from(group.current?.querySelectorAll<HTMLElement>('[role="radio"]:not([disabled])') ?? []);
+    if (!radios.length) return;
+    e.preventDefault();
+    const here = radios.indexOf(document.activeElement as HTMLElement);
+    const step = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : -1;
+    const next =
+      e.key === 'Home' ? 0 :
+      e.key === 'End' ? radios.length - 1 :
+      here === -1 ? 0 : (here + step + radios.length) % radios.length;
+    radios[next].focus();
+    // Arrow keys select in a radiogroup; Home and End only move.
+    if (e.key !== 'Home' && e.key !== 'End') radios[next].click();
+  };
+
+  return (
+    <div
+      ref={group}
+      role="radiogroup"
+      aria-label={label}
+      onKeyDown={onKeyDown}
+      style={{ display: 'grid', gap: d.labelGap }}
+    >
+      {children}
+    </div>
+  );
 };
 
 // ─── PixelActions — the button row ───────────────────────────────────────────
