@@ -285,6 +285,10 @@ test('the showcase demonstrates every pattern an agent will need', async ({ page
   await expect(patterns.getByRole('progressbar')).toHaveCount(3);        // progress
   await expect(patterns.getByText('No datasets yet')).toBeVisible();     // empty state
   await expect(patterns.getByRole('button', { name: 'Delete dataset' })).toBeVisible();
+  // Panel, choice list and action row — the compact composition.
+  await expect(patterns.getByRole('radiogroup')).toHaveCount(1);
+  await expect(patterns.getByRole('radio')).toHaveCount(4);
+  await expect(patterns.getByRole('button', { name: 'Send answer' })).toBeVisible();
 });
 
 test('a notice is visible the moment it renders, not only once scrolled past', async ({ page }) => {

@@ -8,7 +8,7 @@ import { COLOR, EDITOR_SURFACE, roles, onColor, inkOn, statusFor, SYSTEM_COLOR, 
 import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
-import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress } from './onganda-patterns';
+import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -2601,6 +2601,7 @@ export const ProductPatterns = () => {
   const [tab, setTab] = useState<'live' | 'queued' | 'archived'>('live');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [choice, setChoice] = useState('The split changes between runs');
 
   const panel: React.CSSProperties = { background: c.surface, border: `1px solid ${c.line}` };
 
@@ -2679,6 +2680,53 @@ export const ProductPatterns = () => {
                 <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Dialog · focus trap, escape, scrim</p>
                 <PixelButton variant="danger" isDark={isDark} onClick={() => setDialogOpen(true)}>Delete dataset</PixelButton>
               </div>
+            </div>
+          </div>
+
+          {/* ── Panel, choices, actions — the compact composition ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative">
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+                Panel · a compact surface cannot be built without the language
+              </p>
+              <DensityProvider value="compact">
+                <PixelPanel
+                  isDark={isDark}
+                  eyebrow="Practice — MCQ"
+                  title="What happens if train_test_split uses shuffle=True without random_state?"
+                  note="data splitting"
+                  footer={
+                    <PixelActions align="between">
+                      <PixelButton variant="primary" isDark={isDark}>Send answer</PixelButton>
+                      <PixelButton variant="ghost" isDark={isDark}>Next exercise</PixelButton>
+                    </PixelActions>
+                  }
+                >
+                  <div className="mt-4">
+                    <PixelChoiceList label="Answer" isDark={isDark}>
+                      {[
+                        'The split is reproducible',
+                        'The split changes between runs',
+                        'The split fails',
+                        'The test set is empty'
+                      ].map(o => (
+                        <PixelChoice
+                          key={o}
+                          isDark={isDark}
+                          label={o}
+                          selected={choice === o}
+                          onSelect={() => setChoice(o)}
+                        />
+                      ))}
+                    </PixelChoiceList>
+                  </div>
+                </PixelPanel>
+              </DensityProvider>
+              <p className="mt-4 text-xs leading-relaxed" style={{ color: c.textMuted }}>
+                The panel brings its own eyebrow, dither rule, weave and corner marks, so a compact
+                surface carries the language without the product re-deriving it.
+              </p>
             </div>
           </div>
 

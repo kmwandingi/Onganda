@@ -421,3 +421,182 @@ export const PixelProgress = ({
     </div>
   );
 };
+
+// ─── PixelPanel — the compact surface container ──────────────────────────────
+// Measured against the landing page, every extension panel sat at the floor on
+// all six composition measures: one weave, three marks, one eyebrow label, no
+// inverse band. A solid black button in a flat textureless box reads as a heavy
+// blob, which is why the panels looked "too black" while actually carrying less
+// black than the landing page (3% against 12%).
+//
+// This is the compact peer of SectionHeader + a card: eyebrow, title, dither
+// rule, weave and corner marks in one place, so a panel cannot be built
+// without them.
+export const PixelPanel = ({
+  eyebrow,
+  title,
+  note,
+  accent,
+  children,
+  footer,
+  isDark = false,
+  className = ''
+}: {
+  eyebrow?: string;
+  title?: React.ReactNode;
+  /** one quiet line under the title */
+  note?: React.ReactNode;
+  /** left rule colour; defaults to the accent ink */
+  accent?: string;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
+  isDark?: boolean;
+  className?: string;
+}) => {
+  const c = roles(isDark);
+  const rule = accent ?? c.accentInk;
+  return (
+    <section
+      className={`relative overflow-hidden ${className}`}
+      style={{ background: c.surface, border: `1px solid ${c.line}`, borderLeft: `3px solid ${rule}` }}
+    >
+      <WeaveOverlay isDark={isDark} opacity={0.04} />
+      <PixelCornerMarks hex={rule} size={8} />
+      <div className="relative" style={{ padding: 16 }}>
+        {eyebrow && (
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: c.accentInk, margin: 0 }}>
+            {eyebrow}
+          </p>
+        )}
+        {note && <p className="text-xs leading-relaxed" style={{ color: c.textMuted, margin: '4px 0 0' }}>{note}</p>}
+        {title && (
+          <h2 className="text-base font-semibold tracking-tight" style={{ color: c.text, margin: (eyebrow || note) ? '6px 0 0' : 0 }}>
+            {title}
+          </h2>
+        )}
+        {(eyebrow || title || note) && (
+          // DitherBar has no margin of its own, so it needs its own row or it
+          // collides with the line above it.
+          <div style={{ margin: '12px 0 14px' }}>
+            <DitherBar color={rule} segments={28} height={3} opacity={0.32} />
+          </div>
+        )}
+        {children}
+      </div>
+      {footer && (
+        <div className="relative" style={{ padding: '12px 16px', borderTop: `1px solid ${c.line}`, background: c.surfaceWell }}>
+          {footer}
+        </div>
+      )}
+    </section>
+  );
+};
+
+// ─── PixelChoice — a selectable option in a list ─────────────────────────────
+// Multiple choice was hand-rolled downstream as a bordered box with a radio
+// glyph, which is how it drifted: 44px tall boxes with a lot of dead space and
+// no trace of the language. The option is a first-class pattern here.
+export const PixelChoice = ({
+  label,
+  selected,
+  onSelect,
+  disabled = false,
+  state,
+  isDark = false,
+  name
+}: {
+  label: React.ReactNode;
+  selected: boolean;
+  onSelect: () => void;
+  disabled?: boolean;
+  /** after grading: marks the option as the right or the chosen-wrong one */
+  state?: 'correct' | 'incorrect';
+  isDark?: boolean;
+  name?: string;
+}) => {
+  const c = roles(isDark);
+  const d = useDensity();
+  const edge = state === 'correct' ? statusFor('settled', isDark)
+    : state === 'incorrect' ? statusFor('critical', isDark)
+    : selected ? c.controlOnBorder : c.fieldBorder;
+  return (
+    <button
+      type="button"
+      role="radio"
+      name={name}
+      aria-checked={selected}
+      disabled={disabled}
+      onClick={onSelect}
+      className="onganda-focus relative w-full overflow-hidden text-left"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: d.labelGap,
+        padding: d.fieldPadding,
+        background: selected ? `${c.controlOn}14` : c.fieldBg,
+        border: `1px solid ${edge}`,
+        borderRadius: 0,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled && !selected ? 0.55 : 1,
+        color: c.textBody,
+        fontSize: d.fieldFont,
+        lineHeight: 1.45,
+        transition: 'background 0.18s, border-color 0.18s',
+        ['--onganda-focus' as string]: c.focusRing
+      } as React.CSSProperties}
+    >
+      {selected && <WeaveOverlay isDark={isDark} opacity={0.05} />}
+      <span
+        aria-hidden="true"
+        className="relative shrink-0"
+        style={{ width: d.controlBox - 4, height: d.controlBox - 4, border: `1px solid ${edge}`, background: selected ? c.controlOn : 'transparent' }}
+      />
+      <span className="relative min-w-0">{label}</span>
+    </button>
+  );
+};
+
+/** The radiogroup wrapper. Keeps arrow-key semantics and even spacing. */
+export const PixelChoiceList = ({
+  label,
+  children,
+  isDark = false
+}: {
+  label: string;
+  children: React.ReactNode;
+  isDark?: boolean;
+}) => {
+  const d = useDensity();
+  return <div role="radiogroup" aria-label={label} style={{ display: 'grid', gap: d.labelGap }}>{children}</div>;
+};
+
+// ─── PixelActions — the button row ───────────────────────────────────────────
+// Buttons were being stacked flush at unequal widths, which is most of why the
+// panels looked unfinished. One row, one gap, one alignment.
+export const PixelActions = ({
+  children,
+  align = 'start',
+  stack = false
+}: {
+  children: React.ReactNode;
+  align?: 'start' | 'end' | 'between';
+  /** full-width stacked buttons, for very narrow surfaces */
+  stack?: boolean;
+}) => {
+  const d = useDensity();
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: stack ? 'column' : 'row',
+        flexWrap: stack ? 'nowrap' : 'wrap',
+        alignItems: stack ? 'stretch' : 'center',
+        justifyContent: align === 'end' ? 'flex-end' : align === 'between' ? 'space-between' : 'flex-start',
+        gap: d.labelGap,
+        marginTop: d.stackGap
+      }}
+    >
+      {children}
+    </div>
+  );
+};

@@ -155,7 +155,7 @@ diagrams, heatmaps, charts, icons, maps and authoring surfaces. Take what fits.
 | | |
 |---|---|
 | **Controls** | Button (4 intents), text input, textarea, select, field wrapper with label/hint/error, checkbox, radio, toggle |
-| **Patterns** | Dialog, table, notice (4 statuses), empty state, loading skeleton, tabs, progress bar |
+| **Patterns** | Dialog, table, notice (4 statuses), empty state, loading skeleton, tabs, progress bar, panel, choice list, action row |
 | **Marks** | Pixel dot, pixel tag, dither bar, dither strip, stepped corner marks, basket-weave overlay, arrow connector |
 | **Icons** | 95 interface icons plus 5 system icons, all `<rect>` on a 12 or 24 grid |
 | **Sections** | Hero, nav, systems grid, connection diagram, heatmap, roadmap, field applications, flowchart, research signals, footer |

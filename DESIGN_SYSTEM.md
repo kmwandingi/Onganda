@@ -587,6 +587,59 @@ Uppercase tracked headers, hairline row rules, tabular figures on `numeric`
 columns, horizontal scroll rather than page overflow, and a real `<caption>`.
 Pass `empty` and the table renders that instead of an empty body.
 
+### PixelPanel
+
+```tsx
+<PixelPanel
+  eyebrow="Practice — MCQ"
+  note="data splitting"
+  title="What happens if train_test_split uses shuffle=True without random_state?"
+  footer={<PixelActions align="between">
+    <PixelButton variant="primary">Send answer</PixelButton>
+    <PixelButton variant="ghost">Next exercise</PixelButton>
+  </PixelActions>}
+>
+  …
+</PixelPanel>
+```
+
+The compact peer of `SectionHeader` plus a card. It brings its own eyebrow,
+dither rule, weave texture, corner marks and left rule, so a panel cannot be
+built without the language.
+
+This exists because measuring a product's panels against the landing page
+found them at the floor on every composition measure — one weave, three marks,
+one label, no inverse band. A solid button in a flat box reads as a heavy blob,
+which is why those panels looked *too black* while carrying **less** black than
+the landing page (3% against 12%). The fix was never less black; it was more of
+everything else.
+
+### PixelChoice and PixelChoiceList
+
+```tsx
+<PixelChoiceList label="Answer">
+  {options.map(o => (
+    <PixelChoice key={o} label={o} selected={picked === o} onSelect={() => setPicked(o)} />
+  ))}
+</PixelChoiceList>
+```
+
+A selectable option in the system's language: stepped square mark, weave on the
+selected row, accent-ink edge, density-aware height. Pass `state="correct"` or
+`"incorrect"` after grading and the edge takes the settled or critical status
+colour. `PixelChoiceList` is the `radiogroup` wrapper.
+
+### PixelActions
+
+```tsx
+<PixelActions align="between">…</PixelActions>
+<PixelActions stack>…</PixelActions>
+```
+
+One row, one gap, one alignment. Buttons stacked flush at unequal widths were
+most of why compact surfaces looked unfinished. `stack` gives full-width
+buttons for very narrow surfaces.
+
 ### PixelEmptyState
 
 ```tsx
