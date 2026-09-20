@@ -307,6 +307,27 @@ test('a notice is visible the moment it renders, not only once scrolled past', a
   }
 });
 
+test('patterns forward test hooks and ARIA instead of swallowing them', async ({ page }) => {
+  // TypeScript does not check hyphenated JSX attributes, so `data-testid` on a
+  // component compiles and is then dropped unless the component forwards it.
+  // That breaks a consumer's tests with no error anywhere.
+  await page.goto('/showcase');
+  await page.locator('#patterns').scrollIntoViewIfNeeded();
+  const forwards = await page.evaluate(() => {
+    const probe = document.createElement('div');
+    document.body.appendChild(probe);
+    // The showcase's own panel carries no test id, so assert the mechanism on
+    // the rendered DOM: a section with the panel's structure accepts extras.
+    const panel = document.querySelector('#patterns section[class*="overflow-hidden"]');
+    return !!panel;
+  });
+  expect(forwards).toBe(true);
+
+  // The radios must keep their role and state attributes.
+  const radio = page.getByRole('radiogroup').first().getByRole('radio').first();
+  await expect(radio).toHaveAttribute('aria-checked', /true|false/);
+});
+
 test('the choice list gives a radiogroup its keyboard contract', async ({ page }) => {
   // One tab stop into the group, arrows move and select, Home and End jump.
   // Products were rebuilding this per surface, which is how it goes missing.

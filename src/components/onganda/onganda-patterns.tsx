@@ -440,7 +440,8 @@ export const PixelPanel = ({
   children,
   footer,
   isDark = false,
-  className = ''
+  className = '',
+  ...rest
 }: {
   eyebrow?: string;
   title?: React.ReactNode;
@@ -452,11 +453,15 @@ export const PixelPanel = ({
   footer?: React.ReactNode;
   isDark?: boolean;
   className?: string;
-}) => {
+  // TypeScript does not type-check hyphenated JSX attributes, so `data-testid`
+  // on a component compiles and is then silently dropped. Forwarding the rest
+  // keeps test hooks and ARIA attributes working.
+} & Omit<React.HTMLAttributes<HTMLElement>, 'title'>) => {
   const c = roles(isDark);
   const rule = accent ?? c.accentInk;
   return (
     <section
+      {...rest}
       className={`relative overflow-hidden ${className}`}
       style={{ background: c.surface, border: `1px solid ${c.line}`, borderLeft: `3px solid ${rule}` }}
     >
@@ -505,7 +510,8 @@ export const PixelChoice = ({
   state,
   isDark = false,
   name,
-  tabIndex
+  tabIndex,
+  ...rest
 }: {
   label: React.ReactNode;
   selected: boolean;
@@ -517,7 +523,7 @@ export const PixelChoice = ({
   name?: string;
   /** override the roving tab stop; the list normally handles this */
   tabIndex?: number;
-}) => {
+} & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onSelect' | 'name' | 'disabled' | 'tabIndex' | 'style' | 'className' | 'children'>) => {
   const c = roles(isDark);
   const d = useDensity();
   const edge = state === 'correct' ? statusFor('settled', isDark)
@@ -525,6 +531,7 @@ export const PixelChoice = ({
     : selected ? c.controlOnBorder : c.fieldBorder;
   return (
     <button
+      {...rest}
       type="button"
       role="radio"
       name={name}
