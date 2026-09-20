@@ -1596,7 +1596,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       minWidth: 110
     }}>
       <span style={{
-        fontSize: 32,
+        fontSize: 30,
         fontWeight: 700,
         color: h,
         lineHeight: 1
@@ -1625,7 +1625,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       minWidth: 110
     }}>
       <span style={{
-        fontSize: 32,
+        fontSize: 30,
         fontWeight: 700,
         color: h,
         lineHeight: 1
@@ -1769,7 +1769,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         marginBottom: 2
       }}>
         <span style={{
-          fontSize: 7,
+          fontSize: 8,
           color: 'rgba(232,225,207,0.55)',
           width: 42,
           flexShrink: 0,
@@ -1808,7 +1808,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         <RadarChart data={radarChartData}>
           <PolarGrid stroke={`${COLOR.dyePlum}30`} />
           <PolarAngleAxis dataKey="subject" tick={{
-            fontSize: 7,
+            fontSize: 8,
             fill: muted
           }} />
           <Radar dataKey="value" stroke={COLOR.dyePlum} fill={COLOR.dyePlum} fillOpacity={0.25} strokeWidth={1.5} />
@@ -3880,7 +3880,7 @@ const ExportModal = ({
             justifyContent: 'center'
           }}>
             <span style={{
-              fontSize: 22,
+              fontSize: 24,
               color: COLOR.mahanguGold
             }}>✓</span>
           </div>
@@ -4255,7 +4255,7 @@ const SlidePicker = ({
             margin: 0
           }}>Slide Editor</p>
           <h1 style={{
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 700,
             color: fg,
             margin: 0,

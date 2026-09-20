@@ -343,7 +343,7 @@ const PublicationCard = ({
               </span>
             </div>
             <h3 style={{
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 600,
             letterSpacing: '-0.02em',
             color: titleColor,

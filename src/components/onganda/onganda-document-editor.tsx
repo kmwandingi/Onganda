@@ -808,7 +808,7 @@ const StatBlock = ({
     minWidth: 140
   }}>
       <span style={{
-      fontSize: 34,
+      fontSize: 30,
       fontWeight: 700,
       color: hex,
       lineHeight: 1
@@ -1148,7 +1148,7 @@ const SystemCardBlock = ({
         marginBottom: 4
       }}>
           <span style={{
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: 700,
           // The panel is ember brown in light mode, which is a dark ground:
           // char black measures 1.13:1 on it. Paper, always.
@@ -2680,7 +2680,7 @@ const LetterheadBlock = ({
     </div>
     <div style={{ padding: '36px 56px 28px' }}>
       <h1 style={{
-        fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em',
+        fontSize: 24, fontWeight: 700, letterSpacing: '-0.025em',
         color: fg, lineHeight: 1.2, marginBottom: 10, maxWidth: 600
       }}>{lh.title}</h1>
       <p style={{
@@ -2864,7 +2864,7 @@ function DocBlockView({
           content: v
         })} onBlur={onStopEdit} style={{
           flex: 1,
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: 700,
           letterSpacing: '-0.01em',
           color: fg,
@@ -2873,7 +2873,7 @@ function DocBlockView({
           borderBottom: `1px solid ${headingAccent}80`,
           outline: 'none'
         }} /> : <h2 style={{
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: 700,
           letterSpacing: '-0.01em',
           color: fg,
@@ -3731,7 +3731,7 @@ const DocExportModal = ({
             justifyContent: 'center'
           }}>
                 <span style={{
-              fontSize: 22,
+              fontSize: 24,
               color: COLOR.mahanguGold
             }}>✓</span>
               </div>
@@ -4213,7 +4213,7 @@ const DocLetterhead = ({
       padding: '36px 56px 28px'
     }}>
         <h1 style={{
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: 700,
         letterSpacing: '-0.025em',
         color: fg,
@@ -4333,7 +4333,7 @@ const TemplatePicker = ({
             margin: 0
           }}>Document Editor</p>
             <h1 style={{
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 700,
             color: fg,
             margin: 0,

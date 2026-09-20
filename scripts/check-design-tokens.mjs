@@ -78,6 +78,16 @@ const PALETTE_RGB = new Set(
     .map(h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)).join(','))
 );
 
+// The closed type scale, read from source like the palette is.
+const typeSrc = readFileSync(resolveTokenFile('onganda-type.ts'), 'utf8');
+const TYPE_SIZES = new Set(
+  [...typeSrc.slice(typeSrc.indexOf('export const TYPE = {'), typeSrc.indexOf('} as const;'))
+    .matchAll(/size:\s*(\d+)/g)].map(m => Number(m[1]))
+);
+if (TYPE_SIZES.size < 5) throw new Error('check-design-tokens: could not read the type scale');
+// Tailwind's default steps, mapped to px so they are checked too.
+const TW_SIZES = { xs: 12, sm: 14, base: 16, lg: 18, xl: 20, '2xl': 24, '3xl': 30, '4xl': 36, '5xl': 48, '6xl': 60, '7xl': 72 };
+
 const TAILWIND_HUES = 'slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose';
 
 const RULES = [
@@ -127,6 +137,19 @@ const RULES = [
     // fixed grounds and declare them.
     re: /\binkOn\([^,)]+,\s*(?:COLOR|EDITOR_SURFACE)\.\w+/g,
     files: /onganda-primitives\.tsx$|onganda-patterns\.tsx$/
+  },
+  {
+    id: 'off-scale-type',
+    why: 'A font size outside the closed type scale in onganda-type.ts. Pick the step whose job matches, or add one to the scale with a stated role.',
+    // .tsx only: the PPTX exporter measures in points, not CSS pixels.
+    files: /\.tsx$/,
+    re: /fontSize:\s*(\d+)\b|text-\[(\d+)px\]|\btext-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g,
+    filter: m => {
+      const n = m.match(/fontSize:\s*(\d+)/) ?? m.match(/text-\[(\d+)px\]/);
+      if (n) return !TYPE_SIZES.has(Number(n[1]));
+      const tw = m.match(/text-(\w+)/);
+      return tw ? !TYPE_SIZES.has(TW_SIZES[tw[1]]) : false;
+    }
   },
   {
     id: 'rounded-geometry',

@@ -51,7 +51,7 @@ export const DocBlockDisplay = ({
       <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: headingAccent, minWidth: 20 }}>
         {String(Math.floor(idx / 3) + 1).padStart(2, '0')}
       </span>
-      <h2 style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: fg, lineHeight: 1.2, flex: 1, margin: 0 }}>
+      <h2 style={{ fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em', color: fg, lineHeight: 1.2, flex: 1, margin: 0 }}>
         {block.content}
       </h2>
       <div style={{ flex: 0.3, height: 1, background: headingAccent, opacity: 0.25, marginBottom: 3 }} />

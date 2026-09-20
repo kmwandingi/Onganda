@@ -1,5 +1,10 @@
 # Repository agent instructions
 
+**Onganda is a closed system.** Everything permitted is in
+`tokens/onganda.tokens.json`. Any colour, type size, spacing value, radius or
+shadow not in that file is not acceptable. `npm run check:design` fails on
+violations; do not widen a check to make one pass.
+
 For Onganda UI, design-system, or new-project work, read and follow `skills/onganda-design-system/SKILL.md` before changing code. Treat `DESIGN_SYSTEM.md` as the language specification and `DESIGN_GUIDELINES.md` as the implementation contract.
 
 Two sections govern most day-to-day decisions and are enforced by `npm run check:design`:

@@ -29,14 +29,21 @@ const DOCS = {
   'CLAUDE.md': read('CLAUDE.md'),
   '.github/copilot-instructions.md': read('.github/copilot-instructions.md'),
   '.cursorrules': read('.cursorrules'),
-  '.windsurfrules': read('.windsurfrules')
+  '.windsurfrules': read('.windsurfrules'),
+  'FOR_DESIGNERS.md': read('FOR_DESIGNERS.md'),
+  'AGENTS.md': read('AGENTS.md')
 };
 
 const rolesSrc = read('src/components/onganda/onganda-roles.ts');
 const colorsSrc = read('src/components/onganda/onganda-colors.ts');
 
 const failures = [];
-const fail = (doc, msg) => failures.push(`${doc}: ${msg}`);
+const fail = (doc, msg) => {
+  // A rule naming a document that was never loaded would pass silently on
+  // `undefined`. AGENTS.md was in exactly that state.
+  if (!(doc in DOCS)) throw new Error(`check-docs: rule references "${doc}", which is not in the DOCS map`);
+  failures.push(`${doc}: ${msg}`);
+};
 
 // ── 1. Measurable claims must match the source ───────────────────────────────
 const alpha = name => {
@@ -155,6 +162,30 @@ const AGENT_RULES = [
 for (const doc of AGENT_FILES) {
   for (const [rule, re] of AGENT_RULES) {
     if (!re.test(DOCS[doc])) fail(doc, `never states the rule "${rule}", but the other agent files do`);
+  }
+}
+
+// ── 3b. The closed-set rule must be stated where someone starts ─────────────
+for (const doc of ['README.md', 'DESIGN_SYSTEM.md', 'DESIGN_GUIDELINES.md', 'AGENTS.md', 'FOR_DESIGNERS.md']) {
+  if (!/closed system/i.test(DOCS[doc])) fail(doc, 'does not state that Onganda is a closed system');
+  if (!/onganda\.tokens\.json/.test(DOCS[doc])) fail(doc, 'does not point at tokens/onganda.tokens.json as the permitted set');
+}
+
+// ── 3c. The token export must exist and agree with the source ───────────────
+{
+  const tokensPath = path.join(root, 'tokens/onganda.tokens.json');
+  if (!existsSync(tokensPath)) {
+    failures.push('tokens/onganda.tokens.json is missing — run `npm run build:tokens`');
+  } else {
+    const t = JSON.parse(readFileSync(tokensPath, 'utf8'));
+    for (const [name, hex] of Object.entries(
+      Object.fromEntries([...colorsSrc.slice(colorsSrc.indexOf('export const COLOR = {'), colorsSrc.indexOf('} as const;'))
+        .matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{6})'/g)].map(m => [m[1], m[2]]))
+    )) {
+      if (t.palette?.[name]?.$value?.toUpperCase() !== hex.toUpperCase()) {
+        failures.push(`tokens/onganda.tokens.json: palette.${name} is ${t.palette?.[name]?.$value} but COLOR.${name} is ${hex}`);
+      }
+    }
   }
 }
 

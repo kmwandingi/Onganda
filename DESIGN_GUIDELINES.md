@@ -2,6 +2,16 @@
 
 This document serves as the single source of truth for the design language of **Onganda** (Namibia AI Systems Lab). It codifies the visual, architectural, and cultural principles that define the project. Whenever adding new features, components, or systems to this project, adhere strictly to these guidelines to ensure consistency.
 
+
+> **This is a closed system.** Everything permitted is in
+> [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
+> type step, spacing value, border width and motion value. **Anything not in
+> that file is not Onganda and is not acceptable**, in code or in design.
+> There is no green and no blue, no corner radius, no shadow, and no second
+> typeface. If the system lacks something you need, extend the system — see
+> [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
+> `npm run check:design` fails on every violation.
+
 ---
 
 ## 1. Introduction & Vision

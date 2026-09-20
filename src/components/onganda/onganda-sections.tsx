@@ -548,7 +548,7 @@ export const OngandaNav = () => {
         <span style={{
         fontWeight: 600,
         letterSpacing: '-0.01em',
-        fontSize: 15,
+        fontSize: 14,
         lineHeight: 1
       }}>
           <span style={{

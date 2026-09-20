@@ -2,7 +2,24 @@
 
 Onganda is the pixel editorial design language for the Namibia AI Systems Lab. It combines Namibian craft references, sharp geometry, clean typography, and quiet mechanical motion.
 
+
+> **This is a closed system.** Everything permitted is in
+> [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
+> type step, spacing value, border width and motion value. **Anything not in
+> that file is not Onganda and is not acceptable**, in code or in design.
+> There is no green and no blue, no corner radius, no shadow, and no second
+> typeface. If the system lacks something you need, extend the system — see
+> [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
+> `npm run check:design` fails on every violation.
+
 Use this repository for lab websites, product interfaces, documents, presentations, and AI-assisted authoring surfaces.
+
+## Designing, not coding?
+
+Read **[FOR_DESIGNERS.md](./FOR_DESIGNERS.md)** and load
+`tokens/onganda.tokens.json` into Figma with the Tokens Studio plugin. That
+file plus the `/showcase` page is everything needed to design a page that is
+solely Onganda.
 
 ## Start a project
 

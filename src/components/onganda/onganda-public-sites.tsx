@@ -254,7 +254,7 @@ const SectionTitle = ({ label, headline, accent = COLOR.ochreOrange }: { label: 
       <PixelDot color={accent} size={7} />
       <h2 className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{label}</h2>
     </div>
-    <p className="max-w-4xl text-2xl font-medium leading-tight md:text-4xl" style={{ color: COLOR.charBlack }}>{headline}</p>
+    <p className="max-w-4xl text-2xl font-medium leading-tight md:text-3xl" style={{ color: COLOR.charBlack }}>{headline}</p>
   </div>
 );
 

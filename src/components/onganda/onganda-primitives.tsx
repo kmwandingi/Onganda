@@ -915,7 +915,7 @@ export const StatCard = ({
   duration: 0.45
 }} className="flex flex-col gap-1 px-6 py-8 md:px-10">
     <div className="flex items-end gap-2 mb-1">
-      <span className="text-4xl font-semibold tracking-tighter leading-none" style={{
+      <span className="text-3xl font-semibold tracking-tighter leading-none" style={{
       color: inkFor(stat.hex)
     }}>{stat.value}</span>
       <PixelDot color={stat.hex} size={8} />
@@ -1116,7 +1116,7 @@ export const FlowNodeCard = ({
         <PixelTag hex={node.hex} label={node.pixelTag} />
         <FlowNodeIcon id={node.id} hex={node.hex} />
       </div>
-      <p className="text-[17px] font-semibold tracking-tight text-[#1E1A17] leading-none">{node.oshiwambo}</p>
+      <p className="text-[16px] font-semibold tracking-tight text-[#1E1A17] leading-none">{node.oshiwambo}</p>
       <p className="text-xs text-[#1E1A17]/66 font-medium mb-3">{node.english}</p>
       <div className="flex items-center gap-1.5 min-w-0">
         <PixelDot color={node.hex} size={4} />

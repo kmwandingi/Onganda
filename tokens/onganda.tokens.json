@@ -1,0 +1,940 @@
+{
+  "$description": "Onganda Design System — the complete and closed token set for the Namibia AI Systems Lab. Any colour, size, spacing or radius not in this file is not part of the system. Generated from source by scripts/build-tokens.mjs; do not edit by hand.",
+  "palette": {
+    "$description": "The nine brand hues and the dark surfaces. These are the raw materials. Do NOT design with them directly — pick a semantic role below. Each entry records what it may and may not do.",
+    "milletClay": {
+      "$type": "color",
+      "$value": "#E8E1CF",
+      "$description": "ALLOWED: Light canvas; text and icons on any dark surface; the primary action fill in dark mode. — NEVER: A fill on a light surface — it disappears."
+    },
+    "dustLight": {
+      "$type": "color",
+      "$value": "#F3E8C3",
+      "$description": "ALLOWED: Lifted surface on the light canvas: cards, panels, bands. — NEVER: Text, borders, or any action."
+    },
+    "mahanguGold": {
+      "$type": "color",
+      "$value": "#DFAE2B",
+      "$description": "ALLOWED: Caution status; Ombiga; chart series 3. Needs char black on it (8.4:1). — NEVER: Light-mode body text or any small type — 1.6:1 on cream. Never millet clay on it."
+    },
+    "ochreOrange": {
+      "$type": "color",
+      "$value": "#D9791F",
+      "$description": "ALLOWED: A FILL with char black on it (5.5:1): accent button, checked control, action hover. INK on dark surfaces only (6.1:1): link, focus ring, ghost hover. Also Okaanda. — NEVER: Ink on a light surface — 2.4:1. Use bark rust there. Never body text at any size."
+    },
+    "firedRed": {
+      "$type": "color",
+      "$value": "#C84A1B",
+      "$description": "ALLOWED: Critical status marks and invalid field borders, where the 3:1 non-text floor applies. — NEVER: A fill behind small text — its best foreground is 4.05:1. Never error message text. Never a second general-purpose accent."
+    },
+    "barkRust": {
+      "$type": "color",
+      "$value": "#8F3E21",
+      "$description": "ALLOWED: The accent as INK on light surfaces (5.6:1): link, focus ring, ghost hover, field focus. The danger fill, with millet clay on it. Also Oshini and chart series 2. — NEVER: A surface or a large decorative fill."
+    },
+    "mopaneBrown": {
+      "$type": "color",
+      "$value": "#6A4B2E",
+      "$description": "ALLOWED: Settled status on light surfaces; Etiti; chart series 4. — NEVER: Generic interface chrome. Never on a dark card — 2.25:1. Use mopaneBrownLight."
+    },
+    "mopaneBrownLight": {
+      "$type": "color",
+      "$value": "#8F6840",
+      "$description": "ALLOWED: Settled status and Etiti on dark surfaces, where the base tone loses contrast. — NEVER: A sixth system color."
+    },
+    "charBlack": {
+      "$type": "color",
+      "$value": "#1E1A17",
+      "$description": "ALLOWED: Primary action fill in light mode; the hover fill for accent and danger; inverse surfaces (footer, ticker, lab card); ink for text and lines via the alpha ramp. — NEVER: The dark-mode canvas — use darkBg."
+    },
+    "dyePlum": {
+      "$type": "color",
+      "$value": "#6F4A6E",
+      "$description": "ALLOWED: Oshitoo; chart series 5. Rare by design. — NEVER: An accent, a status, or a background."
+    },
+    "darkBg": {
+      "$type": "color",
+      "$value": "#120F0D"
+    },
+    "darkCard": {
+      "$type": "color",
+      "$value": "#1C1713"
+    },
+    "darkCardAlt": {
+      "$type": "color",
+      "$value": "#271F1A"
+    }
+  },
+  "palette-editor": {
+    "$description": "Additional grounds used only by the document and slide editors. Not brand identity colours.",
+    "paperWhite": {
+      "$type": "color",
+      "$value": "#FFFFFF"
+    },
+    "paperWarm": {
+      "$type": "color",
+      "$value": "#FDFAF2"
+    },
+    "dustCream": {
+      "$type": "color",
+      "$value": "#F0E8D4"
+    },
+    "dustHover": {
+      "$type": "color",
+      "$value": "#EDE0C4"
+    },
+    "dustPanel": {
+      "$type": "color",
+      "$value": "#E0D8C6"
+    },
+    "dustPanelDeep": {
+      "$type": "color",
+      "$value": "#DDD6C3"
+    },
+    "dustWell": {
+      "$type": "color",
+      "$value": "#D8D1BF"
+    },
+    "dustHeader": {
+      "$type": "color",
+      "$value": "#D5CEBB"
+    },
+    "canvasWellDark": {
+      "$type": "color",
+      "$value": "#0E0C0A"
+    },
+    "emberBrown": {
+      "$type": "color",
+      "$value": "#2A2420"
+    },
+    "smokeGray": {
+      "$type": "color",
+      "$value": "#888888"
+    }
+  },
+  "role": {
+    "$description": "THE DESIGN SURFACE. Every colour decision is made here, not in the palette. Pick the role that matches what the element does; the mode decides the value.",
+    "light": {
+      "$description": "Roles on the light canvas.",
+      "canvas": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#F3E8C3",
+        "$description": "light — dustLight"
+      },
+      "surfaceWell": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "inverseBorder": {
+        "$type": "color",
+        "$value": "transparent",
+        "$description": "light — transparent"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "textBody": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.82)",
+        "$description": "light — ink 82%"
+      },
+      "textMuted": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.66)",
+        "$description": "light — ink 66%"
+      },
+      "textFaint": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.25)",
+        "$description": "light — ink 25%"
+      },
+      "textOnInverse": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "line": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.1)",
+        "$description": "light — ink 10%"
+      },
+      "lineStrong": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.2)",
+        "$description": "light — ink 20%"
+      },
+      "focusRing": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "accentInk": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "actionBg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "actionFg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "actionHoverBg": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "light — ochreOrange"
+      },
+      "actionHoverFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "accentBg": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "light — ochreOrange"
+      },
+      "accentFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "accentHoverBg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "accentHoverFg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "dangerBg": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "dangerFg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "dangerHoverBg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "dangerHoverFg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "light — milletClay"
+      },
+      "ghostBorder": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.51)",
+        "$description": "light — ink 51%"
+      },
+      "ghostFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "ghostHoverBorder": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "ghostHoverFg": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "fieldBg": {
+        "$type": "color",
+        "$value": "transparent",
+        "$description": "light — transparent"
+      },
+      "fieldText": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "fieldPlaceholder": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.66)",
+        "$description": "light — ink 66%"
+      },
+      "fieldBorder": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.51)",
+        "$description": "light — ink 51%"
+      },
+      "fieldBorderHover": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.65)",
+        "$description": "light — ink 65%"
+      },
+      "fieldBorderFocus": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "fieldBorderInvalid": {
+        "$type": "color",
+        "$value": "#C84A1B",
+        "$description": "light — firedRed"
+      },
+      "fieldDisabledBg": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.04)",
+        "$description": "light — ink 4%"
+      },
+      "fieldDisabledText": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.25)",
+        "$description": "light — ink 25%"
+      },
+      "controlOn": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "light — ochreOrange"
+      },
+      "controlOnFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
+      },
+      "controlOnBorder": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      }
+    },
+    "dark": {
+      "$description": "Roles on the dark canvas.",
+      "canvas": {
+        "$type": "color",
+        "$value": "#120F0D",
+        "$description": "dark — darkBg"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#1C1713",
+        "$description": "dark — darkCard"
+      },
+      "surfaceWell": {
+        "$type": "color",
+        "$value": "#120F0D",
+        "$description": "dark — darkBg"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "#271F1A",
+        "$description": "dark — darkCardAlt"
+      },
+      "inverseBorder": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "textBody": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.78)",
+        "$description": "dark — paper 78%"
+      },
+      "textMuted": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.55)",
+        "$description": "dark — paper 55%"
+      },
+      "textFaint": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.25)",
+        "$description": "dark — paper 25%"
+      },
+      "textOnInverse": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "line": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.1)",
+        "$description": "dark — paper 10%"
+      },
+      "lineStrong": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.2)",
+        "$description": "dark — paper 20%"
+      },
+      "focusRing": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "accentInk": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "actionBg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "actionFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "dark — charBlack"
+      },
+      "actionHoverBg": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "actionHoverFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "dark — charBlack"
+      },
+      "accentBg": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "accentFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "dark — charBlack"
+      },
+      "accentHoverBg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "accentHoverFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "dark — charBlack"
+      },
+      "dangerBg": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "dark — barkRust"
+      },
+      "dangerFg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "dangerHoverBg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "dangerHoverFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "dark — charBlack"
+      },
+      "ghostBorder": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.42)",
+        "$description": "dark — paper 42%"
+      },
+      "ghostFg": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "ghostHoverBorder": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "ghostHoverFg": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "fieldBg": {
+        "$type": "color",
+        "$value": "transparent",
+        "$description": "dark — transparent"
+      },
+      "fieldText": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
+      "fieldPlaceholder": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.55)",
+        "$description": "dark — paper 55%"
+      },
+      "fieldBorder": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.42)",
+        "$description": "dark — paper 42%"
+      },
+      "fieldBorderHover": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.58)",
+        "$description": "dark — paper 58%"
+      },
+      "fieldBorderFocus": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "fieldBorderInvalid": {
+        "$type": "color",
+        "$value": "#C84A1B",
+        "$description": "dark — firedRed"
+      },
+      "fieldDisabledBg": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.04)",
+        "$description": "dark — paper 4%"
+      },
+      "fieldDisabledText": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.25)",
+        "$description": "dark — paper 25%"
+      },
+      "controlOn": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      },
+      "controlOnFg": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "dark — charBlack"
+      },
+      "controlOnBorder": {
+        "$type": "color",
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
+      }
+    }
+  },
+  "system": {
+    "$description": "The five Onganda systems. A colour here means \"this belongs to that system\" and nothing else. Never use one as a button, border, label or background.",
+    "Okaanda": {
+      "$type": "color",
+      "$value": "#D9791F",
+      "$description": "Identity colour for Okaanda"
+    },
+    "Oshini": {
+      "$type": "color",
+      "$value": "#8F3E21",
+      "$description": "Identity colour for Oshini"
+    },
+    "Ombiga": {
+      "$type": "color",
+      "$value": "#DFAE2B",
+      "$description": "Identity colour for Ombiga"
+    },
+    "Etiti": {
+      "$type": "color",
+      "$value": "#6A4B2E",
+      "$description": "Identity colour for Etiti"
+    },
+    "Oshitoo": {
+      "$type": "color",
+      "$value": "#6F4A6E",
+      "$description": "Identity colour for Oshitoo"
+    }
+  },
+  "status": {
+    "$description": "Four states. The palette is earth-derived: it has no green and no blue, and none may be added. Success reads as a check glyph on the settled tone. Colour is never the only carrier — pair every status mark with a text label and a hairline ring.",
+    "critical": {
+      "$type": "color",
+      "$value": "#C84A1B"
+    },
+    "caution": {
+      "$type": "color",
+      "$value": "#DFAE2B"
+    },
+    "active": {
+      "$type": "color",
+      "$value": "#D9791F"
+    },
+    "settled": {
+      "$type": "color",
+      "$value": "#6A4B2E"
+    }
+  },
+  "chart": {
+    "$description": "Fixed series order. Take colours from the front; never reorder or substitute, so series index 2 reads the same in every chart across a product.",
+    "series-1": {
+      "$type": "color",
+      "$value": "#D9791F"
+    },
+    "series-2": {
+      "$type": "color",
+      "$value": "#8F3E21"
+    },
+    "series-3": {
+      "$type": "color",
+      "$value": "#DFAE2B"
+    },
+    "series-4": {
+      "$type": "color",
+      "$value": "#6A4B2E"
+    },
+    "series-5": {
+      "$type": "color",
+      "$value": "#6F4A6E"
+    },
+    "series-6": {
+      "$type": "color",
+      "$value": "#C84A1B"
+    }
+  },
+  "typography": {
+    "$description": "The complete, closed type scale. One family. A size not listed here is not an Onganda size.",
+    "fontFamily": {
+      "$type": "fontFamily",
+      "$value": "'Inter', Arial, Helvetica, sans-serif"
+    },
+    "tag": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "8px",
+        "fontWeight": 700,
+        "lineHeight": 1.2,
+        "letterSpacing": "0.18em",
+        "textCase": "uppercase"
+      }
+    },
+    "micro": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "9px",
+        "fontWeight": 700,
+        "lineHeight": 1.2,
+        "letterSpacing": "0.16em",
+        "textCase": "uppercase"
+      }
+    },
+    "eyebrow": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "10px",
+        "fontWeight": 700,
+        "lineHeight": 1.2,
+        "letterSpacing": "0.16em",
+        "textCase": "uppercase"
+      }
+    },
+    "caption": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "11px",
+        "fontWeight": 500,
+        "lineHeight": 1.45,
+        "letterSpacing": "0.02em",
+        "textCase": "none"
+      }
+    },
+    "small": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "lineHeight": 1.45,
+        "letterSpacing": "0.02em",
+        "textCase": "none"
+      }
+    },
+    "ui": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": 500,
+        "lineHeight": 1.4,
+        "letterSpacing": "0.02em",
+        "textCase": "none"
+      }
+    },
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "lineHeight": 1.6,
+        "letterSpacing": "0em",
+        "textCase": "none"
+      }
+    },
+    "bodyLarge": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "lineHeight": 1.65,
+        "letterSpacing": "0em",
+        "textCase": "none"
+      }
+    },
+    "lead": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "18px",
+        "fontWeight": 400,
+        "lineHeight": 1.6,
+        "letterSpacing": "0em",
+        "textCase": "none"
+      }
+    },
+    "title": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "20px",
+        "fontWeight": 600,
+        "lineHeight": 1.25,
+        "letterSpacing": "-0.01em",
+        "textCase": "none"
+      }
+    },
+    "headline": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "24px",
+        "fontWeight": 600,
+        "lineHeight": 1.2,
+        "letterSpacing": "-0.01em",
+        "textCase": "none"
+      }
+    },
+    "pageTitle": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "30px",
+        "fontWeight": 600,
+        "lineHeight": 1.15,
+        "letterSpacing": "-0.02em",
+        "textCase": "none"
+      }
+    },
+    "display": {
+      "$description": "Fluid hero sizes. Figma cannot express a clamp, so the rendered size is given at three reference widths.",
+      "hero-360": {
+        "$type": "dimension",
+        "$value": "58px",
+        "$description": "clamp(3.2rem, 10vw, 9rem) at a 360px viewport"
+      },
+      "hero-1280": {
+        "$type": "dimension",
+        "$value": "128px",
+        "$description": "clamp(3.2rem, 10vw, 9rem) at a 1280px viewport"
+      },
+      "hero-1920": {
+        "$type": "dimension",
+        "$value": "144px",
+        "$description": "clamp(3.2rem, 10vw, 9rem) at a 1920px viewport"
+      },
+      "heroPublic-360": {
+        "$type": "dimension",
+        "$value": "48px",
+        "$description": "clamp(3rem, 7.4vw, 7.1rem) at a 360px viewport"
+      },
+      "heroPublic-1280": {
+        "$type": "dimension",
+        "$value": "95px",
+        "$description": "clamp(3rem, 7.4vw, 7.1rem) at a 1280px viewport"
+      },
+      "heroPublic-1920": {
+        "$type": "dimension",
+        "$value": "114px",
+        "$description": "clamp(3rem, 7.4vw, 7.1rem) at a 1920px viewport"
+      },
+      "subhead-360": {
+        "$type": "dimension",
+        "$value": "13px",
+        "$description": "clamp(0.82rem, 1.3vw, 0.95rem) at a 360px viewport"
+      },
+      "subhead-1280": {
+        "$type": "dimension",
+        "$value": "15px",
+        "$description": "clamp(0.82rem, 1.3vw, 0.95rem) at a 1280px viewport"
+      },
+      "subhead-1920": {
+        "$type": "dimension",
+        "$value": "15px",
+        "$description": "clamp(0.82rem, 1.3vw, 0.95rem) at a 1920px viewport"
+      }
+    }
+  },
+  "space": {
+    "0": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "1": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "5": {
+      "$type": "dimension",
+      "$value": "20px"
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "10": {
+      "$type": "dimension",
+      "$value": "40px"
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": "48px"
+    },
+    "16": {
+      "$type": "dimension",
+      "$value": "64px"
+    },
+    "20": {
+      "$type": "dimension",
+      "$value": "80px"
+    },
+    "24": {
+      "$type": "dimension",
+      "$value": "96px"
+    },
+    "32": {
+      "$type": "dimension",
+      "$value": "128px"
+    },
+    "$description": "A 4px base grid. The pixel geometry rests on whole units."
+  },
+  "geometry": {
+    "$description": "Sharp by definition.",
+    "radius": {
+      "$type": "dimension",
+      "$value": "0px",
+      "$description": "ZERO, EVERYWHERE. Corner decoration is the PixelCornerMarks component, never a radius."
+    },
+    "border-hairline": {
+      "$type": "dimension",
+      "$value": "1px",
+      "$description": "The standard border."
+    },
+    "border-rule": {
+      "$type": "dimension",
+      "$value": "3px",
+      "$description": "The emphasised left rule on inverse cards and notices."
+    },
+    "shadow": {
+      "$type": "shadow",
+      "$value": "none",
+      "$description": "No shadows. Depth comes from the weave texture and stepped marks."
+    }
+  },
+  "motion": {
+    "$description": "Quiet and mechanical. Tween, never spring. Cards lift, they do not scale.",
+    "duration-tap": {
+      "$type": "duration",
+      "$value": "150ms"
+    },
+    "duration-entrance": {
+      "$type": "duration",
+      "$value": "500ms"
+    },
+    "duration-ticker": {
+      "$type": "duration",
+      "$value": "28000ms"
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.16,
+        1,
+        0.3,
+        1
+      ],
+      "$description": "The hero entrance curve."
+    },
+    "hover-lift": {
+      "$type": "dimension",
+      "$value": "-2px",
+      "$description": "Cards translate up by 2px on hover. They never scale."
+    },
+    "tap-scale": {
+      "$type": "number",
+      "$value": 0.97,
+      "$description": "Buttons compress on tap."
+    }
+  },
+  "forbidden": {
+    "$description": "NOT TOKENS — the closed-set rule, stated so it travels with the file. Anything below is outside the Onganda design system and is not acceptable in work that claims to use it.",
+    "rules": {
+      "$type": "other",
+      "$value": [
+        "Any colour not in `palette` or `palette-editor`. There is no green and no blue, and none may be added.",
+        "Designing from `palette` directly instead of `role`. The palette is raw material; roles are the design surface.",
+        "Ochre orange as text on a light surface (2.4:1). It is a fill; the accent ink on light is bark rust.",
+        "Fired red behind small text (best foreground 4.05:1). It is an indicator only.",
+        "A system colour used as a button, border, label or background.",
+        "Any corner radius. Any drop shadow. Any gradient other than the documented dither fills.",
+        "Any font other than Inter, and any size not in `typography`.",
+        "Any spacing not on the 4px grid in `space`.",
+        "Rounded or organic icon shapes. Icons are <rect> on an integer grid.",
+        "Spring animation, scale-on-hover, or any motion that is not in `motion`."
+      ]
+    }
+  }
+}

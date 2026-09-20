@@ -307,7 +307,7 @@ export const SlideInspector = ({
             alignItems: 'center'
           }}>
             <span style={{
-              fontSize: 7,
+              fontSize: 8,
               color: 'rgba(232,225,207,0.55)',
               width: 36,
               flexShrink: 0,
@@ -334,7 +334,7 @@ export const SlideInspector = ({
                 });
               }} style={{
                 width: 24,
-                fontSize: 7,
+                fontSize: 8,
                 background: 'transparent',
                 border: 'none',
                 outline: 'none',
