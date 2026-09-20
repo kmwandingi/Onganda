@@ -29,6 +29,8 @@ export default tseslint.config(
             'SurfaceContext',
             'useSurface',
             'useInkOn',
+            'DensityContext',
+            'useDensity',
             'systemIconForName',
             'regenerateDocBlock',
             'ICON_REGISTRY',

@@ -426,6 +426,42 @@ Rules: one primary per view. `accent` never substitutes for `primary` on a plain
 page. `danger` is the only destructive treatment and never appears twice in one
 dialog.
 
+
+### Density — the surface decides, not the control
+
+The system has two densities. Page defaults dropped into a 340px popup or a
+narrow side panel are oversized: a 42px button and a 47px field crowd the
+surface and the result reads as heavy. Density is a property of the **surface**,
+so a container declares it once and every control inside tightens together.
+
+```tsx
+import { DensityProvider, PixelButton, PixelInput } from '@onganda/design-system';
+
+<DensityProvider value="compact">
+  <PixelButton variant="primary">Save</PixelButton>
+  <PixelInput placeholder="Field" />
+</DensityProvider>
+```
+
+| | `comfortable` (default) | `compact` |
+|---|---|---|
+| Use for | Pages, marketing, full-width app views | Popups, side panels, toolbars, inspectors, dense tables |
+| Button | 42px tall, `10px 22px`, 13px | 32px tall, `6px 14px`, 12px |
+| Field | 47px tall, `12px 16px`, 14px | 38px tall, `8px 12px`, 13px |
+| Checkbox / radio | 18px | 16px |
+| Toggle | 40×20 | 34×18 |
+| Label gap / stack gap | 12 / 20 | 8 / 12 |
+
+Never hand-tune a control's padding to fit a narrow surface. Set the density on
+the container; the whole surface stays in proportion.
+
+### Focus is keyboard-only
+
+Focus rings render through `:focus-visible` in `style.css`, so they appear when
+someone tabs and never after a mouse click. Do not set an outline from a React
+`onFocus` handler — it fires on click too and leaves a permanent ring on every
+button a pointer user touches.
+
 ### Text fields
 
 ```tsx
@@ -442,6 +478,8 @@ import { PixelInput, PixelTextarea, PixelSelect, PixelField } from '@onganda/des
 
 All three fields share one recipe: transparent ground, 1px `fieldBorder`,
 `borderRadius: 0`, `accentInk` border on focus, fired red border when `invalid`.
+`PixelSelect` replaces the native chevron with a stepped pixel arrow, so no
+platform chrome survives inside an Onganda field.
 Props: `isDark`, `invalid`, plus every native attribute.
 
 Use `PixelField` for the label, hint, and error. It sets `aria-invalid` and

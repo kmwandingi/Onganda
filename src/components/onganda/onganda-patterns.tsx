@@ -14,7 +14,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
-import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px } from './onganda-primitives';
+import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity } from './onganda-primitives';
 import { MOTION } from './onganda-motion';
 
 // ─── PixelNotice — inline callout tied to the four status states ─────────────
@@ -341,6 +341,7 @@ export const PixelTabs = <T extends string>({
   label?: string;
 }) => {
   const c = roles(isDark);
+  const d = useDensity();
   return (
     <div role="tablist" aria-label={label} className="flex flex-wrap gap-2">
       {tabs.map(tab => {
@@ -350,10 +351,12 @@ export const PixelTabs = <T extends string>({
             key={tab.value}
             role="tab"
             type="button"
+            className="onganda-focus"
             aria-selected={active}
             onClick={() => onChange(tab.value)}
             style={{
-              padding: '7px 14px',
+              ['--onganda-focus' as string]: c.focusRing,
+              padding: d.tabPadding,
               borderRadius: 0,
               fontSize: 11,
               fontWeight: 700,
@@ -364,7 +367,7 @@ export const PixelTabs = <T extends string>({
               background: active ? c.controlOn : 'transparent',
               border: `1px solid ${active ? c.controlOnBorder : c.fieldBorder}`,
               color: active ? c.controlOnFg : c.textMuted
-            }}
+            } as React.CSSProperties}
           >{tab.label}</button>
         );
       })}

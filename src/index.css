@@ -192,3 +192,44 @@ img.broken-image-fallback {
     opacity: 1;
   }
 }
+
+/* ─── Focus ─────────────────────────────────────────────────────────────────
+ * Keyboard-only, via :focus-visible. Applying a ring from a React onFocus
+ * handler fires on mouse click too and leaves a permanent outline on every
+ * button a pointer user touches.
+ * The colour comes from --onganda-focus, set inline per mode by the control.
+ */
+.onganda-focus:focus { outline: none; }
+
+.onganda-focus:focus-visible {
+  outline: 2px solid var(--onganda-focus, var(--onganda-bark-rust, #8F3E21));
+  outline-offset: 2px;
+}
+
+/* Native controls the design system styles: same rule, same reason. */
+.onganda-control:focus { outline: none; }
+
+.onganda-control:focus-visible {
+  outline: 2px solid var(--onganda-focus, var(--onganda-bark-rust, #8F3E21));
+  outline-offset: 2px;
+}
+
+/* ─── Select ────────────────────────────────────────────────────────────────
+ * The native chevron is the one piece of platform chrome that would otherwise
+ * survive inside an Onganda field. Replaced with a stepped pixel arrow.
+ */
+.onganda-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px 6px;
+  padding-right: 34px;
+}
+
+/* The native checkbox/radio is visually hidden; the ring belongs on the
+ * pixel box drawn next to it. */
+.onganda-choice:focus-visible + span {
+  outline: 2px solid var(--onganda-focus, var(--onganda-bark-rust, #8F3E21));
+  outline-offset: 2px;
+}

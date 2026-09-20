@@ -802,6 +802,43 @@
       }
     }
   },
+  "density": {
+    "$description": "How tight a surface is. Density belongs to the SURFACE, not the control: a container declares it once with DensityProvider and every control inside tightens together. Use `comfortable` for pages and `compact` for popups, side panels, toolbars and inspectors. Dropping page density into a 340px panel is what makes a layout read as oversized and cramped.",
+    "comfortable": {
+      "$type": "other",
+      "$value": {
+        "buttonPadding": "10px 22px",
+        "buttonFont": 13,
+        "fieldPadding": "12px 16px",
+        "fieldFont": 14,
+        "textareaMinHeight": 128,
+        "controlBox": 18,
+        "toggleWidth": 40,
+        "toggleHeight": 20,
+        "stackGap": 20,
+        "labelGap": 12,
+        "tabPadding": "7px 14px"
+      },
+      "$description": "Pages and full-width app views. The default."
+    },
+    "compact": {
+      "$type": "other",
+      "$value": {
+        "buttonPadding": "6px 14px",
+        "buttonFont": 12,
+        "fieldPadding": "8px 12px",
+        "fieldFont": 13,
+        "textareaMinHeight": 88,
+        "controlBox": 16,
+        "toggleWidth": 34,
+        "toggleHeight": 18,
+        "stackGap": 12,
+        "labelGap": 8,
+        "tabPadding": "5px 10px"
+      },
+      "$description": "Popups, side panels, toolbars, inspectors, dense tables."
+    }
+  },
   "space": {
     "0": {
       "$type": "dimension",

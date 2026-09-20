@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, roles, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
-import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelField, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress } from './onganda-patterns';
@@ -2457,6 +2457,28 @@ export const ControlStandards = () => {
               </p>
 
               <div className="mt-8">
+                <SubLabel isDark={isDark}>Density · the surface decides, not the control</SubLabel>
+                <div className="mb-8 grid gap-4 sm:grid-cols-2">
+                  <div style={{ border: `1px solid ${c.line}`, padding: 14 }}>
+                    <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Comfortable · pages</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <PixelButton variant="primary" isDark={isDark}>Save</PixelButton>
+                      <PixelButton variant="ghost" isDark={isDark}>Cancel</PixelButton>
+                    </div>
+                    <PixelInput className="mt-3" isDark={isDark} placeholder="Field" />
+                  </div>
+                  <DensityProvider value="compact">
+                    <div style={{ border: `1px solid ${c.line}`, padding: 14 }}>
+                      <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Compact · popups, panels, toolbars</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <PixelButton variant="primary" isDark={isDark}>Save</PixelButton>
+                        <PixelButton variant="ghost" isDark={isDark}>Cancel</PixelButton>
+                      </div>
+                      <PixelInput className="mt-3" isDark={isDark} placeholder="Field" />
+                    </div>
+                  </DensityProvider>
+                </div>
+
                 <SubLabel isDark={isDark}>Buttons · four intents</SubLabel>
                 <div className="flex flex-wrap items-center gap-3">
                   <PixelButton variant="primary" isDark={isDark}>Primary</PixelButton>

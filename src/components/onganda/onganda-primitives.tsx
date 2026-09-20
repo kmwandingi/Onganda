@@ -7,7 +7,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { MOTION } from './onganda-motion';
-import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
+import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
 export const DarkContext = createContext<{
@@ -498,6 +498,27 @@ export const useInkOn = () => {
   return useCallback((hue: string) => inkOn(hue, hex, isDark), [hex, isDark]);
 };
 
+// ─── Density context — how tight is this surface? ───────────────────────────
+// The page defaults were dropped unchanged into a 340px popup and a narrow
+// side panel, where a 36px button and a 43px field are oversized and the
+// result reads as cramped. Density belongs to the SURFACE: a container
+// declares it once and every control inside tightens together.
+//
+//   <DensityProvider value="compact">   ← popups, side panels, toolbars
+//     <PixelButton>Save</PixelButton>
+//   </DensityProvider>
+export const DensityContext = createContext<DensityName>('comfortable');
+
+export const useDensity = (): Density => DENSITY[useContext(DensityContext)];
+
+export const DensityProvider = ({
+  value,
+  children
+}: {
+  value: DensityName;
+  children: React.ReactNode;
+}) => <DensityContext.Provider value={value}>{children}</DensityContext.Provider>;
+
 // ─── Controls — buttons, fields, and choice controls ─────────────────────────
 // Every control reads the role layer (onganda-roles.ts). No control picks a
 // palette token directly, so a theme change or a mode switch moves all of them
@@ -555,13 +576,14 @@ export const PixelButton = ({
   ...rest
 }: PixelButtonProps) => {
   const c = roles(isDark);
+  const d = useDensity();
   const p = buttonPalette(variant, c);
   const style: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 8,
-    padding: '10px 22px',
-    fontSize: 13,
+    padding: d.buttonPadding,
+    fontSize: d.buttonFont,
     fontWeight: 500,
     letterSpacing: '0.02em',
     textDecoration: 'none',
@@ -571,8 +593,10 @@ export const PixelButton = ({
     color: p.fg,
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.45 : 1,
-    transition: CONTROL_TRANSITION
-  };
+    transition: CONTROL_TRANSITION,
+    // Read by the `:focus-visible` rule in style.css.
+    ['--onganda-focus' as string]: c.focusRing
+  } as React.CSSProperties;
   const enter = (el: HTMLElement) => {
     if (disabled) return;
     el.style.background = p.hoverBg;
@@ -584,8 +608,10 @@ export const PixelButton = ({
     el.style.color = p.fg;
     el.style.borderColor = p.border;
   };
-  const focusRing = (el: HTMLElement) => { el.style.outline = `2px solid ${c.focusRing}`; el.style.outlineOffset = '2px'; };
-  const clearRing = (el: HTMLElement) => { el.style.outline = 'none'; };
+  // Focus rings are keyboard-only. Setting them from onFocus put a permanent
+  // 2px ring on every button a mouse user clicked, which read as a heavy black
+  // outline on everything. `:focus-visible` in the stylesheet is the only
+  // correct way to express "focused by keyboard".
 
   if (href && !disabled) {
     return (
@@ -594,11 +620,9 @@ export const PixelButton = ({
         {...MOTION.tap}
         href={href}
         style={style}
-        className={className}
+        className={`onganda-focus ${className}`}
         onMouseEnter={e => enter(e.currentTarget)}
         onMouseLeave={e => leave(e.currentTarget)}
-        onFocus={e => focusRing(e.currentTarget)}
-        onBlur={e => clearRing(e.currentTarget)}
       >
         {children}
       </motion.a>
@@ -612,11 +636,9 @@ export const PixelButton = ({
       onClick={onClick}
       disabled={disabled}
       style={style}
-      className={className}
+      className={`onganda-focus ${className}`}
       onMouseEnter={e => enter(e.currentTarget)}
       onMouseLeave={e => leave(e.currentTarget)}
-      onFocus={e => focusRing(e.currentTarget)}
-      onBlur={e => clearRing(e.currentTarget)}
     >
       {children}
     </motion.button>
@@ -626,15 +648,15 @@ export const PixelButton = ({
 // ─── Text fields ──────────────────────────────────────────────────────────────
 // Transparent ground, 1px line, ochre on focus, fired red when invalid.
 // Pass `invalid` rather than styling an error state by hand.
-const fieldBase = (c: ColorRoles, invalid: boolean, disabled: boolean): React.CSSProperties => ({
+const fieldBase = (c: ColorRoles, invalid: boolean, disabled: boolean, d: Density): React.CSSProperties => ({
   width: '100%',
   background: disabled ? c.fieldDisabledBg : c.fieldBg,
   border: `1px solid ${invalid ? c.fieldBorderInvalid : c.fieldBorder}`,
   borderRadius: 0,
   outline: 'none',
-  padding: '12px 16px',
+  padding: d.fieldPadding,
   fontFamily: 'Inter, Arial, sans-serif',
-  fontSize: 14,
+  fontSize: d.fieldFont,
   color: disabled ? c.fieldDisabledText : c.fieldText,
   transition: 'border-color 0.2s'
 });
@@ -655,37 +677,55 @@ interface FieldFlags {
 
 export const PixelInput = ({ isDark = false, invalid = false, style, ...props }: React.InputHTMLAttributes<HTMLInputElement> & FieldFlags) => {
   const c = roles(isDark);
+  const d = useDensity();
   const h = useFieldHandlers(c, invalid);
   return <input
     {...props}
+    className={`onganda-control ${props.className ?? ''}`}
     aria-invalid={invalid || undefined}
     onFocus={e => { h.onFocus(e); props.onFocus?.(e); }}
     onBlur={e => { h.onBlur(e); props.onBlur?.(e); }}
-    style={{ ...fieldBase(c, invalid, !!props.disabled), ...style }}
+    style={{ ...fieldBase(c, invalid, !!props.disabled, d), ['--onganda-focus' as string]: c.focusRing, ...style } as React.CSSProperties}
   />;
 };
 
 export const PixelTextarea = ({ isDark = false, invalid = false, style, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & FieldFlags) => {
   const c = roles(isDark);
+  const d = useDensity();
   const h = useFieldHandlers(c, invalid);
   return <textarea
     {...props}
+    className={`onganda-control ${props.className ?? ''}`}
     aria-invalid={invalid || undefined}
     onFocus={e => { h.onFocus(e); props.onFocus?.(e); }}
     onBlur={e => { h.onBlur(e); props.onBlur?.(e); }}
-    style={{ ...fieldBase(c, invalid, !!props.disabled), minHeight: 128, resize: 'vertical', ...style }}
+    style={{ ...fieldBase(c, invalid, !!props.disabled, d), minHeight: d.textareaMinHeight, resize: 'vertical', ['--onganda-focus' as string]: c.focusRing, ...style } as React.CSSProperties}
   />;
 };
 
-export const PixelSelect = ({ isDark = false, invalid = false, style, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & FieldFlags) => {
+// The native chevron is the last piece of platform chrome that would survive
+// inside an Onganda field, so it is replaced with a stepped pixel arrow drawn
+// from rects — the same vocabulary as the icons.
+const chevron = (hex: string) =>
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Crect x='0' y='0' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='2' y='2' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='4' y='4' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='6' y='2' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='8' y='0' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3C/svg%3E")`;
+
+export const PixelSelect = ({ isDark = false, invalid = false, style, children, className = '', ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & FieldFlags) => {
   const c = roles(isDark);
+  const d = useDensity();
   const h = useFieldHandlers(c, invalid);
   return <select
     {...props}
+    className={`onganda-control onganda-select ${className}`}
     aria-invalid={invalid || undefined}
     onFocus={e => { h.onFocus(e); props.onFocus?.(e); }}
     onBlur={e => { h.onBlur(e); props.onBlur?.(e); }}
-    style={{ ...fieldBase(c, invalid, !!props.disabled), cursor: props.disabled ? 'not-allowed' : 'pointer', ...style }}
+    style={{
+      ...fieldBase(c, invalid, !!props.disabled, d),
+      cursor: props.disabled ? 'not-allowed' : 'pointer',
+      backgroundImage: chevron(props.disabled ? c.fieldDisabledText : c.textMuted),
+      ['--onganda-focus' as string]: c.focusRing,
+      ...style
+    } as React.CSSProperties}
   >{children}</select>;
 };
 
@@ -711,12 +751,13 @@ export const PixelField = ({
   className?: string;
 }) => {
   const c = roles(isDark);
+  const d = useDensity();
   return (
     <div className={className}>
       <label htmlFor={htmlFor} className="block text-xs font-bold uppercase tracking-[0.15em]" style={{ color: c.textMuted }}>
         {label}
       </label>
-      <div className="mt-3">{children}</div>
+      <div style={{ marginTop: d.labelGap }}>{children}</div>
       {hint && !error && <p className="mt-2 text-xs leading-relaxed" style={{ color: c.textMuted }}>{hint}</p>}
       {/* Fired red as text is 3.6:1 — under the floor. The message runs at full
           contrast and the red appears as the marker, so colour is never the
@@ -735,12 +776,11 @@ export const PixelField = ({
 // Drawn as pixel marks on the integer grid, never as a rounded native control.
 // Unchecked is a hairline box; checked fills with `controlOn` (ochre). The
 // checked colour is the same for all three, so "on" reads identically.
-const CONTROL_BOX = 18;
 
-const controlLabelStyle = (c: ColorRoles, disabled: boolean): React.CSSProperties => ({
+const controlLabelStyle = (c: ColorRoles, disabled: boolean, d: Density): React.CSSProperties => ({
   display: 'inline-flex',
   alignItems: 'flex-start',
-  gap: 12,
+  gap: d.labelGap,
   cursor: disabled ? 'not-allowed' : 'pointer',
   opacity: disabled ? 0.45 : 1,
   fontSize: 14,
@@ -756,15 +796,17 @@ export const PixelCheckbox = ({
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
   const c = roles(isDark);
+  const d = useDensity();
   const on = !!props.checked;
   const disabled = !!props.disabled;
   return (
-    <label className={className} style={controlLabelStyle(c, disabled)}>
-      <span style={{ position: 'relative', flexShrink: 0, width: CONTROL_BOX, height: CONTROL_BOX, marginTop: 2 }}>
+    <label className={className} style={controlLabelStyle(c, disabled, d)}>
+      <span style={{ position: 'relative', flexShrink: 0, width: d.controlBox, height: d.controlBox, marginTop: 2 }}>
         <input
           {...props}
           type="checkbox"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer' }}
+          className="onganda-choice"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer', ['--onganda-focus' as string]: c.focusRing } as React.CSSProperties}
         />
         <span
           aria-hidden="true"
@@ -779,7 +821,7 @@ export const PixelCheckbox = ({
           }}
         >
           {on && (
-            <svg width={CONTROL_BOX - 2} height={CONTROL_BOX - 2} viewBox="0 0 12 12" fill="none" shapeRendering="crispEdges">
+            <svg width={d.controlBox - 2} height={d.controlBox - 2} viewBox="0 0 12 12" fill="none" shapeRendering="crispEdges">
               <rect x="2" y="6" width="2" height="2" fill={c.controlOnFg} />
               <rect x="4" y="8" width="2" height="2" fill={c.controlOnFg} />
               <rect x="6" y="6" width="2" height="2" fill={c.controlOnFg} />
@@ -802,18 +844,20 @@ export const PixelRadio = ({
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
   const c = roles(isDark);
+  const d = useDensity();
   const on = !!props.checked;
   const disabled = !!props.disabled;
   const edge = on ? c.controlOnBorder : c.fieldBorder;
   return (
-    <label className={className} style={controlLabelStyle(c, disabled)}>
-      <span style={{ position: 'relative', flexShrink: 0, width: CONTROL_BOX, height: CONTROL_BOX, marginTop: 2 }}>
+    <label className={className} style={controlLabelStyle(c, disabled, d)}>
+      <span style={{ position: 'relative', flexShrink: 0, width: d.controlBox, height: d.controlBox, marginTop: 2 }}>
         <input
           {...props}
           type="radio"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer' }}
+          className="onganda-choice"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer', ['--onganda-focus' as string]: c.focusRing } as React.CSSProperties}
         />
-        <svg aria-hidden="true" width={CONTROL_BOX} height={CONTROL_BOX} viewBox="0 0 12 12" fill="none" shapeRendering="crispEdges" style={{ display: 'block', transition: CONTROL_TRANSITION }}>
+        <svg aria-hidden="true" width={d.controlBox} height={d.controlBox} viewBox="0 0 12 12" fill="none" shapeRendering="crispEdges" style={{ display: 'block', transition: CONTROL_TRANSITION }}>
           {/* stepped octagon frame */}
           <rect x="3" y="0" width="6" height="1" fill={edge} />
           <rect x="3" y="11" width="6" height="1" fill={edge} />
@@ -853,8 +897,9 @@ export const PixelToggle = ({
   className?: string;
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange' | 'type' | 'color'>) => {
   const c = roles(isDark);
-  const w = 40;
-  const h = 20;
+  const d = useDensity();
+  const w = d.toggleWidth;
+  const h = d.toggleHeight;
   return (
     <button
       {...rest}
@@ -863,8 +908,8 @@ export const PixelToggle = ({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
-      className={className}
-      style={{ ...controlLabelStyle(c, disabled), alignItems: 'center', background: 'none', border: 'none', padding: 0 }}
+      className={`onganda-focus ${className}`}
+      style={{ ...controlLabelStyle(c, disabled, d), alignItems: 'center', background: 'none', border: 'none', padding: 0, ['--onganda-focus' as string]: c.focusRing } as React.CSSProperties}
     >
       <span
         aria-hidden="true"

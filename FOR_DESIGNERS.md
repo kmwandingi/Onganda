@@ -104,6 +104,23 @@ real numbers.
 
 ---
 
+## Two densities
+
+Every control has a `comfortable` and a `compact` size, in the `density` token
+group. Design pages at comfortable; design popups, side panels, toolbars and
+inspectors at compact. Do not shrink a control by hand — the whole surface
+changes density together, or the proportions break.
+
+| | comfortable | compact |
+|---|---|---|
+| Button | 42px tall, 13px label | 32px tall, 12px label |
+| Field | 47px tall, 14px | 38px tall, 13px |
+| Checkbox / radio | 18px | 16px |
+| Toggle | 40×20 | 34×18 |
+
+Build two Figma component variants against these numbers rather than resizing
+instances.
+
 ## Composition: what makes a page actually Onganda
 
 Using the right colours is necessary and not sufficient. A layout that uses

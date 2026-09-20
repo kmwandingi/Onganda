@@ -95,3 +95,47 @@ export const GEOMETRY = {
   /** No shadows: depth comes from the weave texture and stepped marks. */
   shadow: 'none'
 } as const;
+
+// ─── Density ─────────────────────────────────────────────────────────────────
+// The system shipped with one density, tuned for a page. Dropped unchanged into
+// a 340px popup or a narrow side panel, a 36px button with 22px of horizontal
+// padding and a 43px field is oversized, and the layout reads as cramped and
+// heavy — which is exactly what happened in the first extension surfaces.
+//
+// Density is a property of the SURFACE, not of each control. A container
+// declares it once with <DensityProvider>, and every control inside tightens
+// together. Both sets are on /showcase side by side.
+//
+//   comfortable — pages, marketing, full-width app views (the default)
+//   compact     — popups, side panels, toolbars, inspectors, dense tables
+export const DENSITY = {
+  comfortable: {
+    buttonPadding: '10px 22px',
+    buttonFont: TYPE.ui.size,        // 13
+    fieldPadding: '12px 16px',
+    fieldFont: TYPE.body.size,       // 14
+    textareaMinHeight: 128,
+    controlBox: 18,
+    toggleWidth: 40,
+    toggleHeight: 20,
+    stackGap: SPACE_SCALE['5'],      // 20
+    labelGap: SPACE_SCALE['3'],      // 12
+    tabPadding: '7px 14px'
+  },
+  compact: {
+    buttonPadding: '6px 14px',
+    buttonFont: TYPE.small.size,     // 12
+    fieldPadding: '8px 12px',
+    fieldFont: TYPE.ui.size,         // 13
+    textareaMinHeight: 88,
+    controlBox: 16,
+    toggleWidth: 34,
+    toggleHeight: 18,
+    stackGap: SPACE_SCALE['3'],      // 12
+    labelGap: SPACE_SCALE['2'],      // 8
+    tabPadding: '5px 10px'
+  }
+} as const;
+
+export type DensityName = keyof typeof DENSITY;
+export type Density = (typeof DENSITY)[DensityName];

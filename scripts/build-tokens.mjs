@@ -91,6 +91,23 @@ const SPACE_SCALE = Object.fromEntries(
   [...literalBlock(typeSrc, 'SPACE_SCALE').matchAll(/'(\d+)':\s*(\d+)/g)].map(m => [m[1], +m[2]])
 );
 const fontFamily = typeSrc.match(/family:\s*"([^"]+)"/)[1];
+const DENSITY = {};
+for (const m of literalBlock(typeSrc, 'DENSITY').matchAll(/^\s{2}(\w+):\s*\{([\s\S]*?)\n\s{2}\}/gm)) {
+  DENSITY[m[1]] = Object.fromEntries(
+    [...m[2].matchAll(/(\w+):\s*(?:'([^']+)'|([\w.\[\]']+))/g)]
+      // Resolve source references to concrete numbers — a designer cannot use
+      // "TYPE.small.size".
+      .map(x => {
+        const raw = x[2] ?? x[3];
+        const t = raw.match(/^TYPE\.(\w+)\.size$/);
+        if (t) return [x[1], TYPE[t[1]].size];
+        const sp = raw.match(/^SPACE_SCALE\['(\d+)'\]$/);
+        if (sp) return [x[1], SPACE_SCALE[sp[1]]];
+        return [x[1], /^\d+$/.test(raw) ? Number(raw) : raw];
+      })
+      .filter(([k]) => k !== 'size')
+  );
+}
 const durations = [...motionSrc.matchAll(/duration:\s*([\d.]+)/g)].map(m => parseFloat(m[1]));
 
 // ── Build the W3C token document ────────────────────────────────────────────
@@ -177,6 +194,18 @@ const tokens = {
       ]))
     )
   },
+
+  density: g(
+    'How tight a surface is. Density belongs to the SURFACE, not the control: a container declares it ' +
+    'once with DensityProvider and every control inside tightens together. Use `comfortable` for pages ' +
+    'and `compact` for popups, side panels, toolbars and inspectors. Dropping page density into a 340px ' +
+    'panel is what makes a layout read as oversized and cramped.',
+    Object.fromEntries(Object.entries(DENSITY).map(([name, d]) => [name, {
+      $type: 'other',
+      $value: d,
+      $description: name === 'compact' ? 'Popups, side panels, toolbars, inspectors, dense tables.' : 'Pages and full-width app views. The default.'
+    }]))
+  ),
 
   space: g(
     'A 4px base grid. The pixel geometry rests on whole units.',

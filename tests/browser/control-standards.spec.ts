@@ -55,7 +55,8 @@ test('every sanctioned control is present in the showcase', async ({ page }) => 
   await expect(section.locator('input[type="checkbox"]')).toHaveCount(3);
   // three choice-control switches plus the section's own mode switch
   await expect(section.getByRole('switch')).toHaveCount(3);
-  await expect(section.locator('input:not([type="radio"]):not([type="checkbox"])')).toHaveCount(3);
+  // three field examples plus the two in the density comparison
+  await expect(section.locator('input:not([type="radio"]):not([type="checkbox"])')).toHaveCount(5);
   await expect(section.locator('textarea')).toHaveCount(1);
   await expect(section.locator('select')).toHaveCount(1);
 });
