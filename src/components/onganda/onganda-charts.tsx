@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
 import { COLOR } from './onganda-colors';
+import { CHART_SERIES, onColor } from './onganda-roles';
 import { SectionHeader, DitherBar, PixelTag, PixelDot } from './onganda-primitives';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
@@ -16,12 +17,13 @@ const C = {
   cardAlt: 'rgba(232,225,207,0.62)',
   // slightly deeper for alt rows
   border: 'rgba(30,26,23,0.10)',
-  label: 'rgba(30,26,23,0.40)',
-  tick: 'rgba(30,26,23,0.35)',
+  label: 'rgba(30,26,23,0.66)',
+  tick: 'rgba(30,26,23,0.66)',
   grid: 'rgba(30,26,23,0.07)',
   tooltipBg: COLOR.charBlack,
   tooltipText: COLOR.milletClay,
-  p: [COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum, COLOR.firedRed]
+  // Fixed series order — see CHART_SERIES in onganda-roles.ts
+  p: CHART_SERIES
 } as const;
 
 // ─── Chart types / categories ─────────────────────────────────────────────────
@@ -1149,7 +1151,7 @@ export const ChartGallery = () => {
   const TABS: Array<ChartCategory | 'All'> = ['All', ...CHART_CATEGORIES];
   const visible = activeCategory === 'All' ? CHART_PANELS : CHART_PANELS.filter(p => p.category === activeCategory);
   const borderColor = 'rgba(30,26,23,0.10)';
-  const labelColor = 'rgba(30,26,23,0.40)';
+  const labelColor = 'rgba(30,26,23,0.66)';
   return <section id="chart-gallery" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Chart Gallery" headline="Every chart. One palette." />
 
@@ -1165,7 +1167,7 @@ export const ChartGallery = () => {
           textTransform: 'uppercase',
           border: `1px solid ${isActive ? COLOR.ochreOrange : borderColor}`,
           background: isActive ? COLOR.ochreOrange : 'transparent',
-          color: isActive ? COLOR.milletClay : labelColor,
+          color: isActive ? onColor(COLOR.ochreOrange) : labelColor,
           cursor: 'pointer',
           transition: 'background 0.18s, border-color 0.18s, color 0.18s'
         }}>
@@ -1203,7 +1205,8 @@ export const ChartGallery = () => {
         letterSpacing: '0.16em',
         textTransform: 'uppercase',
         color: labelColor,
-        whiteSpace: 'nowrap'
+        whiteSpace: 'normal',
+        textAlign: 'center'
       }}>
           {CHART_PANELS.length} chart types · Recharts · Onganda palette
         </span>

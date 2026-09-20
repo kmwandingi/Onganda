@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
+import { COLOR, roles, onColor, inkOn, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
 import {
   DarkContext,
   DitherBar,
   OngandaLogoMark,
+  PixelButton,
   PixelCornerMarks,
   PixelDot,
+  PixelField,
   PixelInput,
   PixelTag,
   PixelTextarea,
@@ -33,8 +35,8 @@ type PublicPage = 'home' | 'full';
 
 const BRAND = 'Onganda';
 const LAB_LABEL = 'Namibia AI Systems Lab';
-const muted = 'rgba(30,26,23,0.58)';
-const quiet = 'rgba(30,26,23,0.42)';
+const muted = 'rgba(30,26,23,0.66)';
+const quiet = 'rgba(30,26,23,0.66)';
 const line = 'rgba(30,26,23,0.10)';
 const darkLine = 'rgba(232,225,207,0.10)';
 
@@ -153,8 +155,8 @@ const Ticker = ({ className = '' }: { className?: string }) => (
       {[...SYSTEMS, ...SYSTEMS].map((sys, index) => (
         <div key={`${sys.name}-${index}`} className="flex items-center">
           <PixelDot color={sys.borderHex} size={6} />
-          <span className="ml-3 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: sys.borderHex }}>{sys.name}</span>
-          <span className="ml-2 mr-8 text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: 'rgba(232,225,207,0.32)' }}>{systemEnglish(sys)}</span>
+          <span className="ml-3 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: inkOn(sys.borderHex, COLOR.milletClay) }}>{sys.name}</span>
+          <span className="ml-2 mr-8 text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: 'rgba(232,225,207,0.55)' }}>{systemEnglish(sys)}</span>
           <div className="mr-8 h-4 w-px" style={{ background: darkLine }} />
         </div>
       ))}
@@ -217,7 +219,7 @@ const PublicHero = ({
               initial={{ y: '110%', opacity: 0 }}
               animate={{ y: '0%', opacity: 1 }}
               transition={{ duration: 0.72, delay: 0.08 + index * 0.12, ease: [0.16, 1, 0.3, 1] }}
-              style={{ color: index === 2 ? COLOR.ochreOrange : COLOR.charBlack }}
+              style={{ color: index === 2 ? roles(false).accentInk : COLOR.charBlack }}
             >
               {line}
             </motion.span>
@@ -295,7 +297,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           </div>
           <div className="relative">
             <h3 className="text-2xl font-semibold">{sys.name}</h3>
-            <p className="mt-1 text-sm font-medium" style={{ color: sys.borderHex }}>{systemEnglish(sys)}</p>
+            <p className="mt-1 text-sm font-medium" style={{ color: muted }}>{systemEnglish(sys)}</p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>{sys.role}</p>
             <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{detailed ? sys.long : sys.line}</p>
           </div>
@@ -312,7 +314,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           <WeaveOverlay isDark opacity={0.06} />
           <div className="relative">
             <div className="w-full" style={{ background: COLOR.ochreOrange, height: 28 }}>
-              <span className="ml-3 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: COLOR.milletClay, lineHeight: '28px' }}>LAB</span>
+              <span className="ml-3 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: onColor(COLOR.ochreOrange), lineHeight: '28px' }}>LAB</span>
             </div>
             <h3 className="mt-8 text-2xl font-semibold">{BRAND}</h3>
             <p className="mt-5 text-sm leading-relaxed" style={{ color: 'rgba(232,225,207,0.56)' }}>
@@ -405,23 +407,20 @@ const ContactBand = ({ compact = false }: { compact?: boolean }) => (
           <div className="grid gap-5">
             {!compact && (
               <div className="grid gap-5 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Email</span>
-                  <PixelInput className="mt-3" type="email" placeholder="name@institution.na" />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Inquiry type</span>
-                  <PixelInput className="mt-3" placeholder="Partnership, pilot, access" />
-                </label>
+                <PixelField label="Email" htmlFor="contact-email">
+                  <PixelInput id="contact-email" type="email" placeholder="name@institution.na" />
+                </PixelField>
+                <PixelField label="Inquiry type" htmlFor="contact-type">
+                  <PixelInput id="contact-type" placeholder="Partnership, pilot, access" />
+                </PixelField>
               </div>
             )}
-            <label className="block">
-              <span className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>Short note</span>
-              <PixelTextarea className="mt-3" placeholder="What would you like to discuss?" />
-            </label>
-            <motion.button whileTap={{ scale: 0.98 }} className="inline-flex w-fit items-center gap-2 px-6 py-3 text-sm font-semibold" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+            <PixelField label="Short note" htmlFor="contact-note">
+              <PixelTextarea id="contact-note" placeholder="What would you like to discuss?" />
+            </PixelField>
+            <PixelButton variant="primary" className="w-fit">
               Contact {BRAND}<IconArrowRight size={14} />
-            </motion.button>
+            </PixelButton>
           </div>
         </div>
       </div>

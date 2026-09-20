@@ -19,7 +19,23 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': [
+        'warn',
+        {
+          allowConstantExport: true,
+          allowExportNames: [
+            'DarkContext',
+            'useDark',
+            'SurfaceContext',
+            'useSurface',
+            'useInkOn',
+            'systemIconForName',
+            'regenerateDocBlock',
+            'ICON_REGISTRY',
+            'ICON_CATEGORIES',
+          ],
+        },
+      ],
       '@typescript-eslint/no-unused-vars': 'off',
     },
   }

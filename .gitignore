@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+playwright-report
+test-results
 *.local
 
 # Editor directories and files
@@ -22,3 +24,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright MCP scratch output
+.playwright-mcp/
+
+# Packed tarballs from `npm pack`
+*.tgz
+
+# Local export verification scratch
+export-verification/

@@ -26,7 +26,7 @@ export const SlideInspector = ({
   const headerBg = isDark ? COLOR.darkCard : '#D5CEBB';
   const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.40)' : 'rgba(30,26,23,0.40)';
+  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const inputStyle: React.CSSProperties = {
     width: '100%',
     fontSize: 11,
@@ -166,7 +166,7 @@ export const SlideInspector = ({
             }} style={{
               ...inputStyle,
               flex: 1,
-              color: COLOR.ochreOrange
+              color: COLOR.barkRust
             }} placeholder="$B" />
             <button onClick={() => {
               const next = chartData.filter((_, ri) => ri !== i);
@@ -192,7 +192,7 @@ export const SlideInspector = ({
           }} style={{
             fontSize: 9,
             fontWeight: 600,
-            color: COLOR.ochreOrange,
+            color: COLOR.barkRust,
             background: 'transparent',
             border: `1px solid ${COLOR.ochreOrange}50`,
             cursor: 'pointer',
@@ -308,7 +308,7 @@ export const SlideInspector = ({
           }}>
             <span style={{
               fontSize: 7,
-              color: 'rgba(232,225,207,0.35)',
+              color: 'rgba(232,225,207,0.55)',
               width: 36,
               flexShrink: 0,
               textAlign: 'right',
@@ -677,7 +677,7 @@ export const SlideInspector = ({
               padding: '2px 8px'
             }} onMouseEnter={e => {
               e.currentTarget.style.borderColor = COLOR.ochreOrange;
-              e.currentTarget.style.color = COLOR.ochreOrange;
+              e.currentTarget.style.color = COLOR.barkRust;
             }} onMouseLeave={e => {
               e.currentTarget.style.borderColor = border;
               e.currentTarget.style.color = muted;
@@ -696,7 +696,7 @@ export const SlideInspector = ({
             fontSize: 9,
             fontWeight: 700,
             letterSpacing: '0.14em',
-            color: COLOR.ochreOrange,
+            color: COLOR.barkRust,
             textTransform: 'uppercase' as const,
             margin: '0 0 8px'
           }}>Properties</p>
@@ -740,7 +740,7 @@ export const SlideInspector = ({
             fontSize: 9,
             fontWeight: 700,
             letterSpacing: '0.14em',
-            color: COLOR.ochreOrange,
+            color: COLOR.barkRust,
             textTransform: 'uppercase' as const,
             margin: '0 0 8px'
           }}>Slide Title</p>

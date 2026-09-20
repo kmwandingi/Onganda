@@ -1,0 +1,193 @@
+// ─── Consumer render check ───────────────────────────────────────────────────
+// The package smoke test resolves every export and type-checks the README
+// example. It never renders a pixel — so a consumer who follows the README and
+// misses the Tailwind content configuration gets structurally correct,
+// visually broken components, and every test still passes.
+//
+// This builds a real Vite + React + Tailwind app against the packed tarball,
+// following the README setup verbatim, then renders it and asserts that:
+//   1. the package's inline role styles actually apply, and
+//   2. the Tailwind utilities used *inside* the package were generated,
+//      which only happens if the documented `@source` line is correct.
+//
+// It deliberately also builds a second app WITHOUT that line, to prove the
+// check can tell the two apart. A check that passes either way is worthless.
+
+import { execFile } from 'node:child_process';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { promisify } from 'node:util';
+import { chromium } from 'playwright';
+import { createServer } from 'node:http';
+import { readFile as readFileFs } from 'node:fs/promises';
+
+const run = promisify(execFile);
+const projectRoot = process.cwd();
+const testRoot = await mkdtemp(path.join(tmpdir(), 'onganda-render-'));
+
+const APP = `
+import { createRoot } from 'react-dom/client';
+import { DarkProvider, PixelButton, SectionHeader, PixelField, PixelInput, roles } from '@onganda/design-system';
+import '@onganda/design-system/style.css';
+import './app.css';
+
+const c = roles(false);
+
+function App() {
+  return (
+    <DarkProvider>
+      <main id="app" style={{ background: c.canvas, padding: 40 }}>
+        <SectionHeader label="Consumer check" headline="Does this render?" isDark={false} />
+        <PixelField label="Email" htmlFor="e"><PixelInput id="e" placeholder="name@x.na" /></PixelField>
+        <PixelButton variant="primary">Primary</PixelButton>
+        <PixelButton variant="danger">Delete</PixelButton>
+      </main>
+    </DarkProvider>
+  );
+}
+createRoot(document.getElementById('root')).render(<App />);
+`;
+
+const buildApp = async (name, tailwindSource) => {
+  const root = path.join(testRoot, name);
+  await mkdir(root, { recursive: true });
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({
+    name, private: true, type: 'module', scripts: { build: 'vite build' }
+  }));
+  await writeFile(path.join(root, 'index.html'),
+    `<!doctype html><html><body><div id="root"></div><script type="module" src="/main.jsx"></script></body></html>`);
+  await writeFile(path.join(root, 'main.jsx'), APP);
+  // Exactly the CSS the README tells a Tailwind 4 consumer to write.
+  await writeFile(path.join(root, 'app.css'), `@import 'tailwindcss';\n${tailwindSource}\n`);
+  await writeFile(path.join(root, 'vite.config.js'),
+    `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport tailwindcss from '@tailwindcss/vite';\nexport default defineConfig({ plugins: [react(), tailwindcss()], base: './' });\n`);
+  return root;
+};
+
+let browser;
+try {
+  const { stdout } = await run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', testRoot], { cwd: projectRoot });
+  const [{ filename }] = JSON.parse(stdout);
+  const tarball = path.join(testRoot, filename);
+
+  const deps = [
+    tarball, 'react@^19', 'react-dom@^19', 'framer-motion@^11', 'recharts@^2',
+    'vite@^6', '@vitejs/plugin-react@^4', 'tailwindcss@^4', '@tailwindcss/vite@^4',
+  ];
+
+  // Verbatim from the README's Tailwind 4 instruction.
+  const WITH_SOURCE = `@source "./node_modules/@onganda/design-system/dist/package";`;
+
+  const cases = [
+    { name: 'configured', source: WITH_SOURCE, expectStyled: true },
+    { name: 'misconfigured', source: '', expectStyled: false },
+  ];
+
+  browser = await chromium.launch();
+  const results = {};
+
+  // One app, one install, two builds. Installing per case doubled the slowest
+  // step for no extra coverage.
+  const root = await buildApp('app', cases[0].source);
+  await run('npm', ['install', '--no-package-lock', '--no-audit', '--no-fund', '--prefer-offline', ...deps], { cwd: root, maxBuffer: 1 << 26 });
+
+  for (const { name, source, expectStyled } of cases) {
+    await writeFile(path.join(root, 'app.css'), `@import 'tailwindcss';\n${source}\n`);
+    await rm(path.join(root, 'dist'), { recursive: true, force: true });
+    await run('npm', ['run', 'build'], { cwd: root, maxBuffer: 1 << 26 });
+
+    // ES modules are blocked over file://, so serve the build.
+    const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' };
+    const server = createServer(async (req, res) => {
+      const rel = decodeURIComponent(req.url.split('?')[0]);
+      const file = path.join(root, 'dist', rel === '/' ? 'index.html' : rel);
+      try {
+        const body = await readFileFs(file);
+        res.writeHead(200, { 'content-type': types[path.extname(file)] ?? 'application/octet-stream' });
+        res.end(body);
+      } catch { res.writeHead(404).end('not found'); }
+    });
+    await new Promise(r => server.listen(0, '127.0.0.1', r));
+    const origin = `http://127.0.0.1:${server.address().port}`;
+
+    const page = await browser.newPage();
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(origin + '/');
+    await page.waitForSelector('#app', { timeout: 15_000 });
+    await page.waitForTimeout(400);
+
+    const probe = await page.evaluate(() => {
+      const btn = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Primary');
+      const danger = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Delete');
+      const label = document.querySelector('h2, label, p');
+      // SectionHeader's eyebrow relies on Tailwind's `uppercase` + `tracking-*`.
+      // The innermost node carrying the text, not a wrapper.
+      const eyebrow = [...document.querySelectorAll('*')]
+        .filter(el => (el.textContent || '').trim() === 'Consumer check' && el.children.length === 0)
+        .pop();
+      const s = eyebrow ? getComputedStyle(eyebrow) : null;
+      // Also ask the stylesheets directly: did Tailwind emit the utility at all?
+      // Tailwind 4 nests utilities inside @layer, so this recurses. It is
+      // diagnostic only — the computed style is what a user actually sees.
+      let utilityEmitted = false;
+      const scan = rules => {
+        for (const rule of rules ?? []) {
+          if (rule.selectorText && /\.uppercase\b/.test(rule.selectorText)) return true;
+          if (rule.cssRules && scan(rule.cssRules)) return true;
+        }
+        return false;
+      };
+      for (const sheet of document.styleSheets) {
+        try { if (scan(sheet.cssRules)) { utilityEmitted = true; break; } } catch { /* cross-origin */ }
+      }
+      return {
+        rendered: !!btn,
+        primaryBg: btn ? getComputedStyle(btn).backgroundColor : null,
+        dangerBg: danger ? getComputedStyle(danger).backgroundColor : null,
+        primaryRadius: btn ? getComputedStyle(btn).borderTopLeftRadius : null,
+        eyebrowTransform: s ? s.textTransform : null,
+        eyebrowTag: eyebrow ? eyebrow.tagName + '.' + (eyebrow.className || '') : null,
+        utilityEmitted,
+        eyebrowTracking: s ? s.letterSpacing : null,
+        labelFound: !!label,
+      };
+    });
+    await page.close();
+    await new Promise(r => server.close(r));
+    results[name] = { probe, errors };
+
+    if (errors.length) throw new Error(`${name}: runtime errors in a consumer app:\n  ${errors.join('\n  ')}`);
+    if (!probe.rendered) throw new Error(`${name}: the package did not render at all.`);
+
+    // Inline role styles come from the package and must work either way.
+    if (probe.primaryBg !== 'rgb(30, 26, 23)') {
+      throw new Error(`${name}: PixelButton primary background is ${probe.primaryBg}, expected char black. The role layer did not survive packaging.`);
+    }
+    if (probe.dangerBg !== 'rgb(143, 62, 33)') {
+      throw new Error(`${name}: PixelButton danger background is ${probe.dangerBg}, expected bark rust.`);
+    }
+    if (parseFloat(probe.primaryRadius) !== 0) {
+      throw new Error(`${name}: a control rendered with a ${probe.primaryRadius} corner radius in a consumer app.`);
+    }
+
+    // Computed style is the contract: it is what the consumer sees.
+    const styled = probe.eyebrowTransform === 'uppercase';
+    if (styled !== expectStyled) {
+      throw new Error(
+        expectStyled
+          ? `configured: the documented Tailwind @source line did not style the package. eyebrow=${probe.eyebrowTag} text-transform=${probe.eyebrowTransform} utilityEmitted=${probe.utilityEmitted}. A consumer following the README would get unstyled components.`
+          : `misconfigured: utilities were generated even without the @source line, so this check cannot detect a missing Tailwind configuration and proves nothing.`
+      );
+    }
+  }
+
+  console.log('Consumer render check passed.');
+  console.log(`  configured    → eyebrow ${results.configured.probe.eyebrowTransform}, tracking ${results.configured.probe.eyebrowTracking}, primary ${results.configured.probe.primaryBg}`);
+  console.log(`  misconfigured → eyebrow ${results.misconfigured.probe.eyebrowTransform} (correctly detected as broken)`);
+  console.log('  The check distinguishes a correctly configured consumer from a misconfigured one.');
+} finally {
+  if (browser) await browser.close();
+  await rm(testRoot, { recursive: true, force: true });
+}

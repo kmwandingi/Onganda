@@ -7,9 +7,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
-import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, OngandaFooter } from './onganda-primitives';
-import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab } from './onganda-sections';
+import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, PixelButton, OngandaFooter } from './onganda-primitives';
+import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab, ControlStandards, ProductPatterns } from './onganda-sections';
 import { ChartGallery } from './onganda-charts';
+import { NAMIBIA_MAP_POINTS, NAMIBIA_MAP_ROUTES } from './onganda-map-data';
+import { OngandaMap } from './onganda-maps';
 import { Publications } from './onganda-publications';
 import { DocumentEditor } from './onganda-document-editor';
 import { SlideEditor } from './onganda-slide-editor';
@@ -65,7 +67,7 @@ export const NamibiaAISystemsHub = () => {
         }}>
             <div>
               <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{
-              color: isDark ? 'rgba(232,225,207,0.38)' : 'rgba(30,26,23,0.45)'
+              color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
             }}>System Architecture</h2>
               <p className="text-2xl md:text-3xl font-medium tracking-tight" style={{
               color: isDark ? COLOR.milletClay : COLOR.charBlack
@@ -109,9 +111,8 @@ export const NamibiaAISystemsHub = () => {
                   A science and technology park driving applied research, piloting, and technology transfer. Sovereign AI infrastructure for Namibia.
                 </p>
               </div>
-              <button className="relative self-start px-5 py-2.5 bg-[#D9791F] text-[#E8E1CF] font-medium text-sm hover:bg-[#C84A1B] transition-colors duration-200">
-                Read the manifesto
-              </button>
+              {/* isDark: the button sits on the inverse (black) card, so it takes the dark role set — see DESIGN_SYSTEM.md §5 */}
+              <PixelButton variant="accent" isDark className="relative self-start">Read the manifesto</PixelButton>
             </motion.div>
           </div>
         </section>
@@ -130,11 +131,29 @@ export const NamibiaAISystemsHub = () => {
           </div>
         </section>
 
+        {/* ── Control Standards — buttons, fields, choice controls, colour roles ── */}
+        <ControlStandards />
+
+        {/* ── Product Patterns — dialog, table, notice, empty, loading, tabs ── */}
+        <ProductPatterns />
+
         {/* ── Research Heatmap ── */}
         <PixelHeatmap />
 
         {/* ── Chart Gallery ── */}
         <ChartGallery />
+
+        {/* ── Geospatial surface ── */}
+        <div id="maps" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+          <OngandaMap
+            points={NAMIBIA_MAP_POINTS}
+            routes={NAMIBIA_MAP_ROUTES}
+            label="Geospatial surface"
+            title="A map that belongs to the system."
+            description="An illustrative Namibia-wide network showing how place, data, and field operations can share one visual language."
+            ariaLabel="Illustrative map of capability signals across Namibia"
+          />
+        </div>
 
         {/* ── Roadmap Timeline ── */}
         <RoadmapTimeline />
@@ -158,11 +177,11 @@ export const NamibiaAISystemsHub = () => {
           <div className="bg-[#F3E8C3] border border-[#1E1A17]/10 p-8 md:p-12">
             <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-0">
               <div className="md:w-1/3 shrink-0">
-                <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/45 mb-3">Naming Hierarchy</h2>
+                <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-3">Naming Hierarchy</h2>
                 <p className="text-2xl font-medium tracking-tight text-[#1E1A17] leading-snug">
                   One parent.<br />Five tools.<br />One direction.
                 </p>
-                <p className="mt-4 text-sm text-[#1E1A17]/60 leading-relaxed max-w-xs">
+                <p className="mt-4 text-sm text-[#1E1A17]/66 leading-relaxed max-w-xs">
                   Names pending final validation with fluent Oshikwanyama / Oshindonga speakers and community-informed partners before lock.
                 </p>
               </div>
@@ -172,7 +191,7 @@ export const NamibiaAISystemsHub = () => {
                     <div className="w-2 h-8 bg-[#D9791F] shrink-0" aria-hidden="true" />
                     <div>
                       <p className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">Onganda</p>
-                      <p className="text-xs text-[#1E1A17]/50 mt-0.5">Parent brand · Namibia Applied AI Lab</p>
+                      <p className="text-xs text-[#1E1A17]/66 mt-0.5">Parent brand · Namibia Applied AI Lab</p>
                     </div>
                   </div>
                   {SYSTEMS.map((sys, i) => <div key={`nl-${sys.name}`} className="flex items-center gap-4 py-3.5 border-b border-[#1E1A17]/8 pl-6">
@@ -182,13 +201,13 @@ export const NamibiaAISystemsHub = () => {
                   }} aria-hidden="true" />
                       <div className="flex-1 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
                         <p className="text-base font-semibold text-[#1E1A17] tracking-tight leading-none">{sys.name}</p>
-                        <p className="text-xs text-[#1E1A17]/45 mt-0.5 sm:mt-0">
-                          <span className="text-[#1E1A17]/60">{sys.english}</span>
+                        <p className="text-xs text-[#1E1A17]/66 mt-0.5 sm:mt-0">
+                          <span className="text-[#1E1A17]/66">{sys.english}</span>
                           <span className="mx-1.5">·</span>
                           <span>{sys.role}</span>
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#1E1A17]/25">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#1E1A17]/66">{String(i + 1).padStart(2, '0')}</span>
                     </div>)}
                 </div>
               </div>

@@ -640,7 +640,9 @@ export const TICKER_ITEMS: TickerItem[] = [{
 }];
 
 export const HERO_LINE_1_WORDS: HeroWord[] = [{ text: 'A', color: '#1E1A17' }, { text: 'workshop', color: '#1E1A17' }];
-export const HERO_LINE_2_WORDS: HeroWord[] = [{ text: 'of', color: '#D9791F' }, { text: 'intelligence.', color: '#D9791F' }];
+// Bark rust, not ochre: ochre is 2.4:1 on the light canvas even at display
+// size, under the 3:1 large-text floor. See DESIGN_SYSTEM.md §4.
+export const HERO_LINE_2_WORDS: HeroWord[] = [{ text: 'of', color: '#8F3E21' }, { text: 'intelligence.', color: '#8F3E21' }];
 export const HERO_LINE_3_WORDS: HeroWord[] = [{ text: 'Pixelated', color: '#1E1A17' }, { text: 'by', color: '#1E1A17' }, { text: 'design.', color: '#1E1A17' }];
 
 // ─── Slide editor chart data ──────────────────────────────────────────────────

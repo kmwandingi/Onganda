@@ -24,7 +24,6 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@onganda/design-system": ["./src/design-system/index.ts"],
       "@/*": ["./src/*"]
     }
   },

@@ -1,0 +1,5 @@
+interface:
+  display_name: 'Onganda Design System'
+  short_description: 'Build consistent Onganda product interfaces'
+  default_prompt: 'Use $onganda-design-system to build this project with the Onganda design language.'
+  brand_color: '#D9791F'

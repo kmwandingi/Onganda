@@ -282,7 +282,7 @@ export const AiAuthoringPanel = ({
   const [error, setError] = useState<string | null>(null);
   const gaps = useMemo(() => requiredGaps(brief, mode), [brief, mode]);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.48)' : 'rgba(30,26,23,0.48)';
+  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const bg = isDark ? COLOR.darkCard : COLOR.dustLight;
   const border = isDark ? 'rgba(232,225,207,0.12)' : 'rgba(30,26,23,0.12)';
 
@@ -387,7 +387,7 @@ export const AiAuthoringPanel = ({
           lineHeight: 1.5
         }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
-          {gaps.length ? gaps.map(gap => <span key={gap} style={{ fontSize: 8, fontWeight: 800, letterSpacing: '0.10em', textTransform: 'uppercase', color: COLOR.barkRust, border: `1px solid ${COLOR.barkRust}40`, padding: '4px 6px' }}>{gap}</span>) : <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: COLOR.ochreOrange }}><IconCheck size={12} color={COLOR.ochreOrange} /> Enough context to draft</span>}
+          {gaps.length ? gaps.map(gap => <span key={gap} style={{ fontSize: 8, fontWeight: 800, letterSpacing: '0.10em', textTransform: 'uppercase', color: COLOR.barkRust, border: `1px solid ${COLOR.barkRust}40`, padding: '4px 6px' }}>{gap}</span>) : <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: COLOR.barkRust }}><IconCheck size={12} color={COLOR.ochreOrange} /> Enough context to draft</span>}
         </div>
         {error && <p style={{ color: COLOR.firedRed, fontSize: 11, lineHeight: 1.5 }}>{error}</p>}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>

@@ -4,8 +4,15 @@
  * Import once in your project entry:
  *   import '@onganda/design-system/style.css';
  *
- * For Tailwind utility support, add the library to your Tailwind content path:
- *   content: ['./node_modules/@onganda/design-system/dist/index.js']
+ * For Tailwind utility support, point Tailwind at this package's dist folder.
+ * Tailwind 4:  @source "./node_modules/@onganda/design-system/dist/package";
+ *               (relative to your CSS file; a wrong level fails silently)
+ * Tailwind 3:  add that same folder to `content`, matching .js and .cjs.
+ *
+ * Do not write a glob here. A double-star followed by a slash closes this
+ * comment, and everything after it is parsed as CSS — which is exactly how
+ * this file once shipped a build-breaking declaration to every Tailwind 4
+ * consumer. See tests/consumer-render.mjs.
  */
 
 :root {
@@ -23,6 +30,7 @@
   --onganda-fired-red:     #C84A1B;
   --onganda-bark-rust:     #8F3E21;
   --onganda-mopane-brown:  #6A4B2E;
+  --onganda-mopane-brown-light: #8F6840;
   --onganda-char-black:    #1E1A17;
   --onganda-dye-plum:      #6F4A6E;
   --onganda-dark-bg:       #120F0D;

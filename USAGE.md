@@ -7,13 +7,13 @@ pixel-art SVG primitives, basket-weave textures, quiet mechanical motion.
 
 ## Installation
 
-### From GitHub (current)
+### From GitHub
 
 ```bash
 npm install github:kmwandingi/Onganda
 ```
 
-### From npm (when published)
+### From the npm registry
 
 ```bash
 npm install @onganda/design-system
@@ -50,7 +50,7 @@ your Tailwind content path so those utilities are included in your CSS output.
 
 **Tailwind v4** (`tailwind.css` or `@tailwindcss/vite` config):
 ```css
-@source "../../node_modules/@onganda/design-system/dist/index.js";
+@source "../../node_modules/@onganda/design-system/dist/package";
 ```
 
 **Tailwind v3** (`tailwind.config.js`):
@@ -58,7 +58,7 @@ your Tailwind content path so those utilities are included in your CSS output.
 module.exports = {
   content: [
     // ... your existing paths
-    './node_modules/@onganda/design-system/dist/index.js',
+    './node_modules/@onganda/design-system/dist/package/**/*.{js,cjs}',
   ],
 };
 ```
@@ -66,22 +66,41 @@ module.exports = {
 ### 3. Wrap your app in the dark-mode provider
 
 ```tsx
-import { DarkContext } from '@onganda/design-system';
-import { useState } from 'react';
+import { DarkProvider } from '@onganda/design-system';
 
 function App() {
-  const [isDark, setIsDark] = useState(false);
   return (
-    <DarkContext.Provider value={{ isDark, toggle: () => setIsDark(d => !d) }}>
+    <DarkProvider>
       {/* your app */}
-    </DarkContext.Provider>
+    </DarkProvider>
   );
 }
 ```
 
 ---
 
-## Core imports
+## Supported imports
+
+Use the package root or `/core` for tokens, primitives, and icons. Import larger features through their named paths:
+
+```ts
+import { COLOR, PixelButton } from '@onganda/design-system';
+import { ChartGallery } from '@onganda/design-system/charts';
+import { DocumentEditor, SlideEditor } from '@onganda/design-system/editors';
+import { AiAuthoringPanel } from '@onganda/design-system/ai';
+import { OngandaMap } from '@onganda/design-system/maps';
+import { OngandaPublicSite } from '@onganda/design-system/sites';
+```
+
+The package root retains the complete version 1.x surface for compatibility.
+
+Map consumers must also load the Leaflet base styles once:
+
+```ts
+import '@onganda/design-system/maps.css';
+```
+
+## Compatibility import list
 
 ```ts
 import {
@@ -217,26 +236,53 @@ const MyIcon = ({ size = 48 }: { size?: number }) => (
 );
 ```
 
-### Dark mode
+### Dark mode and colour roles
 ```tsx
-import { useDark, COLOR } from '@onganda/design-system';
+import { useDark, roles, PixelButton } from '@onganda/design-system';
 
 function MyComponent() {
   const { isDark, toggle } = useDark();
-  const bg = isDark ? COLOR.darkCard : COLOR.dustLight;
-  const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
+  const c = roles(isDark);
 
   return (
-    <div style={{ background: bg, color: fg }}>
-      <button onClick={toggle}>Toggle dark mode</button>
+    <div style={{ background: c.surface, color: c.text }}>
+      <PixelButton variant="ghost" isDark={isDark} onClick={toggle}>Toggle dark mode</PixelButton>
     </div>
   );
 }
 ```
 
+`roles(isDark)` resolves every colour for the current mode, so a component never
+branches on `isDark` per colour. `COLOR` says what a colour *is*; a role says
+where it may be *used*. See `DESIGN_SYSTEM.md` §4.
+
+### Forms
+```tsx
+import { PixelField, PixelInput, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, PixelButton } from '@onganda/design-system';
+
+<PixelField label="Email" hint="We reply within two days." htmlFor="email">
+  <PixelInput id="email" type="email" placeholder="name@institution.na" />
+</PixelField>
+
+{/* PixelField runs the message at full contrast with a red marker beside it —
+    fired red as text is 3.6:1, and colour is never the only signal. */}
+<PixelField label="Organisation" error="This field is required." htmlFor="org">
+  <PixelInput id="org" invalid />
+</PixelField>
+
+<PixelRadio name="kind" label="Pilot programme" checked={kind === 'pilot'} onChange={() => setKind('pilot')} />
+<PixelCheckbox label="Send me lab updates" checked={sub} onChange={e => setSub(e.currentTarget.checked)} />
+<PixelToggle label="Publish" checked={live} onChange={setLive} />
+
+<PixelButton variant="primary" onClick={submit}>Send</PixelButton>
+```
+
+Never hand-roll a control. Every field shares one recipe: transparent ground,
+1px border, `borderRadius: 0`, ochre on focus, fired red when `invalid`.
+
 ### Composing a page section
 ```tsx
-import { SystemConnectionDiagram, DIAGRAM_NODES, CONNECTION_EDGES } from '@onganda/design-system';
+import { SystemConnectionDiagram } from '@onganda/design-system/sites';
 
 // Default data (full five-system diagram)
 <SystemConnectionDiagram />
@@ -247,7 +293,7 @@ import { SystemConnectionDiagram, DIAGRAM_NODES, CONNECTION_EDGES } from '@ongan
 
 ### AI authoring panel
 ```tsx
-import { AiAuthoringPanel } from '@onganda/design-system';
+import { AiAuthoringPanel } from '@onganda/design-system/ai';
 
 <AiAuthoringPanel
   mode="document"
@@ -262,7 +308,7 @@ import { AiAuthoringPanel } from '@onganda/design-system';
 
 ### Document editor
 ```tsx
-import { DocumentEditor } from '@onganda/design-system';
+import { DocumentEditor } from '@onganda/design-system/editors';
 import '@onganda/design-system/style.css';
 
 <DocumentEditor />
@@ -270,7 +316,7 @@ import '@onganda/design-system/style.css';
 
 ### Slide editor
 ```tsx
-import { SlideEditor } from '@onganda/design-system';
+import { SlideEditor } from '@onganda/design-system/editors';
 import '@onganda/design-system/style.css';
 
 <SlideEditor />
@@ -298,12 +344,23 @@ import '@onganda/design-system/style.css';
 
 ## Design rules
 
-1. **No `border-radius` on brand cards** — use `PixelCornerMarks` instead.
-2. **No Tailwind generic colors** — use `COLOR.*` tokens always.
-3. **Pixel icons use `<rect>` only** — no `<path>`, `<circle>`, `<ellipse>`.
-4. **Inline `style={}` for colors** — never `className="text-orange-500"`.
-5. **Motion: tween entrances, not spring** — `y:-2` hover lift, `scale:0.97` tap.
-6. **Typography: Inter/Arial everywhere** — no pixel fonts for reading text.
+1. **Style from `roles(isDark)`** — not from the raw palette. Being in `COLOR` does not make a token available for any purpose.
+2. **Ochre orange is the accent as a fill**, with char black on it. As ink on a light surface it is 2.4:1 — read `accentInk` (bark rust in light, ochre in dark) for links, focus rings, and ghost hover.
+3. **Fired red is an indicator only** — status marks and invalid borders. Never behind small text, never error-message text.
+4. **System colours mean membership.** Mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo. Never interface chrome.
+5. **The palette has no green and no blue.** Read status through `statusFor(name, isDark)`.
+6. **Colour is never the only carrier of state** — pair it with a marker, a label, or a message.
+7. **Never hand-roll a control** — use `PixelButton`, `PixelInput`, `PixelTextarea`, `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, `PixelToggle`. One primary per view. A control on an inverse surface takes `isDark`.
+8. **No `border-radius` anywhere** — use `PixelCornerMarks` for corner decoration.
+9. **No Tailwind generic colors, no raw hex, no `rgba()`** in components. All three fail `npm run check:design`.
+10. **Pixel icons use `<rect>` only** — no `<path>`, `<circle>`, `<ellipse>`.
+11. **Motion: spread `MOTION` presets** — tween entrances, `y:-2` hover lift, `scale:0.97` tap. Never spring.
+12. **Typography: Inter/Arial everywhere** — no pixel fonts for reading text.
+
+Check your own project against these rules with `npx onganda-check src/`.
+
+The full specification is `DESIGN_SYSTEM.md` §4 (Color Roles) and §5 (Controls).
+The `/showcase` **Control Standards** section renders every control in every state.
 
 ---
 

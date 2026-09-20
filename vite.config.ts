@@ -8,8 +8,11 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@onganda/design-system': path.resolve(__dirname, './src/design-system/index.ts'),
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    outDir: 'dist/showcase',
+    emptyOutDir: true,
   },
 });

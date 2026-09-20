@@ -12,6 +12,7 @@ export const COLOR = {
   firedRed: '#C84A1B',
   barkRust: '#8F3E21',
   mopaneBrown: '#6A4B2E',
+  mopaneBrownLight: '#8F6840',
   charBlack: '#1E1A17',
   dyePlum: '#6F4A6E',
   darkBg: '#120F0D',
@@ -31,6 +32,7 @@ export const COLOR_CSS_VARS = {
   firedRed: 'var(--onganda-fired-red, #C84A1B)',
   barkRust: 'var(--onganda-bark-rust, #8F3E21)',
   mopaneBrown: 'var(--onganda-mopane-brown, #6A4B2E)',
+  mopaneBrownLight: 'var(--onganda-mopane-brown-light, #8F6840)',
   charBlack: 'var(--onganda-char-black, #1E1A17)',
   dyePlum: 'var(--onganda-dye-plum, #6F4A6E)',
   darkBg: 'var(--onganda-dark-bg, #120F0D)',
@@ -96,6 +98,24 @@ export const SWATCHES: SwatchEntry[] = [{
   desc: 'Rare accent',
   light: false
 }];
+
+// ─── Editor surface tones ──────────────────────────────────────────────────
+// Paper/panel/canvas tones used by DocumentEditor and SlideEditor. Kept apart
+// from COLOR (the 12 core brand tokens mirrored in lib-style.css CSS vars) —
+// these are editor-only surface variants, not brand identity colors.
+export const EDITOR_SURFACE = {
+  paperWhite: '#FFFFFF',
+  paperWarm: '#FDFAF2',
+  dustCream: '#F0E8D4',
+  dustHover: '#EDE0C4',
+  dustPanel: '#E0D8C6',
+  dustPanelDeep: '#DDD6C3',
+  dustWell: '#D8D1BF',
+  dustHeader: '#D5CEBB',
+  canvasWellDark: '#0E0C0A',
+  emberBrown: '#2A2420',
+  smokeGray: '#888888'
+} as const;
 
 export const GUIDE_PALETTE_SWATCHES = ['#D9791F', '#8F3E21', '#DFAE2B', '#6A4B2E', '#6F4A6E'];
 export const FOOTER_DITHER_SWATCHES = ['#D9791F', '#C84A1B', '#DFAE2B', '#8F3E21', '#6A4B2E', '#1E1A17'];

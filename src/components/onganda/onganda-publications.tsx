@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { COLOR, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
+import { COLOR, inkOn, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
 import { Px, PixelDot, DitherBar, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './onganda-primitives';
 
 // ─── Document mockup — pixel-art A4 page preview ──────────────────────────────
@@ -273,9 +273,9 @@ const PublicationCard = ({
   const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
   const borderColor = hovered ? fmt.hex : isDark ? `${fmt.hex}28` : 'rgba(30,26,23,0.10)';
   const titleColor = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const subColor = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';
+  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const descColor = isDark ? 'rgba(232,225,207,0.60)' : 'rgba(30,26,23,0.65)';
-  const hintColor = isDark ? `${fmt.hex}99` : fmt.hex;
+  const hintColor = inkOn(fmt.hex, isDark ? COLOR.darkCard : COLOR.dustLight, isDark);
   return <motion.article initial={{
     opacity: 0,
     y: 20
@@ -364,7 +364,7 @@ const PublicationCard = ({
               fontWeight: 700,
               letterSpacing: '0.13em',
               textTransform: 'uppercase',
-              color: fmt.hex
+              color: inkOn(fmt.hex, isDark ? COLOR.darkCard : COLOR.dustLight, isDark)
             }}>
                 {fmt.role}
               </span>
@@ -416,7 +416,7 @@ const PublicationCard = ({
             padding: '3px 10px',
             background: `${fmt.hex}14`,
             border: `1px solid ${fmt.hex}30`,
-            color: fmt.hex
+            color: inkOn(fmt.hex, isDark ? COLOR.darkCard : COLOR.dustLight, isDark)
           }}>
                 {uc}
               </span>)}
@@ -482,7 +482,7 @@ const PublicationCard = ({
           padding: '9px 20px',
           background: hovered ? fmt.hex : 'transparent',
           border: `1px solid ${fmt.hex}`,
-          color: hovered ? fmt.id === 'document' ? COLOR.charBlack : COLOR.milletClay : fmt.hex,
+          color: hovered ? fmt.id === 'document' ? COLOR.charBlack : COLOR.milletClay : inkOn(fmt.hex, isDark ? COLOR.darkCard : COLOR.dustLight, isDark),
           fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.08em',
@@ -534,7 +534,7 @@ export const Publications = ({
     isDark
   } = useDark();
   const borderColor = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
-  const subColor = isDark ? 'rgba(232,225,207,0.38)' : 'rgba(30,26,23,0.45)';
+  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const headlineColor = isDark ? COLOR.milletClay : COLOR.charBlack;
   return <section id="publications" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       {/* Section header */}
@@ -578,7 +578,7 @@ export const Publications = ({
           </div>
         </div>
         <p className="mt-4 text-sm leading-relaxed max-w-2xl" style={{
-        color: isDark ? 'rgba(232,225,207,0.50)' : 'rgba(30,26,23,0.55)'
+        color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
       }}>
           Two authoring formats — structured documents and slide decks — both living natively on the website with the full Onganda design language, and both exportable to standard formats whenever you need to share offline.
         </p>
@@ -620,7 +620,8 @@ export const Publications = ({
         letterSpacing: '0.15em',
         textTransform: 'uppercase',
         color: subColor,
-        whiteSpace: 'nowrap'
+        whiteSpace: 'normal',
+        textAlign: 'center'
       }}>
           Oshitaandwa · Oshilongifano · PDF · Word · PPT
         </span>

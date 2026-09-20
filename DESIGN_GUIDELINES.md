@@ -48,9 +48,231 @@ The Onganda color palette is strictly defined. **Do not use generic Tailwind col
 *   **Dye Plum** (`#6F4A6E`): Rare accent, representing the **Oshitoo** (Delivery) system.
 *   **Fired Red** (`#C84A1B`): Primary highlight for actionable or critical UI elements.
 
+### The palette is an inventory, not a permission
+
+Being in the palette does not make a colour available for any purpose. Each token
+has a role, and the role is the rule. `DESIGN_SYSTEM.md` §4 holds the full table;
+`COLOR_POLICY` in `onganda-roles.ts` holds the same table in code.
+
+**Style from roles, not from the palette:**
+
+```tsx
+import { roles, useDark } from '@onganda/design-system';
+
+const { isDark } = useDark();
+const c = roles(isDark);
+
+<div style={{ background: c.surface, color: c.text, border: `1px solid ${c.line}` }} />
+```
+
+The colour rules, all measured and all enforced by `npm run check:design`:
+
+1.  **Ochre Orange is the interactive accent, but only as a fill.** Millet clay
+    on ochre is 2.4:1 and ochre on millet clay is 2.4:1. Ochre works as a
+    **fill** with Char Black on it (5.5:1) and as **ink** on dark surfaces
+    (6.1:1). On light surfaces the accent ink is **Bark Rust** (5.6:1) — the
+    deep ochre. That is what `accentInk` and `focusRing` resolve to in light mode.
+2.  **Fired Red is an indicator, not a fill behind text.** Its best foreground
+    reaches 4.05:1, under the 4.5:1 floor. Use it for critical status marks and
+    invalid field borders, where the 3:1 non-text threshold applies. The danger
+    button fills with Bark Rust. Error message text runs at full contrast with a
+    red marker beside it.
+3.  **System colours mean membership, not decoration.** Mahangu Gold, Mopane
+    Brown, and Dye Plum identify Ombiga, Etiti, and Oshitoo; Bark Rust identifies
+    Oshini and doubles as the light-mode accent ink. None of them is a button, a
+    label, or a background. The check fails on a system hue bound to a
+    `background` or `border*` property.
+4.  **Text and lines are brand ink at a fixed opacity, not new hues.** Use the
+    steps in `ALPHA`, which is mode-aware. Only `textFaint`, `line`, and
+    `lineStrong` sit below the contrast floors, and they are reserved for
+    disabled text, ordinals, and decorative dividers.
+5.  **The palette has no green and no blue, and none may be added.** The four
+    status colours are `active` (ochre), `caution` (gold), `critical` (fired
+    red), and `settled` (mopane brown). Read them through
+    `statusFor(name, isDark)` — mopane brown drops to 2.25:1 on a dark card.
+6.  **Colour is never the only carrier of state.** An invalid field has a red
+    border, a marker, and a message. A status mark has a text label and a
+    hairline ring.
+7.  **A control on an inverse surface takes the dark role set.** The footer, the
+    ticker, and the black lab card are locally dark. Pass `isDark` to controls
+    sitting on them, or their hover resolves against the wrong background.
+
+### Adding a colour
+
+Almost never the right move. Before proposing one:
+
+1.  Name the role it fills that no existing role covers.
+2.  Measure it against both surfaces in both modes: 4.5:1 for text, 3:1 for a
+    boundary or indicator. `npm run check:contrast -- --table` shows the format.
+3.  Add it to `COLOR`, `COLOR_CSS_VARS`, `lib-style.css`, and `COLOR_POLICY`.
+    The guard parses the palette from `onganda-colors.ts`, so there is no
+    separate allowlist to update — and no way for the two to drift.
+4.  Add it to `DESIGN_SYSTEM.md` §4 with its allowed and forbidden uses.
+
 ---
 
-## 4. Typography & Layout
+## 4. Controls
+
+Every interactive element has one recipe. A control does not choose its own
+colours. `/showcase` renders all of them in every state under **Control
+Standards**; that section is the reference, and `DESIGN_SYSTEM.md` §5 is the spec.
+
+### Never hand-roll a control
+
+If the system has a primitive, use it. A hand-written `<button>` or `<input>`
+with inline colours is the single most common way this design system drifts: the
+same "primary button" ends up three different colours on three pages.
+
+| Need | Use | Not |
+|---|---|---|
+| Any button or CTA | `PixelButton` | `<button>` with an inline `background` |
+| Text entry | `PixelInput` | `<input>` with an inline `border` |
+| Long text | `PixelTextarea` | `<textarea>` |
+| Fixed choice from a list | `PixelSelect` | `<select>` |
+| Label, hint, error | `PixelField` | a hand-written `<label>` + `<span>` |
+| One of several options | `PixelRadio` | a native radio |
+| Independent on/off | `PixelCheckbox` | a native checkbox |
+| Instant-effect on/off | `PixelToggle` | a switch library |
+
+### Choosing a button
+
+| Variant | When |
+|---|---|
+| `primary` | The one main action in a view. Exactly one per view. |
+| `accent` | An action inside a card that already sits on the page's primary. |
+| `ghost` | The quiet alternative standing next to a primary. |
+| `danger` | It destroys something. Never twice in one dialog. |
+
+Danger fills with Bark Rust rather than Fired Red: fired red's best foreground
+is 4.05:1, under the floor for a 13px button label. Fired red stays the critical
+status and border colour.
+
+A control on an inverse surface — the footer, the ticker, the black lab card —
+must be passed `isDark`, or its hover resolves against the wrong background and
+the control can disappear into the card.
+
+Pass `href` to render an anchor; the styling is identical either way. Every
+button carries `MOTION.tap`. No button scales on hover.
+
+### Field states
+
+Transparent ground, 1px `fieldBorder`, `borderRadius: 0`, `accentInk` on focus,
+fired red when `invalid`. Pass `invalid` and let `PixelField` render the message
+— it sets `aria-invalid` and `role="alert"`, runs the text at full contrast, and
+puts the red in a marker beside it. Do not colour an error state by hand.
+
+### Choice controls
+
+Checked is `controlOn` (ochre) on checkbox, radio, and toggle alike, so "on"
+reads the same everywhere. The ochre fill is 2.56:1 against dust light, so
+`controlOnBorder` carries the boundary. The radio is a stepped octagon with a square core,
+because the pixel system has no curves. The toggle knob steps between two cells;
+it does not slide.
+
+### Utility controls
+
+Tab chips, filter buttons, mode toggles, and canvas tools are deliberately not
+`PixelButton`. They follow the ghost recipe at a smaller scale: transparent
+ground, `line` border, `text` label, `focusRing` when active or focused. They
+never take a system colour and never take a fill other than `surface` or
+`controlOn`.
+
+### Adding a control
+
+A new control is a change to the system, not to a page:
+
+1.  Build it in `onganda-primitives.tsx` reading `roles(isDark)`.
+2.  Give it every state: rest, hover, focus, active, disabled, and invalid where
+    it applies.
+3.  Add it to the **Control Standards** section of `/showcase` in every state,
+    and verify it in both modes with that section's own light/dark switch.
+4.  Specify it in `DESIGN_SYSTEM.md` §5 and in the table above.
+5.  Run `npm run check:design`, then extend
+    `tests/browser/control-standards.spec.ts` to assert its colours at runtime.
+
+A control that is not on `/showcase` does not exist yet.
+
+---
+
+## 5. Composition
+
+Every other rule in this document is a prohibition. An agent can satisfy all of
+them by building a few bordered cards and a button, and the result passes every
+check while looking nothing like Onganda.
+
+This section is the positive half: **what a finished Onganda surface actually
+contains.** `tests/browser/composition.spec.ts` enforces it.
+
+### A surface is not finished until it has all of these
+
+| Ingredient | What it means | Where it comes from |
+|---|---|---|
+| **Editorial rhythm** | A small uppercase tracked label above a headline, on every major section | `SectionHeader` |
+| **Texture** | At least one surface carrying the basket-weave | `WeaveOverlay` at 0.03–0.08 |
+| **Pixel marks** | Dots, tags, or stepped corner accents — the system's punctuation | `PixelDot`, `PixelTag`, `PixelCornerMarks` |
+| **A dither rule** | A stepped divider, not a plain hairline, where a section breaks | `DitherBar`, `DitherStrip` |
+| **Pixel iconography** | Icons drawn as `<rect>` on an integer grid | `Icon*`, `systemIconForName`, `createPixelIcon` |
+| **An inverse band** | The black-card language somewhere on the page | `c.inverse`, and `isDark` on its controls |
+| **Real motion** | Entrance, hover and tap that actually move | `MOTION` presets |
+| **System controls** | Every button and field from the primitives | §4 |
+| **Generous space** | Sections breathe; nothing is cramped | `SPACE` scale |
+
+A page that renders correct colours and none of the above is a failure, even
+though the token and contrast guards pass.
+
+### Use the whole vocabulary, not the safe corner of it
+
+The most common failure is timidity: an agent uses `roles()` and `PixelButton`,
+avoids everything else, and ships a generic layout in Onganda colours. Before
+calling a surface done, ask which of these it could legitimately carry:
+
+- A **ticker** or marquee band for live signals.
+- A **step-line diagram** for anything with relationships — no bezier curves.
+- A **heatmap** or **flowchart** for density and process.
+- A **terminal or code surface** where the product is technical.
+- A **map** where place matters.
+- A **chart** from `CHART_SERIES` where there is data.
+- The **five system identities** where content belongs to one of them.
+- An **empty**, **loading**, and **error** state for every surface that loads.
+
+Not every page needs every one. Every page needs more than cards and buttons.
+
+### Read the showcase first
+
+`/showcase` is the reference implementation and the inventory. Before building,
+open it and take the patterns that fit:
+
+| Showcase section | What it teaches |
+|---|---|
+| Hero | Layered display type, dither columns, ticker |
+| Systems grid | Card composition, system identity, the black lab card |
+| Control Standards | Every control in every state, both modes |
+| **Product Patterns** | Dialog, table, notice, empty, loading, tabs, progress |
+| Connection diagram | Step-line relationships, tooltips, node states |
+| Heatmap · Roadmap | Density, phases, progress, status |
+| Chart gallery | Every chart type on the fixed series order |
+| Icon bank · Icon factory | The icon vocabulary and how to add to it |
+| Maps | Geospatial framing |
+| Publications | Long-form and deck authoring surfaces |
+| Brand guide | Pixel rules and annotation |
+
+If a product needs something the showcase does not have, that is a gap in the
+system, not a licence to invent. Build it as a primitive, add it to the
+showcase in every state, and document it. The composition test asserts the
+showcase still contains every pattern an agent will reach for.
+
+### Adding a pattern
+
+1. Build it in `onganda-patterns.tsx` reading `roles(isDark)`.
+2. Give it every state, including empty, loading and error where they apply.
+3. Make colour a second signal, never the only one.
+4. Add it to the **Product Patterns** section of `/showcase` in both modes.
+5. Document it in `DESIGN_SYSTEM.md`, and add it to the README cheat sheet.
+6. Add it to the pattern list in `tests/browser/composition.spec.ts`.
+
+---
+
+## 6. Typography & Layout
 
 ### Typography
 *   **Font Families**: We use `Inter`, `Arial`, or standard sans-serif for body and headings. No pixel fonts for reading text.
@@ -65,7 +287,7 @@ The Onganda color palette is strictly defined. **Do not use generic Tailwind col
 
 ---
 
-## 5. Iconography & Textures
+## 7. Iconography & Textures
 
 ### The Pixel Rule
 All visual flair must be pixelated.
@@ -87,7 +309,7 @@ Motion is part of the design language, not a garnish.
 
 ---
 
-## 6. System Architecture Hierarchy
+## 8. System Architecture Hierarchy
 
 Onganda is divided into five functional systems. Each system has a dedicated name, role, color, and tag. When building a feature, identify which system it belongs to and use the corresponding visual language.
 
@@ -118,15 +340,15 @@ Onganda is divided into five functional systems. Each system has a dedicated nam
 
 ---
 
-## 7. Importable Design System Contract
+## 9. Design System Contract
 
-The reusable design system now has a single internal import surface:
+Use the package root for the stable foundation:
 
 ```tsx
 import {
   COLOR,
   SYSTEMS,
-  DarkContext,
+  DarkProvider,
   useDark,
   SectionHeader,
   SystemCard,
@@ -135,22 +357,23 @@ import {
 } from '@onganda/design-system';
 ```
 
-Use `@onganda/design-system` for app-level imports and future reusable surfaces unless you are editing one of the underlying design-system files directly. The package entry lives at `src/design-system/index.ts` and re-exports:
+Import larger features through `@onganda/design-system/charts`, `/editors`, `/ai`, `/maps`, or `/sites`. The package root retains the complete version 1.x surface for compatibility. Removing a root export requires a major release and a migration note.
+
+The implementation modules are:
 
 1.  `onganda-tokens.ts`: color constants, cultural system data, charts, publication formats, guide annotations, and TypeScript interfaces.
 2.  `onganda-primitives.tsx`: atomic Onganda UI primitives such as pixel marks, dither bars, tags, overlays, cards, buttons, logo marks, and dark-mode context.
 3.  `onganda-icons.tsx`: pixel-art interface and system icons.
 4.  `onganda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
-5.  `onganda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
-6.  `onganda-publications.tsx`, `onganda-document-editor.tsx`, and `onganda-slide-editor.tsx`: larger product surfaces built on the same system.
-7.  `onganda-ai-authoring.tsx`: the lightweight AI authoring rail and endpoint adapter for generating editable documents and decks.
-8.  `onganda-public-sites.tsx`: public Home and Full site surfaces built from the system.
-9.  `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
+5.  `onganda-maps.tsx`: Leaflet-backed maps with Onganda controls, markers, routes, popups, and accessibility behavior.
+6.  `onganda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
+7.  `onganda-publications.tsx`, `onganda-document-editor.tsx`, and `onganda-slide-editor.tsx`: larger product surfaces built on the same system.
+8.  `onganda-ai-authoring.tsx`: the lightweight AI authoring rail and endpoint adapter for generating editable documents and decks.
+9.  `onganda-public-sites.tsx`: public Home and Full site surfaces built from the system.
+10. `NamibiaAISystemsHub.tsx`: the current full-page reference implementation.
 
 ### Reuse Status
-This project is now structured around a first-class design-system import boundary: `@onganda/design-system`. Inside this repository, Vite and TypeScript resolve that package name to `src/design-system/index.ts`. The package entry exports the full system: tokens, primitives, icons, charts, composed sections, product surfaces, and public site surfaces.
-
-The repository is still a Vite app and showcase, so publishing as a clean external npm package requires a later packaging pass that emits compiled JS and `.d.ts` files. Until then, external reuse should consume the GitHub repository as the remote source of truth and import through `@onganda/design-system`, not through deep generated paths.
+The repository builds a showcase and a publishable package. `npm run build` writes them to `dist/showcase` and `dist/package`. Consumer code must use the package exports, never deep source paths.
 
 ### Current Public Surfaces
 The current app intentionally has multiple public surfaces:
@@ -175,59 +398,67 @@ The homepage should avoid repeated editorial sections. If "What we are building"
 *   **Reusable but page-shaped**: `OngandaNav`, `OngandaHero`, `ResearchSignals`, `SystemConnectionDiagram`, `PixelHeatmap`, `RoadmapTimeline`, `FieldApplications`, `PixelFlowchart`, `IconShowcase`, and `Publications`.
 *   **Product shells**: `DocumentEditor` and `SlideEditor`. These are usable surfaces, but they are larger, stateful modules and should not be treated as small primitives.
 *   **AI authoring surface**: `AiAuthoringPanel`. Use it as the starting pattern for chat-like generation workflows: schema-first output, endpoint configured by the user, deterministic apply-to-editor behavior, and generated content that becomes normal editable blocks/slides.
+*   **Geospatial surface**: `OngandaMap`. Import it from `/maps`, load `maps.css`, keep provider attribution visible, and preserve keyboard, reduced-motion, responsive, and marker-label behavior.
 
 ---
 
-## 8. Component Implementation Rules
+## 10. Component Implementation Rules
 
-### Working with `src/components/generated/`
-The design system is implemented via modular files in the `generated` directory:
+### Working with `src/components/onganda/`
+The design system is implemented through focused modules in `src/components/onganda/`:
 1.  `onganda-design-system.ts`: Preferred import surface for new app code.
 2.  `onganda-tokens.ts`: **Do not hardcode new colors or constant data.** If you need a color or system definition, import `COLOR`, `SYSTEMS`, `SWATCHES`, or a typed data constant from this file through the barrel.
 3.  `onganda-primitives.tsx`: Base UI elements (section headers, dither strips, standard cards, overlays). When building a new page section, compose it using these primitives.
 4.  `onganda-sections.tsx`: Large, composed page sections (hero, timelines, heatmaps).
 5.  `onganda-icons.tsx`: All pixel-art SVG icons.
 6.  `onganda-ai-authoring.tsx`: AI/chat authoring rail. Keep it lightweight, local/endpoint-driven, and visually constrained to the Onganda rail pattern.
+7.  `onganda-maps.tsx`: Geospatial surface. Keep tile services configurable and all visible controls, markers, legends, and popups inside the Onganda language.
 
 ### Dark Mode Context
 *   The application handles dark mode via the `DarkContext` provider (found in `onganda-primitives.tsx`).
-*   Always respect the `isDark` value from `useDark()` when applying inline styles for colors that are not perfectly mapped by Tailwind classes.
+*   Read the mode once and take colours from the role layer. A component should
+    not branch on `isDark` per colour.
 *   Example:
     ```tsx
-    import { COLOR, useDark } from '@onganda/design-system';
+    import { roles, useDark } from '@onganda/design-system';
 
     const { isDark } = useDark();
-    const bg = isDark ? COLOR.darkCard : COLOR.milletClay;
+    const c = roles(isDark);
+    // c.surface, c.text, c.line, c.actionBg, c.fieldBorder …
     ```
 
 ### Writing New Code
 1.  **Surgical Changes**: Do not refactor whole files unless necessary. If adding a stat, add it to `STATS` in `onganda-tokens.ts` rather than hardcoding HTML.
 2.  **Minimalism**: Prefer elegant improvements over verbosity. If a piece of UI feels cluttered, you are violating the "Anthropic-level whitespace discipline" rule.
 3.  **Comment Minimally**: Only document what is not obvious. Rely on the strong naming conventions provided by the Oshiwambo + English system roles.
-4.  **No Generic Colors**: New code must not introduce generic Tailwind color classes or unrelated hex values. Use `COLOR`, existing data constants, or add a named semantic token first.
+4.  **Style from roles**: Take colours from `roles(isDark)`. A raw hex, an `rgba()`, or a generic Tailwind colour class in a component is a build failure — see §3 and `npm run check:design`. Adding a token means measuring it first, not reaching for it.
 5.  **Sharp Brand Geometry**: Do not add rounded corners to brand cards, diagrams, icons, or major Onganda surfaces. Small utility controls may remain rectangular or stepped.
-6.  **Use Existing Icons**: If a section has system cards, contact actions, focus areas, navigation affordances, or tool/product concepts, use the existing pixel icons from `onganda-icons.tsx` or system icons from `onganda-primitives.tsx`. Do not introduce generic icon styles.
-7.  **Validate Every UI Change**: Before shipping UI work, run a code pass for design-system drift and a Playwright pass for rendered layout, motion, hover states, mobile fit, and console errors.
-8.  **AI Generation Contract**: Generated documents and decks must land as normal editor data, not as static images or opaque blobs. The assistant may call any user-configured endpoint, but it must keep a schema-first response contract and ask for missing brief context before generation.
+6.  **Never Hand-Roll a Control**: Buttons, fields, labels, checkboxes, radios, and toggles come from the primitives in §4. An inline-styled `<button>` or `<input>` is the fastest way to fork the design system.
+7.  **Use Existing Icons**: If a section has system cards, contact actions, focus areas, navigation affordances, or tool/product concepts, use the existing pixel icons from `onganda-icons.tsx` or system icons from `onganda-primitives.tsx`. Do not introduce generic icon styles.
+8.  **Validate Every UI Change**: Before shipping UI work, run a code pass for design-system drift and a Playwright pass for rendered layout, motion, hover states, mobile fit, and console errors.
+9.  **AI Generation Contract**: Generated documents and decks must land as normal editor data, not as static images or opaque blobs. The assistant may call any user-configured endpoint, but it must keep a schema-first response contract and ask for missing brief context before generation.
 
 ### Required Design Validation
 For any UI, page, or component change, run the following checks:
 
-1.  Search the changed files for forbidden drift: generic Tailwind palette classes, new raw hex colors, `oklch`, `tracking-tight`, rounded brand geometry, and stale public links.
-2.  Run `npm run lint` and `npm run build`.
-3.  Start the app and use Playwright on the affected routes.
-4.  Verify no document-level horizontal overflow on desktop and mobile.
-5.  Verify hero text, tickers, CTAs, and contact/forms do not collide or overflow.
-6.  Verify expected motion actually changes over time or on hover/tap.
-7.  Verify `/showcase` still works when the task did not explicitly target it.
+1.  Run `npm run check:design`. It fails on generic Tailwind colours, off-palette hex and `rgba()`, `oklch`, system colours used as chrome, raw `STATUS` reads, rounded geometry, and any contrast regression against the measured role table.
+2.  Read the changed files for drift the script cannot see: a hand-rolled control, a system colour used as chrome, a hue chosen for decoration, `tracking-tight`, or a stale public link.
+3.  Run `npm run lint` and `npm run build`.
+4.  Start the app and use Playwright on the affected routes.
+5.  Verify no document-level horizontal overflow on desktop and mobile.
+6.  Verify hero text, tickers, CTAs, and contact/forms do not collide or overflow.
+7.  Verify expected motion actually changes over time or on hover/tap.
+8.  Verify `/showcase` still works when the task did not explicitly target it.
+9.  When the change adds or alters a control, verify it in the `/showcase` Control Standards section in both modes.
 
 ### Current Compliance Notes
-The core design language is present and importable, but the repository still contains legacy generated code that predates the stricter token rule:
+Every design-system module passes `npm run check:tokens`. Remaining debt is
+structural, not chromatic:
 
-*   Several generated components hardcode approved Onganda palette values directly in JSX. Treat those as migration debt, not as a pattern to copy.
-*   `DocumentEditor` and `SlideEditor` include additional light-surface variants for paper/editor canvases. These should be promoted into named tokens before further expansion.
+*   Many components still write approved palette literals inline instead of reading `roles(isDark)`. The colours are correct, so the check passes, but the mode branching is duplicated. Migrate a file to the role layer when you are already editing it. Do not copy the pattern into new code.
+*   `DocumentEditor` and `SlideEditor` use the `EDITOR_SURFACE` paper and panel tones. Those are editor-only surface variants, not brand identity colours, and they are sanctioned. Promote a new one into `EDITOR_SURFACE` rather than inlining a hex.
 *   `src/index.css` maps global Tailwind/shadcn-style variables to the Onganda palette so generic utilities such as `bg-background`, `text-foreground`, and `border-border` remain brand-aligned.
-*   `npm run lint` may report Fast Refresh warnings because some generated files export both components and constants. These warnings do not block use, but a future library extraction should split contexts/constants into separate files.
+*   The lint configuration allows the named library utilities that intentionally share modules with components. Add no broad Fast Refresh exemptions.
 
 ---
 *Following these guidelines ensures that Onganda remains visually coherent, culturally grounded, and architecturally sound.*

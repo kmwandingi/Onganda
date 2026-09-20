@@ -1,6 +1,6 @@
 {
   "name": "@onganda/design-system",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Onganda pixel editorial design system — tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
   "keywords": [
@@ -16,32 +16,83 @@
     "type": "git",
     "url": "https://github.com/kmwandingi/Onganda.git"
   },
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "bin": {
+    "onganda-check": "scripts/onganda-check.mjs"
+  },
+  "main": "dist/package/index.cjs",
+  "module": "dist/package/index.js",
+  "types": "dist/package/design-system/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./dist/package/design-system/index.d.ts",
+      "import": "./dist/package/index.js",
+      "require": "./dist/package/index.cjs"
     },
-    "./style.css": "./dist/style.css",
-    "./style": "./dist/style.css"
+    "./core": {
+      "types": "./dist/package/design-system/core.d.ts",
+      "import": "./dist/package/core.js",
+      "require": "./dist/package/core.cjs"
+    },
+    "./charts": {
+      "types": "./dist/package/design-system/charts.d.ts",
+      "import": "./dist/package/charts.js",
+      "require": "./dist/package/charts.cjs"
+    },
+    "./editors": {
+      "types": "./dist/package/design-system/editors.d.ts",
+      "import": "./dist/package/editors.js",
+      "require": "./dist/package/editors.cjs"
+    },
+    "./ai": {
+      "types": "./dist/package/design-system/ai.d.ts",
+      "import": "./dist/package/ai.js",
+      "require": "./dist/package/ai.cjs"
+    },
+    "./maps": {
+      "types": "./dist/package/design-system/maps.d.ts",
+      "import": "./dist/package/maps.js",
+      "require": "./dist/package/maps.cjs"
+    },
+    "./sites": {
+      "types": "./dist/package/design-system/sites.d.ts",
+      "import": "./dist/package/sites.js",
+      "require": "./dist/package/sites.cjs"
+    },
+    "./maps.css": "./dist/package/maps.css",
+    "./style.css": "./dist/package/style.css",
+    "./style": "./dist/package/style.css"
   },
   "files": [
-    "dist",
+    "dist/package",
+    "scripts/onganda-check.mjs",
+    "scripts/check-design-tokens.mjs",
+    "scripts/check-contrast.mjs",
+    "src/components/onganda/onganda-colors.ts",
+    "src/components/onganda/onganda-roles.ts",
     "README.md",
-    "USAGE.md"
+    "USAGE.md",
+    "LICENSE"
   ],
   "sideEffects": [
-    "dist/style.css"
+    "dist/package/maps.css",
+    "dist/package/style.css"
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "build:lib": "vite build --config vite.lib.config.ts && cp src/design-system/lib-style.css dist/style.css && node -e \"require('fs').writeFileSync('dist/index.d.ts', 'export * from \\\"./design-system/lib-entry\\\";\\n')\"",
-    "prepack": "npm run build:lib",
+    "typecheck": "tsc -b",
+    "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
+    "build:showcase": "vite build",
+    "build:lib": "vite build --config vite.lib.config.ts && cp src/design-system/lib-style.css dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
+    "prepare": "npm run build:lib",
     "lint": "eslint .",
+    "check:tokens": "node scripts/check-design-tokens.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
+    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs",
+    "test:package": "node tests/package-smoke.mjs",
+    "test:consumer": "node tests/consumer-render.mjs",
+    "test:browser": "playwright test",
+    "check": "npm run lint && npm run check:design && npm run build && npm run test:package && npm run test:consumer",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -59,7 +110,6 @@
     "@headless-tree/core": "^1.4.0",
     "@headless-tree/react": "^1.4.0",
     "@hookform/resolvers": "^5.2.1",
-    "@onganda/design-system": "file:onganda-design-system-1.0.0.tgz",
     "@react-three/drei": "^10.0.6",
     "@react-three/fiber": "^9.1.2",
     "class-variance-authority": "^0.7.1",
@@ -69,6 +119,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": ">=10.0.0",
     "input-otp": "^1.4.2",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.542.0",
     "next-themes": "^0.4.6",
     "pptxgenjs": "^4.0.1",
@@ -89,7 +140,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@playwright/test": "^1.55.0",
     "@tailwindcss/vite": "^4.0.9",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^22.13.9",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

@@ -4,9 +4,10 @@
 // node card, field app card, annotation panel, and dark-mode context.
 // Import from this file in any Onganda project.
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { WEAVE, COLOR, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
+import { MOTION } from './onganda-motion';
+import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
 export const DarkContext = createContext<{
@@ -66,20 +67,30 @@ export const Px = ({
 
 // ─── PixelDot — single 2×2 or n×n pixel mark ─────────────────────────────────
 // Usage: <PixelDot color="#D9791F" size={5} />
+// `ring` draws a hairline edge. A status hue below 3:1 against its surface
+// (mahangu gold on cream is 1.6:1) needs one to be delineated at all.
 export const PixelDot = ({
   color,
   size = 4,
-  opacity = 1
+  opacity = 1,
+  ring,
+  offset
 }: {
   color: string;
   size?: number;
   opacity?: number;
-}) => <div aria-hidden="true" style={{
+  ring?: string;
+  /** nudge down to sit on a text baseline when inline with a line of copy */
+  offset?: number;
+}) => <span aria-hidden="true" style={{
+  display: 'block',
   width: size,
   height: size,
   background: color,
   opacity,
-  flexShrink: 0
+  flexShrink: 0,
+  marginTop: offset,
+  boxShadow: ring ? `0 0 0 1px ${ring}` : undefined
 }} />;
 
 // ─── DitherBar — horizontal pixel-dither accent bar ──────────────────────────
@@ -125,16 +136,26 @@ export const DitherStrip = ({
 // Usage: <PixelTag hex="#D9791F" label="01" />
 export const PixelTag = ({
   hex,
-  label
+  label,
+  isDark = false
 }: {
   hex: string;
   label: string;
-}) => <div className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]" style={{
-  background: hex,
-  color: hex === COLOR.mahanguGold ? COLOR.charBlack : COLOR.dustLight
-}}>
+  isDark?: boolean;
+}) => {
+  // Chosen by measured luminance, not by comparing against one token. Some
+  // fills — fired red tops out at 3.85:1 — cannot host small text at all, so
+  // the tag outlines instead of filling and the hue still reads as identity.
+  // `transparent` is a valid request for the outlined form.
+  const parsable = /^#[0-9a-fA-F]{6}$/.test(hex);
+  const fg = parsable ? onColor(hex) : COLOR.charBlack;
+  const filled = parsable && contrast(fg, hex) >= 4.5;
+  return <div className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]" style={filled
+    ? { background: hex, color: fg }
+    : { background: 'transparent', border: `1px solid ${parsable ? hex : 'currentColor'}`, color: roles(isDark).text }}>
     {label}
   </div>;
+};
 
 // ─── PixelArrowDown — pixel-art downward arrow connector ─────────────────────
 // Usage: <PixelArrowDown color="#D9791F" />
@@ -167,7 +188,7 @@ export const SectionHeader = ({
   borderColor: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)'
 }}>
     <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{
-    color: isDark ? 'rgba(232,225,207,0.38)' : 'rgba(30,26,23,0.45)'
+    color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
   }}>
       {label}
     </h2>
@@ -440,22 +461,102 @@ export const OngandaLogoMark = ({
     <rect x="3" y="11" width="6" height="1" fill="#1E1A17" fillOpacity="0.18" />
   </Px>;
 
-// ─── PixelButton — primary/ghost pixel-style button ──────────────────────────
-// Usage: <PixelButton variant="primary" onClick={…}>Label</PixelButton>
-export const PixelButton = ({
-  children,
-  variant = 'primary',
-  onClick,
-  href,
-  className = ''
+// ─── Surface context — what ground am I painted on? ─────────────────────────
+// `inkOn(hex, surface)` has to be told the surface, and naming it at the call
+// site bakes in an assumption: `inkOn(hex, EDITOR_SURFACE.emberBrown)` is
+// wrong the moment that component renders somewhere else, and it fails
+// silently. A container declares its ground once and everything inside
+// resolves against the real one.
+//
+//   <SurfaceProvider hex={c.inverse} isDark>
+//     <SystemCard … />          ← its labels now resolve against the black card
+//   </SurfaceProvider>
+export const SurfaceContext = createContext<{ hex: string; isDark: boolean }>({
+  hex: COLOR.dustLight,
+  isDark: false
+});
+
+export const useSurface = () => useContext(SurfaceContext);
+
+export const SurfaceProvider = ({
+  hex,
+  isDark = false,
+  children
 }: {
+  hex: string;
+  isDark?: boolean;
   children: React.ReactNode;
-  variant?: 'primary' | 'ghost';
+}) => {
+  const value = useMemo(() => ({ hex, isDark }), [hex, isDark]);
+  return <SurfaceContext.Provider value={value}>{children}</SurfaceContext.Provider>;
+};
+
+/** `inkOn` for the ground this component is actually on. Prefer this over
+ *  passing a surface literal. */
+export const useInkOn = () => {
+  const { hex, isDark } = useSurface();
+  return useCallback((hue: string) => inkOn(hue, hex, isDark), [hex, isDark]);
+};
+
+// ─── Controls — buttons, fields, and choice controls ─────────────────────────
+// Every control reads the role layer (onganda-roles.ts). No control picks a
+// palette token directly, so a theme change or a mode switch moves all of them
+// at once. Geometry is sharp: borderRadius is 0 everywhere, without exception.
+
+const CONTROL_TRANSITION = 'background 0.2s, border-color 0.2s, color 0.2s';
+
+// ─── PixelButton ──────────────────────────────────────────────────────────────
+// Four intents, one recipe each. `primary` is the page's main action;
+// `accent` is the warm in-card action; `ghost` is the quiet alternative;
+// `danger` destroys something. A button never invents a fourth colour, and
+// `href` renders an <a> with identical styling to the <button>.
+export type PixelButtonVariant = 'primary' | 'accent' | 'ghost' | 'danger';
+
+// framer-motion redefines the drag and animation handlers with its own
+// signatures. Rather than cast the conflict away, drop them from the public
+// surface: a design-system button has no business being a drag source.
+type MotionConflicting =
+  | 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onDragEnter' | 'onDragExit'
+  | 'onDragLeave' | 'onDragOver' | 'onDrop'
+  | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'
+  | 'onTransitionEnd' | 'color' | 'style' | 'children';
+
+export type PixelButtonProps = {
+  children: React.ReactNode;
+  variant?: PixelButtonVariant;
+  isDark?: boolean;
+  disabled?: boolean;
   onClick?: () => void;
   href?: string;
   className?: string;
-}) => {
-  const base: React.CSSProperties = {
+} & Omit<React.HTMLAttributes<HTMLElement>, MotionConflicting>;
+
+const buttonPalette = (variant: PixelButtonVariant, c: ColorRoles) => {
+  switch (variant) {
+    case 'accent':
+      return { bg: c.accentBg, fg: c.accentFg, border: 'transparent', hoverBg: c.accentHoverBg, hoverFg: c.accentHoverFg, hoverBorder: 'transparent' };
+    case 'ghost':
+      return { bg: 'transparent', fg: c.ghostFg, border: c.ghostBorder, hoverBg: 'transparent', hoverFg: c.ghostHoverFg, hoverBorder: c.ghostHoverBorder };
+    case 'danger':
+      return { bg: c.dangerBg, fg: c.dangerFg, border: 'transparent', hoverBg: c.dangerHoverBg, hoverFg: c.dangerHoverFg, hoverBorder: 'transparent' };
+    default:
+      return { bg: c.actionBg, fg: c.actionFg, border: 'transparent', hoverBg: c.actionHoverBg, hoverFg: c.actionHoverFg, hoverBorder: 'transparent' };
+  }
+};
+
+export const PixelButton = ({
+  children,
+  variant = 'primary',
+  isDark = false,
+  disabled = false,
+  onClick,
+  href,
+  className = '',
+  ...rest
+}: PixelButtonProps) => {
+  const c = roles(isDark);
+  const p = buttonPalette(variant, c);
+  const style: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 8,
@@ -464,131 +565,345 @@ export const PixelButton = ({
     fontWeight: 500,
     letterSpacing: '0.02em',
     textDecoration: 'none',
-    cursor: 'pointer',
-    transition: 'background 0.2s, border-color 0.2s, color 0.2s',
-    border: 'none'
+    borderRadius: 0,
+    border: `1px solid ${p.border}`,
+    background: p.bg,
+    color: p.fg,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.45 : 1,
+    transition: CONTROL_TRANSITION
   };
-  const primaryStyle: React.CSSProperties = {
-    ...base,
-    background: COLOR.charBlack,
-    color: COLOR.milletClay
+  const enter = (el: HTMLElement) => {
+    if (disabled) return;
+    el.style.background = p.hoverBg;
+    el.style.color = p.hoverFg;
+    el.style.borderColor = p.hoverBorder;
   };
-  const ghostStyle: React.CSSProperties = {
-    ...base,
-    background: 'transparent',
-    border: `1px solid rgba(30,26,23,0.2)`,
-    color: COLOR.charBlack
+  const leave = (el: HTMLElement) => {
+    el.style.background = p.bg;
+    el.style.color = p.fg;
+    el.style.borderColor = p.border;
   };
-  const style = variant === 'primary' ? primaryStyle : ghostStyle;
-  if (href) {
-    return <a href={href} style={style} className={className} onMouseEnter={e => {
-      e.currentTarget.style.background = variant === 'primary' ? COLOR.ochreOrange : 'transparent';
-      if (variant === 'ghost') {
-        e.currentTarget.style.borderColor = COLOR.ochreOrange;
-        e.currentTarget.style.color = COLOR.ochreOrange;
-      }
-    }} onMouseLeave={e => {
-      e.currentTarget.style.background = variant === 'primary' ? COLOR.charBlack : 'transparent';
-      if (variant === 'ghost') {
-        e.currentTarget.style.borderColor = 'rgba(30,26,23,0.2)';
-        e.currentTarget.style.color = COLOR.charBlack;
-      }
-    }}>
+  const focusRing = (el: HTMLElement) => { el.style.outline = `2px solid ${c.focusRing}`; el.style.outlineOffset = '2px'; };
+  const clearRing = (el: HTMLElement) => { el.style.outline = 'none'; };
+
+  if (href && !disabled) {
+    return (
+      <motion.a
+        {...rest}
+        {...MOTION.tap}
+        href={href}
+        style={style}
+        className={className}
+        onMouseEnter={e => enter(e.currentTarget)}
+        onMouseLeave={e => leave(e.currentTarget)}
+        onFocus={e => focusRing(e.currentTarget)}
+        onBlur={e => clearRing(e.currentTarget)}
+      >
         {children}
-      </a>;
+      </motion.a>
+    );
   }
-  return <button onClick={onClick} style={{
-    ...style,
-    background: COLOR.ochreOrange,
-    color: COLOR.milletClay
-  }} className={`hover:bg-[#C84A1B] transition-colors duration-200 ${className}`}>
+  return (
+    <motion.button
+      {...rest}
+      {...(disabled ? {} : MOTION.tap)}
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={style}
+      className={className}
+      onMouseEnter={e => enter(e.currentTarget)}
+      onMouseLeave={e => leave(e.currentTarget)}
+      onFocus={e => focusRing(e.currentTarget)}
+      onBlur={e => clearRing(e.currentTarget)}
+    >
       {children}
-    </button>;
+    </motion.button>
+  );
 };
 
-// ─── Form primitives — sharp-cornered inputs in the pixel language ────────────
-// Transparent background, 1px line border, ochre focus. Extend native props so
-// callers keep full control (placeholder, value, onChange, className, …).
-const fieldBase = (isDark: boolean): React.CSSProperties => ({
+// ─── Text fields ──────────────────────────────────────────────────────────────
+// Transparent ground, 1px line, ochre on focus, fired red when invalid.
+// Pass `invalid` rather than styling an error state by hand.
+const fieldBase = (c: ColorRoles, invalid: boolean, disabled: boolean): React.CSSProperties => ({
   width: '100%',
-  background: 'transparent',
-  border: `1px solid ${isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'}`,
+  background: disabled ? c.fieldDisabledBg : c.fieldBg,
+  border: `1px solid ${invalid ? c.fieldBorderInvalid : c.fieldBorder}`,
   borderRadius: 0,
   outline: 'none',
   padding: '12px 16px',
   fontFamily: 'Inter, Arial, sans-serif',
   fontSize: 14,
-  color: isDark ? COLOR.milletClay : COLOR.charBlack,
+  color: disabled ? c.fieldDisabledText : c.fieldText,
   transition: 'border-color 0.2s'
 });
-const fieldFocus = (e: React.FocusEvent<HTMLElement>) => {
-  (e.currentTarget as HTMLElement).style.borderColor = COLOR.ochreOrange;
-};
-const fieldBlur = (isDark: boolean) => (e: React.FocusEvent<HTMLElement>) => {
-  (e.currentTarget as HTMLElement).style.borderColor = isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)';
-};
 
-export const PixelInput = ({
-  isDark = false,
-  style,
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement> & {
+const useFieldHandlers = (c: ColorRoles, invalid: boolean) => ({
+  onFocus: (e: React.FocusEvent<HTMLElement>) => {
+    e.currentTarget.style.borderColor = invalid ? c.fieldBorderInvalid : c.fieldBorderFocus;
+  },
+  onBlur: (e: React.FocusEvent<HTMLElement>) => {
+    e.currentTarget.style.borderColor = invalid ? c.fieldBorderInvalid : c.fieldBorder;
+  }
+});
+
+interface FieldFlags {
   isDark?: boolean;
-}) => <input {...props} onFocus={e => {
-  fieldFocus(e);
-  props.onFocus?.(e);
-}} onBlur={e => {
-  fieldBlur(isDark)(e);
-  props.onBlur?.(e);
-}} style={{
-  ...fieldBase(isDark),
-  ...style
-}} />;
+  invalid?: boolean;
+}
 
-export const PixelTextarea = ({
-  isDark = false,
-  style,
-  ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-  isDark?: boolean;
-}) => <textarea {...props} onFocus={e => {
-  fieldFocus(e);
-  props.onFocus?.(e);
-}} onBlur={e => {
-  fieldBlur(isDark)(e);
-  props.onBlur?.(e);
-}} style={{
-  ...fieldBase(isDark),
-  minHeight: 128,
-  resize: 'vertical',
-  ...style
-}} />;
+export const PixelInput = ({ isDark = false, invalid = false, style, ...props }: React.InputHTMLAttributes<HTMLInputElement> & FieldFlags) => {
+  const c = roles(isDark);
+  const h = useFieldHandlers(c, invalid);
+  return <input
+    {...props}
+    aria-invalid={invalid || undefined}
+    onFocus={e => { h.onFocus(e); props.onFocus?.(e); }}
+    onBlur={e => { h.onBlur(e); props.onBlur?.(e); }}
+    style={{ ...fieldBase(c, invalid, !!props.disabled), ...style }}
+  />;
+};
 
-export const PixelSelect = ({
+export const PixelTextarea = ({ isDark = false, invalid = false, style, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & FieldFlags) => {
+  const c = roles(isDark);
+  const h = useFieldHandlers(c, invalid);
+  return <textarea
+    {...props}
+    aria-invalid={invalid || undefined}
+    onFocus={e => { h.onFocus(e); props.onFocus?.(e); }}
+    onBlur={e => { h.onBlur(e); props.onBlur?.(e); }}
+    style={{ ...fieldBase(c, invalid, !!props.disabled), minHeight: 128, resize: 'vertical', ...style }}
+  />;
+};
+
+export const PixelSelect = ({ isDark = false, invalid = false, style, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & FieldFlags) => {
+  const c = roles(isDark);
+  const h = useFieldHandlers(c, invalid);
+  return <select
+    {...props}
+    aria-invalid={invalid || undefined}
+    onFocus={e => { h.onFocus(e); props.onFocus?.(e); }}
+    onBlur={e => { h.onBlur(e); props.onBlur?.(e); }}
+    style={{ ...fieldBase(c, invalid, !!props.disabled), cursor: props.disabled ? 'not-allowed' : 'pointer', ...style }}
+  >{children}</select>;
+};
+
+// ─── PixelField — label, hint, and error around any field ─────────────────────
+// Wraps a control so every form in every Onganda product labels, hints, and
+// errors the same way. The label is the standard uppercase micro-label; the
+// error is the only place fired red appears in a form.
+export const PixelField = ({
+  label,
+  hint,
+  error,
+  htmlFor,
   isDark = false,
-  style,
   children,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & {
+  className = ''
+}: {
+  label: string;
+  hint?: string;
+  error?: string;
+  htmlFor?: string;
   isDark?: boolean;
-}) => <select {...props} onFocus={e => {
-  fieldFocus(e);
-  props.onFocus?.(e);
-}} onBlur={e => {
-  fieldBlur(isDark)(e);
-  props.onBlur?.(e);
-}} style={{
-  ...fieldBase(isDark),
-  cursor: 'pointer',
-  ...style
-}}>{children}</select>;
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const c = roles(isDark);
+  return (
+    <div className={className}>
+      <label htmlFor={htmlFor} className="block text-xs font-bold uppercase tracking-[0.15em]" style={{ color: c.textMuted }}>
+        {label}
+      </label>
+      <div className="mt-3">{children}</div>
+      {hint && !error && <p className="mt-2 text-xs leading-relaxed" style={{ color: c.textMuted }}>{hint}</p>}
+      {/* Fired red as text is 3.6:1 — under the floor. The message runs at full
+          contrast and the red appears as the marker, so colour is never the
+          only thing carrying the error. */}
+      {error && (
+        <p role="alert" className="mt-2 flex items-start gap-2 text-xs leading-relaxed" style={{ color: c.text }}>
+          <PixelDot color={STATUS.critical} size={6} ring={c.line} offset={4} />
+          <span>{error}</span>
+        </p>
+      )}
+    </div>
+  );
+};
+
+// ─── Choice controls — checkbox, radio, toggle ────────────────────────────────
+// Drawn as pixel marks on the integer grid, never as a rounded native control.
+// Unchecked is a hairline box; checked fills with `controlOn` (ochre). The
+// checked colour is the same for all three, so "on" reads identically.
+const CONTROL_BOX = 18;
+
+const controlLabelStyle = (c: ColorRoles, disabled: boolean): React.CSSProperties => ({
+  display: 'inline-flex',
+  alignItems: 'flex-start',
+  gap: 12,
+  cursor: disabled ? 'not-allowed' : 'pointer',
+  opacity: disabled ? 0.45 : 1,
+  fontSize: 14,
+  lineHeight: 1.5,
+  color: c.textBody
+});
+
+/** Square box with a stepped pixel check. Sharp corners, ochre when on. */
+export const PixelCheckbox = ({
+  label,
+  isDark = false,
+  className = '',
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
+  const c = roles(isDark);
+  const on = !!props.checked;
+  const disabled = !!props.disabled;
+  return (
+    <label className={className} style={controlLabelStyle(c, disabled)}>
+      <span style={{ position: 'relative', flexShrink: 0, width: CONTROL_BOX, height: CONTROL_BOX, marginTop: 2 }}>
+        <input
+          {...props}
+          type="checkbox"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer' }}
+        />
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'block',
+            width: '100%',
+            height: '100%',
+            borderRadius: 0,
+            border: `1px solid ${on ? c.controlOnBorder : c.fieldBorder}`,
+            background: on ? c.controlOn : c.fieldBg,
+            transition: CONTROL_TRANSITION
+          }}
+        >
+          {on && (
+            <svg width={CONTROL_BOX - 2} height={CONTROL_BOX - 2} viewBox="0 0 12 12" fill="none" shapeRendering="crispEdges">
+              <rect x="2" y="6" width="2" height="2" fill={c.controlOnFg} />
+              <rect x="4" y="8" width="2" height="2" fill={c.controlOnFg} />
+              <rect x="6" y="6" width="2" height="2" fill={c.controlOnFg} />
+              <rect x="8" y="4" width="2" height="2" fill={c.controlOnFg} />
+              <rect x="10" y="2" width="1" height="2" fill={c.controlOnFg} />
+            </svg>
+          )}
+        </span>
+      </span>
+      {label}
+    </label>
+  );
+};
+
+/** Stepped-octagon frame with a square core. The pixel system has no circles. */
+export const PixelRadio = ({
+  label,
+  isDark = false,
+  className = '',
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
+  const c = roles(isDark);
+  const on = !!props.checked;
+  const disabled = !!props.disabled;
+  const edge = on ? c.controlOnBorder : c.fieldBorder;
+  return (
+    <label className={className} style={controlLabelStyle(c, disabled)}>
+      <span style={{ position: 'relative', flexShrink: 0, width: CONTROL_BOX, height: CONTROL_BOX, marginTop: 2 }}>
+        <input
+          {...props}
+          type="radio"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer' }}
+        />
+        <svg aria-hidden="true" width={CONTROL_BOX} height={CONTROL_BOX} viewBox="0 0 12 12" fill="none" shapeRendering="crispEdges" style={{ display: 'block', transition: CONTROL_TRANSITION }}>
+          {/* stepped octagon frame */}
+          <rect x="3" y="0" width="6" height="1" fill={edge} />
+          <rect x="3" y="11" width="6" height="1" fill={edge} />
+          <rect x="0" y="3" width="1" height="6" fill={edge} />
+          <rect x="11" y="3" width="1" height="6" fill={edge} />
+          <rect x="1" y="1" width="2" height="1" fill={edge} />
+          <rect x="9" y="1" width="2" height="1" fill={edge} />
+          <rect x="1" y="10" width="2" height="1" fill={edge} />
+          <rect x="9" y="10" width="2" height="1" fill={edge} />
+          <rect x="1" y="2" width="1" height="1" fill={edge} />
+          <rect x="10" y="2" width="1" height="1" fill={edge} />
+          <rect x="1" y="9" width="1" height="1" fill={edge} />
+          <rect x="10" y="9" width="1" height="1" fill={edge} />
+          {on && <rect x="4" y="4" width="4" height="4" fill={c.controlOn} />}
+        </svg>
+      </span>
+      {label}
+    </label>
+  );
+};
+
+/** Two-cell mechanical switch. The knob steps between cells; it does not slide. */
+export const PixelToggle = ({
+  label,
+  checked = false,
+  disabled = false,
+  isDark = false,
+  onChange,
+  className = '',
+  ...rest
+}: {
+  label?: React.ReactNode;
+  checked?: boolean;
+  disabled?: boolean;
+  isDark?: boolean;
+  onChange?: (next: boolean) => void;
+  className?: string;
+} & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange' | 'type' | 'color'>) => {
+  const c = roles(isDark);
+  const w = 40;
+  const h = 20;
+  return (
+    <button
+      {...rest}
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange?.(!checked)}
+      className={className}
+      style={{ ...controlLabelStyle(c, disabled), alignItems: 'center', background: 'none', border: 'none', padding: 0 }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'relative',
+          flexShrink: 0,
+          width: w,
+          height: h,
+          borderRadius: 0,
+          border: `1px solid ${checked ? c.controlOnBorder : c.fieldBorder}`,
+          background: checked ? c.controlOn : c.fieldBg,
+          transition: CONTROL_TRANSITION
+        }}
+      >
+        <span
+          style={{
+            position: 'absolute',
+            top: 2,
+            left: checked ? w - h + 2 : 2,
+            width: h - 6,
+            height: h - 6,
+            background: checked ? c.controlOnFg : c.textMuted,
+            transition: 'left 0.12s steps(2, end), background 0.2s'
+          }}
+        />
+      </span>
+      {label}
+    </button>
+  );
+};
 
 // ─── StatCard — single stat in the research signals bar ──────────────────────
 export const StatCard = ({
   stat
 }: {
   stat: StatEntry;
-}) => <motion.div initial={{
+}) => {
+  const inkFor = useInkOn();
+  return <motion.div initial={{
   opacity: 0,
   y: 8
 }} whileInView={{
@@ -601,13 +916,14 @@ export const StatCard = ({
 }} className="flex flex-col gap-1 px-6 py-8 md:px-10">
     <div className="flex items-end gap-2 mb-1">
       <span className="text-4xl font-semibold tracking-tighter leading-none" style={{
-      color: stat.hex
+      color: inkFor(stat.hex)
     }}>{stat.value}</span>
       <PixelDot color={stat.hex} size={8} />
     </div>
     <p className="text-sm text-[#1E1A17]/65 leading-relaxed">{stat.label}</p>
-    <p className="text-xs text-[#1E1A17]/45 mt-0.5">{stat.sub}</p>
+    <p className="text-xs text-[#1E1A17]/66 mt-0.5">{stat.sub}</p>
   </motion.div>;
+};
 
 // ─── SwatchChip — single colour swatch with label ────────────────────────────
 export const SwatchChip = ({
@@ -620,7 +936,7 @@ export const SwatchChip = ({
   }} title={swatch.name} aria-label={swatch.name} />
     <div>
       <p className="text-[11px] font-semibold text-[#1E1A17] leading-tight">{swatch.name}</p>
-      <p className="text-[10px] text-[#1E1A17]/50 mt-0.5">{swatch.desc}</p>
+      <p className="text-[10px] text-[#1E1A17]/66 mt-0.5">{swatch.desc}</p>
     </div>
   </div>;
 
@@ -630,12 +946,16 @@ export const TerminalCard = ({
 }: {
   block: TerminalBlock;
 }) => {
+  // Syntax colours sit on char black. Mopane brown reads 2.19:1 there and
+  // fired red 3.66:1, so comments become dimmed paper and the accent takes
+  // ochre. Only ochre, mahangu gold and paper >=0.52 clear 4.5:1 on this
+  // surface, so keyword and accent share a hue by necessity.
   const colorMap: Record<TerminalLine['type'], string> = {
-    comment: '#6A4B2E',
-    keyword: '#D9791F',
-    string: '#DFAE2B',
-    plain: '#E8E1CF99',
-    accent: '#C84A1B'
+    comment: 'rgba(232,225,207,0.55)',
+    keyword: COLOR.ochreOrange,
+    string: COLOR.mahanguGold,
+    plain: 'rgba(232,225,207,0.78)',
+    accent: COLOR.ochreOrange
   };
   return <motion.div initial={{
     opacity: 0,
@@ -667,7 +987,7 @@ export const TerminalCard = ({
             opacity: 0.7
           }} />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E8E1CF]/30 ml-2">{block.title}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E8E1CF]/55 ml-2">{block.title}</span>
         </div>
         <PixelTag hex={block.tagHex} label={block.tag} />
       </div>
@@ -698,7 +1018,7 @@ export const SystemCard = ({
   const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
   const cardBorder = isDark ? `${sys.borderHex}30` : 'rgba(30,26,23,0.10)';
   const titleColor = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.45)';
+  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const descColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.70)';
   const shadowHover = isDark ? `0 4px 28px 0 rgba(0,0,0,0.45), 0 0 0 1px ${sys.borderHex}40` : '0 4px 24px 0 rgba(30,26,23,0.10)';
   const shadowRest = isDark ? `0 1px 6px 0 rgba(0,0,0,0.30), 0 0 0 1px ${sys.borderHex}18` : '0 1px 4px 0 rgba(30,26,23,0.05)';
@@ -741,7 +1061,8 @@ export const SystemCard = ({
       }}>{sys.english}</p>
       </div>
       <div className="text-[10px] font-bold uppercase tracking-[0.15em] mb-5" style={{
-      color: isDark ? sys.borderHex : COLOR.ochreOrange
+      // Ochre is 2.4:1 on the light card; the accent ink carries it there.
+      color: isDark ? sys.borderHex : roles(false).accentInk
     }}>{sys.role}</div>
       <p className="leading-relaxed text-sm flex-1" style={{
       color: descColor
@@ -772,7 +1093,9 @@ export const FlowNodeCard = ({
 }: {
   node: FlowNodeEntry;
   isHovered: boolean;
-}) => <div className="relative w-full bg-[#F3E8C3] overflow-hidden mb-4" style={{
+}) => {
+  const inkFor = useInkOn();
+  return <div className="relative w-full bg-[#F3E8C3] overflow-hidden mb-4" style={{
   border: `1px solid ${node.hex}`,
   borderLeftWidth: 4,
   borderLeftColor: node.hex,
@@ -794,11 +1117,11 @@ export const FlowNodeCard = ({
         <FlowNodeIcon id={node.id} hex={node.hex} />
       </div>
       <p className="text-[17px] font-semibold tracking-tight text-[#1E1A17] leading-none">{node.oshiwambo}</p>
-      <p className="text-xs text-[#1E1A17]/50 font-medium mb-3">{node.english}</p>
+      <p className="text-xs text-[#1E1A17]/66 font-medium mb-3">{node.english}</p>
       <div className="flex items-center gap-1.5 min-w-0">
         <PixelDot color={node.hex} size={4} />
         <span className="text-[10px] font-bold uppercase tracking-[0.13em] truncate" style={{
-        color: node.hex === COLOR.mahanguGold ? COLOR.mopaneBrown : node.hex
+        color: inkFor(node.hex)
       }}>
           {node.role}
         </span>
@@ -806,6 +1129,7 @@ export const FlowNodeCard = ({
     </div>
     <DitherBar color={node.hex} segments={16} height={2} opacity={0.7} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
   </div>;
+};
 
 // ─── FieldAppCard — field application card ────────────────────────────────────
 export const FieldAppCard = ({
@@ -814,7 +1138,9 @@ export const FieldAppCard = ({
 }: {
   app: SectorApp;
   idx: number;
-}) => <motion.article initial={{
+}) => {
+  const inkFor = useInkOn();
+  return <motion.article initial={{
   opacity: 0,
   y: 16
 }} whileInView={{
@@ -841,18 +1167,18 @@ export const FieldAppCard = ({
       </div>
     </div>
     <h3 className="text-lg font-semibold tracking-tight text-[#1E1A17] leading-none">{app.name}</h3>
-    <p className="text-xs font-medium text-[#1E1A17]/45 mb-4">
+    <p className="text-xs font-medium text-[#1E1A17]/66 mb-4">
       <span style={{
-      color: app.hex
+      color: inkFor(app.hex)
     }}>{app.oshiwambo}</span>
-      <span className="mx-1.5 text-[#1E1A17]/25">·</span>
+      <span className="mx-1.5 text-[#1E1A17]/66">·</span>
       <span>{app.sector}</span>
     </p>
     <p className="text-sm text-[#1E1A17]/65 leading-relaxed mb-6">{app.desc}</p>
     <div className="flex items-center gap-1.5">
       <PixelDot color={app.hex} size={6} />
       <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{
-      color: app.hex
+      color: inkFor(app.hex)
     }}>Active pilot</span>
     </div>
     <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{
@@ -860,6 +1186,7 @@ export const FieldAppCard = ({
   }} aria-hidden="true" />
     <DitherBar color={app.hex} segments={20} height={2} opacity={1} className="absolute bottom-0 left-0 right-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
   </motion.article>;
+};
 
 // ─── AnnotationPanel — chart reading guide + pixel rules sidebar ──────────────
 export const AnnotationPanel = ({
@@ -870,10 +1197,10 @@ export const AnnotationPanel = ({
   rules: PixelRule[];
 }) => <div className="lg:w-72 xl:w-80 shrink-0 flex flex-col gap-0">
     <div className="mb-8">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/40 mb-4">Reading the chart</p>
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-4">Reading the chart</p>
       <dl className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
         {annotations.map(item => <div key={item.label} className="flex flex-col gap-0.5 py-4">
-            <dt className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#D9791F]">{item.label}</dt>
+            <dt className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8F3E21]">{item.label}</dt>
             <dd className="text-sm text-[#1E1A17]/65 leading-relaxed">{item.note}</dd>
           </div>)}
       </dl>
@@ -884,7 +1211,7 @@ export const AnnotationPanel = ({
         background: c
       }} />)}
       </div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/40 mb-3">Pixel rules</p>
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/66 mb-3">Pixel rules</p>
       <ul className="flex flex-col gap-2">
         {rules.map(item => <li key={item.rule} className="flex items-start gap-2 text-xs text-[#1E1A17]/65 leading-snug">
             <div className="w-1 h-1 mt-1.5 shrink-0 bg-[#D9791F]" aria-hidden="true" />
@@ -912,7 +1239,7 @@ export const PrincipleRow = ({
 }} transition={{
   delay: idx * 0.07
 }} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-8 py-5">
-    <dt className="text-xs font-bold uppercase tracking-[0.13em] text-[#D9791F] w-32 shrink-0">{principle.label}</dt>
+    <dt className="text-xs font-bold uppercase tracking-[0.13em] text-[#8F3E21] w-32 shrink-0">{principle.label}</dt>
     <dd className="text-[#1E1A17]/80 text-base">{principle.value}</dd>
   </motion.div>;
 
@@ -936,11 +1263,13 @@ export const CodeSnippetBlock = ({
     isDark
   } = useDark();
   const colorMap: Record<CodeSnippetLine['type'], string> = {
-    comment: isDark ? '#6A4B2E' : '#8F6840',
+    // See TerminalCard: this block is char-black in both modes, so the
+    // comment tone is dimmed paper rather than a brown that fails on it.
+    comment: 'rgba(232,225,207,0.55)',
     keyword: COLOR.ochreOrange,
     string: COLOR.mahanguGold,
-    plain: isDark ? 'rgba(232,225,207,0.6)' : 'rgba(232,225,207,0.75)',
-    accent: COLOR.firedRed,
+    plain: isDark ? 'rgba(232,225,207,0.7)' : 'rgba(232,225,207,0.78)',
+    accent: COLOR.ochreOrange,
     import: COLOR.ochreOrange,
     tag: isDark ? 'rgba(232,225,207,0.9)' : 'rgba(232,225,207,0.95)',
     prop: COLOR.mahanguGold
@@ -1003,6 +1332,7 @@ export const CodeSnippetBlock = ({
             <div style={{
             width: 8,
             height: 8,
+            // onganda-allow: system-colour-as-chrome — decorative dither run, not an interface surface
             background: COLOR.mahanguGold,
             opacity: 0.6
           }} />
@@ -1012,7 +1342,7 @@ export const CodeSnippetBlock = ({
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          color: accentHex,
+          color: 'rgba(232,225,207,0.85)',
           opacity: 0.85
         }}>
             {label}
@@ -1022,7 +1352,7 @@ export const CodeSnippetBlock = ({
           fontWeight: 500,
           letterSpacing: '0.10em',
           textTransform: 'uppercase',
-          color: 'rgba(232,225,207,0.25)'
+          color: 'rgba(232,225,207,0.55)'
         }}>
             snippet
           </span>
@@ -1036,7 +1366,7 @@ export const CodeSnippetBlock = ({
         padding: '4px 12px',
         background: copied ? `${accentHex}22` : 'transparent',
         border: `1px solid ${copied ? accentHex : 'rgba(232,225,207,0.15)'}`,
-        color: copied ? accentHex : 'rgba(232,225,207,0.45)',
+        color: copied ? COLOR.mahanguGold : 'rgba(232,225,207,0.6)',
         fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.14em',
@@ -1098,21 +1428,21 @@ export const OngandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[
             <OngandaLogoMark size={22} />
             <span className="font-semibold tracking-tight text-base">
               <span className="text-[#D9791F]">Onganda</span>
-              <span className="text-[#E8E1CF]/40 mx-1.5">·</span>
+              <span className="text-[#E8E1CF]/55 mx-1.5">·</span>
               <span className="text-[#E8E1CF]/70 font-normal text-sm">Namibia AI Systems Lab</span>
             </span>
           </div>
-          <p className="text-sm text-[#E8E1CF]/45 max-w-xs leading-relaxed">
+          <p className="text-sm text-[#E8E1CF]/55 max-w-xs leading-relaxed">
             A sovereign intelligence workshop. Pixelated by design. Material by palette. Oshiwambo by name. Calm by layout.
           </p>
         </div>
         <nav aria-label="Footer navigation" className="flex flex-col gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E8E1CF]/30 mb-1">Navigate</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E8E1CF]/55 mb-1">Navigate</p>
           {FOOTER_LINKS.map(link => <a key={link.label} href={link.href} className="text-sm text-[#E8E1CF]/60 hover:text-[#D9791F] transition-colors duration-200">{link.label}</a>)}
         </nav>
       </div>
       <div className="mt-12 pt-6 border-t border-[#E8E1CF]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <p className="text-[11px] text-[#E8E1CF]/30">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
+        <p className="text-[11px] text-[#E8E1CF]/55">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
         <div aria-hidden="true" className="flex gap-0.5">
           {FOOTER_DITHER_SWATCHES.map((c, i) => <div key={`foot-sw-${i}`} className="w-3 h-3" style={{
           background: c,

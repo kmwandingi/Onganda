@@ -10,17 +10,20 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 1. [Installation](#1-installation)
 2. [Project Setup](#2-project-setup)
 3. [Color Tokens](#3-color-tokens)
-4. [Content & Data Tokens](#4-content--data-tokens)
-5. [Atomic Primitives](#5-atomic-primitives)
-6. [System Icons](#6-system-icons)
-7. [Interface Icons](#7-interface-icons)
-8. [Charts](#8-charts)
-9. [Page Sections](#9-page-sections)
-10. [Block System](#10-block-system)
-11. [AI Authoring](#11-ai-authoring)
-12. [Editor Shells](#12-editor-shells)
-13. [TypeScript Types](#13-typescript-types)
-14. [Design Rules](#14-design-rules)
+4. [Color Roles](#4-color-roles)
+5. [Controls](#5-controls)
+6. [Product Patterns](#6-product-patterns)
+7. [Content & Data Tokens](#7-content--data-tokens)
+8. [Atomic Primitives](#8-atomic-primitives)
+9. [System Icons](#9-system-icons)
+10. [Interface Icons](#10-interface-icons)
+11. [Maps and Charts](#11-maps-and-charts)
+12. [Page Sections](#12-page-sections)
+13. [Block System](#13-block-system)
+14. [AI Authoring](#14-ai-authoring)
+15. [Editor Shells](#15-editor-shells)
+16. [TypeScript Types](#16-typescript-types)
+17. [Design Rules](#17-design-rules)
 
 ---
 
@@ -32,7 +35,7 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 npm install github:kmwandingi/Onganda
 ```
 
-### When published to npm
+### From the npm registry
 
 ```bash
 npm install @onganda/design-system
@@ -77,51 +80,61 @@ content scan so those utilities are generated.
 
 **Tailwind v4** (in your CSS file):
 ```css
-@source "../../node_modules/@onganda/design-system/dist/index.js";
+@source "./node_modules/@onganda/design-system/dist/package";
 ```
+
+The path is relative to your CSS file; the line above assumes it sits at the
+project root. Tailwind does not resolve this by package name, and a wrong level
+fails silently — you get correct markup with no utility classes. Verify by
+rendering, not by reading.
 
 **Tailwind v3** (`tailwind.config.js`):
 ```js
 module.exports = {
   content: [
     './src/**/*.{ts,tsx}',
-    './node_modules/@onganda/design-system/dist/index.js',
+    './node_modules/@onganda/design-system/dist/package/**/*.{js,cjs}',
   ],
 };
 ```
 
-### Step 3 — Wrap your app in DarkContext
+### Step 3 — Wrap your app in DarkProvider
 
 All design-system components read dark mode via React context.
 
 ```tsx
-import { DarkContext } from '@onganda/design-system';
-import { useState } from 'react';
+import { DarkProvider } from '@onganda/design-system';
 
 function Root() {
-  const [isDark, setIsDark] = useState(false);
-
   return (
-    <DarkContext.Provider value={{ isDark, toggle: () => setIsDark(d => !d) }}>
+    <DarkProvider>
       <App />
-    </DarkContext.Provider>
+    </DarkProvider>
   );
 }
 ```
 
+### Supported package paths
+
+The root keeps stable tokens, primitives, icons, and version 1.x compatibility exports. Use `/charts`, `/editors`, `/ai`, `/maps`, and `/sites` for larger features. `/core` provides the foundation alone.
+
+Non-core root exports remain available throughout version 1.x. Removing one requires a major release and a migration note.
+
 Read the current mode in any component:
 
 ```tsx
-import { useDark, COLOR } from '@onganda/design-system';
+import { useDark, roles } from '@onganda/design-system';
 
 function MyComponent() {
   const { isDark, toggle } = useDark();
-  const bg = isDark ? COLOR.darkCard : COLOR.dustLight;
-  const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
+  const c = roles(isDark);
 
-  return <div style={{ background: bg, color: fg }}>…</div>;
+  return <div style={{ background: c.surface, color: c.text }}>…</div>;
 }
 ```
+
+`roles(isDark)` resolves every colour for the current mode, so a component never
+branches on `isDark` for colour. See [§4 Color Roles](#4-color-roles).
 
 ---
 
@@ -146,19 +159,13 @@ import { COLOR } from '@onganda/design-system';
 | `darkCard`      | `#1C1713` | Dark Card      | Elevated dark surface         |
 | `darkCardAlt`   | `#271F1A` | Dark Card Alt  | Alt elevated dark surface     |
 
-**Standard opacity patterns (use `rgba`, not Tailwind utilities):**
+This table is the inventory. It does not grant permission to use a token
+anywhere. **Read §4 before styling anything** — it says which role each token
+may fill, and the roles are what components consume.
 
-```ts
-// Light mode
-const borderLight  = 'rgba(30,26,23,0.10)';
-const mutedLight   = 'rgba(30,26,23,0.45)';
-const bodyLight    = 'rgba(30,26,23,0.82)';
-
-// Dark mode
-const borderDark   = 'rgba(232,225,207,0.10)';
-const mutedDark    = 'rgba(232,225,207,0.40)';
-const bodyDark     = 'rgba(232,225,207,0.78)';
-```
+Do not write these opacities by hand. `roles(isDark)` returns `textBody`,
+`textMuted`, `textFaint`, `line`, and `lineStrong` already resolved for the
+current mode.
 
 ### WEAVE — basket-weave texture
 
@@ -174,7 +181,414 @@ Used directly by `WeaveOverlay`. You rarely need to apply `WEAVE` manually.
 
 ---
 
-## 4. Content & Data Tokens
+## 4. Color Roles
+
+`COLOR` says what a color is. `ROLE` says where it may be used. Style interface
+elements from roles. Reach for a palette token only when no role covers the case,
+and then add the role.
+
+```tsx
+import { roles, useDark } from '@onganda/design-system';
+
+const { isDark } = useDark();
+const c = roles(isDark);
+
+<div style={{ background: c.surface, color: c.text, border: `1px solid ${c.line}` }} />
+```
+
+`roles(isDark)` returns the full set for the current mode, so a component never
+writes its own light/dark branch for color.
+
+### Two measurements shape the whole set
+
+Every value here is measured, not chosen by eye. `npm run check:contrast`
+recomputes all 68 ratios and fails the build on a regression. Two results drive
+most of the design:
+
+- **Ochre orange cannot carry meaning on a light surface.** Millet clay on ochre
+  is 2.4:1, and ochre on millet clay is 2.4:1. Ochre works as a **fill** with
+  char black on it (5.5:1), and as **ink** on dark surfaces (6.1:1). On light
+  surfaces the accent ink is bark rust (5.6:1) — the deep ochre.
+- **Fired red cannot host small light text.** Its best foreground reaches
+  4.05:1, under the 4.5:1 floor. Fired red stays an **indicator** — status marks
+  and invalid field borders, where the 3:1 non-text threshold applies. The
+  danger fill is bark rust instead.
+
+### The roles
+
+| Group | Role | Light | Dark | Use |
+|---|---|---|---|---|
+| Surface | `canvas` | Millet Clay | Dark BG | Page background |
+| | `surface` | Dust Light | Dark Card | Cards, panels, bands |
+| | `surfaceWell` | Millet Clay | Dark BG | Wells, code blocks. **Recedes toward the canvas — not an elevated surface.** |
+| | `inverse` | Char Black | Dark Card Alt | Footer, ticker, lab card |
+| | `inverseBorder` | transparent | Ochre Orange | Dark mode has no darker tone to invert into, so the inverse card is marked by an accent edge |
+| Text | `text` | Char Black | Millet Clay | Headings, primary text |
+| | `textBody` | ink 82% | paper 78% | Long-form reading text (8.1:1 / 9.1:1) |
+| | `textMuted` | ink 66% | paper 55% | Labels, captions, meta (the 4.5:1 floor, measured against the editor grounds too) |
+| | `textFaint` | ink 25% | paper 25% | **Disabled text and ordinals only** — below 4.5:1 by design |
+| | `textOnInverse` | Millet Clay | Millet Clay | Text on an inverse surface |
+| Line | `line` | ink 10% | paper 10% | Hairline divider — decorative, carries no state |
+| | `lineStrong` | ink 20% | paper 20% | Emphasized divider |
+| | `focusRing` | Bark Rust | Ochre Orange | Focus ring (3:1 floor) |
+| | `accentInk` | Bark Rust | Ochre Orange | The accent as ink: link, ghost hover, field focus |
+| Action | `actionBg` / `actionFg` | Char Black / Millet Clay | Millet Clay / Char Black | Primary action |
+| | `actionHoverBg` / `actionHoverFg` | Ochre / Char Black | Ochre / Char Black | Primary hover — both modes warm up to ochre |
+| | `accentBg` / `accentFg` | Ochre / Char Black | Ochre / Char Black | Warm in-card action |
+| | `accentHoverBg` / `accentHoverFg` | Char Black / Millet Clay | Millet Clay / Char Black | Accent hover |
+| | `dangerBg` / `dangerFg` | Bark Rust / Millet Clay | Bark Rust / Millet Clay | Destructive action |
+| | `dangerHoverBg` / `dangerHoverFg` | Char Black / Millet Clay | Millet Clay / Char Black | Danger hover |
+| | `ghostBorder` / `ghostFg` | ink 51% / Char Black | paper 42% / Millet Clay | Quiet alternative |
+| | `ghostHoverBorder` / `ghostHoverFg` | Bark Rust | Ochre Orange | Ghost hover |
+| Field | `fieldBg` | transparent | transparent | Field ground |
+| | `fieldBorder` | ink 51% | paper 42% | The control's visible boundary (3:1 floor) |
+| | `fieldBorderHover` | ink 65% | paper 58% | Boundary on hover |
+| | `fieldBorderFocus` | Bark Rust | Ochre Orange | Boundary on focus |
+| | `fieldBorderInvalid` | Fired Red | Fired Red | Boundary when invalid |
+| | `fieldDisabledBg` / `fieldDisabledText` | ink 4% / ink 25% | paper 4% / paper 25% | Disabled field |
+| | `controlOn` / `controlOnFg` | Ochre / Char Black | Ochre / Char Black | Checked checkbox, radio, toggle |
+| | `controlOnBorder` | Bark Rust | Ochre Orange | The checked control's edge — the ochre fill is 2.56:1, so the edge carries the boundary |
+
+**Text and lines are brand ink at a fixed opacity, not new hues.** Use the steps
+in `ALPHA`, which is mode-aware: `body`, `muted`, `faint`, `line`, `lineStrong`,
+`control`, `controlHover`. They are measured against every ground in the
+system, including the eleven `EDITOR_SURFACE` tones. A step not in `ALPHA` is drift.
+
+`textFaint` is deliberately below 4.5:1. WCAG exempts inactive controls, and
+ordinals repeat information already in the adjacent label. **Never put meaning
+there.**
+
+### Picking a foreground for a colour you receive as data
+
+Tags, chart labels, and system cards take a colour as input and cannot know
+their foreground in advance:
+
+```tsx
+import { onColor, SYSTEM_COLOR } from '@onganda/design-system';
+
+<span style={{ background: SYSTEM_COLOR.Ombiga, color: onColor(SYSTEM_COLOR.Ombiga) }}>03</span>
+```
+
+`onColor` picks by measured luminance. It cannot rescue fired red — char black
+reaches 3.66:1 and dust light 3.85:1 — so do not put small text on fired red.
+
+### What each palette token may do
+
+`COLOR_POLICY` carries this table in code, so an agent can read the rule without
+reading the docs.
+
+| Token | Allowed | Never |
+|---|---|---|
+| `milletClay` | Light canvas; text and icons on any dark surface; the primary action fill in dark mode | A fill on a light surface |
+| `dustLight` | Lifted surface on the light canvas | Text, borders, any action |
+| `charBlack` | Primary action fill in light mode; the hover fill for accent and danger; inverse surfaces; ink for text and lines | The dark-mode canvas — use `darkBg` |
+| `ochreOrange` | A **fill** with char black on it (5.5:1): accent button, checked control, action hover. **Ink on dark surfaces only** (6.1:1). Also Okaanda | Ink on a light surface — 2.4:1. Use bark rust. Never body text |
+| `firedRed` | Critical status marks and invalid field borders, where the 3:1 floor applies | A fill behind small text (best 4.05:1). Never error message text. Never a second accent |
+| `mahanguGold` | Caution status; Ombiga; chart series 3. Needs char black on it (8.4:1) | Light-mode body text or small type — 1.6:1 on cream |
+| `barkRust` | The accent as **ink** on light surfaces (5.6:1); the danger fill with millet clay on it. Also Oshini and chart series 2 | A surface or a large decorative fill |
+| `mopaneBrown` | Settled status on light; Etiti; chart series 4 | Generic chrome. Never on a dark card — 2.25:1. Use `mopaneBrownLight` |
+| `mopaneBrownLight` | Settled status and Etiti on dark surfaces | A sixth system color |
+| `dyePlum` | Oshitoo; chart series 5. Rare by design | An accent, a status, or a background |
+| `darkBg` | Dark canvas; the recessed well on a dark card | Light mode |
+| `darkCard` | Dark surface: cards, panels | Light mode |
+| `darkCardAlt` | The inverse card in dark mode, marked with an ochre edge | Light mode |
+
+### System identity
+
+```ts
+import { SYSTEM_COLOR } from '@onganda/design-system';
+// Okaanda → Ochre Orange · Oshini → Bark Rust · Ombiga → Mahangu Gold
+// Etiti → Mopane Brown · Oshitoo → Dye Plum
+```
+
+A system color means "this belongs to that system." Using one as a button, a
+border, or a label destroys that meaning. `npm run check:tokens` fails on a
+system hue bound to a `background` or `border*` property.
+
+### Status
+
+```ts
+import { statusFor } from '@onganda/design-system';
+
+<PixelDot color={statusFor('settled', isDark)} ring={c.lineStrong} />
+```
+
+| Status | Color | Means |
+|---|---|---|
+| `active` | Ochre Orange | Live, running, in progress |
+| `caution` | Mahangu Gold | Warning, pending, needs attention |
+| `critical` | Fired Red | Error, destructive, blocking |
+| `settled` | Mopane Brown (light) / Mopane Brown Light (dark) | Complete, archived, informational |
+
+Always call `statusFor(name, isDark)`, not `STATUS[name]`: mopane brown drops to
+2.25:1 on a dark card. The check flags a direct `STATUS.settled` read.
+
+**A status mark is never the only carrier of meaning.** Pair it with a text
+label. Some hues fall under 3:1 against their surface — gold on cream is 1.6:1 —
+so a bare dot also needs a hairline: `<PixelDot ring={c.lineStrong} />`.
+
+**The palette is earth-derived. It has no green and no blue, and none may be
+added.** Success reads as a check glyph on a settled tone.
+
+### Charts
+
+```ts
+import { CHART_SERIES } from '@onganda/design-system';
+```
+
+Fixed order: ochre orange, bark rust, mahangu gold, mopane brown, dye plum, fired
+red. Take colors from the front. Never reorder or substitute, so series index 2
+reads the same in every chart across a product.
+
+### Theming
+
+`COLOR_CSS_VARS` gives the CSS-variable form of every token
+(`var(--onganda-ochre-orange, #D9791F)`). Override the `--onganda-*` properties in
+a consumer stylesheet to retheme without forking components. Keep `COLOR` for hex
+math such as `` `${hex}60` ``.
+
+If you retheme, run `npx onganda-check --contrast` — the guard reads the token
+source, so your values are measured, not the shipped ones.
+
+---
+
+## 5. Controls
+
+Every control has one recipe. A control does not choose its own colors, and no
+control uses a rounded corner. If a control is not listed here, it does not exist
+yet: add it to the system and to `/showcase` before using it in a product.
+
+`/showcase` renders all of them in every state, in both modes, under **Control
+Standards**. That section carries its own light/dark switch.
+
+### Controls on an inverse surface take the dark role set
+
+An inverse surface — the footer, the ticker, the black lab card — is locally
+dark. A control sitting on one must be passed `isDark`, or it resolves its hover
+against the wrong background and can disappear into the card:
+
+```tsx
+<div style={{ background: c.inverse }}>
+  <PixelButton variant="accent" isDark>Read the manifesto</PixelButton>
+</div>
+```
+
+### PixelButton
+
+```tsx
+import { PixelButton } from '@onganda/design-system';
+
+<PixelButton variant="primary" onClick={submit}>Send</PixelButton>
+<PixelButton variant="accent" href="/manifesto">Read the manifesto</PixelButton>
+<PixelButton variant="ghost" isDark>Cancel</PixelButton>
+<PixelButton variant="danger" onClick={remove}>Delete</PixelButton>
+<PixelButton variant="primary" disabled>Saving…</PixelButton>
+```
+
+| Variant | Light | Dark | When |
+|---|---|---|---|
+| `primary` | Char black → ochre on hover | Millet clay → ochre on hover | The one main action in a view |
+| `accent` | Ochre → char black | Ochre → millet clay | An action inside a card that already sits on the page's primary |
+| `ghost` | Transparent, ink-50% border → bark rust | Transparent, paper-42% border → ochre | The quiet alternative next to a primary |
+| `danger` | Bark rust → char black | Bark rust → millet clay | Destroys something |
+
+Both modes warm up to ochre on the primary hover; the neutral extreme is char
+black in light and millet clay in dark, because char black is the dark canvas.
+
+Danger fills with bark rust rather than fired red. Fired red's best foreground
+is 4.05:1, under the floor for a 13px label; a fired-red marker on a bark rust
+fill measures 1.55:1 and is invisible; and an outlined treatment passes but
+makes the destructive action quieter than the primary, which is wrong in a
+confirmation dialog where deleting *is* the primary action. Bark rust sits
+2.37:1 from char black and 2.33:1 from ochre, so it stays distinct from the
+other intents. Fired red remains the critical **status** and **border** color,
+where the 3:1 threshold applies, so "red means danger" survives in the system's
+semantics.
+
+Accent and danger both press into ink on hover; primary warms up to ochre. Two
+directions, each consistent across both modes.
+
+Props: `variant`, `isDark`, `disabled`, `onClick`, `href`, `className`.
+Passing `href` renders an `<a>` with identical styling. Every button carries the
+`MOTION.tap` compression and an `accentInk` focus ring; none scales on hover.
+
+Rules: one primary per view. `accent` never substitutes for `primary` on a plain
+page. `danger` is the only destructive treatment and never appears twice in one
+dialog.
+
+### Text fields
+
+```tsx
+import { PixelInput, PixelTextarea, PixelSelect, PixelField } from '@onganda/design-system';
+
+<PixelField label="Email" hint="We reply within two days." htmlFor="email">
+  <PixelInput id="email" type="email" placeholder="name@institution.na" />
+</PixelField>
+
+<PixelField label="Organisation" error="This field is required." htmlFor="org">
+  <PixelInput id="org" invalid placeholder="Institution or company" />
+</PixelField>
+```
+
+All three fields share one recipe: transparent ground, 1px `fieldBorder`,
+`borderRadius: 0`, `accentInk` border on focus, fired red border when `invalid`.
+Props: `isDark`, `invalid`, plus every native attribute.
+
+Use `PixelField` for the label, hint, and error. It sets `aria-invalid` and
+renders the error with `role="alert"`. **The error message runs at full contrast
+with a fired-red marker beside it, not in fired red** — red text is 3.6:1, and
+color must never be the only signal. Do not hand-write a field label.
+
+### Choice controls
+
+```tsx
+import { PixelCheckbox, PixelRadio, PixelToggle } from '@onganda/design-system';
+
+<PixelCheckbox label="Send me lab updates" checked={on} onChange={e => set(e.currentTarget.checked)} />
+<PixelRadio name="inquiry" label="Pilot programme" checked={v === 'pilot'} onChange={() => setV('pilot')} />
+<PixelToggle label="Publish to the public site" checked={live} onChange={setLive} />
+```
+
+| Control | Off | On | Geometry |
+|---|---|---|---|
+| `PixelCheckbox` | Square box, `fieldBorder` | `controlOn` fill, `controlOnBorder` edge, stepped pixel check | 18px square, no radius |
+| `PixelRadio` | Stepped octagon, `fieldBorder` | `controlOnBorder` frame, square core | 18px, no circle |
+| `PixelToggle` | Two-cell track, `fieldBorder` | `controlOn` fill, knob at the far cell | 40×20, knob steps in 2 frames |
+
+Checked is `controlOn` (ochre) on all three, so "on" reads identically. The ochre
+fill is 2.56:1 against dust light, so `controlOnBorder` carries the boundary. The
+radio has no circle: the pixel system has no curves. The toggle knob steps
+between two cells; it does not slide. Each accepts `label`, `isDark`, `disabled`,
+and the native props.
+
+### Utility controls
+
+Tab chips, filter buttons, mode toggles, and canvas tools are not `PixelButton`.
+They follow the ghost recipe — transparent ground, `fieldBorder`, `text` label,
+`accentInk` when active or focused — at a smaller scale. They never take a system
+color and never take a fill other than `surface` or `controlOn`.
+
+
+
+## 6. Product Patterns
+
+The compounds a real product needs. `/showcase` renders all of them in every
+state under **Product Patterns**, with its own light/dark switch.
+
+These exist because their absence was the largest leak in the system. An agent
+building a product hits a modal on day one; with nothing here it invents one,
+and the invention is where Onganda stops looking like Onganda.
+
+```tsx
+import {
+  PixelDialog, PixelTable, PixelNotice, PixelEmptyState,
+  PixelSkeleton, PixelTabs, PixelProgress,
+} from '@onganda/design-system';
+```
+
+### PixelNotice
+
+```tsx
+<PixelNotice status="caution" title="Quota at 94%" onDismiss={hide}>
+  Archive completed runs to free granary space.
+</PixelNotice>
+```
+
+One per status: `active`, `caution`, `critical`, `settled`. The hue appears on
+the left rule and the dot; the text runs at full contrast, so the notice still
+reads if the colour is not perceived. A `critical` notice gets `role="alert"`;
+the others get `role="status"`.
+
+### PixelDialog
+
+```tsx
+<PixelDialog
+  open={open}
+  onClose={close}
+  eyebrow="Okaanda · granary"
+  title="Delete the evaluation corpus?"
+  footer={<>
+    <PixelButton variant="ghost" onClick={close}>Cancel</PixelButton>
+    <PixelButton variant="danger" onClick={remove}>Delete corpus</PixelButton>
+  </>}
+>
+  This removes 128 evaluation records.
+</PixelDialog>
+```
+
+Traps focus, closes on Escape or scrim click, restores focus to the trigger,
+locks body scroll, and carries `PixelCornerMarks` and a `DitherBar` so the
+modal is Onganda rather than generic chrome.
+
+### PixelTable
+
+```tsx
+<PixelTable
+  rows={runs}
+  rowKey={r => r.id}
+  caption="Systems overview"
+  columns={[
+    { key: 'system', header: 'System', render: r => r.system },
+    { key: 'uptime', header: 'Uptime', numeric: true, render: r => `${r.uptime}%` },
+  ]}
+  empty={<PixelEmptyState title="No runs yet" />}
+/>
+```
+
+Uppercase tracked headers, hairline row rules, tabular figures on `numeric`
+columns, horizontal scroll rather than page overflow, and a real `<caption>`.
+Pass `empty` and the table renders that instead of an empty body.
+
+### PixelEmptyState
+
+```tsx
+<PixelEmptyState
+  icon={<IconOkaanda size={44} />}
+  title="No datasets yet"
+  body="Ingest a corpus to start evaluating models."
+  action={<PixelButton variant="accent">Ingest a corpus</PixelButton>}
+/>
+```
+
+A dashed boundary, the weave texture, and a dither rule — the empty state is a
+designed surface, not a blank panel.
+
+### PixelSkeleton
+
+```tsx
+<PixelSkeleton lines={4} />
+```
+
+Loading as a stepped dither sweep, not a soft gradient shimmer, so the waiting
+state stays inside the pixel language. Carries `role="status"`.
+
+### PixelTabs
+
+```tsx
+<PixelTabs
+  label="Run state"
+  value={tab}
+  onChange={setTab}
+  tabs={[{ value: 'live', label: 'Live' }, { value: 'queued', label: 'Queued' }]}
+/>
+```
+
+The ghost recipe at a smaller scale, filling with `controlOn` and its edge when
+active. Proper `role="tablist"` and `aria-selected`.
+
+### PixelProgress
+
+```tsx
+<PixelProgress label="Fine-tuning" value={78} status="active" />
+```
+
+A dithered fill over a recessed well, with the percentage as tabular figures
+beside the label. Full `role="progressbar"` semantics. The status hue picks the
+fill through `statusFor`.
+
+---
+
+## 7. Content & Data Tokens
 
 Import structured data for the five Onganda systems and shared datasets:
 
@@ -215,7 +629,7 @@ Each `SystemEntry` has:
 
 ---
 
-## 5. Atomic Primitives
+## 8. Atomic Primitives
 
 ### Px — pixel SVG wrapper
 
@@ -358,22 +772,10 @@ Renders: small uppercase label above a 26px headline, separated by a subtle bott
 
 ---
 
-### PixelButton — primary and ghost button
+### PixelButton, fields, and choice controls
 
-```tsx
-import { PixelButton } from '@onganda/design-system';
-
-<PixelButton variant="primary" onClick={() => {}}>
-  Get started
-</PixelButton>
-
-<PixelButton variant="ghost" href="https://example.com">
-  Learn more
-</PixelButton>
-```
-
-Props: `variant` (`'primary'` | `'ghost'`, default `'primary'`), `onClick`, `href`, `className`.
-Pass `href` to render an `<a>` tag instead of `<button>`.
+Specified in [§5 Controls](#5-controls) with their variants, states, and colour
+rules. Do not style a button or a field from this section.
 
 ---
 
@@ -421,7 +823,7 @@ Full dark footer with system links, pixel dither strips, and the Onganda logo ma
 
 ---
 
-## 6. System Icons
+## 9. System Icons
 
 Five pixel-art icons representing the Onganda AI systems. Each is a 24×24
 pixel SVG drawn with `<rect>` elements only.
@@ -491,7 +893,7 @@ const IconCustom = ({ size = 48 }: { size?: number }) => (
 
 ---
 
-## 7. Interface Icons
+## 10. Interface Icons
 
 60+ pixel-art interface icons. All accept `size` (default `24`) and `color` props.
 
@@ -532,10 +934,41 @@ import { IconSearch, COLOR } from '@onganda/design-system';
 
 ---
 
-## 8. Charts
+## 11. Maps and Charts
+
+### Maps
 
 ```tsx
-import { ChartGallery } from '@onganda/design-system';
+import '@onganda/design-system/maps.css';
+import { OngandaMap } from '@onganda/design-system/maps';
+
+<OngandaMap
+  points={[
+    {
+      id: 'windhoek',
+      position: [-22.5609, 17.0658],
+      label: 'Windhoek',
+      eyebrow: 'Coordination',
+      description: 'Illustrative coordination signal.',
+      accent: 'ochre',
+      glyph: 'warehouse',
+    },
+  ]}
+/>
+```
+
+`OngandaMap` uses Leaflet for geography and interaction while Onganda owns the frame, controls, pixel markers, routes, legend, popups, dark treatment, and focus states. Configure `tileUrl` and `attribution` for the product's map provider. Set `tileUrl={null}` when a project supplies its own geographic layer.
+
+Markers require unique `id`, `label`, and coordinates. Use `eyebrow` and `description` for useful context. Do not use a marker to imply a real facility, deployment, or data source unless the claim is verified.
+
+Choose a pixel glyph by operational meaning: `signal`, `warehouse`, `water`, `people`, `action`, `source`, or `allocation`. Use the accent color for state or severity.
+
+Use `areas` for verified administrative or analytical polygons. Each area accepts GeoJSON-style polygon nesting after coordinates are converted to `[latitude, longitude]`. Keep the boundary source visible in product evidence and preserve an unavailable fallback when remote geometry cannot load.
+
+### Charts
+
+```tsx
+import { ChartGallery } from '@onganda/design-system/charts';
 
 <ChartGallery isDark={false} />
 ```
@@ -547,14 +980,14 @@ All chart colours derive from `COLOR` — no hardcoded hex in chart code.
 
 ---
 
-## 9. Page Sections
+## 12. Page Sections
 
 Ready-to-use composed page sections. Drop them directly into a page layout.
 
 ### Navigation
 
 ```tsx
-import { OngandaNav } from '@onganda/design-system';
+import { OngandaNav } from '@onganda/design-system/sites';
 
 <OngandaNav />
 ```
@@ -566,7 +999,7 @@ Fixed top navigation with logo, system links, and dark mode toggle placeholder.
 ### Hero
 
 ```tsx
-import { OngandaHero } from '@onganda/design-system';
+import { OngandaHero } from '@onganda/design-system/sites';
 
 <OngandaHero />
 ```
@@ -582,7 +1015,7 @@ Animated SVG network diagram of the five AI systems with step-line connections,
 tooltip overlays, and node highlights.
 
 ```tsx
-import { SystemConnectionDiagram, DIAGRAM_NODES, CONNECTION_EDGES } from '@onganda/design-system';
+import { SystemConnectionDiagram } from '@onganda/design-system/sites';
 
 // Default — renders the full five-system diagram
 <SystemConnectionDiagram />
@@ -604,7 +1037,7 @@ Props all default to `DIAGRAM_NODES`, `CONNECTION_EDGES`, `DIAGRAM_NODE_TOOLTIPS
 Activity heatmap grid with row/column labels and animated reveal.
 
 ```tsx
-import { PixelHeatmap, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from '@onganda/design-system';
+import { PixelHeatmap } from '@onganda/design-system/sites';
 
 // Default data
 <PixelHeatmap />
@@ -626,7 +1059,7 @@ import { PixelHeatmap, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from 
 Animated roadmap with phase cards, status indicators, and staggered entrance.
 
 ```tsx
-import { RoadmapTimeline, TIMELINE_PHASES } from '@onganda/design-system';
+import { RoadmapTimeline } from '@onganda/design-system/sites';
 
 // Default data
 <RoadmapTimeline />
@@ -644,7 +1077,7 @@ import { RoadmapTimeline, TIMELINE_PHASES } from '@onganda/design-system';
 Grid of sector application cards (healthcare, agriculture, education, etc.).
 
 ```tsx
-import { FieldApplications } from '@onganda/design-system';
+import { FieldApplications } from '@onganda/design-system/sites';
 
 <FieldApplications />
 ```
@@ -656,7 +1089,7 @@ import { FieldApplications } from '@onganda/design-system';
 Step-line data-pipeline diagram with animated flow nodes.
 
 ```tsx
-import { PixelFlowchart } from '@onganda/design-system';
+import { PixelFlowchart } from '@onganda/design-system/sites';
 
 <PixelFlowchart />
 ```
@@ -668,7 +1101,7 @@ import { PixelFlowchart } from '@onganda/design-system';
 Horizontal stat bar with headline metrics.
 
 ```tsx
-import { ResearchSignals } from '@onganda/design-system';
+import { ResearchSignals } from '@onganda/design-system/sites';
 
 <ResearchSignals />
 ```
@@ -680,7 +1113,7 @@ import { ResearchSignals } from '@onganda/design-system';
 Grid display of all interface icons with labels.
 
 ```tsx
-import { IconShowcase } from '@onganda/design-system';
+import { IconShowcase } from '@onganda/design-system/sites';
 
 <IconShowcase />
 ```
@@ -692,14 +1125,14 @@ import { IconShowcase } from '@onganda/design-system';
 Publications and media mentions section.
 
 ```tsx
-import { Publications } from '@onganda/design-system';
+import { Publications } from '@onganda/design-system/editors';
 
 <Publications isDark={false} />
 ```
 
 ---
 
-## 10. Block System
+## 13. Block System
 
 The block system powers the document and slide editors. Use it if you are building
 document-like content surfaces.
@@ -707,7 +1140,7 @@ document-like content surfaces.
 ### Block types
 
 ```ts
-import type { DocBlock, DocBlockType } from '@onganda/design-system';
+import type { DocBlock, DocBlockType } from '@onganda/design-system/editors';
 ```
 
 `DocBlockType` union:
@@ -738,7 +1171,7 @@ interface DocBlock {
 ### Render a block
 
 ```tsx
-import { DocBlockDisplay, BlockRenderer } from '@onganda/design-system';
+import { DocBlockDisplay, BlockRenderer } from '@onganda/design-system/editors';
 
 // Read-only display
 <DocBlockDisplay block={myBlock} isDark={false} idx={0} />
@@ -760,7 +1193,7 @@ import {
   DOC_PALETTE_CATEGORIES,
   SLIDE_COMPONENT_PALETTE,  // ComponentPaletteItem[] — 47 slide components
   SLIDE_PALETTE_CATEGORIES,
-} from '@onganda/design-system';
+} from '@onganda/design-system/editors';
 ```
 
 ### Export API types
@@ -771,18 +1204,18 @@ import type {
   DeckExportPayload,
   DocumentExportFormat,   // 'PDF' | 'WORD'
   DeckExportFormat,       // 'PDF' | 'PPT'
-} from '@onganda/design-system';
+} from '@onganda/design-system/editors';
 ```
 
 ---
 
-## 11. AI Authoring
+## 14. AI Authoring
 
 Drop-in panel that connects to any OpenAI-compatible endpoint and generates
 document blocks or slide decks.
 
 ```tsx
-import { AiAuthoringPanel } from '@onganda/design-system';
+import { AiAuthoringPanel } from '@onganda/design-system/ai';
 
 <AiAuthoringPanel
   mode="document"       // 'document' | 'slide'
@@ -803,8 +1236,8 @@ configured, it falls back to offline Onganda-branded placeholder content.
 ### Regenerate a single block
 
 ```ts
-import { regenerateDocBlock } from '@onganda/design-system';
-import type { AiGeneratableDocBlockType } from '@onganda/design-system';
+import { regenerateDocBlock } from '@onganda/design-system/ai';
+import type { AiGeneratableDocBlockType } from '@onganda/design-system/editors';
 
 const result = await regenerateDocBlock(
   'body',                    // AiGeneratableDocBlockType
@@ -819,7 +1252,7 @@ const result = await regenerateDocBlock(
 
 ---
 
-## 12. Editor Shells
+## 15. Editor Shells
 
 Full stateful product surfaces. Drop them into any page — they manage their own
 state internally via `localStorage`.
@@ -827,7 +1260,7 @@ state internally via `localStorage`.
 ### Document Editor
 
 ```tsx
-import { DocumentEditor } from '@onganda/design-system';
+import { DocumentEditor } from '@onganda/design-system/editors';
 
 <DocumentEditor />
 ```
@@ -841,7 +1274,7 @@ per-block regeneration.
 ### Slide Editor
 
 ```tsx
-import { SlideEditor } from '@onganda/design-system';
+import { SlideEditor } from '@onganda/design-system/editors';
 
 <SlideEditor />
 ```
@@ -854,8 +1287,8 @@ multi-slide deck management, slide inspector panel, export to PDF/PPT, AI author
 ### Slide Inspector (standalone)
 
 ```tsx
-import { SlideInspector } from '@onganda/design-system';
-import type { DroppedBlock, SlideEntry } from '@onganda/design-system';
+import { SlideInspector } from '@onganda/design-system/editors';
+import type { DroppedBlock, SlideEntry } from '@onganda/design-system/editors';
 
 <SlideInspector
   isDark={false}
@@ -869,7 +1302,7 @@ import type { DroppedBlock, SlideEntry } from '@onganda/design-system';
 
 ---
 
-## 13. TypeScript Types
+## 16. TypeScript Types
 
 All types are available as named imports:
 
@@ -907,7 +1340,7 @@ import type {
 
 ---
 
-## 14. Design Rules
+## 17. Design Rules
 
 These constraints define the aesthetic. Follow them in any project that builds
 on this system.
@@ -921,10 +1354,18 @@ on this system.
 
 ### 2. Color
 
-- Always use `COLOR.*` tokens — never raw hex in component code.
+- Style from `roles(isDark)`, not from `COLOR`. See §4.
 - Never use Tailwind generic colors (`text-blue-500`, `bg-orange-400`).
-- Border opacity: `rgba(30,26,23,0.10)` light / `rgba(232,225,207,0.10)` dark.
-- Muted text: `rgba(30,26,23,0.45)` light / `rgba(232,225,207,0.40)` dark.
+- Never write a raw hex or rgba in a component. Both are build failures.
+- A system color (bark rust, mahangu gold, mopane brown, dye plum) means
+  "this belongs to that system." It is never interface chrome.
+- Ochre orange is the only interactive accent — as a **fill** anywhere, as
+  **ink** on dark surfaces only. On light surfaces the accent ink is bark rust.
+- Fired red is an indicator: critical status and invalid borders. It never sits
+  behind small text and is never error-message text.
+- The palette has no green and no blue. Do not add one for success or info.
+- Read status through `statusFor(name, isDark)`, never `STATUS[name]`.
+- `npm run check:design` enforces all of this across every design-system module.
 
 ### 3. Card geometry
 
@@ -933,6 +1374,26 @@ on this system.
 - Cards need `position: relative; overflow: hidden` to contain `WeaveOverlay`.
 
 ### 4. Motion (Framer Motion)
+
+Spread the `MOTION` presets rather than retyping values, so the whole system
+retunes from `onganda-motion.ts`:
+
+```tsx
+import { MOTION, SPACE } from '@onganda/design-system';
+
+<motion.section {...MOTION.fadeUp}>…</motion.section>
+<motion.div {...MOTION.staggerParent}>
+  <motion.div {...MOTION.staggerChild}>…</motion.div>
+</motion.div>
+<motion.article {...MOTION.hoverLift}>…</motion.article>
+```
+
+`MOTION` presets: `entrance`, `fadeUp`, `staggerParent`, `staggerChild`,
+`hoverLift`, `tap`, `ticker`. `SPACE` carries the editorial spacing scale
+(`sectionY`, `sectionX`, `sectionXWide`, `cardPad`, `cardPadWide`, `itemGap`,
+`microGap`) for inline styles.
+
+The values behind them:
 
 ```tsx
 // Section entrance — always tween, not spring
@@ -980,11 +1441,92 @@ font-size: var(--type-hero-public);  /* public page hero */
 font-size: var(--type-subhead);      /* subheadline */
 ```
 
-### 7. Accessibility
+### 7. Enforcement
+
+Rules are only real if something checks them. `npm run check:design` runs two
+guards over every design-system module and fails the build.
+
+**`check:tokens`** — lexical drift:
+
+| Rule | Catches |
+|---|---|
+| `tailwind-color` | `bg-blue-500` and every other generic Tailwind hue |
+| `off-palette-hex` | Any hex outside `COLOR` and `EDITOR_SURFACE` (an alpha suffix such as `#D9791F60` is fine) |
+| `off-palette-rgba` | `rgba()` on a colour the palette does not contain |
+| `modern-color-fn` | `oklch`, `oklab`, `lch`, `lab` |
+| `system-colour-as-chrome` | A system hue bound to a `background` or `border*` property |
+| `raw-status-colour` | `STATUS.settled` read directly instead of `statusFor(name, isDark)` |
+| `rounded-geometry` | `rounded-lg`, `borderRadius` with a non-zero value |
+
+The sanctioned hex set is **parsed from `onganda-colors.ts` at run time**, not
+copied. A hand-maintained copy fails open: change a value in `COLOR` and a stale
+list keeps accepting the old hex everywhere.
+
+**`check:contrast`** — measured claims. It recomputes all 68 ratios behind §4
+from the role source and fails on a regression. `npm run check:contrast -- --table`
+prints the full table. Exemptions are declared in the script with a reason;
+today there are three (faint text, hairlines, ringed status marks).
+
+Both run inside `npm run check` and in CI.
+
+**`check:docs`** — the rules are restated in nine documents. This asserts that
+every measurable claim in the prose matches the token source, that every
+component the docs name is actually exported, that the agent rule files cover
+the same ground, and that every `npm run …` they quote exists.
+
+**What the static guards cannot see.** They read source text and token values.
+They cannot tell that a correctly-tokenised colour is on the wrong element, or
+that a layout is thin. Forty-four Playwright tests cover the runtime half:
+
+| Suite | What it holds |
+|---|---|
+| `control-standards` | Button recipes in both modes, focus rings, invalid state, checked controls, rounded geometry, inverse-surface hover |
+| `contrast` | Every rendered text node on every public route **and inside both editors**, measured against its real background |
+| `contrast-pixels` | The same question answered from screenshots, so textures, dither columns and mid-animation frames are included |
+| `composition` | Whether a surface carries the language at all, and whether it is distributed rather than confined to one decorated corner |
+| `identity` | That a system's hue still appears wherever its name does |
+| `critical-paths` | Horizontal overflow across seven widths, keyboard and mobile navigation |
+
+Each of these carries a self-test proving it rejects the thing it claims to
+catch. A guard that cannot fail is worth nothing.
+
+**Rendered, not just compiled.** `npm run test:consumer` builds a real Vite +
+React + Tailwind app against the packed tarball, renders it, and checks that the
+documented setup actually produces styled components — then builds a second app
+without the Tailwind line to prove it can tell the difference. That check found
+a `style.css` comment whose `**/` closed the comment early and broke every
+Tailwind 4 consumer build, and a documented `@source` path that silently
+produced unstyled components.
+
+**In a consumer project.** The gate ships with the package:
+
+```bash
+npx onganda-check src/        # check your own source against the same rules
+npx onganda-check --contrast  # re-measure after retheming
+```
+
+A genuine exception is declared in the file and reviewed like any other code:
+
+```tsx
+// onganda-allow: rounded-geometry — native map control, not a brand surface
+```
+
+The pragma applies to the **next line only**. Never widen the allowlist to make
+a check pass. Either use a role, add a named token with a stated purpose in §4,
+or write the pragma with a reason.
+
+### 8. Accessibility
 
 - All pixel SVGs: `aria-hidden="true"` (decorative).
 - All interactive pixel elements: explicit `aria-label`.
-- Minimum contrast ratio 4.5:1 for body text against its background.
+- 4.5:1 for text under 18.66px (or 14px bold); 3:1 for a control's visible
+  boundary, a focus ring, and a status indicator. `npm run check:contrast`
+  measures both against the role layer.
+- The only roles below those floors are `textFaint`, `line`, and `lineStrong`.
+  They are for disabled text, ordinals, and decorative dividers. Never put
+  meaning in them.
+- Colour is never the only carrier of state. An invalid field has a red border,
+  a marker, and a message. A status mark has a label and a hairline ring.
 
 ---
 
@@ -993,29 +1535,28 @@ font-size: var(--type-subhead);      /* subheadline */
 ```
 src/
   main.tsx         ← import '@onganda/design-system/style.css' here
-  App.tsx          ← wrap in <DarkContext.Provider>
+  App.tsx          ← wrap in <DarkProvider>
   pages/
     Home.tsx       ← compose from OngandaNav, OngandaHero, sections...
   components/
-    MyCard.tsx     ← WeaveOverlay + PixelCornerMarks + COLOR tokens
+    MyCard.tsx     ← WeaveOverlay + PixelCornerMarks + roles(isDark)
     MyIcon.tsx     ← Px + <rect> only
 ```
 
 Minimal working page:
 
 ```tsx
-import { DarkContext, OngandaNav, OngandaHero, OngandaFooter } from '@onganda/design-system';
+import { DarkProvider, OngandaFooter } from '@onganda/design-system';
+import { OngandaNav, OngandaHero } from '@onganda/design-system/sites';
 import '@onganda/design-system/style.css';
-import { useState } from 'react';
 
 export default function Home() {
-  const [isDark, setIsDark] = useState(false);
   return (
-    <DarkContext.Provider value={{ isDark, toggle: () => setIsDark(d => !d) }}>
+    <DarkProvider>
       <OngandaNav />
       <OngandaHero />
       <OngandaFooter />
-    </DarkContext.Provider>
+    </DarkProvider>
   );
 }
 ```

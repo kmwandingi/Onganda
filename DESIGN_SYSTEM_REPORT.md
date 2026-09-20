@@ -1,45 +1,68 @@
-# Onganda Design System Report
+# Onganda Design System Status
 
-This repository is the remote source of truth for the Onganda design system and its showcase.
+Onganda has one design language, one package boundary, and two build outputs.
 
-## Import Boundary
+## Source of truth
 
-Use one public import path for app work:
+- `DESIGN_SYSTEM.md` defines the language and component patterns. §4 Color Roles and §5 Controls are the enforceable rules.
+- `DESIGN_GUIDELINES.md` defines implementation rules.
+- `onganda-roles.ts` carries the colour policy in code: `roles()`, `ALPHA`, `accentInk`, `statusFor()`, `onColor()`, `SYSTEM_COLOR`, `CHART_SERIES`, `COLOR_POLICY`.
+- `README.md` defines installation, supported imports, and contribution policy.
+- `CHANGELOG.md` records releases and migrations.
+
+## What is enforced
+
+A colour or control rule that nothing checks is a suggestion. `npm run check:design`
+runs two guards over all 21 design-system modules.
+
+`check:tokens` catches lexical drift: generic Tailwind colours, off-palette hex
+and `rgba()`, `oklch`, system colours bound to a surface or border, raw `STATUS`
+reads, and rounded geometry. It **parses the sanctioned palette from
+`onganda-colors.ts` at run time** rather than holding a copy, so it cannot
+disagree with the tokens it guards.
+
+`check:contrast` recomputes the 68 ratios behind `DESIGN_SYSTEM.md` §4 from the
+role source and fails on a regression. Every role value is measured, not chosen
+by eye. Run `npm run check:contrast -- --table` for the full table.
+
+Exceptions are declared in the file with a reason, and apply to the next line:
 
 ```tsx
-import { COLOR, PixelTag, ChartGallery } from '@onganda/design-system';
+// onganda-allow: rounded-geometry — native map control, not a brand surface
 ```
 
-Do not import from `src/components/generated/*` in feature code. Those files are implementation modules behind the package boundary.
+Neither guard can tell that a correctly-tokenised colour is on the wrong
+element. Nine Playwright tests in `tests/browser/control-standards.spec.ts`
+cover the runtime half — button recipes in both modes, focus rings, the invalid
+state, checked controls, rounded geometry, and the inverse-surface hover.
 
-## System Layers
+Both guards ship with the package. A consumer project runs the same gate with
+`npx onganda-check src/`.
 
-1. `tokens`: color, system data, texture data, charts data, and shared typed constants.
-2. `primitives`: pixel dots, tags, dither bars, overlays, buttons, cards, logo marks, and base icon marks.
-3. `icons`: pixel-art interface icons and system icons.
-4. `charts`: Recharts compositions using Onganda tokens and motion rules.
-5. `sections`: composed showcase sections, hero, diagrams, heatmaps, timelines, applications, and icon banks.
-6. `surfaces`: public site pages, publications, document editor, slide editor, and the showcase hub.
+The `/showcase` **Control Standards** section renders every sanctioned control in
+every state beside the colour role that governs it, and carries its own
+light/dark switch so the dark role set is reviewable. A control that is not
+there does not exist yet.
 
-## Design Rules
+## Package boundary
 
-The design system includes motion, interaction, iconography, layout, and editorial tone. A component is not compliant just because it uses the right colors.
+Use `@onganda/design-system` for the stable foundation. New code should import larger features through `/charts`, `/editors`, `/ai`, or `/sites`.
 
-Use existing motion patterns: moving black tickers, dither motion, staggered type, card entrance, hover lift, tap compression, and animated flow affordances.
+The package root retains all version 1.x exports for compatibility. A breaking change requires a major release and a migration note.
 
-Use existing pixel icons and primitives before adding anything new.
+Never import from `src/components/onganda/` in a consumer project.
 
-## Current Packaging State
+## Build outputs
 
-The package name is `@onganda/design-system`, resolved locally through Vite and TypeScript to `src/design-system/index.ts`.
+`npm run build` creates:
 
-The repository can be consumed as a GitHub remote source of truth. A later package extraction should add compiled `dist/` output and generated `.d.ts` files before publishing to npm.
+- `dist/showcase` for the reference site.
+- `dist/package` for the published package.
 
-## Validation Contract
+The outputs are independent. Building one does not remove the other.
 
-Every UI change must pass:
+## Validation
 
-1. Design drift scan for forbidden generic colors, raw new hex values, rounded brand geometry, stale public links, and `tracking-tight`.
-2. `npm run lint`.
-3. `npm run build`.
-4. Playwright checks for affected routes, mobile fit, desktop fit, motion, hover/tap behavior, console errors, and no horizontal overflow.
+`npm run check` runs linting, the token and contrast guards, type-checking, both builds, and a clean consumer installation that also exercises the shipped `onganda-check` binary.
+
+`npm run test:browser` checks the public routes, mobile navigation, keyboard access, console errors, and horizontal overflow.

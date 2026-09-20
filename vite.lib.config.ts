@@ -9,12 +9,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
     dts({
-      include: [
-        'src/design-system',
-        'src/components/onganda',
-      ],
-      outDir: 'dist',
-      rollupTypes: true,
+      include: ['src/design-system', 'src/components/onganda'],
+      outDir: 'dist/package',
+      entryRoot: 'src',
       tsconfigPath: './tsconfig.app.json',
     }),
   ],
@@ -26,10 +23,18 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/design-system/lib-entry.ts'),
+      entry: {
+        index: path.resolve(__dirname, 'src/design-system/index.ts'),
+        core: path.resolve(__dirname, 'src/design-system/core.ts'),
+        charts: path.resolve(__dirname, 'src/design-system/charts.ts'),
+        editors: path.resolve(__dirname, 'src/design-system/editors.ts'),
+        ai: path.resolve(__dirname, 'src/design-system/ai.ts'),
+        maps: path.resolve(__dirname, 'src/design-system/maps.ts'),
+        sites: path.resolve(__dirname, 'src/design-system/sites.ts'),
+      },
       name: 'OngandaDesignSystem',
       formats: ['es', 'cjs'],
-      fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,
+      fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,
     },
     rollupOptions: {
       external: [
@@ -37,6 +42,7 @@ export default defineConfig({
         'react-dom',
         'react/jsx-runtime',
         'framer-motion',
+        'leaflet',
         'recharts',
         'pptxgenjs',
       ],
@@ -46,17 +52,18 @@ export default defineConfig({
           'react-dom': 'ReactDOM',
           'react/jsx-runtime': 'ReactJSXRuntime',
           'framer-motion': 'FramerMotion',
+          leaflet: 'Leaflet',
           recharts: 'Recharts',
         },
         // Extract CSS to dist/style.css
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.name === 'style.css') return 'style.css';
           return assetInfo.name ?? 'assets/[name][extname]';
         },
       },
     },
     cssCodeSplit: false,
-    outDir: 'dist',
+    outDir: 'dist/package',
     emptyOutDir: true,
     sourcemap: true,
   },

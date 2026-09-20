@@ -1,16 +1,38 @@
-# Okaanda (Namibia AI Systems Lab) - AI Agent Instructions
+# Onganda repository rules
 
-You are working in the Okaanda project repository. This project has a very strict and specific design system.
+Before changing UI, read `skills/onganda-design-system/SKILL.md`, `DESIGN_GUIDELINES.md`, and the relevant public export in `src/design-system/`.
 
-## CRITICAL INSTRUCTION BEFORE WRITING ANY CODE
-Before you make any changes to UI, styling, components, or layout, you MUST:
-1. Read the `DESIGN_GUIDELINES.md` file located in the root of this project.
-2. Read the available tokens in `src/components/generated/okaanda-tokens.ts`.
+Read `DESIGN_SYSTEM.md` §4 (Color Roles) and §5 (Controls) before styling anything. They are the enforceable rules and every value in them is measured.
 
-## Hard Rules
-1. **Never use standard Tailwind colors** (e.g., `text-blue-500`, `bg-red-500`, `border-gray-200`). You must use the semantic colors provided by the Okaanda design system (e.g., Millet Clay, Char Black, Ochre Orange).
-2. **Never hardcode hex values** in component files. Always import `COLOR` or `SWATCHES` from `okaanda-tokens.ts`.
-3. **Respect the Pixel vs. Type dichotomy**: Icons, diagrams, and brand elements must be pixelated (stepped corners, dither, basket-weave textures). Typography and reading interfaces must be clean sans-serif (Inter/Arial).
-4. **Oshiwambo First**: Respect the naming hierarchy. Use the Oshiwambo names for systems (Okaanda, Oshini, Ombiga, Etiti, Oshitoo) first, followed by English translations if necessary.
+Before changing design data, read:
 
-Failure to follow these rules will result in visual regressions and break the cultural and architectural alignment of the project.
+- `onganda-colors.ts` for the palette and surface tokens.
+- `onganda-roles.ts` for `roles()`, `ALPHA`, `statusFor()`, `onColor()`, `SYSTEM_COLOR`, `COLOR_POLICY`.
+- `onganda-types.ts` for shared types.
+- `onganda-content.ts` for system and editorial data.
+
+Style from roles, not from the palette. Call `roles(isDark)` and read `surface`, `text`, `line`, `actionBg`, `accentInk`, `fieldBorder`. Being in `COLOR` does not make a token available for any purpose.
+
+Never write a raw hex, an `rgba()`, or a generic Tailwind colour class in a component. All three fail `npm run check:design`.
+
+Ochre orange is the accent as a fill, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — use `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. Mahangu gold, mopane brown, and dye plum identify systems and carry chart series; they are not interface chrome. The palette has no green and no blue; do not add one. Read status through `statusFor(name, isDark)`.
+
+Colour is never the only carrier of state: an invalid field has a border, a marker, and a message; a status mark has a label and a hairline ring.
+
+Never hand-roll a control. Use `PixelButton`, `PixelInput`, `PixelTextarea`, `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, `PixelToggle`. One primary action per view. No rounded corners anywhere. A control on an inverse surface (footer, ticker, black lab card) must be passed `isDark`.
+
+A control that is not in the `/showcase` Control Standards section does not exist yet. That section has its own light/dark switch — verify both modes.
+
+System colours mean membership. Mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo; bark rust identifies Oshini. They are never a button, border, label, or background.
+
+Composition matters as much as colour. Every rule above is a prohibition, and a thin page of bordered cards satisfies all of them while looking nothing like Onganda. A finished surface also carries the `SectionHeader` label/headline rhythm, a `WeaveOverlay` texture, pixel marks, a `DitherBar` rule, pixel iconography, an inverse band, real `MOTION`, and system controls. `tests/browser/composition.spec.ts` fails without them.
+
+Open `/showcase` before building. It is the inventory, not a demo: Control Standards for every control, Product Patterns for dialog/table/notice/empty/loading/tabs/progress, plus diagrams, heatmap, roadmap, charts, icons, maps and publications. Use `PixelDialog`, `PixelTable`, `PixelNotice`, `PixelEmptyState`, `PixelSkeleton`, `PixelTabs`, `PixelProgress` rather than inventing equivalents. Give every surface that loads an empty, loading and error state.
+
+Keep the pixel and type split. Use pixel geometry for brand marks, icons, diagrams, and textures. Use clean Inter or Arial for reading.
+
+Reuse existing tokens, primitives, icons, and motion patterns. Spread `MOTION` presets rather than retyping transition values.
+
+Keep Oshiwambo system names first. Treat `/showcase` as the reference implementation. Preserve the intentional roles of `/`, `/full`, and `/showcase`.
+
+Run `npm run check` and `npm run test:browser` before completing a UI change.

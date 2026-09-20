@@ -4,10 +4,11 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
-import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { COLOR, EDITOR_SURFACE, roles, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
+import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelField, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
+import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -503,7 +504,7 @@ export const OngandaNav = () => {
   } = useDark();
   const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
   const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
-  const linkColor = isDark ? 'rgba(232,225,207,0.5)' : 'rgba(30,26,23,0.6)';
+  const linkColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const subtitleColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.70)';
   const dotColor = isDark ? 'rgba(232,225,207,0.3)' : 'rgba(30,26,23,0.4)';
   const NAV_ITEMS = [{
@@ -551,7 +552,7 @@ export const OngandaNav = () => {
         lineHeight: 1
       }}>
           <span style={{
-          color: COLOR.ochreOrange
+          color: roles(isDark).accentInk
         }}>Onganda</span>
           <span style={{
           color: dotColor,
@@ -570,17 +571,17 @@ export const OngandaNav = () => {
       alignItems: 'center',
       gap: 32
     }}>
-        <div className="hidden md:flex" style={{
-        gap: 32,
-        alignItems: 'center'
-      }}>
+        {/* Seven links need ~676px of text alone, so the row appears at lg
+            rather than md. Below that the nav keeps its logo and mode switch,
+            the same as it already did on phones. */}
+        <div className="hidden items-center gap-[18px] lg:flex lg:gap-6 xl:gap-8">
           {NAV_ITEMS.map(item => <a key={item.label} href={item.href} style={{
           fontSize: 13,
           fontWeight: 500,
           color: linkColor,
           textDecoration: 'none',
           transition: 'color 0.2s'
-        }} onMouseEnter={e => e.currentTarget.style.color = COLOR.ochreOrange} onMouseLeave={e => e.currentTarget.style.color = linkColor}>
+        }} onMouseEnter={e => e.currentTarget.style.color = roles(isDark).accentInk} onMouseLeave={e => e.currentTarget.style.color = linkColor}>
               {item.label}
             </a>)}
           <div aria-hidden="true" style={{
@@ -597,10 +598,10 @@ export const OngandaNav = () => {
         }].map(item => <a key={item.label} href={item.href} style={{
           fontSize: 13,
           fontWeight: 600,
-          color: COLOR.ochreOrange,
+          color: roles(isDark).accentInk,
           textDecoration: 'none',
           transition: 'color 0.2s'
-        }} onMouseEnter={e => e.currentTarget.style.color = COLOR.firedRed} onMouseLeave={e => e.currentTarget.style.color = COLOR.ochreOrange}>
+        }} onMouseEnter={e => e.currentTarget.style.color = roles(isDark).text} onMouseLeave={e => e.currentTarget.style.color = roles(isDark).accentInk}>
               {item.label}
             </a>)}
         </div>
@@ -614,7 +615,7 @@ export const OngandaNav = () => {
         padding: '6px 10px',
         border: `1px solid rgba(30,26,23,0.18)`,
         background: 'rgba(30,26,23,0.04)',
-        color: 'rgba(30,26,23,0.55)',
+        color: 'rgba(30,26,23,0.66)',
         cursor: 'not-allowed',
         opacity: 0.45,
         transition: 'background 0.25s, border-color 0.25s, color 0.25s'
@@ -720,7 +721,6 @@ export const OngandaHero = () => {
         <div style={{
         position: 'absolute',
         inset: 0,
-        borderRadius: '50%',
         background: 'radial-gradient(circle at 50% 50%, rgba(217,121,31,0.10) 0%, rgba(217,121,31,0.04) 38%, transparent 70%)'
       }} />
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
@@ -885,7 +885,7 @@ export const OngandaHero = () => {
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          color: 'rgba(30,26,23,0.55)'
+          color: 'rgba(30,26,23,0.66)'
         }}>
               {chip.text}
             </span>
@@ -935,7 +935,8 @@ export const OngandaHero = () => {
             fontWeight: 700,
             letterSpacing: '-0.04em',
             color: word.color,
-            whiteSpace: 'nowrap'
+            whiteSpace: 'normal',
+        textAlign: 'center'
           }}>
                 {word.text}
               </motion.span>
@@ -990,7 +991,7 @@ export const OngandaHero = () => {
               fontWeight: 400,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'rgba(232,225,207,0.3)',
+              color: 'rgba(232,225,207,0.55)',
               marginRight: 32
             }}>{item.role}</span>
                 <div style={{
@@ -1142,7 +1143,7 @@ export const OngandaHero = () => {
         duration: 0.6
       }} style={{
         fontSize: 'var(--type-subhead)',
-        color: 'rgba(30,26,23,0.48)',
+        color: 'rgba(30,26,23,0.66)',
         letterSpacing: '0.01em',
         lineHeight: 1.7,
         textAlign: 'center',
@@ -1213,9 +1214,9 @@ export const PixelTerminal = () => <section className="max-w-7xl mx-auto px-6 pb
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       {TERMINAL_BLOCKS.map(block => <TerminalCard key={block.title} block={block} />)}
     </div>
-    <div className="mt-6 flex items-center gap-4">
+    <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
       <div className="flex-1 h-px bg-[#1E1A17]/8" />
-      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/30 shrink-0">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
+      <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
       <div className="flex-1 h-px bg-[#1E1A17]/8" />
     </div>
     <CodeSnippetBlock label="TerminalCard · Developer Surface" lines={SNIPPET_DEVELOPER_SURFACE} accentHex="#8F3E21" />
@@ -1272,7 +1273,7 @@ export const SystemConnectionDiagram = ({
               opacity: 0.12 + i * 0.1
             }} />)}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/35">Pixel Connection Map — Data Flow</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Pixel Connection Map — Data Flow</span>
           </div>
           <div className="bg-[#1E1A17]" style={{
           position: 'relative',
@@ -1371,7 +1372,7 @@ export const SystemConnectionDiagram = ({
                   boxShadow: isActive ? `0 0 0 3px ${node.hex}44, 0 4px 16px ${node.hex}33` : 'none'
                 }}>
                       <div className="text-[8px] font-bold uppercase tracking-[0.18em] mb-1 text-center" style={{
-                    color: isActive || isLinked ? COLOR.milletClay : node.hex
+                    color: isActive || isLinked ? COLOR.milletClay : inkOn(node.hex, COLOR.charBlack, true)
                   }}>{node.tag}</div>
                       <div className="w-6 h-6 mx-auto flex items-center justify-center" aria-hidden="true" style={{
                     background: isActive || isLinked ? 'rgba(30,26,23,0.4)' : `${node.hex}22`,
@@ -1386,7 +1387,8 @@ export const SystemConnectionDiagram = ({
                   minWidth: 64
                 }}>
                       <p className="text-[10px] font-semibold tracking-tight" style={{
-                    color: isActive || isLinked ? node.hex : COLOR.milletClay
+                    color: COLOR.milletClay,
+                    opacity: isActive || isLinked ? 1 : 0.75
                   }}>{node.label}</p>
                       <p className="text-[9px] uppercase tracking-[0.1em]" style={{
                     color: COLOR.milletClay,
@@ -1441,7 +1443,7 @@ export const SystemConnectionDiagram = ({
                         fontWeight: 700,
                         letterSpacing: '0.14em',
                         textTransform: 'uppercase',
-                        color: node.hex
+                        color: inkOn(node.hex, COLOR.charBlack, true)
                       }}>{node.tag}</span>
                           </div>
                           <span style={{
@@ -1449,7 +1451,7 @@ export const SystemConnectionDiagram = ({
                       fontWeight: 700,
                       letterSpacing: '0.14em',
                       textTransform: 'uppercase',
-                      color: 'rgba(232,225,207,0.3)'
+                      color: 'rgba(232,225,207,0.55)'
                     }}>NODE</span>
                         </div>
                         <p style={{
@@ -1465,7 +1467,7 @@ export const SystemConnectionDiagram = ({
                     fontWeight: 500,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
-                    color: node.hex,
+                    color: inkOn(node.hex, COLOR.charBlack, true),
                     opacity: 0.75,
                     marginBottom: 8
                   }}>{tooltip.role}</p>
@@ -1475,7 +1477,7 @@ export const SystemConnectionDiagram = ({
                       fontWeight: 700,
                       letterSpacing: '0.15em',
                       textTransform: 'uppercase',
-                      color: 'rgba(232,225,207,0.3)',
+                      color: 'rgba(232,225,207,0.55)',
                       marginBottom: 4
                     }}>Connects to</p>
                             <div style={{
@@ -1491,7 +1493,7 @@ export const SystemConnectionDiagram = ({
                         padding: '2px 6px',
                         background: `${node.hex}22`,
                         border: `1px solid ${node.hex}55`,
-                        color: node.hex
+                        color: inkOn(node.hex, COLOR.charBlack, true)
                       }}>{c}</span>)}
                             </div>
                           </div>}
@@ -1547,7 +1549,7 @@ export const PixelHeatmap = ({
   };
   return <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Research Signals" headline="Activity across systems." />
-      <div className="flex flex-col lg:flex-row gap-12 items-start">
+      <div className="flex flex-col items-stretch gap-12 lg:flex-row lg:items-start">
         <motion.div initial={{
         opacity: 0
       }} whileInView={{
@@ -1556,8 +1558,8 @@ export const PixelHeatmap = ({
         once: true
       }} transition={{
         duration: 0.6
-      }} className="bg-[#1E1A17] p-6 md:p-8 flex-1">
-          <div className="relative">
+      }} className="min-w-0 flex-1 bg-[#1E1A17] p-6 md:p-8">
+          <div className="relative overflow-x-auto">
             <WeaveOverlay isDark opacity={0.06} />
             <div className="relative flex gap-1.5 mb-2 pl-24">
               {colLabels.map((label, i) => <div key={`hx-${i}`} className="flex-1 text-center text-[9px] font-bold uppercase tracking-widest" style={{
@@ -1567,10 +1569,15 @@ export const PixelHeatmap = ({
             </div>
             <div className="relative flex flex-col gap-1.5">
               {rowLabels.map((yLabel, rowIdx) => <div key={`hr-${rowIdx}`} className="flex items-center gap-1.5">
-                  <div className="w-24 shrink-0 text-[9px] font-bold uppercase tracking-[0.12em] text-right pr-3" style={{
-                color: COLOR.milletClay,
-                opacity: 0.35
-              }}>{yLabel}</div>
+                  {/* The row names a system, so it carries that system's mark.
+                      Without it the label is the only identity and the hue is
+                      gone — see tests/browser/identity.spec.ts. */}
+                  <div className="w-24 shrink-0 flex items-center justify-end gap-2 pr-3 text-[9px] font-bold uppercase tracking-[0.12em] text-right" style={{
+                color: 'rgba(232,225,207,0.55)'
+              }}>
+                      <span>{yLabel}</span>
+                      {SYSTEM_COLOR[yLabel as SystemName] && <PixelDot color={SYSTEM_COLOR[yLabel as SystemName]} size={5} ring="rgba(232,225,207,0.2)" />}
+                    </div>
                   {data.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={{
                 opacity: 0,
                 scale: 0.5
@@ -1588,16 +1595,16 @@ export const PixelHeatmap = ({
                 </div>)}
             </div>
             <div className="relative flex items-center gap-3 mt-6">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/25">Low</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/55">Low</span>
               {([COLOR.charBlack, COLOR.mopaneBrown, COLOR.barkRust, COLOR.mahanguGold, COLOR.ochreOrange, COLOR.firedRed] as string[]).map((c, i) => <div key={`hl-${i}`} className="w-4 h-4" style={{
               background: c
             }} aria-hidden="true" />)}
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/25">High</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/55">High</span>
             </div>
           </div>
         </motion.div>
         <div className="lg:w-72 xl:w-80 shrink-0">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/40 mb-5">How to read</p>
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-5">How to read</p>
           <div className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
             {[{
             label: 'Rows',
@@ -1609,7 +1616,7 @@ export const PixelHeatmap = ({
             label: 'Color',
             body: 'Intensity corresponds to relative research and development activity. Material palette — no arbitrary hues.'
           }].map(item => <div key={item.label} className="py-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#D9791F] mb-1">{item.label}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8F3E21] mb-1">{item.label}</p>
                 <p className="text-sm text-[#1E1A17]/65 leading-relaxed">{item.body}</p>
               </div>)}
           </div>
@@ -1688,16 +1695,16 @@ export const RoadmapTimeline = ({
               }} />)}
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-[0.15em]" style={{
-              color: phase.status !== 'upcoming' ? phase.hex : COLOR.charBlack,
+              color: COLOR.charBlack,
               opacity: phase.status === 'upcoming' ? 0.35 : 1
             }}>{phase.status}</span>
               </div>
-              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-[#1E1A17]/35 mt-1">{phase.period}</span>
+              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-[#1E1A17]/66 mt-1">{phase.period}</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2.5 mb-1">
                 <h3 className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">{phase.oshiwambo}</h3>
-                <span className="text-sm text-[#1E1A17]/60 font-normal">{phase.english}</span>
+                <span className="text-sm text-[#1E1A17]/66 font-normal">{phase.english}</span>
               </div>
               <p className="text-sm text-[#1E1A17]/65 leading-relaxed mb-5 max-w-xl">{phase.desc}</p>
               <div className="flex items-center gap-3">
@@ -1733,13 +1740,13 @@ export const RoadmapTimeline = ({
               }} />)}
                 </div>
                 <span className="text-[11px] font-bold tabular-nums shrink-0" style={{
-              color: phase.progress === 0 ? COLOR.charBlack : phase.hex,
+              color: COLOR.charBlack,
               opacity: phase.progress === 0 ? 0.3 : 1
             }}>{phase.progress}%</span>
               </div>
             </div>
             <div className="lg:w-60 xl:w-72 shrink-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/35 mb-3">Milestones</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-3">Milestones</p>
               <ul className="flex flex-col gap-2">
                 {phase.milestones.map(ms => <li key={`ms-${phase.tag}-${ms}`} className="flex items-start gap-2">
                     <div aria-hidden="true" className="w-1.5 h-1.5 mt-1 shrink-0" style={{
@@ -1770,7 +1777,7 @@ export const RoadmapTimeline = ({
             border: `1px solid ${item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' ? COLOR.barkRust : '#1E1A1744'}`
           }} />)}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/45">{item.label}</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/66">{item.label}</span>
           </div>)}
       </div>
       <CodeSnippetBlock label="TimelinePhase · Development Roadmap" lines={SNIPPET_ROADMAP} accentHex="#D9791F" />
@@ -1795,9 +1802,10 @@ export const FieldApplications = () => <section className="max-w-7xl mx-auto px-
       <WeaveOverlay isDark opacity={0.04} />
       <div className="relative">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#D9791F] mb-1">Partner with us</p>
-        <p className="text-sm text-[#E8E1CF]/50 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
+        <p className="text-sm text-[#E8E1CF]/55 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
       </div>
-      <button className="relative shrink-0 px-5 py-2.5 bg-[#D9791F] text-[#E8E1CF] font-medium text-sm hover:bg-[#C84A1B] transition-colors duration-200">Propose a pilot</button>
+      {/* isDark: this sits on the inverse (black) band — see DESIGN_SYSTEM.md §5 */}
+      <PixelButton variant="accent" isDark className="relative shrink-0">Propose a pilot</PixelButton>
     </motion.div>
     <CodeSnippetBlock label="FieldAppCard · Field Applications" lines={SNIPPET_FIELD_APPS} accentHex="#6F4A6E" />
   </section>;
@@ -1819,7 +1827,7 @@ export const PixelFlowchart = () => {
               opacity: 0.12 + idx * 0.1
             }} />)}
             </div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/35">Pixel Flowchart — Naming Architecture</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Pixel Flowchart — Naming Architecture</span>
           </div>
           <motion.div initial={{
           opacity: 0,
@@ -1843,11 +1851,11 @@ export const PixelFlowchart = () => {
                 <div>
                   <div className="flex items-baseline gap-2.5">
                     <h3 className="text-xl font-semibold tracking-tight text-[#E8E1CF] leading-none">{rootNode.oshiwambo}</h3>
-                    <PixelTag hex="transparent" label={rootNode.pixelTag} />
+                    <PixelTag hex="transparent" label={rootNode.pixelTag} isDark />
                   </div>
                   <p className="text-sm text-[#E8E1CF]/55 mt-1">{rootNode.english}</p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.13em] mt-1.5" style={{
-                  color: rootNode.hex
+                  color: inkOn(rootNode.hex, COLOR.charBlack, true)
                 }}>{rootNode.role}</p>
                 </div>
               </div>
@@ -1921,9 +1929,9 @@ export const IconShowcase = () => {
   } = useDark();
   const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
   const borderColor = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
-  const labelColor = isDark ? 'rgba(232,225,207,0.38)' : 'rgba(30,26,23,0.45)';
+  const labelColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const headlineColor = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const bodyColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.58)';
+  const bodyColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const CATEGORY_TABS: Array<IconCategory | 'All'> = ['All', ...ICON_CATEGORIES];
   const filtered = activeCategory === 'All' ? ICON_REGISTRY : ICON_REGISTRY.filter(i => i.category === activeCategory);
   const handleCopy = (name: string, id: string) => {
@@ -1985,7 +1993,7 @@ export const IconShowcase = () => {
         }}>
             {STYLE_SPEC.map(spec => <div key={spec.label} className="flex gap-3 py-2.5 items-start">
                 <span className="text-[9px] font-bold uppercase tracking-[0.18em] shrink-0 mt-0.5 w-16" style={{
-              color: COLOR.ochreOrange
+              color: roles(isDark).accentInk
             }}>{spec.label}</span>
                 <span className="text-[11px] leading-snug" style={{
               color: bodyColor
@@ -2007,7 +2015,7 @@ export const IconShowcase = () => {
           textTransform: 'uppercase',
           border: `1px solid ${isActive ? COLOR.ochreOrange : borderColor}`,
           background: isActive ? COLOR.ochreOrange : 'transparent',
-          color: isActive ? COLOR.milletClay : labelColor,
+          color: isActive ? onColor(COLOR.ochreOrange) : labelColor,
           cursor: 'pointer',
           transition: 'background 0.18s, border-color 0.18s, color 0.18s'
         }}>
@@ -2036,7 +2044,7 @@ export const IconShowcase = () => {
           alignItems: 'center',
           gap: 6,
           padding: '12px 6px 8px',
-          background: isHovered ? isDark ? COLOR.darkCardAlt : '#EDE0C4' : cardBg,
+          background: isHovered ? isDark ? COLOR.darkCardAlt : EDITOR_SURFACE.dustHover : cardBg,
           border: `1px solid ${isHovered ? COLOR.ochreOrange : borderColor}`,
           cursor: 'pointer',
           transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
@@ -2068,7 +2076,7 @@ export const IconShowcase = () => {
       </div>
 
       {/* Footer rule */}
-      <div className="mt-10 flex items-center gap-4">
+      <div className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="flex-1 h-px" style={{
         background: borderColor
       }} />
@@ -2078,7 +2086,8 @@ export const IconShowcase = () => {
         letterSpacing: '0.16em',
         textTransform: 'uppercase',
         color: labelColor,
-        whiteSpace: 'nowrap'
+        whiteSpace: 'normal',
+        textAlign: 'center'
       }}>
           {ICON_REGISTRY.length} icons · Pixel grid · 12×12 viewBox · currentColor
         </span>
@@ -2094,7 +2103,7 @@ export const IconShowcase = () => {
       borderLeft: `3px solid ${COLOR.ochreOrange}`
     }}>
         <span style={{
-        color: COLOR.mopaneBrown
+        color: 'rgba(232,225,207,0.55)'
       }}>{'// import from onganda-icons'}</span>
         <br />
         <span style={{
@@ -2110,7 +2119,7 @@ export const IconShowcase = () => {
         <br />
         <br />
         <span style={{
-        color: COLOR.mopaneBrown
+        color: 'rgba(232,225,207,0.55)'
       }}>{'// render with size + color props'}</span>
         <br />
         <span>{'<'}</span>
@@ -2126,7 +2135,7 @@ export const IconShowcase = () => {
       }}>color</span>
         <span>{"='"}</span>
         <span style={{
-        color: COLOR.firedRed
+        color: COLOR.mahanguGold
       }}>{'#D9791F'}</span>
         <span>{"' />"}</span>
       </div>
@@ -2234,7 +2243,7 @@ export const IconFactoryLab = () => {
   const problems = useMemo(() => validatePixelIconDef('Doodle', def), [def]);
   const snippet = useMemo(() => factorySnippetLines(def), [def]);
   const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
-  const muted = isDark ? 'rgba(232,225,207,0.45)' : 'rgba(30,26,23,0.45)';
+  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const cellBg = isDark ? 'rgba(232,225,207,0.05)' : 'rgba(30,26,23,0.04)';
   const paintCell = (idx: number) => setCells(prev => {
     const next = [...prev];
@@ -2243,10 +2252,10 @@ export const IconFactoryLab = () => {
   });
   return <section id="icon-factory" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Icon Factory" headline="Draw a doodle. Get a component." isDark={isDark} />
-      <div className="grid gap-10 lg:grid-cols-[auto_1fr]">
+      <div className="grid gap-10 lg:grid-cols-[auto_1fr] [&>*]:min-w-0">
         {/* ── Editor ── */}
         <div>
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
             {FACTORY_PALETTE.map(hex => <button key={hex} onClick={() => setActiveColor(hex)} aria-label={`Paint with ${hex}`} style={{
             width: 22,
             height: 22,
@@ -2278,16 +2287,18 @@ export const IconFactoryLab = () => {
           </div>
           <div style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${FACTORY_GRID}, 24px)`,
+          gridTemplateColumns: `repeat(${FACTORY_GRID}, minmax(0, 1fr))`,
           gap: 1,
-          width: 'fit-content',
+          // 24px cells at rest; shrinks rather than pushing the page wide.
+          width: '100%',
+          maxWidth: FACTORY_GRID * 24 + (FACTORY_GRID - 1) + 18,
           padding: 8,
           background: isDark ? COLOR.darkCard : COLOR.dustLight,
           border: `1px solid ${border}`
         }}>
             {cells.map((hex, idx) => <button key={idx} onClick={() => paintCell(idx)} aria-label={`Pixel ${idx % FACTORY_GRID},${Math.floor(idx / FACTORY_GRID)}`} style={{
-            width: 24,
-            height: 24,
+            width: '100%',
+            aspectRatio: '1',
             background: hex ?? cellBg,
             border: 'none',
             padding: 0,
@@ -2302,7 +2313,7 @@ export const IconFactoryLab = () => {
         </div>
         {/* ── Preview + code ── */}
         <div>
-          <div className="flex items-end gap-8 border p-6" style={{
+          <div className="flex flex-wrap items-end gap-8 border p-6" style={{
           borderColor: border,
           background: isDark ? COLOR.darkCard : COLOR.dustLight,
           color: isDark ? COLOR.milletClay : COLOR.charBlack
@@ -2326,6 +2337,408 @@ export const IconFactoryLab = () => {
         </div>
       </div>
     </section>;
+};
+
+// ─── Control Standards — the enforceable half of the design system ───────────
+// Every interactive element the system sanctions, in every state, next to the
+// colour role that governs it. If a control is not on this page, it does not
+// exist yet: add it here and to DESIGN_SYSTEM.md §4–5 before using it in a
+// product. Read this section before styling any button, field, or choice.
+
+const ROLE_ROWS: { role: keyof ColorRoles; use: string }[] = [
+  { role: 'canvas', use: 'Page background' },
+  { role: 'surface', use: 'Cards, panels, bands' },
+  { role: 'surfaceWell', use: 'Wells and code blocks — recedes, never raised' },
+  { role: 'inverse', use: 'Footer, ticker, lab card' },
+  { role: 'text', use: 'Headings and primary text' },
+  { role: 'textBody', use: 'Long-form reading text' },
+  { role: 'textMuted', use: 'Labels, captions, meta' },
+  { role: 'textFaint', use: 'Disabled text and ordinals only' },
+  { role: 'line', use: 'Hairline borders and dividers' },
+  { role: 'actionBg', use: 'Primary action fill' },
+  { role: 'accentBg', use: 'Warm in-card action fill' },
+  { role: 'accentInk', use: 'The accent as ink: link, focus ring, ghost hover' },
+  { role: 'dangerBg', use: 'Destructive action fill' },
+  { role: 'fieldBorder', use: 'Field boundary at rest' },
+  { role: 'fieldBorderInvalid', use: 'Field boundary when invalid' },
+  { role: 'controlOn', use: 'Checked control fill' }
+];
+
+const STATUS_ROWS: { name: StatusName; means: string }[] = [
+  { name: 'active', means: 'Live, running, in progress' },
+  { name: 'caution', means: 'Warning, pending, needs attention' },
+  { name: 'critical', means: 'Error, destructive, blocking' },
+  { name: 'settled', means: 'Complete, archived, informational' }
+];
+
+const SubLabel = ({ children, isDark }: { children: React.ReactNode; isDark: boolean }) => (
+  <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: roles(isDark).textMuted }}>
+    {children}
+  </p>
+);
+
+// ─── Control Standards — the enforceable half of the design system ───────────
+// Every interactive element the system sanctions, in every state, next to the
+// colour role that governs it. If a control is not on this page, it does not
+// exist yet: add it here and to DESIGN_SYSTEM.md §4–5 before using it in a
+// product. Read this section before styling any button, field, or choice.
+//
+// The mode switch is local to this section. The surrounding showcase does not
+// support dark mode yet (see the TODO in OngandaNav), but every dark role must
+// still be renderable and reviewable, so this section flips on its own.
+export const ControlStandards = () => {
+  const { isDark: pageDark } = useDark();
+  const [isDark, setIsDark] = useState(pageDark);
+  const c = roles(isDark);
+  const [inquiry, setInquiry] = useState('pilot');
+  const [consent, setConsent] = useState(true);
+  const [live, setLive] = useState(true);
+
+  const panel: React.CSSProperties = { background: c.surface, border: `1px solid ${c.line}` };
+
+  return (
+    <section id="controls" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader label="Control Standards" headline="One recipe per control. No free choices." isDark={pageDark} />
+
+      {/* The whole reference renders on the canvas role so both modes are real. */}
+      <div id="controls-stage" data-mode={isDark ? 'dark' : 'light'} className="relative p-6 md:p-8" style={{ background: c.canvas, border: `1px solid ${c.line}` }}>
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <p className="text-xs leading-relaxed" style={{ color: c.textMuted }}>
+            Every value below is measured. <code>npm run check:contrast</code> fails the build on a regression.
+          </p>
+          <PixelToggle
+            isDark={isDark}
+            checked={isDark}
+            onChange={setIsDark}
+            label={<span className="text-[10px] font-bold uppercase tracking-[0.16em]">{isDark ? 'Dark' : 'Light'}</span>}
+          />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {/* ── Colour roles ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative">
+              <SubLabel isDark={isDark}>Colour roles · read the role, not the palette</SubLabel>
+              <dl className="grid gap-0">
+                {ROLE_ROWS.map(r => (
+                  <div key={r.role} className="flex items-center gap-4 py-2.5 border-b" style={{ borderColor: c.line }}>
+                    <span aria-hidden="true" className="h-5 w-5 shrink-0" style={{ background: c[r.role], border: `1px solid ${c.lineStrong}` }} />
+                    <dt className="w-28 shrink-0 font-mono text-xs sm:w-40" style={{ color: c.text }}>{r.role}</dt>
+                    <dd className="text-xs leading-relaxed" style={{ color: c.textMuted }}>{r.use}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
+                Ochre is the accent as a <em>fill</em>. As ink on a light surface it measures 2.4:1, so the
+                accent ink is bark rust there and ochre in dark mode. Mahangu gold, mopane brown, and dye
+                plum are absent: they identify systems and carry chart series.
+              </p>
+            </div>
+          </div>
+
+          {/* ── Status and buttons ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative">
+              <SubLabel isDark={isDark}>Status · four states, no green, no blue</SubLabel>
+              <dl className="grid gap-0">
+                {STATUS_ROWS.map(s => (
+                  <div key={s.name} className="flex items-center gap-4 py-3 border-b" style={{ borderColor: c.line }}>
+                    <PixelDot color={statusFor(s.name, isDark)} size={8} ring={c.lineStrong} />
+                    <dt className="w-24 shrink-0 text-sm font-medium" style={{ color: c.text }}>{s.name}</dt>
+                    <dd className="text-xs leading-relaxed" style={{ color: c.textMuted }}>{s.means}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
+                A status mark always carries a text label and a hairline ring. Gold on cream is 1.6:1, so
+                the ring is what delineates it — colour never carries the meaning alone.
+              </p>
+
+              <div className="mt-8">
+                <SubLabel isDark={isDark}>Buttons · four intents</SubLabel>
+                <div className="flex flex-wrap items-center gap-3">
+                  <PixelButton variant="primary" isDark={isDark}>Primary</PixelButton>
+                  <PixelButton variant="accent" isDark={isDark}>Accent</PixelButton>
+                  <PixelButton variant="ghost" isDark={isDark}>Ghost</PixelButton>
+                  <PixelButton variant="danger" isDark={isDark}>Delete</PixelButton>
+                  <PixelButton variant="primary" isDark={isDark} disabled>Disabled</PixelButton>
+                </div>
+                <p className="mt-4 text-xs leading-relaxed" style={{ color: c.textMuted }}>
+                  One primary action per view. Danger is bark rust, not fired red: fired red's best
+                  foreground is 4.05:1, under the floor for a button label.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Fields ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative grid gap-5">
+              <SubLabel isDark={isDark}>Fields · transparent ground, accent-ink focus</SubLabel>
+              <PixelField label="Email" hint="Focus the field to see the accent border." htmlFor="cs-email" isDark={isDark}>
+                <PixelInput id="cs-email" isDark={isDark} type="email" placeholder="name@institution.na" />
+              </PixelField>
+              <PixelField label="Organisation" error="This field is required." htmlFor="cs-org" isDark={isDark}>
+                <PixelInput id="cs-org" isDark={isDark} invalid placeholder="Institution or company" />
+              </PixelField>
+              <PixelField label="Reference" hint="Assigned after intake." htmlFor="cs-ref" isDark={isDark}>
+                <PixelInput id="cs-ref" isDark={isDark} disabled placeholder="ONG-0000" />
+              </PixelField>
+              <PixelField label="Region" htmlFor="cs-region" isDark={isDark}>
+                <PixelSelect id="cs-region" isDark={isDark} defaultValue="khomas">
+                  <option value="khomas">Khomas</option>
+                  <option value="oshana">Oshana</option>
+                  <option value="erongo">Erongo</option>
+                </PixelSelect>
+              </PixelField>
+              <PixelField label="Short note" htmlFor="cs-note" isDark={isDark}>
+                <PixelTextarea id="cs-note" isDark={isDark} placeholder="What would you like to discuss?" style={{ minHeight: 88 }} />
+              </PixelField>
+            </div>
+          </div>
+
+          {/* ── Choice controls ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative grid gap-8">
+              <div>
+                <SubLabel isDark={isDark}>Radio · stepped octagon, square core</SubLabel>
+                <div className="grid gap-3">
+                  {[
+                    { value: 'partnership', label: 'Partnership' },
+                    { value: 'pilot', label: 'Pilot programme' },
+                    { value: 'access', label: 'Early access' }
+                  ].map(o => (
+                    <PixelRadio
+                      key={o.value}
+                      name="cs-inquiry"
+                      value={o.value}
+                      isDark={isDark}
+                      label={o.label}
+                      checked={inquiry === o.value}
+                      onChange={() => setInquiry(o.value)}
+                    />
+                  ))}
+                  <PixelRadio name="cs-inquiry" isDark={isDark} label="Unavailable option" disabled />
+                </div>
+              </div>
+
+              <div>
+                <SubLabel isDark={isDark}>Checkbox · square box, stepped check</SubLabel>
+                <div className="grid gap-3">
+                  <PixelCheckbox isDark={isDark} label="Send me lab updates" checked={consent} onChange={e => setConsent(e.currentTarget.checked)} />
+                  <PixelCheckbox isDark={isDark} label="Unchecked" checked={false} onChange={() => {}} />
+                  <PixelCheckbox isDark={isDark} label="Locked by policy" checked disabled onChange={() => {}} />
+                </div>
+              </div>
+
+              <div>
+                <SubLabel isDark={isDark}>Toggle · the knob steps, it does not slide</SubLabel>
+                <div className="grid gap-3">
+                  <PixelToggle isDark={isDark} label="Publish to the public site" checked={live} onChange={setLive} />
+                  <PixelToggle isDark={isDark} label="Disabled" checked={false} disabled />
+                </div>
+              </div>
+
+              <p className="text-xs leading-relaxed" style={{ color: c.textMuted }}>
+                Checked is ochre on all three, so "on" reads the same everywhere. The ochre fill is 2.56:1
+                against dust light, so the accent-ink edge carries the boundary. No control is rounded and
+                none uses a system colour.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Product Patterns — the surfaces a real product needs ────────────────────
+// Control Standards covers the atoms. This covers the compounds: the dialog,
+// table, notice, empty state, loading state, tabs and progress bar that every
+// product reaches for. They live here so an agent building a product has an
+// Onganda answer instead of inventing generic chrome.
+//
+// Like Control Standards, this section carries its own light/dark switch and
+// every pattern is shown in every state.
+
+const PATTERN_ROWS = [
+  { id: 'okaanda', system: 'Okaanda', role: 'Model & data platform', status: 'settled' as StatusName, models: 128, uptime: 99.4 },
+  { id: 'oshini', system: 'Oshini', role: 'Adaptation workflows', status: 'active' as StatusName, models: 64, uptime: 98.1 },
+  { id: 'ombiga', system: 'Ombiga', role: 'Agents & containers', status: 'caution' as StatusName, models: 31, uptime: 94.7 },
+  { id: 'oshitoo', system: 'Oshitoo', role: 'Sector applications', status: 'critical' as StatusName, models: 8, uptime: 71.2 }
+];
+
+export const ProductPatterns = () => {
+  const { isDark: pageDark } = useDark();
+  const [isDark, setIsDark] = useState(pageDark);
+  const c = roles(isDark);
+  const [tab, setTab] = useState<'live' | 'queued' | 'archived'>('live');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  const panel: React.CSSProperties = { background: c.surface, border: `1px solid ${c.line}` };
+
+  return (
+    <section id="patterns" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader label="Product Patterns" headline="The compounds, not just the atoms." isDark={pageDark} />
+
+      <div id="patterns-stage" data-mode={isDark ? 'dark' : 'light'} className="relative p-6 md:p-8" style={{ background: c.canvas, border: `1px solid ${c.line}` }}>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-xs leading-relaxed" style={{ color: c.textMuted }}>
+            A product needs a dialog on day one. Build from these instead of inventing chrome.
+          </p>
+          <PixelToggle
+            isDark={isDark}
+            checked={isDark}
+            onChange={setIsDark}
+            label={<span className="text-[10px] font-bold uppercase tracking-[0.16em]">{isDark ? 'Dark' : 'Light'}</span>}
+          />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {/* ── Notices ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative">
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+                Notice · one per status, colour never alone
+              </p>
+              <div className="grid gap-3">
+                <PixelNotice isDark={isDark} status="active" title="Evaluation running">
+                  namibia-base-1b is being scored against the Oshiwambo benchmark.
+                </PixelNotice>
+                <PixelNotice isDark={isDark} status="caution" title="Quota at 94%">
+                  Archive completed runs to free granary space.
+                </PixelNotice>
+                <PixelNotice isDark={isDark} status="critical" title="Deployment failed">
+                  The Ombiga container could not reach the model registry.
+                </PixelNotice>
+                {!dismissed && (
+                  <PixelNotice isDark={isDark} status="settled" title="Corpus v1 archived" onDismiss={() => setDismissed(true)}>
+                    Dismissable. Press the stepped cross to remove.
+                  </PixelNotice>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Tabs, progress, dialog trigger ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative grid gap-8">
+              <div>
+                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Tabs · ghost recipe, ochre when active</p>
+                <PixelTabs
+                  isDark={isDark}
+                  label="Run state"
+                  value={tab}
+                  onChange={setTab}
+                  tabs={[
+                    { value: 'live', label: 'Live' },
+                    { value: 'queued', label: 'Queued' },
+                    { value: 'archived', label: 'Archived' }
+                  ]}
+                />
+                <p className="mt-3 text-xs" style={{ color: c.textMuted }}>Showing <strong style={{ color: c.text }}>{tab}</strong> runs.</p>
+              </div>
+
+              <div className="grid gap-5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Progress · dithered fill, never a smooth gradient</p>
+                <PixelProgress isDark={isDark} label="Corpus ingestion" value={100} status="settled" />
+                <PixelProgress isDark={isDark} label="Fine-tuning" value={78} status="active" />
+                <PixelProgress isDark={isDark} label="Container rollout" value={34} status="caution" />
+              </div>
+
+              <div>
+                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Dialog · focus trap, escape, scrim</p>
+                <PixelButton variant="danger" isDark={isDark} onClick={() => setDialogOpen(true)}>Delete dataset</PixelButton>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Table ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative">
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Table · editorial rhythm, tabular figures</p>
+              <PixelTable
+                isDark={isDark}
+                caption="Systems overview"
+                rows={PATTERN_ROWS}
+                rowKey={row => row.id}
+                columns={[
+                  {
+                    key: 'system',
+                    header: 'System',
+                    render: row => (
+                      // Two signals, two meanings: the left rule is the system's
+                      // identity, the dot is its run status.
+                      <span className="flex items-center gap-2" style={{ borderLeft: `3px solid ${SYSTEM_COLOR[row.system as SystemName]}`, paddingLeft: 8 }}>
+                        <PixelDot color={statusFor(row.status, isDark)} size={6} ring={c.lineStrong} />
+                        <strong style={{ color: c.text }}>{row.system}</strong>
+                      </span>
+                    )
+                  },
+                  { key: 'role', header: 'Role', render: row => row.role },
+                  { key: 'models', header: 'Models', numeric: true, render: row => row.models },
+                  { key: 'uptime', header: 'Uptime', numeric: true, render: row => `${row.uptime}%` }
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* ── Empty and loading ── */}
+          <div className="relative overflow-hidden p-8" style={panel}>
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
+            <div className="relative grid gap-8">
+              <div>
+                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Empty · the surface a product shows first</p>
+                <PixelEmptyState
+                  isDark={isDark}
+                  icon={<IconOkaanda size={44} />}
+                  title="No datasets yet"
+                  body="Ingest a corpus to start evaluating models against Namibian language data."
+                  action={<PixelButton variant="accent" isDark={isDark}>Ingest a corpus</PixelButton>}
+                />
+              </div>
+              <div>
+                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Loading · a dither sweep, not a soft shimmer</p>
+                <div style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: 20 }}>
+                  <PixelSkeleton isDark={isDark} lines={4} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <PixelDialog
+          isDark={isDark}
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          eyebrow="Okaanda · granary"
+          title="Delete the evaluation corpus?"
+          footer={
+            <>
+              <PixelButton variant="ghost" isDark={isDark} onClick={() => setDialogOpen(false)}>Cancel</PixelButton>
+              <PixelButton variant="danger" isDark={isDark} onClick={() => setDialogOpen(false)}>Delete corpus</PixelButton>
+            </>
+          }
+        >
+          <p>
+            This removes 128 evaluation records and every scored run attached to them. Exports already
+            downloaded are unaffected.
+          </p>
+          <div className="mt-5">
+            <PixelNotice isDark={isDark} status="critical" title="This cannot be undone" />
+          </div>
+        </PixelDialog>
+      </div>
+    </section>
+  );
 };
 
 export const OkaandaNav = OngandaNav;

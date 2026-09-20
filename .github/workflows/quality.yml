@@ -1,0 +1,53 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Browsers must exist before `npm run check`: its consumer-render step
+      # builds a real app and renders it in Chromium.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Split so a failure names itself instead of surfacing as "check failed".
+      - name: Lint
+        run: npm run lint
+
+      - name: Design guards (tokens, contrast, docs)
+        run: npm run check:design
+
+      - name: Type check and build
+        run: npm run build
+
+      - name: Package consumer smoke test
+        run: npm run test:package
+
+      - name: Consumer renders with the documented setup
+        run: npm run test:consumer
+
+      - name: Browser suite
+        run: npm run test:browser
+
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: |
+            test-results
+            tests/browser/__screenshots__
