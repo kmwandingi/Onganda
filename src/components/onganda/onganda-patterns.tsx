@@ -579,11 +579,14 @@ export const PixelChoice = ({
 export const PixelChoiceList = ({
   label,
   children,
-  isDark = false
+  isDark = false,
+  layout = 'rows'
 }: {
   label: string;
   children: React.ReactNode;
   isDark?: boolean;
+  /** `grid` packs short options two-up; long text always wants rows */
+  layout?: 'rows' | 'grid';
 }) => {
   const d = useDensity();
   const group = useRef<HTMLDivElement>(null);
@@ -611,7 +614,11 @@ export const PixelChoiceList = ({
       role="radiogroup"
       aria-label={label}
       onKeyDown={onKeyDown}
-      style={{ display: 'grid', gap: d.labelGap }}
+      style={{
+        display: 'grid',
+        gap: d.labelGap,
+        gridTemplateColumns: layout === 'grid' ? 'repeat(auto-fit, minmax(150px, 1fr))' : '1fr'
+      }}
     >
       {children}
     </div>
