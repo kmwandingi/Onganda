@@ -498,6 +498,27 @@ export const useInkOn = () => {
   return useCallback((hue: string) => inkOn(hue, hex, isDark), [hex, isDark]);
 };
 
+// ─── Focus ring stylesheet ──────────────────────────────────────────────────
+// :focus-visible is the only correct way to express "focused by keyboard", and
+// it cannot be expressed as an inline style. Shipping it only in style.css
+// would mean a consumer who forgets that import loses every focus ring — worse
+// than the always-on ring this replaced. So it is injected once at module
+// load, and style.css keeps a copy for SSR and for anyone inspecting the CSS.
+const FOCUS_STYLE_ID = 'onganda-focus-style';
+const FOCUS_CSS = `
+.onganda-focus:focus,.onganda-control:focus,.onganda-choice:focus{outline:none}
+.onganda-focus:focus-visible,.onganda-control:focus-visible{
+  outline:2px solid var(--onganda-focus,#8F3E21);outline-offset:2px}
+.onganda-choice:focus-visible + span{
+  outline:2px solid var(--onganda-focus,#8F3E21);outline-offset:2px}
+`;
+if (typeof document !== 'undefined' && !document.getElementById(FOCUS_STYLE_ID)) {
+  const el = document.createElement('style');
+  el.id = FOCUS_STYLE_ID;
+  el.textContent = FOCUS_CSS;
+  document.head.appendChild(el);
+}
+
 // ─── Density context — how tight is this surface? ───────────────────────────
 // The page defaults were dropped unchanged into a 340px popup and a narrow
 // side panel, where a 36px button and a 43px field are oversized and the
@@ -722,7 +743,15 @@ export const PixelSelect = ({ isDark = false, invalid = false, style, children, 
     style={{
       ...fieldBase(c, invalid, !!props.disabled, d),
       cursor: props.disabled ? 'not-allowed' : 'pointer',
+      // Fully inline: a consumer that has not loaded style.css would
+      // otherwise get the chevron tiled across the whole field.
+      appearance: 'none',
+      WebkitAppearance: 'none',
       backgroundImage: chevron(props.disabled ? c.fieldDisabledText : c.textMuted),
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'right 12px center',
+      backgroundSize: '10px 6px',
+      paddingRight: 34,
       ['--onganda-focus' as string]: c.focusRing,
       ...style
     } as React.CSSProperties}
