@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Fixed — StatCard no longer hides itself
+
+It used `MOTION.fadeUp`, whose `whileInView` never fires when the component
+is mounted inside an inactive tab panel: FirstRung's mentor cockpit rendered
+a row of empty cells, and scrolling did not recover them. Entrance motion
+must never decide whether content is legible, so a stat band now uses
+`MOTION.entrance`, which always plays.
+
 ### Changed — StatCard is density-aware and reads its roles
 
 Dropped into a 390px side panel, the stat band wrapped into an unreadable

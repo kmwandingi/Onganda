@@ -1025,7 +1025,12 @@ export const StatCard = ({
   const d = useDensity();
   const compact = d.stackGap <= 12;
   return <motion.div
-    {...MOTION.fadeUp}
+    // MOTION.entrance, not fadeUp. A stat band is data, and `whileInView`
+    // gates visibility on an intersection that never fires when the band is
+    // mounted inside an inactive tab panel — FirstRung's mentor cockpit
+    // rendered a row of empty cells for exactly that reason. Entrance motion
+    // must never decide whether content is legible.
+    {...MOTION.entrance}
     // Page density keeps the responsive gutter the stat band was built with;
     // only the compact set is expressed inline.
     className={compact ? 'flex flex-col' : 'flex flex-col gap-1 px-6 py-8 md:px-10'}
