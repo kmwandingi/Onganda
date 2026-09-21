@@ -1002,31 +1002,57 @@ export const PixelToggle = ({
 };
 
 // ─── StatCard — single stat in the research signals bar ──────────────────────
+// ─── StatCard — one measured number in a stat band ──────────────────────────
+// Usage: <StatCard stat={{ value: '5', label: 'Active systems', sub: '…', hex }} />
+//
+// The number, its pixel full stop, the label, the qualifier. Cells sit in a
+// grid divided by hairlines — never by a gap — as the public site's stat
+// strip does it.
+//
+// Density-aware, because this is exactly the component that broke when a
+// product dropped it into a 390px side panel: a 30px numeral with 24px of
+// padding needs a page to sit on, and in a narrow column it wrapped into an
+// unreadable jumble. Wrap a narrow surface in <DensityProvider value="compact">.
 export const StatCard = ({
-  stat
+  stat,
+  isDark = false
 }: {
   stat: StatEntry;
+  isDark?: boolean;
 }) => {
   const inkFor = useInkOn();
-  return <motion.div initial={{
-  opacity: 0,
-  y: 8
-}} whileInView={{
-  opacity: 1,
-  y: 0
-}} viewport={{
-  once: true
-}} transition={{
-  duration: 0.45
-}} className="flex flex-col gap-1 px-6 py-8 md:px-10">
-    <div className="flex items-end gap-2 mb-1">
-      <span className="text-3xl font-semibold tracking-tighter leading-none" style={{
-      color: inkFor(stat.hex)
-    }}>{stat.value}</span>
-      <PixelDot color={stat.hex} size={8} />
+  const c = roles(isDark);
+  const d = useDensity();
+  const compact = d.stackGap <= 12;
+  return <motion.div
+    {...MOTION.fadeUp}
+    // Page density keeps the responsive gutter the stat band was built with;
+    // only the compact set is expressed inline.
+    className={compact ? 'flex flex-col' : 'flex flex-col gap-1 px-6 py-8 md:px-10'}
+    style={compact ? { padding: '16px 14px', gap: 2 } : undefined}
+  >
+    <div className="flex items-end gap-2" style={{ marginBottom: compact ? 2 : 4 }}>
+      <span style={{
+        fontSize: compact ? TYPE.headline.size : TYPE.pageTitle.size,
+        fontWeight: TYPE.headline.weight,
+        lineHeight: 1,
+        letterSpacing: '-0.02em',
+        color: inkFor(stat.hex)
+      }}>{stat.value}</span>
+      <PixelDot color={stat.hex} size={compact ? 6 : 8} />
     </div>
-    <p className="text-sm text-[#1E1A17]/65 leading-relaxed">{stat.label}</p>
-    <p className="text-xs text-[#1E1A17]/66 mt-0.5">{stat.sub}</p>
+    <p style={{
+      fontSize: TYPE.body.size,
+      lineHeight: TYPE.body.lineHeight,
+      color: c.textMuted,
+      margin: 0
+    }}>{stat.label}</p>
+    <p style={{
+      fontSize: TYPE.eyebrow.size,
+      lineHeight: 1.4,
+      color: c.textMuted,
+      margin: 0
+    }}>{stat.sub}</p>
   </motion.div>;
 };
 

@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — StatCard is density-aware and reads its roles
+
+Dropped into a 390px side panel, the stat band wrapped into an unreadable
+jumble: a 30px numeral with 24–40px of gutter needs a page to sit on. It also
+hardcoded its ink at `#1E1A17/65` and `/66` — neither an `ALPHA` step — and
+had no dark mode at all.
+
+- Compact density gives it a 24px numeral and a 16×14 box; page density keeps
+  the responsive gutter the band was built with.
+- Ink comes from `roles(isDark).textMuted`, and it takes `isDark`.
+
 ### Fixed — two showcase sections were not built from the page's own cards
 
 Control Standards and Product Patterns contained **nine hand-rolled
