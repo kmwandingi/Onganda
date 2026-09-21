@@ -9,7 +9,7 @@ import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks,
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
-import { PixelTicker, PixelFocusRow, PixelLabCard } from './onganda-site';
+import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
 import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
@@ -2851,6 +2851,19 @@ export const ProductPatterns = () => {
         <div className="mt-4">
           <SubLabel isDark={isDark}>Site composition · ticker — the only place all five system colours meet</SubLabel>
           <PixelTicker />
+        </div>
+
+        <div className="mt-10">
+          <SubLabel isDark={isDark}>Site composition · stat band — cells divided by a hairline, never a gap</SubLabel>
+          <PixelStatBand
+            isDark={isDark}
+            stats={[
+              { value: '5', label: 'Active systems', sub: 'in architecture', hex: COLOR.ochreOrange },
+              { value: '3', label: 'Language models', sub: 'adapted for Namibia', hex: COLOR.barkRust },
+              { value: '12', label: 'Sector pilots', sub: 'across 4 industries', hex: COLOR.mahanguGold },
+              { value: '1', label: 'Sovereign lab', sub: 'Windhoek, Namibia', hex: COLOR.mopaneBrown }
+            ]}
+          />
         </div>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-2">

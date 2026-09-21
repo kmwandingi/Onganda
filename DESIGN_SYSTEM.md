@@ -734,6 +734,7 @@ to drift.
 | `PixelFocusRow` | Ordinal, icon, title, line, in a row | For a list that should read as a sequence rather than a grid |
 | `PixelLabCard` | The inverted cell that closes a grid | One per grid, in the last cell. It is the grid's full stop |
 | `PixelContactPanel` | The closing inquiry surface | Deliberately the largest surface on the page. A page that ends in a thin footer link reads as unfinished |
+| `PixelStatBand` | The strip of measured numbers under a hero | Cells divided by a hairline, never by a gap — a gap reads as four cards, and this is one object |
 | `PixelEdgeStrips` | Drifting palette columns beside a hero | 16–27s a cycle, so it reads as texture rather than motion |
 | `SystemCard` | The five-system card | Icon tile, numbered tag, 24px name, English reading, role eyebrow, line — closed by a 3px spine and a bottom dither rule |
 

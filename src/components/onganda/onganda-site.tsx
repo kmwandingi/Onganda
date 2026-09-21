@@ -15,11 +15,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { roles, onColor, inkOn, SYSTEMS, SystemEntry } from './onganda-tokens';
+import { roles, onColor, inkOn, SYSTEMS, SystemEntry, StatEntry } from './onganda-tokens';
 import { TYPE, SPACE_SCALE } from './onganda-type';
 import { MOTION, useMotionOK } from './onganda-motion';
 import {
   DitherBar,
+  StatCard,
   PixelDot,
   PixelTag,
   PixelCornerMarks,
@@ -373,5 +374,55 @@ export const PixelEdgeStrips = ({ hexes }: { hexes: readonly string[] }) => {
       ))}
     </div>
   </>
+  );
+};
+
+// ─── PixelStatBand — the strip of measured numbers ─────────────────────────
+// Usage: <PixelStatBand stats={[{ value: '5', label: '…', sub: '…', hex }]} />
+//
+// The band under the public site's hero: cells of StatCard divided by
+// hairlines, never by a gap, on the raised surface. The gap-less division is
+// the whole point — a gap would read as four cards, and this is one object.
+//
+// It was only ever written inline on the site, so a product wanting the same
+// strip had the cell but not the band, and hand-rolled the grid around it.
+// Both FirstRung's mentor cockpit and its side panel did exactly that.
+export const PixelStatBand = ({
+  stats,
+  columns,
+  isDark = false,
+  className = ''
+}: {
+  stats: readonly StatEntry[];
+  /** cells per row; defaults to one row on a page, two columns when compact */
+  columns?: number;
+  isDark?: boolean;
+  className?: string;
+}) => {
+  const c = roles(isDark);
+  const cols = columns ?? stats.length;
+  return (
+    <div
+      className={className}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        background: c.surface,
+        border: `1px solid ${c.line}`
+      }}
+    >
+      {stats.map((stat, i) => (
+        <div
+          key={stat.label}
+          style={{
+            // The hairline between cells, and none on the outer edges.
+            borderRight: (i + 1) % cols === 0 ? undefined : `1px solid ${c.line}`,
+            borderBottom: i < stats.length - (stats.length % cols || cols) ? `1px solid ${c.line}` : undefined
+          }}
+        >
+          <StatCard stat={stat} isDark={isDark} />
+        </div>
+      ))}
+    </div>
   );
 };

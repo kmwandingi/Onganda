@@ -88,6 +88,14 @@ not a new one. It was removed.
 - The Institute card on `/showcase` was hand-rolled from hardcoded hexes and
   two off-scale ink opacities; it is a `PixelLabCard` now.
 
+### Added — `PixelStatBand`
+
+The strip of measured numbers under the public hero. It was only ever written
+inline on the site, so a product had the cell (`StatCard`) but not the band,
+and hand-rolled the grid around it — FirstRung's mentor cockpit and its side
+panel both did. Cells are divided by a hairline, never by a gap: a gap reads
+as four cards, and this is one object.
+
 ### Added — `onganda-site.tsx`
 
 The public site's building blocks, extracted and exported. They were private
