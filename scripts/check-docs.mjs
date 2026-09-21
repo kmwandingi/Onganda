@@ -35,6 +35,7 @@ const DOCS = {
 };
 
 const rolesSrc = read('src/components/onganda/onganda-roles.ts');
+const typeSrc = read('src/components/onganda/onganda-type.ts');
 const colorsSrc = read('src/components/onganda/onganda-colors.ts');
 
 const failures = [];
@@ -110,6 +111,53 @@ for (const [doc, text] of Object.entries(DOCS)) {
   if (quoted) {
     const pct = String(Math.round(parseFloat(muted.light) * 100));
     if (quoted[1] !== pct) fail(doc, `quotes textMuted as ink ${quoted[1]}% but ALPHA.muted.light is ${muted.light} (${pct}%)`);
+  }
+}
+
+// ── 1b. The type-scale table must match TYPE, step for step ─────────────────
+// DESIGN_SYSTEM.md §6 restates the whole scale for designers, who read it
+// instead of the source. A hand-copied table that drifts from what it
+// describes is the failure mode this guard exists for, and a type table is
+// the easiest place in the repo for it to happen quietly.
+{
+  const steps = new Map();
+  const block = typeSrc.slice(typeSrc.indexOf('export const TYPE = {'), typeSrc.indexOf('} as const;'));
+  for (const m of block.matchAll(
+    /^\s{2}(\w+):\s*\{\s*size:\s*(\d+),\s*lineHeight:\s*([\d.]+),\s*tracking:\s*'([^']*)',\s*weight:\s*(\d+),\s*case:\s*'(\w+)'/gm
+  )) {
+    steps.set(m[1], { size: +m[2], lineHeight: +m[3], tracking: m[4], weight: +m[5], case: m[6] });
+  }
+  if (steps.size < 5) throw new Error('check-docs: could not read the type scale');
+
+  const doc = DOCS['DESIGN_SYSTEM.md'];
+  const rows = new Map();
+  for (const m of doc.matchAll(
+    /^\|\s*`(\w+)`\s*\|\s*(\d+)\s*\|\s*\*{0,2}(\d+)\*{0,2}\s*\|\s*([^|]*?)\s*\|\s*([\d.]+)\s*\|\s*(UPPER|—)\s*\|/gm
+  )) {
+    rows.set(m[1], { size: +m[2], weight: +m[3], tracking: m[4], lineHeight: +m[5], case: m[6] });
+  }
+
+  for (const [name, t] of steps) {
+    const row = rows.get(name);
+    if (!row) { fail('DESIGN_SYSTEM.md', `§6 type table is missing the \`${name}\` step`); continue; }
+    const docTracking = row.tracking === '—' ? '0em' : row.tracking;
+    const docCase = row.case === 'UPPER' ? 'uppercase' : 'none';
+    if (row.size !== t.size) fail('DESIGN_SYSTEM.md', `§6 \`${name}\` size is ${row.size}, TYPE says ${t.size}`);
+    if (row.weight !== t.weight) fail('DESIGN_SYSTEM.md', `§6 \`${name}\` weight is ${row.weight}, TYPE says ${t.weight}`);
+    if (row.lineHeight !== t.lineHeight) fail('DESIGN_SYSTEM.md', `§6 \`${name}\` leading is ${row.lineHeight}, TYPE says ${t.lineHeight}`);
+    if (docTracking !== t.tracking) fail('DESIGN_SYSTEM.md', `§6 \`${name}\` tracking is ${docTracking}, TYPE says ${t.tracking}`);
+    if (docCase !== t.case) fail('DESIGN_SYSTEM.md', `§6 \`${name}\` case is ${docCase}, TYPE says ${t.case}`);
+  }
+  for (const name of rows.keys()) {
+    if (!steps.has(name)) fail('DESIGN_SYSTEM.md', `§6 type table lists \`${name}\`, which is not a step in TYPE`);
+  }
+  const claimed = DOCS['FOR_DESIGNERS.md'].match(/type scale is closed\*{0,2} — (\d+) steps from (\d+)px to (\d+)px/);
+  if (!claimed) fail('FOR_DESIGNERS.md', 'the closed-type-scale claim is missing or reworded; the guard cannot check it');
+  else {
+    const sizes = [...steps.values()].map(t => t.size);
+    if (+claimed[1] !== steps.size) fail('FOR_DESIGNERS.md', `claims ${claimed[1]} type steps, TYPE has ${steps.size}`);
+    if (+claimed[2] !== Math.min(...sizes)) fail('FOR_DESIGNERS.md', `claims the scale starts at ${claimed[2]}px, TYPE starts at ${Math.min(...sizes)}px`);
+    if (+claimed[3] !== Math.max(...sizes)) fail('FOR_DESIGNERS.md', `claims the scale ends at ${claimed[3]}px, TYPE ends at ${Math.max(...sizes)}px`);
   }
 }
 

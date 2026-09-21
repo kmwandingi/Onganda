@@ -562,7 +562,7 @@ export const OngandaNav = () => {
           <span style={{
           color: subtitleColor,
           fontWeight: 400,
-          fontSize: 13
+          fontSize: 14
         }}>Namibia AI Systems Lab</span>
         </span>
       </div>
@@ -576,7 +576,7 @@ export const OngandaNav = () => {
             the same as it already did on phones. */}
         <div className="hidden items-center gap-[18px] lg:flex lg:gap-6 xl:gap-8">
           {NAV_ITEMS.map(item => <a key={item.label} href={item.href} style={{
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 500,
           color: linkColor,
           textDecoration: 'none',
@@ -596,7 +596,7 @@ export const OngandaNav = () => {
           label: 'Full site',
           href: '/full'
         }].map(item => <a key={item.label} href={item.href} style={{
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 600,
           color: roles(isDark).accentInk,
           textDecoration: 'none',
@@ -1371,7 +1371,7 @@ export const SystemConnectionDiagram = ({
                   transition: 'background 0.18s, border-color 0.18s, box-shadow 0.18s',
                   boxShadow: isActive ? `0 0 0 3px ${node.hex}44, 0 4px 16px ${node.hex}33` : 'none'
                 }}>
-                      <div className="text-[8px] font-bold uppercase tracking-[0.18em] mb-1 text-center" style={{
+                      <div className="text-[9px] font-bold uppercase tracking-[0.18em] mb-1 text-center" style={{
                     color: isActive || isLinked ? COLOR.milletClay : inkOn(node.hex, COLOR.charBlack, true)
                   }}>{node.tag}</div>
                       <div className="w-6 h-6 mx-auto flex items-center justify-center" aria-hidden="true" style={{
@@ -1850,7 +1850,7 @@ export const PixelFlowchart = () => {
                 <FlowNodeIcon id="root" hex={rootNode.hex} />
                 <div>
                   <div className="flex items-baseline gap-2.5">
-                    <h3 className="text-xl font-semibold tracking-tight text-[#E8E1CF] leading-none">{rootNode.oshiwambo}</h3>
+                    <h3 className="text-lg font-semibold tracking-tight text-[#E8E1CF] leading-none">{rootNode.oshiwambo}</h3>
                     <PixelTag hex="transparent" label={rootNode.pixelTag} isDark />
                   </div>
                   <p className="text-sm text-[#E8E1CF]/55 mt-1">{rootNode.english}</p>
@@ -2060,7 +2060,7 @@ export const IconShowcase = () => {
                 <entry.component size={20} />
               </span>
               <span style={{
-            fontSize: 8,
+            fontSize: 9,
             fontWeight: 700,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
@@ -2723,9 +2723,43 @@ export const ProductPatterns = () => {
                 </PixelPanel>
               </DensityProvider>
               <p className="mt-4 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                The panel brings its own eyebrow, dither rule, weave and corner marks, so a compact
+                The panel brings its own eyebrow, weave and corner marks, so a compact
                 surface carries the language without the product re-deriving it.
               </p>
+
+              {/* The same component at page density. This is the brand's card:
+                  a transcript of the public site's feature card, and the
+                  reference the fidelity test measures against. Showing only
+                  the compact one left the actual card off the inventory. */}
+              <p className="mb-4 mt-10 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+                Panel · page density — the public site&rsquo;s card
+              </p>
+              <PixelPanel
+                data-testid="panel-page-density"
+                isDark={isDark}
+                eyebrow="Focus"
+                title="Adapt models"
+                note="Select, adapt, evaluate, and organize models for local use."
+              >
+                <PixelActions>
+                  <PixelButton variant="ghost" isDark={isDark}>Read the brief</PixelButton>
+                </PixelActions>
+              </PixelPanel>
+
+              {/* The second recipe. A card that stands for a thing with its own
+                  colour takes a spine and a closing dither rule instead of
+                  corner marks — never both sets of marks at once. */}
+              <p className="mb-4 mt-10 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+                Panel · spine recipe — for a card that carries an identity
+              </p>
+              <PixelPanel
+                isDark={isDark}
+                spine
+                accent={COLOR.mahanguGold}
+                eyebrow="Agents &amp; containers"
+                title="Ombiga"
+                note="Containers, agents, and held systems."
+              />
             </div>
           </div>
 

@@ -154,7 +154,7 @@ same "primary button" ends up three different colours on three pages.
 | `danger` | It destroys something. Never twice in one dialog. |
 
 Danger fills with Bark Rust rather than Fired Red: fired red's best foreground
-is 4.05:1, under the floor for a 13px button label. Fired red stays the critical
+is 4.05:1, under the floor for a 14px button label. Fired red stays the critical
 status and border colour.
 
 A control on an inverse surface — the footer, the ticker, the black lab card —

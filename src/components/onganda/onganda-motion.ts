@@ -30,7 +30,7 @@ export const MOTION = {
     }
   },
   // Interaction: never spring, never scale-on-hover for cards
-  hoverLift: { whileHover: { y: -2 }, transition: { type: 'tween', duration: 0.15 } },
+  hoverLift: { whileHover: { y: -4 }, transition: { type: 'tween', duration: 0.15 } },
   tap: { whileTap: { scale: 0.97 } },
   // Continuous ticker/marquee
   ticker: {

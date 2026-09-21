@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { MOTION } from './onganda-motion';
+import { TYPE } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
@@ -176,28 +177,58 @@ export const PixelArrowDown = ({
 
 // ─── SectionHeader — consistent section label + headline ─────────────────────
 // Usage: <SectionHeader label="System Architecture" headline="Five tools. One workshop." />
+// ─── SectionHeader — the label/headline rhythm that opens every section ──────
+// Usage: <SectionHeader label="Systems" headline="Five systems. One compound."
+//          accent={COLOR.mahanguGold} />
+//
+// Transcribed from the public site. Four parts, in this order, every time: an
+// accent dot, a 12px uppercase label, a 30px MEDIUM headline, and a hairline
+// rule under the pair. The headline is medium, not semibold — it sits under
+// the cards it introduces rather than competing with them.
+//
+// The accent dot is not decoration: it is how a section declares which colour
+// it is allowed to use. Whatever you pass here is the only accent permitted
+// in the section below it.
 export const SectionHeader = ({
   label,
   headline,
+  accent,
   isDark = false
 }: {
   label: string;
   headline: string;
+  /** the section's one permitted accent; defaults to the accent ink */
+  accent?: string;
   isDark?: boolean;
-}) => <div className="border-b pb-6 mb-12" style={{
-  borderColor: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)'
-}}>
-    <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{
-    color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
-  }}>
-      {label}
-    </h2>
-    <p className="text-2xl md:text-3xl font-medium tracking-tight" style={{
-    color: isDark ? COLOR.milletClay : COLOR.charBlack
-  }}>
-      {headline}
-    </p>
-  </div>;
+}) => {
+  const c = roles(isDark);
+  return (
+    <div className="border-b pb-6 mb-12" style={{ borderColor: c.line }}>
+      <div className="mb-3 flex items-center gap-3">
+        <PixelDot color={accent ?? c.accentInk} size={7} />
+        <h2 className="uppercase" style={{
+          fontSize: TYPE.eyebrow.size,
+          fontWeight: TYPE.eyebrow.weight,
+          letterSpacing: TYPE.eyebrow.tracking,
+          lineHeight: TYPE.eyebrow.lineHeight,
+          color: c.textMuted,
+          margin: 0
+        }}>
+          {label}
+        </h2>
+      </div>
+      <p className="max-w-4xl" style={{
+        fontSize: TYPE.pageTitle.size,
+        fontWeight: TYPE.pageTitle.weight,
+        lineHeight: TYPE.pageTitle.lineHeight,
+        color: c.text,
+        margin: 0
+      }}>
+        {headline}
+      </p>
+    </div>
+  );
+};
 
 // ─── WeaveOverlay — Oshiwambo basket-weave texture overlay ───────────────────
 // Usage: <WeaveOverlay isDark opacity={0.05} />
@@ -1127,7 +1158,7 @@ export const SystemCard = ({
       </div>
 
       <div className="mb-1">
-        <h3 className="text-xl font-semibold tracking-tight mb-3" style={{
+        <h3 className="text-lg font-semibold tracking-tight mb-3" style={{
         color: titleColor
       }}>{sys.name}</h3>
         <p className="text-sm font-medium mt-0.5" style={{

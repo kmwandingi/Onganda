@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
 import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity } from './onganda-primitives';
 import { MOTION } from './onganda-motion';
+import { TYPE, SPACE_SCALE } from './onganda-type';
 
 // ─── PixelNotice — inline callout tied to the four status states ─────────────
 // Usage: <PixelNotice status="caution" title="Pilot closes Friday">body</PixelNotice>
@@ -168,7 +169,7 @@ export const PixelDialog = ({
               {eyebrow && (
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>{eyebrow}</p>
               )}
-              <h2 className="text-xl font-semibold tracking-tight" style={{ color: c.text }}>{title}</h2>
+              <h2 className="text-lg font-semibold tracking-tight" style={{ color: c.text }}>{title}</h2>
               <DitherBar color={c.accentInk} segments={40} height={3} opacity={0.35} />
             </div>
             {children && (
@@ -220,7 +221,7 @@ export const PixelTable = <Row,>({
       aria-label={caption ? `${caption} (scrolls horizontally)` : 'Data table, scrolls horizontally'}
       style={{ border: `1px solid ${c.line}`, background: c.surface }}
     >
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
         {caption && <caption className="px-4 pt-4 pb-2 text-left text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>{caption}</caption>}
         <thead>
           <tr>
@@ -432,11 +433,30 @@ export const PixelProgress = ({
 // This is the compact peer of SectionHeader + a card: eyebrow, title, dither
 // rule, weave and corner marks in one place, so a panel cannot be built
 // without them.
+// ─── PixelPanel — the card, exactly as the public site builds it ─────────────
+// Usage: <PixelPanel eyebrow="Privacy" title="What appears in History">…</PixelPanel>
+//
+// This is a transcript of the feature card in the public site's "Why Onganda"
+// grid, which is the brand's general-purpose card: a light surface, a hairline
+// border, four pixel corner marks in the card's accent, a header row, an 18px
+// semibold title, and 14px body.
+//
+// Note what it does NOT do. The site never stacks its marks: the feature card
+// has corner marks and no spine and no dither rule; the system card has a
+// 3px spine and a bottom dither rule and no corner marks. An earlier version
+// of this component did all three at once, and cards built from it read as
+// busy and over-ruled next to the site they were supposed to match. Pass
+// `spine` to get the system-card recipe instead — you get one or the other,
+// never both.
+//
+// Padding follows density: 24 on a page, 16 in a side panel. The type does
+// not change (see DENSITY in onganda-type.ts).
 export const PixelPanel = ({
   eyebrow,
   title,
   note,
   accent,
+  spine = false,
   children,
   footer,
   isDark = false,
@@ -447,8 +467,12 @@ export const PixelPanel = ({
   title?: React.ReactNode;
   /** a quiet subtitle under the title */
   note?: React.ReactNode;
-  /** left rule colour; defaults to the accent ink */
+  /** the card's identifying colour; defaults to the accent ink */
   accent?: string;
+  /** the system-card recipe: a 3px left spine and a bottom dither rule,
+   *  instead of corner marks. Use it when the card stands for a thing that
+   *  has its own colour — a system, a feature area — not for chrome. */
+  spine?: boolean;
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -458,39 +482,88 @@ export const PixelPanel = ({
   // keeps test hooks and ARIA attributes working.
 } & Omit<React.HTMLAttributes<HTMLElement>, 'title'>) => {
   const c = roles(isDark);
+  const d = useDensity();
   const rule = accent ?? c.accentInk;
+  const pad = d.stackGap > 12 ? 24 : 16;
   return (
     <section
+      data-onganda-panel={spine ? 'spine' : 'corners'}
       {...rest}
       className={`relative overflow-hidden ${className}`}
-      style={{ background: c.surface, border: `1px solid ${c.line}`, borderLeft: `3px solid ${rule}` }}
+      style={{
+        background: c.surface,
+        border: `1px solid ${c.line}`,
+        ...(spine ? { borderLeft: `3px solid ${rule}` } : {})
+      }}
     >
-      <WeaveOverlay isDark={isDark} opacity={0.04} />
-      <PixelCornerMarks hex={rule} size={8} />
-      <div className="relative" style={{ padding: 16 }}>
+      <WeaveOverlay isDark={isDark} opacity={0.035} />
+      {!spine && <PixelCornerMarks hex={rule} size={7} />}
+      <div className="relative" style={{ padding: pad }}>
         {eyebrow && (
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: c.accentInk, margin: 0 }}>
+          <p
+            className="uppercase"
+            style={{
+              fontSize: TYPE.eyebrow.size,
+              fontWeight: TYPE.eyebrow.weight,
+              letterSpacing: TYPE.eyebrow.tracking,
+              lineHeight: TYPE.eyebrow.lineHeight,
+              color: c.textMuted,
+              margin: 0
+            }}
+          >
             {eyebrow}
           </p>
         )}
         {title && (
-          <h2 className="text-base font-semibold tracking-tight" style={{ color: c.text, margin: eyebrow ? '6px 0 0' : 0 }}>
+          <h2
+            style={{
+              fontSize: TYPE.title.size,
+              fontWeight: TYPE.title.weight,
+              lineHeight: TYPE.title.lineHeight,
+              color: c.text,
+              // The site's rhythm: a full step of air under the label, not a
+              // hairline gap. This is most of what makes its cards breathe.
+              margin: eyebrow ? `${SPACE_SCALE['4']}px 0 0` : 0
+            }}
+          >
             {title}
           </h2>
         )}
-        {/* A subtitle reads under the title, not above it. */}
-        {note && <p className="text-xs leading-relaxed" style={{ color: c.textMuted, margin: '5px 0 0' }}>{note}</p>}
-        {(eyebrow || title || note) && (
-          // DitherBar has no margin of its own, so it needs its own row or it
-          // collides with the line above it.
-          <div style={{ margin: '12px 0 14px' }}>
-            <DitherBar color={rule} segments={28} height={3} opacity={0.32} />
-          </div>
+        {note && (
+          <p
+            style={{
+              fontSize: TYPE.body.size,
+              lineHeight: TYPE.body.lineHeight,
+              color: c.textMuted,
+              margin: `${SPACE_SCALE['3']}px 0 0`
+            }}
+          >
+            {note}
+          </p>
+        )}
+        {(eyebrow || title || note) && children && (
+          <div style={{ height: SPACE_SCALE['5'] }} />
         )}
         {children}
       </div>
+      {spine && (
+        <DitherBar
+          color={rule}
+          segments={24}
+          height={2}
+          opacity={0.55}
+          className="absolute bottom-0 left-0 right-0"
+        />
+      )}
       {footer && (
-        <div className="relative" style={{ padding: '12px 16px', borderTop: `1px solid ${c.line}`, background: c.surfaceWell }}>
+        <div
+          className="relative"
+          style={{
+            padding: `${SPACE_SCALE['3']}px ${pad}px`,
+            borderTop: `1px solid ${c.line}`,
+            background: c.surfaceWell
+          }}
+        >
           {footer}
         </div>
       )}
@@ -498,10 +571,71 @@ export const PixelPanel = ({
   );
 };
 
-// ─── PixelChoice — a selectable option in a list ─────────────────────────────
-// Multiple choice was hand-rolled downstream as a bordered box with a radio
-// glyph, which is how it drifted: 44px tall boxes with a lot of dead space and
-// no trace of the language. The option is a first-class pattern here.
+// ─── PixelInversePanel — the black card ──────────────────────────────────────
+// Usage: <PixelInversePanel tag="Why Onganda" headline="…">body</PixelInversePanel>
+//
+// The site's one loud move. Everything else is quiet so that flipping to char
+// black reads as emphasis; use it once per view at most. Transcribed from the
+// "Why Onganda" panel: an accent tag, a 48px headline, dark-muted body, and a
+// dither rule closing the block.
+export const PixelInversePanel = ({
+  tag,
+  headline,
+  children,
+  accent,
+  className = '',
+  ...rest
+}: {
+  tag?: React.ReactNode;
+  headline?: React.ReactNode;
+  children?: React.ReactNode;
+  accent?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLElement>) => {
+  const c = roles(true);
+  const rule = accent ?? c.accentInk;
+  return (
+    <section
+      {...rest}
+      className={`relative overflow-hidden ${className}`}
+      style={{ background: roles(false).inverse, color: c.text, padding: SPACE_SCALE['8'] }}
+    >
+      <WeaveOverlay isDark opacity={0.055} />
+      <div className="relative">
+        {tag}
+        {headline && (
+          <h2
+            style={{
+              fontSize: TYPE.display.size,
+              fontWeight: TYPE.display.weight,
+              lineHeight: TYPE.display.lineHeight,
+              color: roles(false).textOnInverse,
+              margin: `${SPACE_SCALE['10']}px 0 0`
+            }}
+          >
+            {headline}
+          </h2>
+        )}
+        {children && (
+          <div
+            style={{
+              fontSize: TYPE.body.size,
+              lineHeight: TYPE.body.lineHeight,
+              color: c.textMuted,
+              marginTop: SPACE_SCALE['8']
+            }}
+          >
+            {children}
+          </div>
+        )}
+        <div style={{ marginTop: SPACE_SCALE['10'] }}>
+          <DitherBar color={rule} segments={28} height={3} opacity={0.65} />
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export const PixelChoice = ({
   label,
   selected,

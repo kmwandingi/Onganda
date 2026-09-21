@@ -625,9 +625,9 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
-        "fontSize": "8px",
+        "fontSize": "9px",
         "fontWeight": 700,
-        "lineHeight": 1.2,
+        "lineHeight": 1.5,
         "letterSpacing": "0.18em",
         "textCase": "uppercase"
       }
@@ -636,10 +636,21 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
-        "fontSize": "9px",
+        "fontSize": "10px",
         "fontWeight": 700,
-        "lineHeight": 1.2,
-        "letterSpacing": "0.16em",
+        "lineHeight": 1.5,
+        "letterSpacing": "0.12em",
+        "textCase": "uppercase"
+      }
+    },
+    "label": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "11px",
+        "fontWeight": 700,
+        "lineHeight": 1.5,
+        "letterSpacing": "0.18em",
         "textCase": "uppercase"
       }
     },
@@ -647,32 +658,21 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
-        "fontSize": "10px",
+        "fontSize": "12px",
         "fontWeight": 700,
-        "lineHeight": 1.2,
+        "lineHeight": 1.33,
         "letterSpacing": "0.16em",
         "textCase": "uppercase"
       }
     },
-    "caption": {
-      "$type": "typography",
-      "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
-        "fontSize": "11px",
-        "fontWeight": 500,
-        "lineHeight": 1.45,
-        "letterSpacing": "0.02em",
-        "textCase": "none"
-      }
-    },
-    "small": {
+    "code": {
       "$type": "typography",
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
         "fontSize": "12px",
-        "fontWeight": 500,
-        "lineHeight": 1.45,
-        "letterSpacing": "0.02em",
+        "fontWeight": 400,
+        "lineHeight": 2,
+        "letterSpacing": "0em",
         "textCase": "none"
       }
     },
@@ -680,10 +680,21 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
-        "fontSize": "13px",
+        "fontSize": "14px",
+        "fontWeight": 600,
+        "lineHeight": 1.43,
+        "letterSpacing": "0em",
+        "textCase": "none"
+      }
+    },
+    "meta": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontSize": "14px",
         "fontWeight": 500,
-        "lineHeight": 1.4,
-        "letterSpacing": "0.02em",
+        "lineHeight": 1.43,
+        "letterSpacing": "0em",
         "textCase": "none"
       }
     },
@@ -704,7 +715,7 @@
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
         "fontSize": "16px",
         "fontWeight": 400,
-        "lineHeight": 1.65,
+        "lineHeight": 1.6,
         "letterSpacing": "0em",
         "textCase": "none"
       }
@@ -724,10 +735,10 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
-        "fontSize": "20px",
+        "fontSize": "18px",
         "fontWeight": 600,
         "lineHeight": 1.25,
-        "letterSpacing": "-0.01em",
+        "letterSpacing": "0em",
         "textCase": "none"
       }
     },
@@ -737,8 +748,8 @@
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
         "fontSize": "24px",
         "fontWeight": 600,
-        "lineHeight": 1.2,
-        "letterSpacing": "-0.01em",
+        "lineHeight": 1.33,
+        "letterSpacing": "0em",
         "textCase": "none"
       }
     },
@@ -747,9 +758,9 @@
       "$value": {
         "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
         "fontSize": "30px",
-        "fontWeight": 600,
-        "lineHeight": 1.15,
-        "letterSpacing": "-0.02em",
+        "fontWeight": 500,
+        "lineHeight": 1.25,
+        "letterSpacing": "0em",
         "textCase": "none"
       }
     },
@@ -807,8 +818,9 @@
     "comfortable": {
       "$type": "other",
       "$value": {
-        "buttonPadding": "10px 22px",
-        "buttonFont": 13,
+        "Measured": "the",
+        "buttonPadding": "12px 24px",
+        "buttonFont": 14,
         "fieldPadding": "12px 16px",
         "fieldFont": 14,
         "textareaMinHeight": 128,
@@ -817,24 +829,24 @@
         "toggleHeight": 20,
         "stackGap": 20,
         "labelGap": 12,
-        "tabPadding": "7px 14px"
+        "tabPadding": "8px 16px"
       },
       "$description": "Pages and full-width app views. The default."
     },
     "compact": {
       "$type": "other",
       "$value": {
-        "buttonPadding": "6px 14px",
-        "buttonFont": 12,
+        "buttonPadding": "8px 16px",
+        "buttonFont": 14,
         "fieldPadding": "8px 12px",
-        "fieldFont": 13,
+        "fieldFont": 14,
         "textareaMinHeight": 88,
         "controlBox": 16,
-        "toggleWidth": 34,
-        "toggleHeight": 18,
+        "toggleWidth": 36,
+        "toggleHeight": 20,
         "stackGap": 12,
         "labelGap": 8,
-        "tabPadding": "5px 10px"
+        "tabPadding": "8px 12px"
       },
       "$description": "Popups, side panels, toolbars, inspectors, dense tables."
     }

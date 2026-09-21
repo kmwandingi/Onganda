@@ -1651,7 +1651,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       border: `1px solid ${COLOR.ochreOrange}30`
     }}>
       <div style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1672,7 +1672,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             </linearGradient>
           </defs>
           <XAxis dataKey="year" tick={{
-            fontSize: 8,
+            fontSize: 9,
             fill: muted
           }} axisLine={false} tickLine={false} />
           <YAxis hide />
@@ -1755,7 +1755,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       minWidth: 220
     }}>
       <div style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1769,7 +1769,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         marginBottom: 2
       }}>
         <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: 'rgba(232,225,207,0.55)',
           width: 42,
           flexShrink: 0,
@@ -1797,7 +1797,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       border: `1px solid ${COLOR.dyePlum}30`
     }}>
       <div style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1808,7 +1808,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         <RadarChart data={radarChartData}>
           <PolarGrid stroke={`${COLOR.dyePlum}30`} />
           <PolarAngleAxis dataKey="subject" tick={{
-            fontSize: 8,
+            fontSize: 9,
             fill: muted
           }} />
           <Radar dataKey="value" stroke={COLOR.dyePlum} fill={COLOR.dyePlum} fillOpacity={0.25} strokeWidth={1.5} />
@@ -2037,7 +2037,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
               editingField: 'name'
             });
           }} onMouseDown={e => e.stopPropagation()} style={{
-            fontSize: 8,
+            fontSize: 9,
             padding: '1px 5px',
             background: `${sys.borderHex}20`,
             border: `1px solid ${sys.borderHex}50`,
@@ -2050,7 +2050,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
               editingField: 'role'
             });
           }} onMouseDown={e => e.stopPropagation()} style={{
-            fontSize: 8,
+            fontSize: 9,
             padding: '1px 5px',
             background: `${sys.borderHex}20`,
             border: `1px solid ${sys.borderHex}50`,
@@ -2151,7 +2151,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
               editingField: 'name'
             });
           }} onMouseDown={e => e.stopPropagation()} style={{
-            fontSize: 8,
+            fontSize: 9,
             padding: '1px 5px',
             background: `${node.hex}20`,
             border: `1px solid ${node.hex}50`,
@@ -2164,7 +2164,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
               editingField: 'role'
             });
           }} onMouseDown={e => e.stopPropagation()} style={{
-            fontSize: 8,
+            fontSize: 9,
             padding: '1px 5px',
             background: `${node.hex}20`,
             border: `1px solid ${node.hex}50`,
@@ -2247,7 +2247,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         marginTop: 3
       }}>
         <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: phase.hex,
           fontWeight: 700
         }}>{displayProgress}%</span>
@@ -2260,7 +2260,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             editingField: undefined
           });
         }} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()} style={{
-          fontSize: 8,
+          fontSize: 9,
           color: phase.hex,
           background: 'transparent',
           border: 'none',
@@ -2270,7 +2270,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
           width: 80,
           padding: '0 2px'
         }} /> : <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: muted
         }}>{displayPeriod}</span>}
       </div>
@@ -2285,7 +2285,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             editingField: 'phaseName'
           });
         }} onMouseDown={e => e.stopPropagation()} style={{
-          fontSize: 8,
+          fontSize: 9,
           padding: '1px 5px',
           background: `${phase.hex}20`,
           border: `1px solid ${phase.hex}50`,
@@ -2298,7 +2298,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             editingField: 'period'
           });
         }} onMouseDown={e => e.stopPropagation()} style={{
-          fontSize: 8,
+          fontSize: 9,
           padding: '1px 5px',
           background: `${phase.hex}20`,
           border: `1px solid ${phase.hex}50`,
@@ -2426,7 +2426,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             editingField: 'appName'
           });
         }} onMouseDown={e => e.stopPropagation()} style={{
-          fontSize: 8,
+          fontSize: 9,
           padding: '1px 5px',
           background: `${app.hex}20`,
           border: `1px solid ${app.hex}50`,
@@ -2439,7 +2439,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             editingField: 'sector'
           });
         }} onMouseDown={e => e.stopPropagation()} style={{
-          fontSize: 8,
+          fontSize: 9,
           padding: '1px 5px',
           background: `${app.hex}20`,
           border: `1px solid ${app.hex}50`,
@@ -2452,7 +2452,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
             editingField: 'appDesc'
           });
         }} onMouseDown={e => e.stopPropagation()} style={{
-          fontSize: 8,
+          fontSize: 9,
           padding: '1px 5px',
           background: `${app.hex}20`,
           border: `1px solid ${app.hex}50`,
@@ -2506,7 +2506,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
         borderBottom: `1px solid ${terminal.tagHex}33`
       }}>
         <span style={{
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
@@ -2671,12 +2671,12 @@ function ComponentPreview({
         justifyContent: 'space-between'
       }}>
         <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: item.hex,
           fontWeight: 700
         }}>{phase.tag}</span>
         <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: muted
         }}>{phase.progress}%</span>
       </div>
@@ -2715,7 +2715,7 @@ function ComponentPreview({
           height: 4,
           background: item.hex
         }} /><span style={{
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           color: isDark ? COLOR.milletClay : COLOR.charBlack
         }}>{app.name}</span></div></div>;
@@ -2768,7 +2768,7 @@ function ComponentPreview({
         background: terminal.tagHex
       }} />
       <span style={{
-        fontSize: 8,
+        fontSize: 9,
         color: terminal.tagHex,
         fontWeight: 700,
         letterSpacing: '0.1em',
@@ -3408,7 +3408,7 @@ const ComponentPanel = ({
       }}>
         {SLIDE_PALETTE_CATEGORIES.map(cat => <button key={`cat-${cat}`} onClick={() => onCategoryChange(cat)} style={{
           padding: '2px 6px',
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.10em',
           cursor: 'pointer',
@@ -3473,7 +3473,7 @@ const ComponentPanel = ({
               background: muted
             }} />)}
             <span style={{
-              fontSize: 8,
+              fontSize: 9,
               color: muted,
               letterSpacing: '0.12em'
             }}>drag to slide</span>
@@ -3582,7 +3582,7 @@ function SlideThumbnail({
       gap: 6
     }}>
       <span style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.16em',
         color: isActive ? COLOR.ochreOrange : muted
@@ -4064,7 +4064,7 @@ const EditorToolbar = ({
           opacity: 0.7
         }} />
         <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: muted,
           letterSpacing: '0.10em'
         }}>saved</span>
@@ -4108,7 +4108,7 @@ const EditorToolbar = ({
         e.currentTarget.style.color = muted;
       }}>
         <span style={{
-          fontSize: 13,
+          fontSize: 14,
           lineHeight: 1
         }}>↩</span>
         <span>Undo</span>
@@ -4127,7 +4127,7 @@ const EditorToolbar = ({
         e.currentTarget.style.color = muted;
       }}>
         <span style={{
-          fontSize: 13,
+          fontSize: 14,
           lineHeight: 1
         }}>↪</span>
         <span>Redo</span>
@@ -4359,7 +4359,7 @@ const SlidePicker = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 20,
+              fontSize: 18,
               color: opt.color
             }}>{opt.icon}</div>
             <div>
@@ -4913,7 +4913,7 @@ export const SlideEditor = ({
           }}>
             <PixelDot color={muted} size={4} />
             <span style={{
-              fontSize: 8,
+              fontSize: 9,
               fontWeight: 700,
               letterSpacing: '0.16em',
               color: muted,
@@ -4921,7 +4921,7 @@ export const SlideEditor = ({
             }}>Slides</span>
           </div>
           <span style={{
-            fontSize: 8,
+            fontSize: 9,
             color: muted
           }}>{slides.length}</span>
         </div>

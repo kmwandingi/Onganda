@@ -59,7 +59,7 @@ export const DocBlockDisplay = ({
   }
 
   if (block.type === 'body') {
-    return <p style={{ fontSize: 13.5, lineHeight: 1.85, color: bodyColor, margin: 0, fontFamily: 'Georgia, serif' }}>
+    return <p style={{ fontSize: 14, lineHeight: 1.85, color: bodyColor, margin: 0, fontFamily: 'Georgia, serif' }}>
       {block.content}
     </p>;
   }
@@ -87,7 +87,7 @@ export const DocBlockDisplay = ({
     return <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6 }}>
       {items.map((item, i) => <li key={`dbd-li-${block.id}-${i}`} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
         <div style={{ width: 5, height: 5, background: accent, marginTop: 7, flexShrink: 0 }} />
-        <span style={{ fontSize: 13, lineHeight: 1.7, color: bodyColor, fontFamily: 'Georgia, serif' }}>{item}</span>
+        <span style={{ fontSize: 14, lineHeight: 1.7, color: bodyColor, fontFamily: 'Georgia, serif' }}>{item}</span>
       </li>)}
     </ul>;
   }

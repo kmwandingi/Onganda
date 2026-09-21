@@ -1,44 +1,65 @@
 // ─── Onganda Design System — Typography & Space Scale ────────────────────────
-// The complete, closed type scale. A size that is not here is not an Onganda
-// size, and `npm run check:tokens` fails on one.
+// This scale is not a design. It is a TRANSCRIPT.
 //
-// The scale is what the system actually uses, with the near-duplicates removed
-// — a 15px and a 16px in the same role were an accident, not a decision. Every
-// value is a whole pixel: the geometry is pixel-aligned and fractional type
-// undermines that. It is dense at the small end because this is an editorial
-// system built on micro-labels; each step below 14px has a distinct job.
+// Onganda's public site (/ and /full) is the reference implementation of the
+// brand. It came first, it is what the brand actually looks like, and it is
+// what every other surface must look like. This file records the type it
+// uses — measured off the rendered DOM at 1440px, not chosen by eye.
+//
+// So: a size that is not here is not an Onganda size, and `npm run
+// check:tokens` fails on one. If you believe a step is missing, the question
+// is not "should we add it" — it is "where does the public site use it". If
+// the answer is nowhere, the answer is no.
+//
+// Each step below records the element it was measured from. Do not retune a
+// step without changing the public site first and re-measuring.
 //
 // Designers: these are exported to `tokens/onganda.tokens.json` in the W3C
 // design-token format, which Tokens Studio imports directly into Figma.
 
 export const TYPE = {
-  /** 8px — pixel tags and ordinals. Decorative by intent: anything at this
-   *  size must be aria-hidden or repeat information available elsewhere. */
-  tag: { size: 8, lineHeight: 1.2, tracking: '0.18em', weight: 700, case: 'uppercase' },
-  /** 9px — the smallest readable label */
-  micro: { size: 9, lineHeight: 1.2, tracking: '0.16em', weight: 700, case: 'uppercase' },
-  /** 10px — the eyebrow label above every section headline */
-  eyebrow: { size: 10, lineHeight: 1.2, tracking: '0.16em', weight: 700, case: 'uppercase' },
-  /** 11px — captions, table meta, inline annotations */
-  caption: { size: 11, lineHeight: 1.45, tracking: '0.02em', weight: 500, case: 'none' },
-  /** 12px — dense secondary text, the most common small step */
-  small: { size: 12, lineHeight: 1.45, tracking: '0.02em', weight: 500, case: 'none' },
-  /** 13px — control and button labels */
-  ui: { size: 13, lineHeight: 1.4, tracking: '0.02em', weight: 500, case: 'none' },
-  /** 14px — default body */
+  /** 9px — pixel tag ordinals and the hero status chip ("LIVE", "01").
+   *  Decorative by intent: anything at this size must be aria-hidden or
+   *  repeat information available elsewhere. Measured: PixelTag. */
+  tag: { size: 9, lineHeight: 1.5, tracking: '0.18em', weight: 700, case: 'uppercase' },
+  /** 10px — the quiet gloss beside a louder label: the English reading under
+   *  a system name, the lab line under the wordmark. Measured: ticker gloss. */
+  micro: { size: 10, lineHeight: 1.5, tracking: '0.12em', weight: 700, case: 'uppercase' },
+  /** 11px — a standalone identifier in a dense strip. Measured: the system
+   *  name in the hero ticker. This step is a LABEL, not a caption: at 11px
+   *  the site only ever sets bold uppercase. */
+  label: { size: 11, lineHeight: 1.5, tracking: '0.18em', weight: 700, case: 'uppercase' },
+  /** 12px — THE eyebrow. The most-used label in the system: the word above
+   *  every section headline, every nav item, every card's role line.
+   *  Measured: "Systems", "Focus", "Model & Data Platform". */
+  eyebrow: { size: 12, lineHeight: 1.33, tracking: '0.16em', weight: 700, case: 'uppercase' },
+  /** 12px — terminal and code lines. Airy leading because a code block is
+   *  read line by line. Measured: TerminalCard. */
+  code: { size: 12, lineHeight: 2, tracking: '0em', weight: 400, case: 'none' },
+  /** 14px — the button and control label. Measured: "Request a conversation". */
+  ui: { size: 14, lineHeight: 1.43, tracking: '0em', weight: 600, case: 'none' },
+  /** 14px — a subtitle directly under a title, weighted to hold its own
+   *  against the title above it. Measured: "Granary" under "Okaanda". */
+  meta: { size: 14, lineHeight: 1.43, tracking: '0em', weight: 500, case: 'none' },
+  /** 14px — default body, and the body of every card. */
   body: { size: 14, lineHeight: 1.6, tracking: '0em', weight: 400, case: 'none' },
-  /** 16px — long-form reading */
-  bodyLarge: { size: 16, lineHeight: 1.65, tracking: '0em', weight: 400, case: 'none' },
-  /** 18px — section lead paragraph */
+  /** 16px — long-form reading. */
+  bodyLarge: { size: 16, lineHeight: 1.6, tracking: '0em', weight: 400, case: 'none' },
+  /** 18px — the paragraph that opens a section. Measured: hero body. */
   lead: { size: 18, lineHeight: 1.6, tracking: '0em', weight: 400, case: 'none' },
-  /** 20px — card and panel titles */
-  title: { size: 20, lineHeight: 1.25, tracking: '-0.01em', weight: 600, case: 'none' },
-  /** 24px — section headline */
-  headline: { size: 24, lineHeight: 1.2, tracking: '-0.01em', weight: 600, case: 'none' },
-  /** 30px — page headline */
-  pageTitle: { size: 30, lineHeight: 1.15, tracking: '-0.02em', weight: 600, case: 'none' },
-  /** 48px — the largest fixed size; above this use the fluid display steps */
-  display: { size: 48, lineHeight: 1.08, tracking: '-0.02em', weight: 700, case: 'none' }
+  /** 18px — card and panel titles. Measured: "Adapt models". */
+  title: { size: 18, lineHeight: 1.25, tracking: '0em', weight: 600, case: 'none' },
+  /** 24px — the title of a full editorial card. Measured: "Okaanda". */
+  headline: { size: 24, lineHeight: 1.33, tracking: '0em', weight: 600, case: 'none' },
+  /** 30px — the section headline under an eyebrow. MEDIUM, not semibold: the
+   *  site's section headlines are deliberately lighter than its card titles,
+   *  which is what keeps a page of cards from shouting over its own
+   *  structure. Measured: "Five systems. One compound." */
+  pageTitle: { size: 30, lineHeight: 1.25, tracking: '0em', weight: 500, case: 'none' },
+  /** 48px — the headline inside an inverted panel; the largest fixed size.
+   *  Above this use the fluid display steps. Measured: "Namibia should not
+   *  only consume AI." */
+  display: { size: 48, lineHeight: 1.25, tracking: '0em', weight: 600, case: 'none' }
 } as const;
 
 export type TypeStep = keyof typeof TYPE;
@@ -97,10 +118,14 @@ export const GEOMETRY = {
 } as const;
 
 // ─── Density ─────────────────────────────────────────────────────────────────
-// The system shipped with one density, tuned for a page. Dropped unchanged into
-// a 340px popup or a narrow side panel, a 36px button with 22px of horizontal
-// padding and a 43px field is oversized, and the layout reads as cramped and
-// heavy — which is exactly what happened in the first extension surfaces.
+// Density changes SPACING. It never changes type.
+//
+// The brand's control label is 14px/600 — measured off the public site's
+// "Request a conversation". A popup does not get a different typeface size for
+// the same job; it gets tighter padding. Shrinking the type as well was the
+// mistake that made the first extension surfaces look like a different
+// product, so the two sets below share every font size and differ only in the
+// space around it.
 //
 // Density is a property of the SURFACE, not of each control. A container
 // declares it once with <DensityProvider>, and every control inside tightens
@@ -110,8 +135,9 @@ export const GEOMETRY = {
 //   compact     — popups, side panels, toolbars, inspectors, dense tables
 export const DENSITY = {
   comfortable: {
-    buttonPadding: '10px 22px',
-    buttonFont: TYPE.ui.size,        // 13
+    // Measured: the public hero's primary action is px-6 py-3.
+    buttonPadding: '12px 24px',
+    buttonFont: TYPE.ui.size,        // 14
     fieldPadding: '12px 16px',
     fieldFont: TYPE.body.size,       // 14
     textareaMinHeight: 128,
@@ -120,20 +146,20 @@ export const DENSITY = {
     toggleHeight: 20,
     stackGap: SPACE_SCALE['5'],      // 20
     labelGap: SPACE_SCALE['3'],      // 12
-    tabPadding: '7px 14px'
+    tabPadding: '8px 16px'
   },
   compact: {
-    buttonPadding: '6px 14px',
-    buttonFont: TYPE.small.size,     // 12
+    buttonPadding: '8px 16px',
+    buttonFont: TYPE.ui.size,        // 14 — same step, tighter box
     fieldPadding: '8px 12px',
-    fieldFont: TYPE.ui.size,         // 13
+    fieldFont: TYPE.body.size,       // 14 — same step, tighter box
     textareaMinHeight: 88,
     controlBox: 16,
-    toggleWidth: 34,
-    toggleHeight: 18,
+    toggleWidth: 36,
+    toggleHeight: 20,
     stackGap: SPACE_SCALE['3'],      // 12
     labelGap: SPACE_SCALE['2'],      // 8
-    tabPadding: '5px 10px'
+    tabPadding: '8px 12px'
   }
 } as const;
 

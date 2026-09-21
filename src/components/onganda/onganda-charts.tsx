@@ -1001,7 +1001,7 @@ const WaterfallChartPanel = () => <ChartCard title="Contribution Waterfall" tag=
       <BarChart data={WATERFALL_DATA} barCategoryGap="28%">
         <CartesianGrid vertical={false} stroke={C.grid} />
         <XAxis dataKey="name" tick={{
-        fontSize: 8,
+        fontSize: 9,
         fill: C.tick,
         fontWeight: 700
       }} axisLine={false} tickLine={false} />

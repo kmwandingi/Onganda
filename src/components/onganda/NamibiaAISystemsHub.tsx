@@ -104,7 +104,7 @@ export const NamibiaAISystemsHub = () => {
             }} />}
               <div className="relative">
                 <div className="w-3 h-3 bg-[#D9791F] mb-8" aria-hidden="true" />
-                <h3 className="text-xl font-semibold tracking-tight mb-3 text-[#E8E1CF]">The Institute</h3>
+                <h3 className="text-lg font-semibold tracking-tight mb-3 text-[#E8E1CF]">The Institute</h3>
                 <p className="leading-relaxed text-sm mb-8" style={{
                 color: isDark ? 'rgba(232,225,207,0.50)' : 'rgba(232,225,207,0.60)'
               }}>

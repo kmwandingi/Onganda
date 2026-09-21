@@ -13,6 +13,15 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
 
+> **The public site is the source, not a consumer.** `/` and `/full` are the
+> reference implementation of the brand. They came first, they are what
+> Onganda actually looks like, and the tokens and patterns in this repo are a
+> *transcript* of them — the type scale in §6 was measured off the rendered
+> DOM, not chosen. So the direction of change is fixed: **to change the
+> system, change the public site first and re-measure.** Never retune a token
+> to suit a new surface. `tests/browser/fidelity.spec.ts` measures the site
+> and the system against each other and fails when they disagree.
+
 ---
 
 ## Table of Contents
@@ -406,7 +415,7 @@ Both modes warm up to ochre on the primary hover; the neutral extreme is char
 black in light and millet clay in dark, because char black is the dark canvas.
 
 Danger fills with bark rust rather than fired red. Fired red's best foreground
-is 4.05:1, under the floor for a 13px label; a fired-red marker on a bark rust
+is 4.05:1, under the floor for a 14px label; a fired-red marker on a bark rust
 fill measures 1.55:1 and is invisible; and an outlined treatment passes but
 makes the destructive action quieter than the primary, which is wrong in a
 confirmation dialog where deleting *is* the primary action. Bark rust sits
@@ -446,11 +455,18 @@ import { DensityProvider, PixelButton, PixelInput } from '@onganda/design-system
 | | `comfortable` (default) | `compact` |
 |---|---|---|
 | Use for | Pages, marketing, full-width app views | Popups, side panels, toolbars, inspectors, dense tables |
-| Button | 42px tall, `10px 22px`, 13px | 32px tall, `6px 14px`, 12px |
-| Field | 47px tall, `12px 16px`, 14px | 38px tall, `8px 12px`, 13px |
+| Button | 44px tall, `12px 24px`, 14px | 36px tall, `8px 16px`, 14px |
+| Field | 47px tall, `12px 16px`, 14px | 39px tall, `8px 12px`, 14px |
 | Checkbox / radio | 18px | 16px |
-| Toggle | 40×20 | 34×18 |
+| Toggle | 40×20 | 36×20 |
 | Label gap / stack gap | 12 / 20 | 8 / 12 |
+| Panel padding | 24 | 16 |
+
+**Density changes spacing. It never changes type.** Both columns set the
+control label at 14px/600 — the size measured off the public site's primary
+action. Shrinking the type as well is what made the first extension surfaces
+read as a different product; a narrow surface gets a tighter box around the
+same letters.
 
 Never hand-tune a control's padding to fit a narrow surface. Set the density on
 the container; the whole surface stays in proportion.
@@ -603,9 +619,17 @@ Pass `empty` and the table renders that instead of an empty body.
 </PixelPanel>
 ```
 
-The compact peer of `SectionHeader` plus a card. It brings its own eyebrow,
-dither rule, weave texture, corner marks and left rule, so a panel cannot be
-built without the language.
+A transcript of the feature card in the public site's "Why Onganda" grid —
+the brand's general-purpose card. Surface, hairline border, four pixel corner
+marks in the card's accent, a 12px eyebrow, an 18px semibold title, 14px body.
+Padding follows density: 24 on a page, 16 in a side panel.
+
+**It does not stack its marks.** The site never does. Its feature card has
+corner marks and no spine and no dither rule; its system card has a 3px spine
+and a bottom dither rule and no corner marks. Pass `spine` to get the second
+recipe — you get one or the other, never both. An earlier version of this
+component did all three at once, and cards built from it read as busy and
+over-ruled beside the site they were meant to match.
 
 This exists because measuring a product's panels against the landing page
 found them at the floor on every composition measure — one weave, three marks,
@@ -868,8 +892,16 @@ import { SectionHeader } from '@onganda/design-system';
 />
 ```
 
-Props: `label`, `headline`, `isDark` (default `false`).
-Renders: small uppercase label above a 26px headline, separated by a subtle bottom border.
+Props: `label`, `headline`, `accent` (default `accentInk`), `isDark` (default `false`).
+
+Renders the four-part rhythm the public site opens every section with, in this
+order every time: an accent `PixelDot`, a 12px uppercase label, a 30px
+**medium** headline, and a hairline rule under the pair. The headline is medium,
+not semibold — it sits beneath the cards it introduces rather than competing
+with them.
+
+The accent dot is not decoration. It declares which colour the section below is
+allowed to use, and it should be the only accent in that section.
 
 ---
 
@@ -1534,7 +1566,44 @@ Connections use 90° polylines — no bezier curves.
 
 ### 6. Typography scale
 
-Use CSS custom properties, not bare `clamp()` or hardcoded `vw`:
+The scale is a **transcript of the public site**, measured off the rendered DOM
+at 1440px. The site is the reference implementation of the brand: it came
+first, it is what Onganda actually looks like, and every other surface must
+look like it. A size that is not in this table is not an Onganda size, and
+`check:tokens` fails the build on one.
+
+If you think a step is missing, the question is not "should we add it" — it is
+"where does the public site use it". If the answer is nowhere, the answer is no.
+
+| Step | Size | Weight | Tracking | Leading | Case | Job — and where it was measured |
+|---|---|---|---|---|---|---|
+| `tag` | 9 | 700 | 0.18em | 1.5 | UPPER | Pixel tag ordinals, the hero status chip. Decorative: `aria-hidden` or repeat it elsewhere |
+| `micro` | 10 | 700 | 0.12em | 1.5 | UPPER | The quiet gloss beside a louder label — "Granary" under a system name |
+| `label` | 11 | 700 | 0.18em | 1.5 | UPPER | A standalone identifier in a dense strip — the system name in the ticker |
+| `eyebrow` | 12 | 700 | 0.16em | 1.33 | UPPER | **THE eyebrow.** Above every section headline, every nav item, every card's role line |
+| `code` | 12 | 400 | — | 2.0 | — | Terminal and code lines. Airy because it is read line by line |
+| `ui` | 14 | 600 | — | 1.43 | — | The button and control label — "Request a conversation" |
+| `meta` | 14 | 500 | — | 1.43 | — | A subtitle directly under a title — "Granary" under "Okaanda" |
+| `body` | 14 | 400 | — | 1.6 | — | Default body, and the body of every card |
+| `bodyLarge` | 16 | 400 | — | 1.6 | — | Long-form reading |
+| `lead` | 18 | 400 | — | 1.6 | — | The paragraph that opens a section |
+| `title` | 18 | 600 | — | 1.25 | — | Card and panel titles — "Adapt models" |
+| `headline` | 24 | 600 | — | 1.33 | — | The title of a full editorial card — "Okaanda" |
+| `pageTitle` | 30 | **500** | — | 1.25 | — | The section headline under an eyebrow — "Five systems. One compound." |
+| `display` | 48 | 600 | — | 1.25 | — | The headline inside an inverted panel |
+
+Two of these carry most of the site's character and are the ones most often
+got wrong:
+
+- **`pageTitle` is medium, not semibold.** A section headline is lighter than
+  the card titles under it. That is what stops a page of cards from shouting
+  over its own structure.
+- **`eyebrow` is 12px, not 10px.** The 10px step is the *gloss* beside a label,
+  not the label. Setting eyebrows at 10px is the single quickest way to make a
+  surface look like a dense admin tool rather than Onganda.
+
+Above 48px, type is fluid. Use the CSS custom properties, not bare `clamp()` or
+a hardcoded `vw`:
 
 ```css
 font-size: var(--type-hero);         /* hero headline */

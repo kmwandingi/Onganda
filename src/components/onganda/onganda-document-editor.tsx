@@ -748,7 +748,7 @@ const StatBlock = ({
       }}>
           {fields.map(f => <div key={f.key}>
               <label style={{
-            fontSize: 8,
+            fontSize: 9,
             fontWeight: 700,
             letterSpacing: '0.12em',
             textTransform: 'uppercase' as const,
@@ -772,7 +772,7 @@ const StatBlock = ({
         </div>
         <div>
           <label style={{
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
@@ -850,7 +850,7 @@ const TerminalBlock = ({
   if (isConfiguring) {
     return <div>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -954,7 +954,7 @@ const TimelineBlock = ({
   if (isConfiguring) {
     return <div>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -999,7 +999,7 @@ const TimelineBlock = ({
         <PixelTag hex={phase.hex} label={phase.tag} />
         <div>
           <span style={{
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 700,
           color: isDark ? COLOR.milletClay : inkOn(phase.hex, EDITOR_SURFACE.paperWarm)
         }}>{phase.oshiwambo}</span>
@@ -1087,7 +1087,7 @@ const SystemCardBlock = ({
   if (isConfiguring) {
     return <div>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1189,7 +1189,7 @@ const FlowNodeBlock = ({
   if (isConfiguring) {
     return <div>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1306,7 +1306,7 @@ const HeatmapBlock = ({
       gap: 12
     }}>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1327,7 +1327,7 @@ const HeatmapBlock = ({
             {colLabels.map((lbl, ci) => <div key={`hcfg-x-${ci}`} style={{
             width: 36,
             textAlign: 'center',
-            fontSize: 8,
+            fontSize: 9,
             color: 'rgba(232,225,207,0.55)',
             fontWeight: 700
           }}>{lbl}</div>)}
@@ -1342,7 +1342,7 @@ const HeatmapBlock = ({
         }}>
               <div style={{
             width: 72,
-            fontSize: 8,
+            fontSize: 9,
             color: 'rgba(232,225,207,0.55)',
             fontWeight: 700,
             textAlign: 'right',
@@ -1367,7 +1367,7 @@ const HeatmapBlock = ({
               }} />
                   <input type="number" min="0" max="1" step="0.05" value={val.toFixed(2)} onChange={e => updateCell(ri, ci, Math.max(0, Math.min(1, Number(e.target.value))))} style={{
                 width: 36,
-                fontSize: 8,
+                fontSize: 9,
                 background: 'transparent',
                 border: '1px solid rgba(232,225,207,0.15)',
                 outline: 'none',
@@ -1399,7 +1399,7 @@ const HeatmapBlock = ({
         {colLabels.map((label, i) => <div key={`hx-doc-${i}`} style={{
         flex: 1,
         textAlign: 'center',
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1414,7 +1414,7 @@ const HeatmapBlock = ({
     }}>
           <div style={{
         width: 72,
-        fontSize: 8,
+        fontSize: 9,
         color: 'rgba(232,225,207,0.55)',
         fontWeight: 700,
         textAlign: 'right',
@@ -1434,7 +1434,7 @@ const HeatmapBlock = ({
       marginTop: 8
     }}>
         <span style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1446,7 +1446,7 @@ const HeatmapBlock = ({
         background: c
       }} />)}
         <span style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1483,7 +1483,7 @@ const MarketChartBlock = ({
     }}>
         <div>
           <label style={{
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
@@ -1505,7 +1505,7 @@ const MarketChartBlock = ({
         </div>
         <div>
           <label style={{
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
@@ -1649,7 +1649,7 @@ const MarketChartBlock = ({
             fill: muted
           }} axisLine={false} tickLine={false} />
             <YAxis tick={{
-            fontSize: 8,
+            fontSize: 9,
             fill: muted
           }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}B`} />
             <Tooltip contentStyle={{
@@ -1698,7 +1698,7 @@ const BarChartBlock = ({
       gap: 10
     }}>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -1812,7 +1812,7 @@ const BarChartBlock = ({
             fill: muted
           }} axisLine={false} tickLine={false} />
             <YAxis tick={{
-            fontSize: 8,
+            fontSize: 9,
             fill: muted
           }} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
             <Tooltip contentStyle={{
@@ -1874,7 +1874,7 @@ const PrinciplesBlock = ({
       gap: 10
     }}>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -2061,7 +2061,7 @@ const SwatchRowBlock = ({
       gap: 8
     }}>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -2175,7 +2175,7 @@ const SwatchRowBlock = ({
         lineHeight: 1.2
       }}>{sw.name}</span>
           <span style={{
-        fontSize: 8,
+        fontSize: 9,
         color: muted
       }}>{sw.hex}</span>
         </div>)}
@@ -2243,7 +2243,7 @@ const SourcesBlock = ({
       gap: 10
     }}>
         <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -2447,7 +2447,7 @@ const SpacerBlock = ({
       gap: 8
     }}>
       <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -2487,7 +2487,7 @@ const SpacerBlock = ({
       alignItems: 'center',
       justifyContent: 'center',
       color: muted,
-      fontSize: 8,
+      fontSize: 9,
       fontWeight: 700,
       letterSpacing: '0.12em',
       textTransform: 'uppercase' as const
@@ -2516,7 +2516,7 @@ const SignatureBlock = ({
   if (isConfiguring) {
     return <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <label style={{
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -2608,11 +2608,11 @@ const LetterheadBlock = ({
   if (isConfiguring) {
     return <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <label style={{
-        fontSize: 8, fontWeight: 700, letterSpacing: '0.12em',
+        fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
         textTransform: 'uppercase' as const, color: muted
       }}>Edit Letterhead</label>
       <input value={lh.title} onChange={e => update({ title: e.target.value })} style={{
-        fontSize: 13, fontWeight: 700, color: fg, background: 'transparent',
+        fontSize: 14, fontWeight: 700, color: fg, background: 'transparent',
         border: `1px solid ${border}`, outline: 'none', padding: '6px 8px',
         letterSpacing: '-0.01em'
       }} placeholder="Title" />
@@ -2673,7 +2673,7 @@ const LetterheadBlock = ({
           }}>{lh.label}</span>
         </div>
         <p style={{
-          fontSize: 8.5, fontWeight: 700, color: muted,
+          fontSize: 9, fontWeight: 700, color: muted,
           letterSpacing: '0.12em', textTransform: 'uppercase' as const
         }}>{lh.status}</p>
       </div>
@@ -2684,7 +2684,7 @@ const LetterheadBlock = ({
         color: fg, lineHeight: 1.2, marginBottom: 10, maxWidth: 600
       }}>{lh.title}</h1>
       <p style={{
-        fontSize: 13.5, color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+        fontSize: 14, color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
         lineHeight: 1.6, maxWidth: 520, marginBottom: 22
       }}>{lh.subtitle}</p>
       <div style={{
@@ -2899,11 +2899,11 @@ function DocBlockView({
         content: v
       })} onBlur={onStopEdit} style={{
         ...sharedTextareaStyle,
-        fontSize: 13.5,
+        fontSize: 14,
         lineHeight: 1.85,
         color: bodyColor
       }} /> : <p style={{
-        fontSize: 13.5,
+        fontSize: 14,
         lineHeight: 1.85,
         color: bodyColor,
         margin: 0,
@@ -3040,7 +3040,7 @@ function DocBlockView({
               flexShrink: 0
             }} />
                     <span style={{
-              fontSize: 13,
+              fontSize: 14,
               lineHeight: 1.7,
               color: bodyColor,
               fontFamily: 'Georgia, serif',
@@ -3322,7 +3322,7 @@ function DocBlockView({
         e.currentTarget.style.color = muted;
       }}>✕ Remove</button>}
           <span style={{
-        fontSize: 8,
+        fontSize: 9,
         color: muted,
         letterSpacing: '0.10em'
       }}>
@@ -4010,7 +4010,7 @@ const DocToolbar = ({
           opacity: 0.7
         }} />
           <span style={{
-          fontSize: 8,
+          fontSize: 9,
           color: mutedFg,
           letterSpacing: '0.10em'
         }}>saved</span>
@@ -4036,7 +4036,7 @@ const DocToolbar = ({
         e.currentTarget.style.color = mutedFg;
       }}>
           <span style={{
-          fontSize: 13,
+          fontSize: 14,
           lineHeight: 1
         }}>↩</span>
           <span>Undo</span>
@@ -4055,7 +4055,7 @@ const DocToolbar = ({
         e.currentTarget.style.color = mutedFg;
       }}>
           <span style={{
-          fontSize: 13,
+          fontSize: 14,
           lineHeight: 1
         }}>↪</span>
           <span>Redo</span>
@@ -4201,7 +4201,7 @@ const DocLetterhead = ({
           }}>Concept Paper</span>
           </div>
           <p style={{
-          fontSize: 8.5,
+          fontSize: 9,
           fontWeight: 700,
           color: muted,
           letterSpacing: '0.12em',
@@ -4222,7 +4222,7 @@ const DocLetterhead = ({
         maxWidth: 600
       }}>{title}</h1>
         <p style={{
-        fontSize: 13.5,
+        fontSize: 14,
         color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
         lineHeight: 1.6,
         maxWidth: 520,
@@ -4430,7 +4430,7 @@ const TemplatePicker = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 20,
+            fontSize: 18,
             color: opt.color
           }}>{opt.icon}</div>
               <div>
@@ -4510,7 +4510,7 @@ const PageGuideOverlay = ({
           background: labelBg,
           border: `1px solid ${COLOR.ochreOrange}55`,
           color: labelFg,
-          fontSize: 8,
+          fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const
@@ -4525,7 +4525,7 @@ const PageGuideOverlay = ({
       right: 10,
       paddingTop: 8,
       color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
-      fontSize: 8,
+      fontSize: 9,
       fontWeight: 700,
       letterSpacing: '0.12em',
       textTransform: 'uppercase' as const
@@ -5097,7 +5097,7 @@ export const DocumentEditor = ({
                     }} />)}
                       </div>
                       <p style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
                     letterSpacing: '0.06em',
                     margin: 0

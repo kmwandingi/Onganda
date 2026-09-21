@@ -5,6 +5,13 @@
 shadow not in that file is not acceptable. `npm run check:design` fails on
 violations; do not widen a check to make one pass.
 
+**The public site is the source of the design system, not a consumer of it.**
+`/` and `/full` are the reference implementation of the brand. The tokens and
+patterns here are a transcript of them — the type scale was measured off the
+rendered DOM. To change the system, change the public site first and
+re-measure; never retune a token to suit a new surface.
+`tests/browser/fidelity.spec.ts` fails when the two disagree.
+
 For Onganda UI, design-system, or new-project work, read and follow `skills/onganda-design-system/SKILL.md` before changing code. Treat `DESIGN_SYSTEM.md` as the language specification and `DESIGN_GUIDELINES.md` as the implementation contract.
 
 Two sections govern most day-to-day decisions and are enforced by `npm run check:design`:

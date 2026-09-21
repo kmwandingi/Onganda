@@ -5,6 +5,55 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — the system is now a transcript of the public site
+
+The public site (`/`, `/full`) is the reference implementation of the brand:
+it came first, and it is what Onganda actually looks like. The system had
+drifted into a parallel, denser house style of its own, so every product built
+from it stopped looking like the site it was meant to look like. The direction
+of authority is now fixed and documented: **change the site first, then
+re-measure.**
+
+- **Type scale retuned to the site, measured off the rendered DOM at 1440px.**
+  `eyebrow` 10 → **12** (the site's most-used label; 10px is the *gloss*
+  beside a label, not the label). `pageTitle` weight 600 → **500** — a section
+  headline is lighter than the card titles under it, which is what stops a
+  page of cards shouting over its own structure. `display` 700 → 600, `tag`
+  8 → 9, `micro` 9 → 10, `title` 20 → 18, `caption` → `label` (11px is bold
+  uppercase on the site, never a caption), `ui` 13 → 14/600. Added `meta`
+  (14/500) and `code` (12/400). Removed the 8, 13 and 20px steps, which the
+  site never used; 101 usages migrated.
+- **Density no longer changes type.** Both densities set the control label at
+  14px/600. Shrinking type as well as padding is what made the first extension
+  surfaces read as a different product. `comfortable` button padding
+  `10px 22px` → `12px 24px`, matching the site's primary action.
+- **`PixelPanel` is the site's card.** 18px semibold title (was 16px), padding
+  24 at page density and 16 in a side panel (was 16 everywhere). It no longer
+  stacks its marks: corner marks *or* a spine and closing dither rule, never
+  both — the site never does, and doing both is what made panels read as busy
+  and over-ruled. Pass `spine` for the second recipe.
+- **`SectionHeader` gained the accent dot and an `accent` prop**, and now
+  styles from `roles(isDark)` instead of hardcoded `rgba()`. It renders the
+  site's four-part rhythm: dot, 12px label, 30px medium headline, hairline.
+- `MOTION.hoverLift` −2 → −4, matching the site's card hover.
+
+### Added
+
+- **`PixelInversePanel`** — the black card, transcribed from the "Why Onganda"
+  panel. The site's one loud move; use it once per view at most.
+- **`tests/browser/fidelity.spec.ts`** — measures the public site and the
+  system's copy of it against each other and fails when they disagree:
+  the card's material, its title step, its padding, its mark recipe, and the
+  section-header rhythm. Verified to fail on each drift it claims to catch.
+- **A type-table rule in `check:docs`** — `DESIGN_SYSTEM.md` §6 restates the
+  whole scale for designers, who read it instead of the source. The guard now
+  checks every step's size, weight, tracking, leading and case against `TYPE`,
+  and the step-count claim in `FOR_DESIGNERS.md`. Verified against three kinds
+  of drift.
+- **Page-density and spine `PixelPanel` specimens on `/showcase`.** The
+  showcase previously demonstrated the panel only in compact, so the brand's
+  actual card was missing from the inventory.
+
 ### Added
 - **Colour role layer** (`onganda-roles.ts`): `roles(isDark)`, `ROLE_LIGHT`, `ROLE_DARK`, `ALPHA`, `SYSTEM_COLOR`, `STATUS`, `statusFor()`, `onColor()`, `CHART_SERIES`, `COLOR_POLICY`. `COLOR` says what a colour is; `ROLE` says where it may be used. Components read a role and stop branching on `isDark` per colour.
 - **Choice controls**: `PixelCheckbox`, `PixelRadio`, `PixelToggle` — pixel-drawn, sharp-cornered, ochre when checked, with disabled states.

@@ -38,7 +38,7 @@ export const SlideInspector = ({
     padding: '5px 8px'
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: 8,
+    fontSize: 9,
     fontWeight: 700,
     letterSpacing: '0.12em',
     textTransform: 'uppercase' as const,
@@ -307,7 +307,7 @@ export const SlideInspector = ({
             alignItems: 'center'
           }}>
             <span style={{
-              fontSize: 8,
+              fontSize: 9,
               color: 'rgba(232,225,207,0.55)',
               width: 36,
               flexShrink: 0,
@@ -334,7 +334,7 @@ export const SlideInspector = ({
                 });
               }} style={{
                 width: 24,
-                fontSize: 8,
+                fontSize: 9,
                 background: 'transparent',
                 border: 'none',
                 outline: 'none',
@@ -346,7 +346,7 @@ export const SlideInspector = ({
           </div>)}
         </div>
         <p style={{
-          fontSize: 8,
+          fontSize: 9,
           color: muted,
           margin: 0
         }}>Shows rows 1–4. Enter 0.0–1.0.</p>
@@ -667,7 +667,7 @@ export const SlideInspector = ({
               w: undefined,
               h: undefined
             })} style={{
-              fontSize: 8,
+              fontSize: 9,
               fontWeight: 600,
               cursor: 'pointer',
               letterSpacing: '0.08em',
@@ -755,7 +755,7 @@ export const SlideInspector = ({
             padding: '5px 8px'
           }} placeholder="Slide title…" />
           <p style={{
-            fontSize: 8,
+            fontSize: 9,
             color: muted,
             margin: '4px 0 0',
             lineHeight: 1.6

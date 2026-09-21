@@ -356,17 +356,17 @@ export const AiAuthoringPanel = ({
         </div>
         <DitherBar color={COLOR.ochreOrange} segments={20} height={2} opacity={0.35} />
         {settingsOpen && <div style={{ marginTop: 12, padding: 12, background: bg, border: `1px solid ${border}` }}>
-          <label style={{ fontSize: 8, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Provider</label>
+          <label style={{ fontSize: 9, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Provider</label>
           <select value={config.provider} onChange={e => updateConfig({ provider: e.target.value as EndpointConfig['provider'] })} style={{ ...inputStyle(isDark), marginTop: 6 }}>
             <option value="openai-compatible">OpenAI-compatible</option>
             <option value="gemini-rest">Gemini REST</option>
             <option value="custom-json">Custom JSON endpoint</option>
           </select>
-          <label style={{ display: 'block', marginTop: 10, fontSize: 8, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Endpoint</label>
+          <label style={{ display: 'block', marginTop: 10, fontSize: 9, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Endpoint</label>
           <input value={config.endpoint} onChange={e => updateConfig({ endpoint: e.target.value })} style={{ ...inputStyle(isDark), marginTop: 6 }} />
-          <label style={{ display: 'block', marginTop: 10, fontSize: 8, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Model</label>
+          <label style={{ display: 'block', marginTop: 10, fontSize: 9, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Model</label>
           <input value={config.model} onChange={e => updateConfig({ model: e.target.value })} style={{ ...inputStyle(isDark), marginTop: 6 }} />
-          <label style={{ display: 'block', marginTop: 10, fontSize: 8, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>API key</label>
+          <label style={{ display: 'block', marginTop: 10, fontSize: 9, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>API key</label>
           <input value={config.apiKey} onChange={e => updateConfig({ apiKey: e.target.value })} type="password" placeholder="Optional for local endpoints" style={{ ...inputStyle(isDark), marginTop: 6 }} />
         </div>}
         <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
@@ -387,7 +387,7 @@ export const AiAuthoringPanel = ({
           lineHeight: 1.5
         }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
-          {gaps.length ? gaps.map(gap => <span key={gap} style={{ fontSize: 8, fontWeight: 800, letterSpacing: '0.10em', textTransform: 'uppercase', color: COLOR.barkRust, border: `1px solid ${COLOR.barkRust}40`, padding: '4px 6px' }}>{gap}</span>) : <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: COLOR.barkRust }}><IconCheck size={12} color={COLOR.ochreOrange} /> Enough context to draft</span>}
+          {gaps.length ? gaps.map(gap => <span key={gap} style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.10em', textTransform: 'uppercase', color: COLOR.barkRust, border: `1px solid ${COLOR.barkRust}40`, padding: '4px 6px' }}>{gap}</span>) : <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: COLOR.barkRust }}><IconCheck size={12} color={COLOR.ochreOrange} /> Enough context to draft</span>}
         </div>
         {error && <p style={{ color: COLOR.firedRed, fontSize: 11, lineHeight: 1.5 }}>{error}</p>}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
@@ -398,7 +398,7 @@ export const AiAuthoringPanel = ({
           <IconRefresh size={11} color={muted} /> Offline scaffold
         </button>
         {result && <div style={{ marginTop: 12, padding: 12, border: `1px solid ${COLOR.ochreOrange}50`, background: bg }}>
-          <p style={{ margin: 0, color: fg, fontSize: 13, fontWeight: 700 }}>{result.title}</p>
+          <p style={{ margin: 0, color: fg, fontSize: 14, fontWeight: 700 }}>{result.title}</p>
           <p style={{ margin: '6px 0 12px', color: muted, fontSize: 11, lineHeight: 1.5 }}>{result.summary}</p>
           <button onClick={() => onApply(result)} style={{ width: '100%', padding: 11, border: 0, background: COLOR.charBlack, color: COLOR.milletClay, cursor: 'pointer', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
             Apply to editor

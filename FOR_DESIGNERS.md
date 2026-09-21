@@ -91,7 +91,7 @@ Every one of these is a measured fact, not an opinion. The ratios are in
 ## Type, space and geometry
 
 - **One typeface: Inter.** Weights 400, 500, 600, 700, 800.
-- **The type scale is closed** — 13 steps from 8px to 48px, plus three fluid
+- **The type scale is closed** — 14 steps from 9px to 48px, plus three fluid
   display sizes. Each step in `typography` carries its size, weight,
   line-height, letter-spacing and casing. A size not in the scale fails the
   build.
