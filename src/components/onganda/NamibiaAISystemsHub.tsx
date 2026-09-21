@@ -106,7 +106,7 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Material Palette ── */}
         <section id="palette" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-          <SectionHeader label="Material Palette" headline="Millet, clay, bark, smoke, ochre." isDark={isDark} />
+          <SectionHeader label="Material Palette" headline="Millet, clay, bark, smoke, ochre." accent={COLOR.ochreOrange} isDark={isDark} />
           <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
             {SWATCHES.map(sw => <SwatchChip key={sw.hex} swatch={sw} />)}
           </div>
@@ -141,7 +141,7 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Brand Principles ── */}
         <section id="language" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-          <SectionHeader label="Brand Principles" headline="Pixelated by design. Oshiwambo by name." isDark={isDark} />
+          <SectionHeader label="Brand Principles" headline="Pixelated by design. Oshiwambo by name." accent={COLOR.dyePlum} isDark={isDark} />
           <dl className="divide-y divide-[#1E1A17]/10">
             {PRINCIPLES.map((p, i) => <PrincipleRow key={p.label} principle={p} idx={i} />)}
           </dl>

@@ -379,3 +379,93 @@ test('the dialog traps focus, closes on escape, and restores focus', async ({ pa
   await expect(dialog).toHaveCount(0);
   await expect(open).toBeFocused();
 });
+
+// ─── Section evenness ────────────────────────────────────────────────────────
+// The page-level composition test above can pass while one section is flat:
+// a rich hero and a rich systems grid carry the totals, and a reference
+// section in the middle reads as a different, duller product.
+//
+// That happened. Control Standards measured 9.0 ingredients per 1000px
+// against 20–25 for every other section on the page: it rendered no inverse
+// surface at all, and its nine blocks were hand-rolled `<div>`s re-deriving
+// surface-plus-hairline instead of using PixelPanel like the rest of the
+// page. Nothing caught it, because every section individually contained
+// "some" of the language.
+//
+// The first attempt at a fix invented a new label component with a dither
+// rule to raise the score. That is the failure this test should make
+// impossible, not enable: the section was rebuilt out of the cards the page
+// already had, and the number came up on its own.
+//
+// So this measures each section against its peers rather than against a fixed
+// number, which is the only way the bar keeps up with the page.
+test('no section is markedly flatter than its peers', async ({ page }) => {
+  await page.goto('/showcase');
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += 400) {
+      window.scrollTo(0, y);
+      await new Promise(r => setTimeout(r, 55));
+    }
+    window.scrollTo(0, 0);
+  });
+  await page.waitForTimeout(1200);
+
+  const densities = await page.evaluate(() => {
+    const SECTIONS = ['#systems', '#connection-diagram', '#controls', '#patterns', '#roadmap'];
+    return SECTIONS.map(sel => {
+      const root = document.querySelector(sel);
+      if (!root) return { sel, missing: true as const };
+      const all = [...root.querySelectorAll('*')];
+      const cs = (el: Element) => getComputedStyle(el);
+      const height = root.getBoundingClientRect().height;
+
+      const weave = all.filter(el => cs(el).backgroundImage.includes('data:image/svg+xml')).length;
+      const marks = all.filter(el => {
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.width <= 12 && r.height <= 12
+          && Math.abs(r.width - r.height) <= 2
+          && cs(el).backgroundColor !== 'rgba(0, 0, 0, 0)';
+      }).length;
+      const dither = all.filter(el =>
+        cs(el).backgroundImage.includes('repeating-linear-gradient')
+        || (el.children.length >= 12 && el.getBoundingClientRect().height <= 6)).length;
+      const pixelSvg = [...root.querySelectorAll('svg')]
+        .filter(sv => sv.querySelector('rect') && !sv.querySelector('path,circle,ellipse')).length;
+      const inverse = all.filter(el => {
+        const r = el.getBoundingClientRect();
+        return /^rgb\(30, 26, 23\)/.test(cs(el).backgroundColor) && r.width > 120 && r.height > 60;
+      }).length;
+
+      return {
+        sel,
+        missing: false as const,
+        inverse,
+        dither,
+        perThousand: ((weave + marks + dither + pixelSvg + inverse) / height) * 1000,
+      };
+    });
+  });
+
+  for (const d of densities) {
+    expect(d.missing, `${d.sel} is not on the page`).toBe(false);
+  }
+
+  const scored = densities.filter(d => !d.missing) as Array<{
+    sel: string; inverse: number; dither: number; perThousand: number;
+  }>;
+  const median = [...scored].sort((a, b) => a.perThousand - b.perThousand)[Math.floor(scored.length / 2)].perThousand;
+
+  for (const d of scored) {
+    // Half the median is generous: it fails a section that is visibly a
+    // different product, not one that is merely quieter.
+    expect(
+      d.perThousand,
+      `${d.sel} carries ${d.perThousand.toFixed(1)} ingredients per 1000px against a median of ${median.toFixed(1)}`
+    ).toBeGreaterThan(median * 0.5);
+
+    // Every section on this page renders an inverse surface. Control
+    // Standards was the only one that did not, and it is also the one that
+    // read as a different product.
+    expect(d.inverse, `${d.sel} renders no inverse surface`).toBeGreaterThan(0);
+  }
+});

@@ -1153,7 +1153,7 @@ export const ChartGallery = () => {
   const borderColor = 'rgba(30,26,23,0.10)';
   const labelColor = 'rgba(30,26,23,0.66)';
   return <section id="chart-gallery" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Chart Gallery" headline="Every chart. One palette." />
+      <SectionHeader label="Chart Gallery" headline="Every chart. One palette." accent={COLOR.mahanguGold} />
 
       {/* Category filter tabs */}
       <div className="flex flex-wrap gap-2 mb-10" role="tablist" aria-label="Chart categories">

@@ -752,6 +752,55 @@ checked it.
 
 ---
 
+### A section is built from the page's cards, not its own
+
+Every block on `/showcase` is a `PixelPanel`. Not a `<div>` styled to look
+like one — the component itself, so the block inherits the weave, the four
+accent corner marks, the 12px eyebrow and the density-aware padding without
+re-deriving any of it.
+
+This is the rule that had been broken most quietly. Control Standards and
+Product Patterns contained **nine hand-rolled containers**, each writing
+`background: c.surface` and `border: 1px solid ${c.line}` inline. Every guard
+passed: no raw hex, no rounded corner, no off-scale type. But measured against
+the rest of the page, Control Standards carried **9.0 ingredients of the
+language per 1000px against 20–25 everywhere else**, and it read as a
+different, duller product sitting in the middle of the showcase.
+
+Two things are worth stating plainly, because the first attempt at fixing it
+got both wrong:
+
+- **The fix was not a new component.** A label with an accent dot and a
+  dither rule under it was invented to raise the score. The site has no such
+  object, and the section did not need a new part — it needed the ones the
+  rest of the page already used. Rebuilding the nine blocks as `PixelPanel`
+  brought the number up on its own.
+- **A label inside a card is plain.** 12px uppercase muted, exactly as the
+  system card sets its role line. No dot, no rule. The dot-and-rule rhythm
+  belongs to `SectionHeader`, at section scale, once.
+
+### Where a section's colour comes from
+
+A section picks **one accent** and spends it on the dot in its
+`SectionHeader`, on the dither rule beside its prose, and on the marks of the
+cards inside it. Nowhere else. That is why the public site reads as deliberate
+rather than colourful: `Systems` is gold, `Focus` is plum, `People` is brown,
+`Why` is ochre, `Studio` is bark rust. The showcase passed no accent at all,
+so every section defaulted to bark rust; each one now declares its own.
+
+### What enforces it
+
+| Guard | Catches |
+|---|---|
+| `hand-rolled-card` (`check:tokens`) | An inline style setting a `surface` background plus a `line` border — that combination **is** `PixelPanel` |
+| `no section is markedly flatter than its peers` (`composition.spec.ts`) | A section below half the median language density of the others, or one rendering no inverse surface |
+
+The density test scores against the median of the page rather than a fixed
+number, so the bar rises with the page instead of freezing at whatever was
+acceptable the day it was written.
+
+---
+
 ## 7. Content & Data Tokens
 
 Import structured data for the five Onganda systems and shared datasets:

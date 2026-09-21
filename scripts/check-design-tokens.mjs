@@ -152,6 +152,22 @@ const RULES = [
     }
   },
   {
+    id: 'hand-rolled-card',
+    why: 'A card built by hand. `background: surface` plus a `line` border plus padding IS PixelPanel — use it, and get the weave, the corner marks and the eyebrow rhythm with it. Nine of these in Control Standards and Product Patterns are why those two sections read as a different product from the rest of the page.',
+    // The components that legitimately define the card language are exempt.
+    files: /\.tsx$/,
+    exclude: /onganda-patterns\.tsx$|onganda-primitives\.tsx$|onganda-site\.tsx$/,
+    // To end of line, not `[^}]*`: a template literal like `${c.line}`
+    // contains a closing brace, so a brace-bounded match stops short of the
+    // border declaration and the rule silently never fires.
+    re: /style=\{\{.*$|const \w+: React\.CSSProperties = \{.*$/gm,
+    filter: m => {
+      const surface = /background:\s*(?:c|roles\([^)]*\))\.surface\b/.test(m);
+      const line = /border:\s*`1px solid \$\{(?:c|roles\([^)]*\))\.line\}`/.test(m);
+      return surface && line;
+    }
+  },
+  {
     id: 'elevation-shadow',
     why: 'A drop shadow. Onganda has no elevation: the public site renders zero blurred shadows, and depth comes from the weave texture, a hairline border and stepped pixel marks. A card lifts on hover by moving (MOTION.hoverLift), not by casting. A `0 0 0 Npx` ring is allowed — it is a border that does not reflow the layout.',
     files: /\.tsx$/,
@@ -204,6 +220,7 @@ const violations = file => {
     for (const rule of RULES) {
       if (pragma && pragma[1] === rule.id) continue;
       if (rule.files && !rule.files.test(file)) continue;
+      if (rule.exclude && rule.exclude.test(file)) continue;
       rule.re.lastIndex = 0;
       for (const m of line.matchAll(rule.re)) {
         if (rule.filter && !rule.filter(m[0])) continue;

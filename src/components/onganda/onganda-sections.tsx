@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, roles, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
 import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard } from './onganda-site';
@@ -1211,7 +1212,7 @@ export const ResearchSignals = () => <section className="w-full border-y border-
 
 // ─── PixelTerminal ────────────────────────────────────────────────────────────
 export const PixelTerminal = () => <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-    <SectionHeader label="Developer Surface" headline="Code that speaks Oshiwambo." />
+    <SectionHeader label="Developer Surface" headline="Code that speaks Oshiwambo." accent={COLOR.barkRust} />
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       {TERMINAL_BLOCKS.map(block => <TerminalCard key={block.title} block={block} />)}
     </div>
@@ -1263,7 +1264,7 @@ export const SystemConnectionDiagram = ({
     };
   };
   return <section id="connection-diagram" className="max-w-7xl mx-auto px-6 pb-24 md:px-12" ref={containerRef}>
-      <SectionHeader label="System Connections" headline="How the workshop talks to itself." />
+      <SectionHeader label="System Connections" headline="How the workshop talks to itself." accent={COLOR.mopaneBrown} />
       <div className="flex flex-col lg:flex-row gap-10 items-start">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-4 mb-6">
@@ -1549,7 +1550,7 @@ export const PixelHeatmap = ({
     return COLOR.charBlack;
   };
   return <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Research Signals" headline="Activity across systems." />
+      <SectionHeader label="Research Signals" headline="Activity across systems." accent={COLOR.mahanguGold} />
       <div className="flex flex-col items-stretch gap-12 lg:flex-row lg:items-start">
         <motion.div initial={{
         opacity: 0
@@ -1649,7 +1650,7 @@ export const RoadmapTimeline = ({
     label: 'Upcoming'
   }];
   return <section id="roadmap" ref={sectionRef} className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Development Roadmap" headline="Five phases. One direction." />
+      <SectionHeader label="Development Roadmap" headline="Five phases. One direction." accent={COLOR.dyePlum} />
       <div className="hidden lg:block relative mb-14" aria-hidden="true">
         <div className="h-px bg-[#1E1A17]/12 w-full" />
         <div className="absolute top-0 left-0 w-full flex">
@@ -1787,7 +1788,7 @@ export const RoadmapTimeline = ({
 
 // ─── FieldApplications ────────────────────────────────────────────────────────
 export const FieldApplications = () => <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-    <SectionHeader label="Field Applications" headline="Intelligence carried to where it is needed." />
+    <SectionHeader label="Field Applications" headline="Intelligence carried to where it is needed." accent={COLOR.ochreOrange} />
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {SECTOR_APPS.map((app, idx) => <FieldAppCard key={app.tag} app={app} idx={idx} />)}
     </div>
@@ -1817,7 +1818,7 @@ export const PixelFlowchart = () => {
   const childNodes = FLOW_NODES.slice(1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   return <section id="brand-guide" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Brand Guide" headline="Naming hierarchy. One root. Five branches." />
+      <SectionHeader label="Brand Guide" headline="Naming hierarchy. One root. Five branches." accent={COLOR.mopaneBrown} />
       <div className="flex flex-col lg:flex-row gap-16 items-start">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-10">
@@ -2252,7 +2253,7 @@ export const IconFactoryLab = () => {
     return next;
   });
   return <section id="icon-factory" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Icon Factory" headline="Draw a doodle. Get a component." isDark={isDark} />
+      <SectionHeader label="Icon Factory" headline="Draw a doodle. Get a component." accent={COLOR.mahanguGold} isDark={isDark} />
       <div className="grid gap-10 lg:grid-cols-[auto_1fr] [&>*]:min-w-0">
         {/* ── Editor ── */}
         <div>
@@ -2372,8 +2373,27 @@ const STATUS_ROWS: { name: StatusName; means: string }[] = [
   { name: 'settled', means: 'Complete, archived, informational' }
 ];
 
-const SubLabel = ({ children, isDark }: { children: React.ReactNode; isDark: boolean }) => (
-  <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: roles(isDark).textMuted }}>
+// The label inside a card, exactly as the public site sets it: the role line
+// on a system card. 12px uppercase muted — no dot, no rule.
+//
+// An earlier attempt at fixing this section invented a new label with an
+// accent dot and a dither rule under it. That was the wrong move twice over:
+// the site has no such object, and the section did not need a new component,
+// it needed the ones the rest of the page already uses.
+const SubLabel = ({ children, isDark, spaced = false }: {
+  children: React.ReactNode;
+  isDark: boolean;
+  /** a label that follows content rather than opening a block needs air above it */
+  spaced?: boolean;
+}) => (
+  <p className="uppercase" style={{
+    fontSize: TYPE.eyebrow.size,
+    fontWeight: TYPE.eyebrow.weight,
+    letterSpacing: TYPE.eyebrow.tracking,
+    lineHeight: TYPE.eyebrow.lineHeight,
+    color: roles(isDark).textMuted,
+    margin: spaced ? '40px 0 16px' : '0 0 16px'
+  }}>
     {children}
   </p>
 );
@@ -2395,11 +2415,10 @@ export const ControlStandards = () => {
   const [consent, setConsent] = useState(true);
   const [live, setLive] = useState(true);
 
-  const panel: React.CSSProperties = { background: c.surface, border: `1px solid ${c.line}` };
 
   return (
     <section id="controls" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Control Standards" headline="One recipe per control. No free choices." isDark={pageDark} />
+      <SectionHeader label="Control Standards" headline="One recipe per control. No free choices." accent={COLOR.barkRust} isDark={pageDark} />
 
       {/* The whole reference renders on the canvas role so both modes are real. */}
       <div id="controls-stage" data-mode={isDark ? 'dark' : 'light'} className="relative p-6 md:p-8" style={{ background: c.canvas, border: `1px solid ${c.line}` }}>
@@ -2415,12 +2434,13 @@ export const ControlStandards = () => {
           />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        {/* The light specimens. The control tests scope to this grid, so the
+            inverse band below is measured separately rather than colliding
+            with it on button labels. */}
+        <div data-testid="controls-grid" className="grid gap-4 lg:grid-cols-2">
           {/* ── Colour roles ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative">
-              <SubLabel isDark={isDark}>Colour roles · read the role, not the palette</SubLabel>
+          <PixelPanel isDark={isDark} eyebrow="Colour roles · read the role, not the palette" accent={COLOR.ochreOrange}>
+
               <dl className="grid gap-0">
                 {ROLE_ROWS.map(r => (
                   <div key={r.role} className="flex items-center gap-4 py-2.5 border-b" style={{ borderColor: c.line }}>
@@ -2435,14 +2455,12 @@ export const ControlStandards = () => {
                 accent ink is bark rust there and ochre in dark mode. Mahangu gold, mopane brown, and dye
                 plum are absent: they identify systems and carry chart series.
               </p>
-            </div>
-          </div>
+            
+          </PixelPanel>
 
           {/* ── Status and buttons ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative">
-              <SubLabel isDark={isDark}>Status · four states, no green, no blue</SubLabel>
+          <PixelPanel isDark={isDark} eyebrow="Status · four states, no green, no blue" accent={COLOR.barkRust}>
+
               <dl className="grid gap-0">
                 {STATUS_ROWS.map(s => (
                   <div key={s.name} className="flex items-center gap-4 py-3 border-b" style={{ borderColor: c.line }}>
@@ -2458,7 +2476,7 @@ export const ControlStandards = () => {
               </p>
 
               <div className="mt-8">
-                <SubLabel isDark={isDark}>Density · the surface decides, not the control</SubLabel>
+                <SubLabel isDark={isDark} spaced>Density · the surface decides, not the control</SubLabel>
                 <div className="mb-8 grid gap-4 sm:grid-cols-2">
                   <div style={{ border: `1px solid ${c.line}`, padding: 14 }}>
                     <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Comfortable · pages</p>
@@ -2480,7 +2498,7 @@ export const ControlStandards = () => {
                   </DensityProvider>
                 </div>
 
-                <SubLabel isDark={isDark}>Buttons · four intents</SubLabel>
+                <SubLabel isDark={isDark} spaced>Buttons · four intents</SubLabel>
                 <div className="flex flex-wrap items-center gap-3">
                   <PixelButton variant="primary" isDark={isDark}>Primary</PixelButton>
                   <PixelButton variant="accent" isDark={isDark}>Accent</PixelButton>
@@ -2493,14 +2511,12 @@ export const ControlStandards = () => {
                   foreground is 4.05:1, under the floor for a button label.
                 </p>
               </div>
-            </div>
-          </div>
+            
+          </PixelPanel>
 
           {/* ── Fields ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative grid gap-5">
-              <SubLabel isDark={isDark}>Fields · transparent ground, accent-ink focus</SubLabel>
+          <PixelPanel isDark={isDark} eyebrow="Fields · transparent ground, accent-ink focus" accent={COLOR.mahanguGold}>
+<div className="relative grid gap-5">
               <PixelField label="Email" hint="Focus the field to see the accent border." htmlFor="cs-email" isDark={isDark}>
                 <PixelInput id="cs-email" isDark={isDark} type="email" placeholder="name@institution.na" />
               </PixelField>
@@ -2521,14 +2537,12 @@ export const ControlStandards = () => {
                 <PixelTextarea id="cs-note" isDark={isDark} placeholder="What would you like to discuss?" style={{ minHeight: 88 }} />
               </PixelField>
             </div>
-          </div>
+          </PixelPanel>
 
           {/* ── Choice controls ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative grid gap-8">
+          <PixelPanel isDark={isDark} eyebrow="Radio · stepped octagon, square core" accent={COLOR.mopaneBrown}>
+<div className="relative grid gap-8">
               <div>
-                <SubLabel isDark={isDark}>Radio · stepped octagon, square core</SubLabel>
                 <div className="grid gap-3">
                   {[
                     { value: 'partnership', label: 'Partnership' },
@@ -2550,7 +2564,7 @@ export const ControlStandards = () => {
               </div>
 
               <div>
-                <SubLabel isDark={isDark}>Checkbox · square box, stepped check</SubLabel>
+                <SubLabel isDark={isDark} spaced>Checkbox · square box, stepped check</SubLabel>
                 <div className="grid gap-3">
                   <PixelCheckbox isDark={isDark} label="Send me lab updates" checked={consent} onChange={e => setConsent(e.currentTarget.checked)} />
                   <PixelCheckbox isDark={isDark} label="Unchecked" checked={false} onChange={() => {}} />
@@ -2559,7 +2573,7 @@ export const ControlStandards = () => {
               </div>
 
               <div>
-                <SubLabel isDark={isDark}>Toggle · the knob steps, it does not slide</SubLabel>
+                <SubLabel isDark={isDark} spaced>Toggle · the knob steps, it does not slide</SubLabel>
                 <div className="grid gap-3">
                   <PixelToggle isDark={isDark} label="Publish to the public site" checked={live} onChange={setLive} />
                   <PixelToggle isDark={isDark} label="Disabled" checked={false} disabled />
@@ -2572,6 +2586,35 @@ export const ControlStandards = () => {
                 none uses a system colour.
               </p>
             </div>
+          </PixelPanel>
+
+        </div>
+
+          {/* ── The inverse band ──
+            Rule 12: a control on an inverse surface takes the dark role
+            set. Until now that rule had no specimen — this section rendered
+            no inverse surface at all in light mode, which also made it the
+            only section on the page carrying none. A footer, a ticker or a
+            lab card is a locally dark surface even on a light page, and a
+            control dropped into one without `isDark` resolves its hover
+            against the wrong ground and can vanish. */}
+        <div data-testid="controls-inverse" className="relative mt-4 overflow-hidden p-8" style={{ background: roles(false).inverse }}>
+          <WeaveOverlay isDark opacity={0.06} />
+          <div className="relative">
+            <SubLabel isDark>
+              Inverse · a locally dark surface on a light page
+            </SubLabel>
+            <div className="flex flex-wrap items-center gap-3">
+              <PixelButton variant="primary" isDark>Primary</PixelButton>
+              <PixelButton variant="accent" isDark>Accent</PixelButton>
+              <PixelButton variant="ghost" isDark>Ghost</PixelButton>
+              <PixelToggle isDark label="Enabled" checked onChange={() => {}} />
+              <PixelCheckbox isDark label="Checked" checked onChange={() => {}} />
+            </div>
+            <p className="mt-5 text-xs leading-relaxed" style={{ color: roles(true).textMuted }}>
+              The same four intents, rendered with <code>isDark</code>. Pass it whenever a control sits on
+              the footer, the ticker or a lab card — the page being light does not make the surface light.
+            </p>
           </div>
         </div>
       </div>
@@ -2604,11 +2647,10 @@ export const ProductPatterns = () => {
   const [dismissed, setDismissed] = useState(false);
   const [choice, setChoice] = useState('The split changes between runs');
 
-  const panel: React.CSSProperties = { background: c.surface, border: `1px solid ${c.line}` };
 
   return (
     <section id="patterns" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-      <SectionHeader label="Product Patterns" headline="The compounds, not just the atoms." isDark={pageDark} />
+      <SectionHeader label="Product Patterns" headline="The compounds, not just the atoms." accent={COLOR.dyePlum} isDark={pageDark} />
 
       <div id="patterns-stage" data-mode={isDark ? 'dark' : 'light'} className="relative p-6 md:p-8" style={{ background: c.canvas, border: `1px solid ${c.line}` }}>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -2625,12 +2667,8 @@ export const ProductPatterns = () => {
 
         <div className="grid gap-4 lg:grid-cols-2">
           {/* ── Notices ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative">
-              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-                Notice · one per status, colour never alone
-              </p>
+          <PixelPanel isDark={isDark} eyebrow="Notice · one per status, colour never alone" accent={COLOR.dyePlum}>
+
               <div className="grid gap-3">
                 <PixelNotice isDark={isDark} status="active" title="Evaluation running">
                   namibia-base-1b is being scored against the Oshiwambo benchmark.
@@ -2647,15 +2685,13 @@ export const ProductPatterns = () => {
                   </PixelNotice>
                 )}
               </div>
-            </div>
-          </div>
+            
+          </PixelPanel>
 
           {/* ── Tabs, progress, dialog trigger ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative grid gap-8">
+          <PixelPanel isDark={isDark} eyebrow="Tabs · ghost recipe, ochre when active" accent={COLOR.ochreOrange}>
+<div className="relative grid gap-8">
               <div>
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Tabs · ghost recipe, ochre when active</p>
                 <PixelTabs
                   isDark={isDark}
                   label="Run state"
@@ -2671,26 +2707,22 @@ export const ProductPatterns = () => {
               </div>
 
               <div className="grid gap-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Progress · dithered fill, never a smooth gradient</p>
+                <SubLabel isDark={isDark} spaced>Progress · dithered fill, never a smooth gradient</SubLabel>
                 <PixelProgress isDark={isDark} label="Corpus ingestion" value={100} status="settled" />
                 <PixelProgress isDark={isDark} label="Fine-tuning" value={78} status="active" />
                 <PixelProgress isDark={isDark} label="Container rollout" value={34} status="caution" />
               </div>
 
               <div>
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Dialog · focus trap, escape, scrim</p>
+                <SubLabel isDark={isDark} spaced>Dialog · focus trap, escape, scrim</SubLabel>
                 <PixelButton variant="danger" isDark={isDark} onClick={() => setDialogOpen(true)}>Delete dataset</PixelButton>
               </div>
             </div>
-          </div>
+          </PixelPanel>
 
           {/* ── Panel, choices, actions — the compact composition ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative">
-              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-                Panel · a compact surface cannot be built without the language
-              </p>
+          <PixelPanel isDark={isDark} eyebrow="Panel · a compact surface cannot be built without the language" accent={COLOR.barkRust}>
+
               <DensityProvider value="compact">
                 <PixelPanel
                   isDark={isDark}
@@ -2732,9 +2764,7 @@ export const ProductPatterns = () => {
                   a transcript of the public site's feature card, and the
                   reference the fidelity test measures against. Showing only
                   the compact one left the actual card off the inventory. */}
-              <p className="mb-4 mt-10 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-                Panel · page density — the public site&rsquo;s card
-              </p>
+              <SubLabel isDark={isDark} spaced>Panel · page density — the public site&rsquo;s card</SubLabel>
               <PixelPanel
                 data-testid="panel-page-density"
                 isDark={isDark}
@@ -2750,9 +2780,7 @@ export const ProductPatterns = () => {
               {/* The second recipe. A card that stands for a thing with its own
                   colour takes a spine and a closing dither rule instead of
                   corner marks — never both sets of marks at once. */}
-              <p className="mb-4 mt-10 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-                Panel · spine recipe — for a card that carries an identity
-              </p>
+              <SubLabel isDark={isDark} spaced>Panel · spine recipe — for a card that carries an identity</SubLabel>
               <PixelPanel
                 isDark={isDark}
                 spine
@@ -2761,14 +2789,12 @@ export const ProductPatterns = () => {
                 title="Ombiga"
                 note="Containers, agents, and held systems."
               />
-            </div>
-          </div>
+            
+          </PixelPanel>
 
           {/* ── Table ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative">
-              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Table · editorial rhythm, tabular figures</p>
+          <PixelPanel isDark={isDark} eyebrow="Table · editorial rhythm, tabular figures" accent={COLOR.mahanguGold}>
+
               <PixelTable
                 isDark={isDark}
                 caption="Systems overview"
@@ -2792,15 +2818,13 @@ export const ProductPatterns = () => {
                   { key: 'uptime', header: 'Uptime', numeric: true, render: row => `${row.uptime}%` }
                 ]}
               />
-            </div>
-          </div>
+            
+          </PixelPanel>
 
           {/* ── Empty and loading ── */}
-          <div className="relative overflow-hidden p-8" style={panel}>
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
-            <div className="relative grid gap-8">
+          <PixelPanel isDark={isDark} eyebrow="Empty · the surface a product shows first" accent={COLOR.mopaneBrown}>
+<div className="relative grid gap-8">
               <div>
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Empty · the surface a product shows first</p>
                 <PixelEmptyState
                   isDark={isDark}
                   icon={<IconOkaanda size={44} />}
@@ -2810,13 +2834,13 @@ export const ProductPatterns = () => {
                 />
               </div>
               <div>
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>Loading · a dither sweep, not a soft shimmer</p>
+                <SubLabel isDark={isDark} spaced>Loading · a dither sweep, not a soft shimmer</SubLabel>
                 <div style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: 20 }}>
                   <PixelSkeleton isDark={isDark} lines={4} />
                 </div>
               </div>
             </div>
-          </div>
+          </PixelPanel>
         </div>
 
         {/* ── Site compositions — the brand's own surfaces ──
@@ -2825,17 +2849,13 @@ export const ProductPatterns = () => {
             design system exists to describe was the one thing it did not
             contain. A consumer had to re-derive them by eye. */}
         <div className="mt-4">
-          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-            Site composition · ticker — the only place all five system colours meet
-          </p>
+          <SubLabel isDark={isDark}>Site composition · ticker — the only place all five system colours meet</SubLabel>
           <PixelTicker />
         </div>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
           <div>
-            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-              Site composition · focus rows — a list that reads as a sequence
-            </p>
+            <SubLabel isDark={isDark}>Site composition · focus rows — a list that reads as a sequence</SubLabel>
             <div className="grid gap-3">
               {[
                 { t: 'Adapt models', hex: COLOR.ochreOrange, b: 'Select, adapt, evaluate, and organize models for local use.' },
@@ -2849,9 +2869,7 @@ export const ProductPatterns = () => {
             </div>
           </div>
           <div>
-            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
-              Site composition · lab card — one per grid, in the last cell
-            </p>
+            <SubLabel isDark={isDark}>Site composition · lab card — one per grid, in the last cell</SubLabel>
             <PixelLabCard tag="Lab" title="Onganda" accent={COLOR.ochreOrange}>
               Five systems working as one compound: from readiness to delivery.
             </PixelLabCard>

@@ -13,12 +13,15 @@ const FIRED_RED = 'rgb(200, 74, 27)';   // indicator only — status marks, inva
 const CHAR_BLACK = 'rgb(30, 26, 23)';
 const MILLET_CLAY = 'rgb(232, 225, 207)';
 
+// Scoped to the light specimen grid, not the whole section: the inverse band
+// below it renders the same four intents with `isDark`, so an unscoped
+// `getByRole('button', { name: 'Primary' })` matches two elements.
 const openControls = async (page: Page) => {
   await page.goto('/showcase');
   const section = page.locator('#controls');
   await section.scrollIntoViewIfNeeded();
   await expect(section.getByText('One recipe per control. No free choices.')).toBeVisible();
-  return section;
+  return section.getByTestId('controls-grid');
 };
 
 const setMode = async (page: Page, mode: 'light' | 'dark') => {
@@ -53,8 +56,9 @@ test('every sanctioned control is present in the showcase', async ({ page }) => 
   }
   await expect(section.locator('input[type="radio"]')).toHaveCount(4);
   await expect(section.locator('input[type="checkbox"]')).toHaveCount(3);
-  // three choice-control switches plus the section's own mode switch
-  await expect(section.getByRole('switch')).toHaveCount(3);
+  // The two toggle specimens. The section's own light/dark mode switch sits
+  // above the grid and is deliberately out of scope.
+  await expect(section.getByRole('switch')).toHaveCount(2);
   // three field examples plus the two in the density comparison
   await expect(section.locator('input:not([type="radio"]):not([type="checkbox"])')).toHaveCount(5);
   await expect(section.locator('textarea')).toHaveCount(1);
@@ -135,7 +139,8 @@ test('checked reads as ochre on checkbox, radio, and toggle alike', async ({ pag
   // The ochre fill is 2.56:1 on dust light, so the edge carries the boundary.
   await expect.poll(box).toBe(`${OCHRE} / ${BARK_RUST}`);
 
-  const toggle = section.getByRole('switch').nth(1);
+  // First inside the grid: the mode switch is no longer in this scope.
+  const toggle = section.getByRole('switch').first();
   await expect(toggle).toHaveAttribute('aria-checked', 'true');
   await expect.poll(() => toggle.evaluate(el => getComputedStyle(el.firstElementChild as Element).backgroundColor)).toBe(OCHRE);
 
@@ -194,4 +199,31 @@ test('the section fits without horizontal overflow at phone width', async ({ pag
     return [...el.querySelectorAll('*')].filter(c => c.getBoundingClientRect().right > limit + 1).length;
   });
   expect(overflowing).toBe(0);
+});
+
+test('the inverse band renders controls with the dark role set', async ({ page }) => {
+  // Rule 12: a control on an inverse surface takes the dark role set. The
+  // rule was documented with no specimen on the page until now, and a control
+  // dropped onto a footer or lab card without `isDark` resolves its hover
+  // against the wrong ground.
+  await page.goto('/showcase');
+  const band = page.getByTestId('controls-inverse');
+  await band.scrollIntoViewIfNeeded();
+  await expect(band).toBeVisible();
+
+  // Char black is the dark canvas, so the neutral extreme flips to millet clay
+  // exactly as it does when the whole section is switched to dark.
+  await expect
+    .poll(() => band.getByRole('button', { name: 'Primary', exact: true })
+      .evaluate(el => getComputedStyle(el).backgroundColor))
+    .toBe(MILLET_CLAY);
+  await expect
+    .poll(() => band.getByRole('button', { name: 'Accent', exact: true })
+      .evaluate(el => getComputedStyle(el).backgroundColor))
+    .toBe(OCHRE);
+
+  // And the band really is a dark surface on a light page.
+  await expect
+    .poll(() => band.evaluate(el => getComputedStyle(el).backgroundColor))
+    .toBe(CHAR_BLACK);
 });

@@ -5,6 +5,38 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Fixed — two showcase sections were not built from the page's own cards
+
+Control Standards and Product Patterns contained **nine hand-rolled
+containers**, each writing `background: c.surface` and a `line` border inline
+instead of using `PixelPanel`. Every guard passed — no raw hex, no rounded
+corner, no off-scale type — but measured against the rest of the page the
+sections carried **9.0 ingredients of the language per 1000px against 20–25
+everywhere else**, and they read as a different product.
+
+- **All nine blocks are `PixelPanel` now**, so each inherits the weave, the
+  four accent corner marks, the 12px eyebrow and the density-aware padding.
+  Control Standards went from 9.0 to 17.5 per 1000px with no decoration added.
+- **One accent per section.** The showcase passed no `accent` to any
+  `SectionHeader`, so all twelve defaulted to bark rust while the public site
+  assigns a distinct hue per section. Each now declares its own.
+- **Control Standards renders an inverse band.** Rule 12 — a control on an
+  inverse surface takes the dark role set — was documented with no specimen,
+  and the section was the only one on the page carrying no inverse surface.
+- **A label inside a card is plain** 12px uppercase muted, as the system card
+  sets its role line. The previous 10px was the wrong step: `TYPE.micro` is
+  the gloss *beside* a label, not the label.
+- **`hand-rolled-card` guard** — an inline style setting a `surface`
+  background plus a `line` border is `PixelPanel`; use it. Verified to catch a
+  reverted block, and to ignore a background or a border on its own.
+- **A section-evenness test** scores each section against the median of its
+  peers, so the bar rises with the page.
+
+A first attempt at this added a new label component with an accent dot and a
+dither rule to raise the density score. That was wrong twice over — the site
+has no such object, and the section needed the parts the page already had,
+not a new one. It was removed.
+
 ### Fixed — perpetual motion
 
 - **`useMotionOK` guards every animation that repeats forever** — the ticker,
