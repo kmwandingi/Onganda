@@ -406,6 +406,14 @@ import { PixelButton } from '@onganda/design-system';
 <PixelButton variant="primary" disabled>Saving…</PixelButton>
 ```
 
+### PixelIconButton
+
+Use `PixelIconButton` for a familiar icon action inside a compact toolbar or row. It is borderless at rest and always requires a concise accessible `label`.
+
+```tsx
+<PixelIconButton label="Move up"><IconChevronUp size={14} /></PixelIconButton>
+```
+
 | Variant | Light | Dark | When |
 |---|---|---|---|
 | `primary` | Char black → ochre on hover | Millet clay → ochre on hover | The one main action in a view |

@@ -136,6 +136,7 @@ same "primary button" ends up three different colours on three pages.
 | Need | Use | Not |
 |---|---|---|
 | Any button or CTA | `PixelButton` | `<button>` with an inline `background` |
+| Compact icon action | `PixelIconButton` | A full text button around an icon |
 | Text entry | `PixelInput` | `<input>` with an inline `border` |
 | Long text | `PixelTextarea` | `<textarea>` |
 | Fixed choice from a list | `PixelSelect` | `<select>` |

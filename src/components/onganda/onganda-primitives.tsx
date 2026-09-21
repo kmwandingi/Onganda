@@ -697,6 +697,48 @@ export const PixelButton = ({
   );
 };
 
+/** Borderless icon action for compact toolbars and in-row controls. */
+export const PixelIconButton = ({
+  label,
+  isDark = false,
+  disabled = false,
+  children,
+  ...props
+}: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, MotionConflicting | 'aria-label'> & {
+  label: string;
+  isDark?: boolean;
+  children: React.ReactNode;
+}) => {
+  const c = roles(isDark);
+  const d = useDensity();
+  return <motion.button
+    {...props}
+    {...(disabled ? {} : MOTION.tap)}
+    type="button"
+    aria-label={label}
+    title={label}
+    disabled={disabled}
+    className="onganda-focus"
+    style={{
+      width: d.controlBox + 16,
+      height: d.controlBox + 16,
+      display: 'inline-grid',
+      placeItems: 'center',
+      padding: 0,
+      border: 0,
+      borderRadius: 0,
+      background: 'transparent',
+      color: c.textMuted,
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      opacity: disabled ? 0.35 : 1,
+      transition: CONTROL_TRANSITION,
+      ['--onganda-focus' as string]: c.focusRing
+    } as React.CSSProperties}
+    onMouseEnter={event => { if (!disabled) { event.currentTarget.style.background = c.surfaceWell; event.currentTarget.style.color = c.accentInk; } }}
+    onMouseLeave={event => { event.currentTarget.style.background = 'transparent'; event.currentTarget.style.color = c.textMuted; }}
+  >{children}</motion.button>;
+};
+
 // ─── Text fields ──────────────────────────────────────────────────────────────
 // Transparent ground, 1px line, ochre on focus, fired red when invalid.
 // Pass `invalid` rather than styling an error state by hand.
