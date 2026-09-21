@@ -64,7 +64,7 @@ export const NamibiaAISystemsHub = () => {
         {/* ── Systems grid ── */}
         <section id="systems" className="max-w-7xl mx-auto px-6 pb-24 md:px-12 pt-16">
           <div className="flex items-end justify-between mb-10 border-b pb-6" style={{
-          borderColor: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)'
+          borderColor: isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.10)'
         }}>
             <div>
               <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{

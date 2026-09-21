@@ -253,7 +253,7 @@ export type { AiGeneratableDocBlockType } from './onganda-block-types';
 const inputStyle = (isDark: boolean): React.CSSProperties => ({
   width: '100%',
   background: isDark ? COLOR.darkBg : COLOR.dustLight,
-  border: `1px solid ${isDark ? 'rgba(232,225,207,0.12)' : 'rgba(30,26,23,0.12)'}`,
+  border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.12)'}`,
   color: isDark ? COLOR.milletClay : COLOR.charBlack,
   padding: '9px 10px',
   fontSize: 11,

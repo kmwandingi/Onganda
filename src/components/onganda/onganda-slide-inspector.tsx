@@ -339,7 +339,7 @@ export const SlideInspector = ({
                 border: 'none',
                 outline: 'none',
                 padding: '1px 2px',
-                color: 'rgba(232,225,207,0.7)',
+                color: 'rgba(232,225,207,0.66)',
                 textAlign: 'center'
               }} />
             </div>)}

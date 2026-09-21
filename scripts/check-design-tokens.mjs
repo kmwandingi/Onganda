@@ -85,6 +85,17 @@ const TYPE_SIZES = new Set(
     .matchAll(/size:\s*(\d+)/g)].map(m => Number(m[1]))
 );
 if (TYPE_SIZES.size < 5) throw new Error('check-design-tokens: could not read the type scale');
+// The permitted ink and paper opacities, READ FROM SOURCE for the same reason
+// the palette is: a hand-copied list stops agreeing with what it guards.
+const ALPHA_STEPS = new Set(
+  [...readFileSync(resolveTokenFile('onganda-roles.ts'), 'utf8')
+    .matchAll(/light:\s*([\d.]+),\s*dark:\s*([\d.]+)/g)]
+    .flatMap(m => [Number(m[1]), Number(m[2])])
+);
+// Fully opaque and fully transparent are not ramp steps but are always legal.
+ALPHA_STEPS.add(0); ALPHA_STEPS.add(1);
+if (ALPHA_STEPS.size < 6) throw new Error('check-design-tokens: could not read the alpha ramp');
+
 // Tailwind's default steps, mapped to px so they are checked too.
 const TW_SIZES = { xs: 12, sm: 14, base: 16, lg: 18, xl: 20, '2xl': 24, '3xl': 30, '4xl': 36, '5xl': 48, '6xl': 60, '7xl': 72 };
 
@@ -143,9 +154,12 @@ const RULES = [
     why: 'A font size outside the closed type scale in onganda-type.ts. Pick the step whose job matches, or add one to the scale with a stated role.',
     // .tsx only: the PPTX exporter measures in points, not CSS pixels.
     files: /\.tsx$/,
-    re: /fontSize:\s*(\d+)\b|text-\[(\d+)px\]|\btext-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g,
+    // `fontSize: '20px'` is the same declaration as `fontSize: 20` and was
+    // invisible to this rule, which is how 71 off-scale sizes accumulated in
+    // a consumer while the check reported clean.
+    re: /fontSize:\s*'(\d+(?:\.\d+)?)px'|fontSize:\s*(\d+(?:\.\d+)?)\b|text-\[(\d+)px\]|\btext-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g,
     filter: m => {
-      const n = m.match(/fontSize:\s*(\d+)/) ?? m.match(/text-\[(\d+)px\]/);
+      const n = m.match(/fontSize:\s*'?(\d+(?:\.\d+)?)/) ?? m.match(/text-\[(\d+)px\]/);
       if (n) return !TYPE_SIZES.has(Number(n[1]));
       const tw = m.match(/text-(\w+)/);
       return tw ? !TYPE_SIZES.has(TW_SIZES[tw[1]]) : false;
@@ -165,6 +179,20 @@ const RULES = [
       const surface = /background:\s*(?:c|roles\([^)]*\))\.surface\b/.test(m);
       const line = /border:\s*`1px solid \$\{(?:c|roles\([^)]*\))\.line\}`/.test(m);
       return surface && line;
+    }
+  },
+  {
+    id: 'off-ramp-ink',
+    why: 'An ink or paper opacity that is not a step on the ALPHA ramp in onganda-roles.ts. `off-palette-rgba` passes this because char black IS a palette colour — only the alpha is invented, and 25 different ones had accumulated where the ramp defines seven. Read a role (textMuted, textBody, line, lineStrong) instead.',
+    files: /\.tsx?$/,
+    exclude: /onganda-roles\.ts$|onganda-colors\.ts$/,
+    // Scoped to the properties the ramp governs: text and lines. A 4%
+    // background wash and a 90% modal scrim are surfaces, not ink, and the
+    // ramp has nothing to say about them.
+    re: /(?:color|borderColor|border(?:Top|Right|Bottom|Left)?Color|outlineColor|border(?:Top|Right|Bottom|Left)?|outline|textDecorationColor)\s*:\s*[^;,\n]*rgba\(\s*(?:30,\s*26,\s*23|232,\s*225,\s*207),\s*[\d.]+\s*\)/g,
+    filter: m => {
+      const a = Number(m.match(/,\s*([\d.]+)\s*\)/)[1]);
+      return !ALPHA_STEPS.has(a);
     }
   },
   {

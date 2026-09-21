@@ -1717,6 +1717,7 @@ guards over every design-system module and fails the build.
 | `modern-color-fn` | `oklch`, `oklab`, `lch`, `lab` |
 | `system-colour-as-chrome` | A system hue bound to a `background` or `border*` property |
 | `raw-status-colour` | `STATUS.settled` read directly instead of `statusFor(name, isDark)` |
+| `off-ramp-ink` | An ink or paper opacity that is not a step on the `ALPHA` ramp, on a `color`, `border*` or `outline*` property. `off-palette-rgba` passes these because char black **is** a palette colour, so only the alpha is invented. Scoped to text and lines: a background wash and a modal scrim are surfaces, and the ramp says nothing about them |
 | `rounded-geometry` | `rounded-lg`, `borderRadius` with a non-zero value |
 
 The sanctioned hex set is **parsed from `onganda-colors.ts` at run time**, not

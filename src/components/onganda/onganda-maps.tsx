@@ -95,11 +95,11 @@ const MAP_STYLES = `
     box-shadow: none;
   }
   .onganda-map-shell .leaflet-control-zoom {
-    border: 1px solid rgba(30, 26, 23, .24);
+    border: 1px solid rgba(30, 26, 23, 0.25);
     margin: 16px 16px 0 0;
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-control-zoom {
-    border-color: rgba(232, 225, 207, .24);
+    border-color: rgba(232, 225, 207, 0.25);
   }
   .onganda-map-shell .leaflet-control-zoom a {
     width: 34px;
@@ -112,7 +112,7 @@ const MAP_STYLES = `
     font: 600 18px/34px Inter, Arial, sans-serif;
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-control-zoom a {
-    border-color: rgba(232, 225, 207, .14);
+    border-color: rgba(232, 225, 207, 0.1);
     background: ${COLOR.darkCard};
     color: ${COLOR.milletClay};
   }
@@ -186,12 +186,12 @@ const MAP_STYLES = `
     box-shadow: 4px 7px 0 rgba(30, 26, 23, .34);
   }
   .onganda-map-shell .leaflet-popup-content-wrapper {
-    border: 1px solid rgba(30, 26, 23, .18);
+    border: 1px solid rgba(30, 26, 23, 0.2);
     background: ${COLOR.dustLight};
     color: ${COLOR.charBlack};
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-popup-content-wrapper {
-    border-color: rgba(232, 225, 207, .18);
+    border-color: rgba(232, 225, 207, 0.2);
     background: ${COLOR.darkCard};
     color: ${COLOR.milletClay};
   }
@@ -504,7 +504,7 @@ export const OngandaMap = ({
       data-onganda-map
       data-theme={isDark ? 'dark' : 'light'}
       style={{
-        borderColor: isDark ? 'rgba(232,225,207,0.14)' : 'rgba(30,26,23,0.14)',
+        borderColor: isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.14)',
         background: isDark ? COLOR.darkCard : COLOR.dustLight,
         color: isDark ? COLOR.milletClay : COLOR.charBlack,
       }}
@@ -529,7 +529,7 @@ export const OngandaMap = ({
             <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{title}</h2>
             <p
               className="mt-2 max-w-2xl text-sm leading-relaxed md:text-base"
-              style={{ color: isDark ? 'rgba(232,225,207,0.62)' : 'rgba(30,26,23,0.66)' }}
+              style={{ color: isDark ? 'rgba(232,225,207,0.65)' : 'rgba(30,26,23,0.66)' }}
             >
               {description}
             </p>
@@ -547,7 +547,7 @@ export const OngandaMap = ({
 
       <div
         className="relative border-y"
-        style={{ borderColor: isDark ? 'rgba(232,225,207,0.14)' : 'rgba(30,26,23,0.14)' }}
+        style={{ borderColor: isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.14)' }}
       >
         <div
           ref={containerRef}

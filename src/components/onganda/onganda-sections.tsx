@@ -615,7 +615,7 @@ export const OngandaNav = () => {
         alignItems: 'center',
         gap: 6,
         padding: '6px 10px',
-        border: `1px solid rgba(30,26,23,0.18)`,
+        border: `1px solid rgba(30,26,23,0.2)`,
         background: 'rgba(30,26,23,0.04)',
         color: 'rgba(30,26,23,0.66)',
         cursor: 'not-allowed',
@@ -877,7 +877,7 @@ export const OngandaHero = () => {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 8,
-        border: '1px solid rgba(30,26,23,0.15)',
+        border: '1px solid rgba(30,26,23,0.1)',
         background: 'rgba(243,232,195,0.9)',
         padding: '6px 12px'
       }}>

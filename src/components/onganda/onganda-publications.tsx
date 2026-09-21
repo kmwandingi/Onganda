@@ -505,7 +505,7 @@ const PublicationCard = ({
       {/* Hint line at the bottom edge */}
       <div style={{
       padding: '9px 40px',
-      borderTop: `1px solid ${isDark ? `${fmt.hex}18` : 'rgba(30,26,23,0.06)'}`,
+      borderTop: `1px solid ${isDark ? `${fmt.hex}18` : 'rgba(30,26,23,0.1)'}`,
       background: isDark ? `${fmt.hex}08` : `${fmt.hex}07`
     }}>
         <p style={{

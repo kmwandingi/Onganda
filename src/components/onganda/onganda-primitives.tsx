@@ -1474,7 +1474,7 @@ export const CodeSnippetBlock = ({
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          color: 'rgba(232,225,207,0.85)',
+          color: 'rgba(232,225,207,0.82)',
           opacity: 0.85
         }}>
             {label}
@@ -1497,8 +1497,8 @@ export const CodeSnippetBlock = ({
         gap: 6,
         padding: '4px 12px',
         background: copied ? `${accentHex}22` : 'transparent',
-        border: `1px solid ${copied ? accentHex : 'rgba(232,225,207,0.15)'}`,
-        color: copied ? COLOR.mahanguGold : 'rgba(232,225,207,0.6)',
+        border: `1px solid ${copied ? accentHex : 'rgba(232,225,207,0.1)'}`,
+        color: copied ? COLOR.mahanguGold : 'rgba(232,225,207,0.58)',
         fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.14em',

@@ -1470,7 +1470,7 @@ const CanvasTextEdit = ({
     fontFamily: isHeadline ? 'inherit' : 'Georgia, serif',
     fontSize: isHeadline ? 22 : 12,
     fontWeight: isHeadline ? 700 : 400,
-    color: isHeadline ? 'inherit' : 'rgba(30,26,23,0.80)',
+    color: isHeadline ? 'inherit' : 'rgba(30,26,23,0.82)',
     lineHeight: isHeadline ? 1.2 : 1.8,
     whiteSpace: 'pre-wrap'
   }} />;
@@ -3518,7 +3518,7 @@ function SlideThumbnail({
     width: '100%',
     padding: '9px 14px',
     background: isActive ? `${COLOR.ochreOrange}18` : isDragOver ? `${COLOR.ochreOrange}0C` : 'transparent',
-    borderLeft: `3px solid ${isActive ? COLOR.ochreOrange : isDark ? 'rgba(232,225,207,0.06)' : 'rgba(30,26,23,0.08)'}`,
+    borderLeft: `3px solid ${isActive ? COLOR.ochreOrange : isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
     cursor: isDragging ? 'grabbing' : 'pointer',
     textAlign: 'left',
     display: 'flex',
@@ -3536,7 +3536,7 @@ function SlideThumbnail({
       width: '100%',
       aspectRatio: '16/9',
       background: isDark ? EDITOR_SURFACE.canvasWellDark : EDITOR_SURFACE.paperWarm,
-      border: `1px solid ${isActive ? `${COLOR.ochreOrange}40` : isDark ? 'rgba(232,225,207,0.06)' : 'rgba(30,26,23,0.08)'}`,
+      border: `1px solid ${isActive ? `${COLOR.ochreOrange}40` : isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
       marginBottom: 6,
       overflow: 'hidden',
       position: 'relative'
@@ -4139,7 +4139,7 @@ const EditorToolbar = ({
       <button onClick={onAddSlide} style={{
         padding: '6px 12px',
         background: 'transparent',
-        border: `1px solid ${isDark ? 'rgba(232,225,207,0.18)' : 'rgba(30,26,23,0.18)'}`,
+        border: `1px solid ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.18)'}`,
         cursor: 'pointer',
         fontSize: 10,
         fontWeight: 600,
@@ -4157,7 +4157,7 @@ const EditorToolbar = ({
         gap: 5,
         padding: '6px 14px',
         background: fmt === 'PDF' ? COLOR.ochreOrange : 'transparent',
-        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? 'rgba(232,225,207,0.18)' : 'rgba(30,26,23,0.18)'}`,
+        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.18)'}`,
         cursor: 'pointer',
         fontSize: 10,
         fontWeight: 700,
@@ -4265,7 +4265,7 @@ const SlidePicker = ({
           alignItems: 'center',
           gap: 6,
           background: 'transparent',
-          border: `1px solid ${isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
           cursor: 'pointer',
           color: muted,
           fontSize: 11,

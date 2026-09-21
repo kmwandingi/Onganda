@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — two guard rules that were failing open
+
+- **`off-ramp-ink`** — an ink or paper opacity that is not a step on the
+  `ALPHA` ramp. `off-palette-rgba` passed these because char black *is* a
+  palette colour: only the alpha was invented, and 25 different ones had
+  accumulated in a consumer where the ramp defines eleven. Scoped to `color`,
+  `border*` and `outline*`, because a 4% wash and a 90% scrim are surfaces,
+  not ink. 34 sites in the editors remapped to their nearest step; the whole
+  visual suite is unchanged.
+- **`off-scale-type` now reads quoted and fractional sizes.** `fontSize:
+  '20px'` was invisible to it, and `fontSize: 9.5` matched as `9` and passed.
+  Two fractional sizes in the document editor were found this way.
+
+Both verified against a planted violation and a legal neighbour.
+
 ### Fixed — PixelNotice forwards its attributes
 
 `data-testid` on a component compiles and is then silently dropped, because

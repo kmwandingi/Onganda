@@ -871,7 +871,7 @@ const TerminalBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.terminalIdx ?? 0) === i ? tb.tagHex : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${(block.terminalIdx ?? 0) === i ? tb.tagHex : 'rgba(30,26,23,0.1)'}`,
           background: (block.terminalIdx ?? 0) === i ? `${tb.tagHex}18` : 'transparent',
           color: (block.terminalIdx ?? 0) === i ? tb.tagHex : muted
         }}>
@@ -975,7 +975,7 @@ const TimelineBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.timelinePhaseIdx ?? 0) === i ? ph.hex : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${(block.timelinePhaseIdx ?? 0) === i ? ph.hex : 'rgba(30,26,23,0.1)'}`,
           background: (block.timelinePhaseIdx ?? 0) === i ? `${ph.hex}18` : 'transparent',
           color: (block.timelinePhaseIdx ?? 0) === i ? ph.hex : muted
         }}>
@@ -1108,7 +1108,7 @@ const SystemCardBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.systemIdx ?? 0) === i ? s.borderHex : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${(block.systemIdx ?? 0) === i ? s.borderHex : 'rgba(30,26,23,0.1)'}`,
           background: (block.systemIdx ?? 0) === i ? `${s.borderHex}18` : 'transparent',
           color: (block.systemIdx ?? 0) === i ? s.borderHex : muted
         }}>
@@ -1210,7 +1210,7 @@ const FlowNodeBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.flowNodeIdx ?? 0) === i ? n.hex : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${(block.flowNodeIdx ?? 0) === i ? n.hex : 'rgba(30,26,23,0.1)'}`,
           background: (block.flowNodeIdx ?? 0) === i ? `${n.hex}18` : 'transparent',
           color: (block.flowNodeIdx ?? 0) === i ? n.hex : muted
         }}>
@@ -1369,10 +1369,10 @@ const HeatmapBlock = ({
                 width: 36,
                 fontSize: 9,
                 background: 'transparent',
-                border: '1px solid rgba(232,225,207,0.15)',
+                border: '1px solid rgba(232,225,207,0.1)',
                 outline: 'none',
                 padding: '2px 3px',
-                color: 'rgba(232,225,207,0.7)',
+                color: 'rgba(232,225,207,0.66)',
                 textAlign: 'center'
               }} />
                 </div>;
@@ -1604,7 +1604,7 @@ const MarketChartBlock = ({
   }
   return <div style={{
     background: isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm,
-    border: `1px solid ${isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'}`,
+    border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
     padding: '16px 20px'
   }}>
       <div style={{
@@ -1773,7 +1773,7 @@ const BarChartBlock = ({
   }
   return <div style={{
     background: isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm,
-    border: `1px solid ${isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'}`,
+    border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
     padding: '16px 20px'
   }}>
       <div style={{
@@ -2690,7 +2690,7 @@ const LetterheadBlock = ({
       <div style={{
         display: 'flex', flexWrap: 'wrap' as const,
         alignItems: 'center', gap: '7px 10px',
-        color: muted, fontSize: 9.5, letterSpacing: '0.06em',
+        color: muted, fontSize: 10, letterSpacing: '0.06em',
         marginTop: -10, marginBottom: 24
       }}>
         <span>{lh.byline}</span>
@@ -2708,12 +2708,12 @@ const LetterheadBlock = ({
 const DesignChartGalleryBlock = ({ isDark }: { isDark: boolean }) => (
   <div style={{
     background: isDark ? COLOR.darkCard : COLOR.dustLight,
-    border: `1px solid ${isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'}`,
+    border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
     overflow: 'hidden'
   }}>
     <div style={{
       padding: '14px 18px',
-      borderBottom: `1px solid ${isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'}`,
+      borderBottom: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -3155,7 +3155,7 @@ function DocBlockView({
         fontWeight: 600,
         cursor: 'pointer',
         background: 'transparent',
-        border: `1px solid ${isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'}`,
+        border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
         color: muted,
         padding: '2px 8px',
         letterSpacing: '0.08em'
@@ -4097,7 +4097,7 @@ const DocToolbar = ({
         gap: 5,
         padding: '6px 14px',
         background: fmt === 'PDF' ? COLOR.ochreOrange : 'transparent',
-        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'}`,
+        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
         cursor: 'pointer',
         fontSize: 10,
         fontWeight: 700,
@@ -4235,7 +4235,7 @@ const DocLetterhead = ({
         alignItems: 'center',
         gap: '7px 10px',
         color: muted,
-        fontSize: 9.5,
+        fontSize: 10,
         letterSpacing: '0.06em',
         marginTop: -10,
         marginBottom: 24
@@ -4344,7 +4344,7 @@ const TemplatePicker = ({
           alignItems: 'center',
           gap: 6,
           background: 'transparent',
-          border: `1px solid ${isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
           cursor: 'pointer',
           color: muted,
           fontSize: 11,
