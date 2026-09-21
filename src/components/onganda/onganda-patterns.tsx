@@ -14,7 +14,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
-import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity } from './onganda-primitives';
+import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
 import { TYPE, SPACE_SCALE } from './onganda-type';
 
@@ -29,7 +29,8 @@ export const PixelNotice = ({
   children,
   isDark = false,
   onDismiss,
-  className = ''
+  className = '',
+  ...rest
 }: {
   status?: StatusName;
   title: string;
@@ -37,11 +38,16 @@ export const PixelNotice = ({
   isDark?: boolean;
   onDismiss?: () => void;
   className?: string;
-}) => {
+  // TypeScript does not type-check hyphenated JSX attributes, so `data-testid`
+  // on a component compiles and is then silently dropped. Forwarding the rest
+  // keeps test hooks and ARIA attributes working, as PixelPanel and
+  // PixelChoice already do.
+} & Omit<React.HTMLAttributes<HTMLElement>, 'title' | MotionConflicting>) => {
   const c = roles(isDark);
   const hue = statusFor(status, isDark);
   return (
     <motion.div
+      {...rest}
       // Mount entrance, not a scroll-triggered one. A notice usually appears
       // in response to something the user just did; `whileInView` leaves it at
       // opacity 0 until it is scrolled past, which for an alert means never.

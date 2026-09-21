@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Fixed — PixelNotice forwards its attributes
+
+`data-testid` on a component compiles and is then silently dropped, because
+TypeScript does not type-check hyphenated JSX attributes. PixelPanel and
+PixelChoice were fixed for this; PixelNotice was not, so a consumer moving a
+block from one to the other lost its test hook with no error anywhere. It
+reuses the exported `MotionConflicting` type rather than casting the
+framer-motion handler clash away.
+
 ### Fixed — StatCard no longer hides itself
 
 It used `MOTION.fadeUp`, whose `whileInView` never fires when the component

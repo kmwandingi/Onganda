@@ -588,7 +588,7 @@ export type PixelButtonVariant = 'primary' | 'accent' | 'ghost' | 'danger';
 // framer-motion redefines the drag and animation handlers with its own
 // signatures. Rather than cast the conflict away, drop them from the public
 // surface: a design-system button has no business being a drag source.
-type MotionConflicting =
+export type MotionConflicting =
   | 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onDragEnter' | 'onDragExit'
   | 'onDragLeave' | 'onDragOver' | 'onDrop'
   | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'
