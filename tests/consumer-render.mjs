@@ -28,7 +28,7 @@ const testRoot = await mkdtemp(path.join(tmpdir(), 'onganda-render-'));
 
 const APP = `
 import { createRoot } from 'react-dom/client';
-import { DarkProvider, PixelButton, SectionHeader, PixelField, PixelInput, roles } from '@onganda/design-system';
+import { DarkProvider, PixelButton, SectionHeader, PixelField, PixelInput, StatCard, roles, COLOR } from '@onganda/design-system';
 import '@onganda/design-system/style.css';
 import './app.css';
 
@@ -42,6 +42,7 @@ function App() {
         <PixelField label="Email" htmlFor="e"><PixelInput id="e" placeholder="name@x.na" /></PixelField>
         <PixelButton variant="primary">Primary</PixelButton>
         <PixelButton variant="danger">Delete</PixelButton>
+        <div id="stat"><StatCard stat={{ value: '5', label: 'Active systems', sub: 'in architecture', hex: COLOR.ochreOrange }} /></div>
       </main>
     </DarkProvider>
   );
@@ -49,7 +50,7 @@ function App() {
 createRoot(document.getElementById('root')).render(<App />);
 `;
 
-const buildApp = async (name, tailwindSource) => {
+const buildApp = async (name, tailwindSource, tailwind = true) => {
   const root = path.join(testRoot, name);
   await mkdir(root, { recursive: true });
   await writeFile(path.join(root, 'package.json'), JSON.stringify({
@@ -59,9 +60,11 @@ const buildApp = async (name, tailwindSource) => {
     `<!doctype html><html><body><div id="root"></div><script type="module" src="/main.jsx"></script></body></html>`);
   await writeFile(path.join(root, 'main.jsx'), APP);
   // Exactly the CSS the README tells a Tailwind 4 consumer to write.
-  await writeFile(path.join(root, 'app.css'), `@import 'tailwindcss';\n${tailwindSource}\n`);
-  await writeFile(path.join(root, 'vite.config.js'),
-    `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport tailwindcss from '@tailwindcss/vite';\nexport default defineConfig({ plugins: [react(), tailwindcss()], base: './' });\n`);
+  await writeFile(path.join(root, 'app.css'),
+    tailwind ? `@import 'tailwindcss';\n${tailwindSource}\n` : '/* no tailwind in this consumer */\n');
+  await writeFile(path.join(root, 'vite.config.js'), tailwind
+    ? `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport tailwindcss from '@tailwindcss/vite';\nexport default defineConfig({ plugins: [react(), tailwindcss()], base: './' });\n`
+    : `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nexport default defineConfig({ plugins: [react()], base: './' });\n`);
   return root;
 };
 
@@ -79,9 +82,17 @@ try {
   // Verbatim from the README's Tailwind 4 instruction.
   const WITH_SOURCE = `@source "./node_modules/@onganda/design-system/dist/package";`;
 
+  // All three must lay out. The package ships the utility classes its own
+  // components carry (scripts/build-layout-css.mjs), so a component no longer
+  // depends on the consumer's CSS pipeline to position itself.
+  //
+  // Before that, `no-tailwind` was the broken case and nothing here covered
+  // it: the FirstRung side panel imports only this package's stylesheet, its
+  // CSS contained zero flex rules, and StatCard collapsed into a jumble.
   const cases = [
-    { name: 'configured', source: WITH_SOURCE, expectStyled: true },
-    { name: 'misconfigured', source: '', expectStyled: false },
+    { name: 'configured', source: WITH_SOURCE, tailwind: true, expectStyled: true },
+    { name: 'misconfigured', source: '', tailwind: true, expectStyled: true },
+    { name: 'no-tailwind', source: '', tailwind: false, expectStyled: true },
   ];
 
   browser = await chromium.launch();
@@ -92,8 +103,17 @@ try {
   const root = await buildApp('app', cases[0].source);
   await run('npm', ['install', '--no-package-lock', '--no-audit', '--no-fund', '--prefer-offline', ...deps], { cwd: root, maxBuffer: 1 << 26 });
 
-  for (const { name, source, expectStyled } of cases) {
-    await writeFile(path.join(root, 'app.css'), `@import 'tailwindcss';\n${source}\n`);
+  for (const { name, source, tailwind, expectStyled } of cases) {
+    await writeFile(
+      path.join(root, 'app.css'),
+      tailwind ? `@import 'tailwindcss';\n${source}\n` : '/* package CSS only */\n',
+    );
+    await writeFile(
+      path.join(root, 'vite.config.js'),
+      tailwind
+        ? `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport tailwindcss from '@tailwindcss/vite';\nexport default defineConfig({ plugins: [react(), tailwindcss()], base: './' });\n`
+        : `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nexport default defineConfig({ plugins: [react()], base: './' });\n`,
+    );
     await rm(path.join(root, 'dist'), { recursive: true, force: true });
     await run('npm', ['run', 'build'], { cwd: root, maxBuffer: 1 << 26 });
 
@@ -176,17 +196,17 @@ try {
     const styled = probe.eyebrowTransform === 'uppercase';
     if (styled !== expectStyled) {
       throw new Error(
-        expectStyled
-          ? `configured: the documented Tailwind @source line did not style the package. eyebrow=${probe.eyebrowTag} text-transform=${probe.eyebrowTransform} utilityEmitted=${probe.utilityEmitted}. A consumer following the README would get unstyled components.`
-          : `misconfigured: utilities were generated even without the @source line, so this check cannot detect a missing Tailwind configuration and proves nothing.`
+        `${name}: packaged layout styles did not apply. eyebrow=${probe.eyebrowTag} text-transform=${probe.eyebrowTransform} utilityEmitted=${probe.utilityEmitted}.`,
       );
     }
   }
 
   console.log('Consumer render check passed.');
-  console.log(`  configured    → eyebrow ${results.configured.probe.eyebrowTransform}, tracking ${results.configured.probe.eyebrowTracking}, primary ${results.configured.probe.primaryBg}`);
-  console.log(`  misconfigured → eyebrow ${results.misconfigured.probe.eyebrowTransform} (correctly detected as broken)`);
-  console.log('  The check distinguishes a correctly configured consumer from a misconfigured one.');
+  for (const { name } of cases) {
+    const probe = results[name].probe;
+    console.log(`  ${name.padEnd(13)} → eyebrow ${probe.eyebrowTransform}, tracking ${probe.eyebrowTracking}, primary ${probe.primaryBg}`);
+  }
+  console.log('  Packaged components retain layout with configured, unconfigured, or absent Tailwind.');
 } finally {
   if (browser) await browser.close();
   await rm(testRoot, { recursive: true, force: true });

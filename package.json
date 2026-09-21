@@ -1,6 +1,6 @@
 {
   "name": "@onganda/design-system",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "description": "Onganda pixel editorial design system — tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
   "keywords": [
@@ -84,7 +84,7 @@
     "typecheck": "tsc -b",
     "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
     "build:showcase": "vite build",
-    "build:lib": "vite build --config vite.lib.config.ts && cp src/design-system/lib-style.css dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
+    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
     "prepare": "npm run build:lib",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-design-tokens.mjs",
@@ -99,7 +99,8 @@
     "check": "npm run lint && npm run check:design && npm run build && npm run test:package && npm run test:consumer",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "build:layout": "node scripts/build-layout-css.mjs"
   },
   "peerDependencies": {
     "framer-motion": ">=10.0.0",

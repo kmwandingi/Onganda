@@ -39,14 +39,17 @@ In your project's root entry file (e.g. `main.tsx`, `_app.tsx`, `layout.tsx`):
 import '@onganda/design-system/style.css';
 ```
 
-This gives you the CSS custom properties:
+This gives you the CSS custom properties and the layout rules used by packaged
+components:
 - `--type-hero`, `--type-hero-public`, `--type-hero-gap`, `--type-subhead`
 - `--onganda-ochre-orange`, `--onganda-char-black`, etc. (full palette as CSS vars)
 
-### 2. Add to your Tailwind content path (if using Tailwind)
+### 2. Add to your Tailwind content path only when extending components
 
-The design-system components use Tailwind utility classes. Add the library to
-your Tailwind content path so those utilities are included in your CSS output.
+The package stylesheet includes the utilities used by its exported components.
+Consumers that only use those components need no Tailwind configuration. Add
+the library to your content path when your own components reuse utility classes
+from the packaged component source.
 
 **Tailwind v4** (`tailwind.css` or `@tailwindcss/vite` config):
 ```css

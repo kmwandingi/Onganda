@@ -34,3 +34,4 @@ test-results
 # Local export verification scratch
 export-verification/
 artifacts/
+src/design-system/lib-layout.css

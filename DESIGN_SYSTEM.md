@@ -92,10 +92,12 @@ This adds the Onganda CSS custom properties to `:root`:
 ... (full palette, see §3)
 ```
 
-### Step 2 — Add to Tailwind content (if using Tailwind)
+### Step 2 — Add to Tailwind content when extending components
 
-The components use Tailwind utility classes. Add the library's bundle to your
-content scan so those utilities are generated.
+The package stylesheet includes the utility classes used by exported
+components. Consumers need no Tailwind configuration for those components.
+Add the library bundle to your content scan only when consumer code extends
+the packaged components with the same utility classes.
 
 **Tailwind v4** (in your CSS file):
 ```css
