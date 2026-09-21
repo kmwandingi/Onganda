@@ -14,6 +14,13 @@ import { stubMapTiles } from './support/map-tiles';
 //
 //   npx playwright test appearance --update-snapshots
 
+// Visual baselines run with reduced motion. `animations: 'disabled'` only
+// freezes CSS animations; framer-motion drives transforms in JS and keeps
+// going, so a section containing a ticker or a loading sweep never reaches
+// two identical consecutive frames and the screenshot times out. Reduced
+// motion stops those at the source — see useMotionOK in onganda-motion.ts.
+test.use({ reducedMotion: 'reduce' });
+
 const settle = async (page: Page, selector: string) => {
   await stubMapTiles(page);
   if (selector !== 'body') {
@@ -49,6 +56,11 @@ for (const [name, route, selector] of SURFACES) {
       // a panel's pixels, so a lenient ratio makes this baseline decorative —
       // it silently accepted a 0.51 → 0.80 field border when set to 0.02.
       maxDiffPixelRatio: 0.0015,
+      // Time, not tolerance. The Control Standards section is ~1900px tall and
+      // takes 5–6.5s to capture twice in the CI container, against a 5s
+      // default — so it timed out under load while passing alone. The
+      // comparison stays at 0.0015; only the budget moves.
+      timeout: 20_000,
     });
   });
 }
@@ -68,6 +80,7 @@ for (const [name, stage] of [['controls-dark', '#controls-stage'], ['patterns-da
       animations: 'disabled',
       caret: 'hide',
       maxDiffPixelRatio: 0.0015,
+      timeout: 20_000,
     });
   });
 }
@@ -80,5 +93,6 @@ test('appearance: the mobile public home', async ({ page }) => {
     animations: 'disabled',
     caret: 'hide',
     maxDiffPixelRatio: 0.0015,
+    timeout: 20_000,
   });
 });

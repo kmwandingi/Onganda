@@ -3086,7 +3086,6 @@ const SlideCanvas = ({
   return <div ref={canvasRef} style={{
     background: bg,
     border: `1px solid ${border}`,
-    boxShadow: isDark ? '0 8px 48px rgba(0,0,0,0.5)' : '0 8px 48px rgba(30,26,23,0.10)',
     aspectRatio: '16 / 9',
     position: 'relative',
     overflow: 'hidden',
@@ -3691,7 +3690,6 @@ const ExportModal = ({
       width: 440,
       background: panelBg,
       border: `1px solid ${borderC}`,
-      boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden'

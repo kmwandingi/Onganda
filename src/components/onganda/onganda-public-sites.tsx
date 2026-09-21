@@ -17,6 +17,14 @@ import {
   systemIconForName
 } from './onganda-primitives';
 import {
+  PixelTicker,
+  PixelEditorialSection,
+  PixelFocusRow,
+  PixelLabCard,
+  PixelContactPanel,
+  PixelEdgeStrips
+} from './onganda-site';
+import {
   IconArrowRight,
   IconCheck,
   IconClose,
@@ -46,7 +54,6 @@ const navItems = [
   { href: '/showcase', label: 'Showcase' }
 ];
 
-const systemEnglish = (sys: SystemEntry) => sys.name === 'Okaanda' ? 'Granary' : sys.english;
 
 const focusItems = [
   { icon: IconDatabase, label: 'Adapt models', body: 'Select, adapt, evaluate, and organize models for local use.', hex: COLOR.ochreOrange },
@@ -144,26 +151,6 @@ const PublicShell = ({ children }: { children: React.ReactNode }) => (
   </DarkContext.Provider>
 );
 
-const Ticker = ({ className = '' }: { className?: string }) => (
-  <div className={`w-full overflow-hidden border-y ${className}`} style={{ background: COLOR.charBlack, borderColor: line }} aria-hidden="true">
-    <motion.div
-      data-onganda-ticker
-      animate={{ x: ['0%', '-50%'] }}
-      transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
-      className="flex w-max items-center py-3"
-    >
-      {[...SYSTEMS, ...SYSTEMS].map((sys, index) => (
-        <div key={`${sys.name}-${index}`} className="flex items-center">
-          <PixelDot color={sys.borderHex} size={6} />
-          <span className="ml-3 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: inkOn(sys.borderHex, COLOR.milletClay) }}>{sys.name}</span>
-          <span className="ml-2 mr-8 text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: 'rgba(232,225,207,0.55)' }}>{systemEnglish(sys)}</span>
-          <div className="mr-8 h-4 w-px" style={{ background: darkLine }} />
-        </div>
-      ))}
-    </motion.div>
-  </div>
-);
-
 const PublicHero = ({
   tag,
   line1,
@@ -183,28 +170,7 @@ const PublicHero = ({
 }) => (
   <header className="relative flex min-h-[calc(100svh-65px)] flex-col items-center justify-center overflow-hidden">
     <WeaveOverlay opacity={0.026} />
-    <div className="absolute inset-y-0 left-0 flex w-5 flex-col overflow-hidden" aria-hidden="true">
-      {[COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum, COLOR.firedRed].map((hex, i) => (
-        <motion.div
-          key={`${hex}-${i}`}
-          animate={{ y: [0, -80, 0] }}
-          transition={{ duration: 16 + i * 2, repeat: Infinity, ease: 'linear' }}
-          className="h-12 w-2"
-          style={{ background: hex, opacity: i % 2 ? 0.18 : 0.48 }}
-        />
-      ))}
-    </div>
-    <div className="absolute inset-y-0 right-0 flex w-5 flex-col items-end overflow-hidden" aria-hidden="true">
-      {[COLOR.dyePlum, COLOR.mopaneBrown, COLOR.mahanguGold, COLOR.barkRust, COLOR.ochreOrange, COLOR.firedRed].map((hex, i) => (
-        <motion.div
-          key={`${hex}-${i}`}
-          animate={{ y: [0, 80, 0] }}
-          transition={{ duration: 17 + i * 2, repeat: Infinity, ease: 'linear' }}
-          className="h-12 w-2"
-          style={{ background: hex, opacity: i % 2 ? 0.16 : 0.42 }}
-        />
-      ))}
-    </div>
+    <PixelEdgeStrips hexes={[COLOR.ochreOrange, COLOR.barkRust, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum, COLOR.firedRed]} />
 
     <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-16 text-center md:px-12">
       <div className="mb-7 flex flex-wrap items-center justify-center gap-3">
@@ -228,7 +194,7 @@ const PublicHero = ({
       </h1>
     </div>
     {/* Full-bleed system ticker — matches the showcase hero stripe */}
-    <Ticker className="relative z-10 mt-6 md:mt-8" />
+    <PixelTicker className="relative z-10 mt-6 md:mt-8" />
     <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pb-16 text-center md:px-12">
       <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
@@ -258,24 +224,6 @@ const SectionTitle = ({ label, headline, accent = COLOR.ochreOrange }: { label: 
   </div>
 );
 
-const EditorialSection = ({ id, label, headline, children, accent = COLOR.ochreOrange }: {
-  id?: string;
-  label: string;
-  headline: string;
-  children: React.ReactNode;
-  accent?: string;
-}) => (
-  <section id={id} className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
-    <SectionTitle label={label} headline={headline} accent={accent} />
-    <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]">
-      <div className="hidden lg:block">
-        <DitherBar color={accent} segments={34} height={4} opacity={0.42} />
-      </div>
-      <div className="space-y-5 text-base leading-relaxed md:text-lg" style={{ color: muted }}>{children}</div>
-    </div>
-  </section>
-);
-
 const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
   <section id="systems" className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
     <SectionTitle label="Systems" headline="Five systems. One compound." accent={COLOR.mahanguGold} />
@@ -297,7 +245,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           </div>
           <div className="relative">
             <h3 className="text-2xl font-semibold">{sys.name}</h3>
-            <p className="mt-1 text-sm font-medium" style={{ color: muted }}>{systemEnglish(sys)}</p>
+            <p className="mt-1 text-sm font-medium" style={{ color: muted }}>{sys.english}</p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>{sys.role}</p>
             <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{detailed ? sys.long : sys.line}</p>
           </div>
@@ -305,24 +253,16 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />
         </motion.article>
       ))}
-      <motion.article
-        {...fadeUp}
-        whileHover={{ y: -4 }}
-        className="relative flex min-h-[320px] flex-col justify-between overflow-hidden p-8"
-        style={{ background: COLOR.charBlack, color: COLOR.milletClay }}
+      <PixelLabCard
+        tag="Lab"
+        title={BRAND}
+        accent={COLOR.ochreOrange}
+        footer={<IconCheck size={24} color={COLOR.ochreOrange} />}
       >
-          <WeaveOverlay isDark opacity={0.06} />
-          <div className="relative">
-            <div className="w-full" style={{ background: COLOR.ochreOrange, height: 28 }}>
-              <span className="ml-3 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: onColor(COLOR.ochreOrange), lineHeight: '28px' }}>LAB</span>
-            </div>
-            <h3 className="mt-8 text-2xl font-semibold">{BRAND}</h3>
-            <p className="mt-5 text-sm leading-relaxed" style={{ color: 'rgba(232,225,207,0.56)' }}>
-              {detailed ? 'The compound exists so the five systems work together rather than become isolated prototypes.' : 'Five systems working as one compound: from readiness to delivery.'}
-            </p>
-          </div>
-          <IconCheck size={24} color={COLOR.ochreOrange} />
-      </motion.article>
+        {detailed
+          ? 'The compound exists so the five systems work together rather than become isolated prototypes.'
+          : 'Five systems working as one compound: from readiness to delivery.'}
+      </PixelLabCard>
     </div>
   </section>
 );
@@ -373,10 +313,10 @@ const SignalBand = () => (
 );
 
 const WhatBuildingBand = () => (
-  <EditorialSection id="building" label="What we are building" headline="A systems lab for sovereignty, capability, and use." accent={COLOR.barkRust}>
+  <PixelEditorialSection id="building" label="What we are building" headline="A systems lab for sovereignty, capability, and use." accent={COLOR.barkRust}>
     <p>{BRAND} is not a single product. It is a lab organized around a coherent stack: model and data systems, adaptation workflows, containers, interfaces, and delivery.</p>
     <p>From there, the lab turns those systems into pilots, tools, and applications that can be used in practice.</p>
-  </EditorialSection>
+  </PixelEditorialSection>
 );
 
 const TerminalBand = () => (
@@ -389,43 +329,33 @@ const TerminalBand = () => (
 );
 
 const ContactBand = ({ compact = false }: { compact?: boolean }) => (
-  <section id="contact" className="px-6 pb-24 md:px-12">
-    <div className="mx-auto max-w-7xl">
-      <div className="relative overflow-hidden border p-8 md:p-12" style={{ background: COLOR.dustLight, borderColor: line }}>
-        <PixelCornerMarks hex={COLOR.ochreOrange} size={10} />
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <div className="mb-5 flex items-center gap-3">
-              <IconMail size={24} color={COLOR.ochreOrange} />
-              <span className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>Contact</span>
-            </div>
-            <h2 className="text-3xl font-semibold leading-tight md:text-5xl">Start a conversation.</h2>
-            <p className="mt-6 max-w-xl text-base leading-relaxed" style={{ color: muted }}>
-              For collaboration, institutional interest, or early access conversations, reach out directly.
-            </p>
-          </div>
-          <div className="grid gap-5">
-            {!compact && (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <PixelField label="Email" htmlFor="contact-email">
-                  <PixelInput id="contact-email" type="email" placeholder="name@institution.na" />
-                </PixelField>
-                <PixelField label="Inquiry type" htmlFor="contact-type">
-                  <PixelInput id="contact-type" placeholder="Partnership, pilot, access" />
-                </PixelField>
-              </div>
-            )}
-            <PixelField label="Short note" htmlFor="contact-note">
-              <PixelTextarea id="contact-note" placeholder="What would you like to discuss?" />
-            </PixelField>
-            <PixelButton variant="primary" className="w-fit">
-              Contact {BRAND}<IconArrowRight size={14} />
-            </PixelButton>
-          </div>
-        </div>
+  <PixelContactPanel
+    id="contact"
+    eyebrow="Contact"
+    headline="Start a conversation."
+    accent={COLOR.ochreOrange}
+    icon={<IconMail size={24} color={COLOR.ochreOrange} />}
+    aside={
+      <p className="max-w-xl">For collaboration, institutional interest, or early access conversations, reach out directly.</p>
+    }
+  >
+    {!compact && (
+      <div className="grid gap-5 sm:grid-cols-2">
+        <PixelField label="Email" htmlFor="contact-email">
+          <PixelInput id="contact-email" type="email" placeholder="name@institution.na" />
+        </PixelField>
+        <PixelField label="Inquiry type" htmlFor="contact-type">
+          <PixelInput id="contact-type" placeholder="Partnership, pilot, access" />
+        </PixelField>
       </div>
-    </div>
-  </section>
+    )}
+    <PixelField label="Short note" htmlFor="contact-note">
+      <PixelTextarea id="contact-note" placeholder="What would you like to discuss?" />
+    </PixelField>
+    <PixelButton variant="primary" className="w-fit">
+      Contact {BRAND}<IconArrowRight size={14} />
+    </PixelButton>
+  </PixelContactPanel>
 );
 
 const HomePage = () => (
@@ -456,38 +386,39 @@ const FullPage = () => (
       primary={{ label: 'Explore the systems', href: '#systems' }}
       secondary={{ label: 'Start a conversation', href: '#contact' }}
     />
-    <EditorialSection id="why" label={`Why ${BRAND}`} headline="Namibia should not only consume AI. It should be able to shape it." accent={COLOR.ochreOrange}>
+    <PixelEditorialSection id="why" label={`Why ${BRAND}`} headline="Namibia should not only consume AI. It should be able to shape it." accent={COLOR.ochreOrange}>
       <p>AI is becoming part of infrastructure: how knowledge is handled, how decisions are supported, how tools are built, and how services are delivered.</p>
       <p>Without local capability, countries remain dependent on outside providers for model choices, system behavior, language support, evaluation standards, and deployment decisions.</p>
       <p>{BRAND} is building that missing layer: not a trophy lab, but a working capability layer.</p>
-    </EditorialSection>
+    </PixelEditorialSection>
     <WhatBuildingBand />
     <SystemsGrid detailed />
     <TerminalBand />
-    <EditorialSection id="focus" label="Focus" headline="Where sovereignty becomes practical." accent={COLOR.dyePlum}>
+    <PixelEditorialSection id="focus" label="Focus" headline="Where sovereignty becomes practical." accent={COLOR.dyePlum}>
       <p>Sovereignty is not a slogan. It becomes real when systems can be adapted, tested, deployed, and used locally.</p>
       <div className="grid gap-3 pt-4">
         {focusItems.map((item, index) => {
           const Icon = item.icon;
           return (
-            <motion.article key={item.label} {...fadeUp} whileHover={{ x: 4 }} className="relative flex gap-5 border p-5" style={{ background: COLOR.dustLight, borderColor: line }}>
-              <PixelTag hex={item.hex} label={String(index + 1).padStart(2, '0')} />
-              <div className="shrink-0 pt-1"><Icon size={22} color={item.hex} /></div>
-              <div>
-                <h3 className="font-semibold">{item.label}</h3>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: muted }}>{item.body}</p>
-              </div>
-            </motion.article>
+            <PixelFocusRow
+              key={item.label}
+              index={index}
+              accent={item.hex}
+              title={item.label}
+              icon={<Icon size={22} color={item.hex} />}
+            >
+              {item.body}
+            </PixelFocusRow>
           );
         })}
       </div>
-    </EditorialSection>
-    <EditorialSection id="people" label="People" headline="A place for builders." accent={COLOR.mopaneBrown}>
+    </PixelEditorialSection>
+    <PixelEditorialSection id="people" label="People" headline="A place for builders." accent={COLOR.mopaneBrown}>
       <div className="flex items-start gap-4">
         <IconUsers size={28} color={COLOR.mopaneBrown} />
         <p>{BRAND} brings together people working across systems, models, interfaces, and applications. The lab is designed for technical depth, practical experimentation, and shared making.</p>
       </div>
-    </EditorialSection>
+    </PixelEditorialSection>
     <ContactBand />
   </>
 );

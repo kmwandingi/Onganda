@@ -33,3 +33,4 @@ test-results
 
 # Local export verification scratch
 export-verification/
+artifacts/

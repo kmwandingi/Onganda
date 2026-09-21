@@ -24,7 +24,8 @@ const DocumentMockup = ({
   position: 'relative',
   overflow: 'hidden',
   transition: 'box-shadow 0.25s, transform 0.25s',
-  boxShadow: hovered ? `0 12px 40px rgba(30,26,23,0.18), 0 0 0 2px ${hex}44` : '0 4px 16px rgba(30,26,23,0.10)',
+  // The ring stays; the blur does not. Onganda has no elevation.
+  boxShadow: hovered ? `0 0 0 2px ${hex}44` : 'none',
   transform: hovered ? 'translateY(-4px) rotate(-0.5deg)' : 'none'
 }}>
     {/* Letterhead strip */}
@@ -146,7 +147,7 @@ const PresentationMockup = ({
   position: 'relative',
   overflow: 'hidden',
   transition: 'box-shadow 0.25s, transform 0.25s',
-  boxShadow: hovered ? `0 12px 40px rgba(30,26,23,0.22), 0 0 0 2px ${hex}55` : '0 4px 16px rgba(30,26,23,0.15)',
+  boxShadow: hovered ? `0 0 0 2px ${hex}55` : 'none',
   transform: hovered ? 'translateY(-4px) rotate(0.5deg)' : 'none'
 }}>
     <WeaveOverlay isDark opacity={0.05} />
@@ -293,7 +294,7 @@ const PublicationCard = ({
     background: cardBg,
     border: `1px solid ${borderColor}`,
     transition: 'border-color 0.25s, box-shadow 0.25s, background 0.35s',
-    boxShadow: hovered ? `0 8px 32px rgba(30,26,23,0.12), 0 0 0 1px ${fmt.hex}33` : '0 2px 8px rgba(30,26,23,0.05)',
+    boxShadow: hovered ? `0 0 0 1px ${fmt.hex}33` : 'none',
     overflow: 'hidden'
   }}>
       <WeaveOverlay isDark={isDark} opacity={isDark ? 0.04 : 0.03} />

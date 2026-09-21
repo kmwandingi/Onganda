@@ -1109,6 +1109,16 @@ export const TerminalCard = ({
 };
 
 // ─── SystemCard — system grid card with dark-mode support ─────────────────────
+// ─── SystemCard — the five-system card, as the public site builds it ────────
+// A transcript of the systems grid on `/` and `/full`. Six parts, in this
+// order: an icon tile edged in the system's colour, a numbered tag, the
+// Oshiwambo name at 24px, the English reading, the role eyebrow, the line —
+// closed by a 3px spine down the left and a dither rule along the bottom.
+//
+// It carries no shadow. The public site renders zero blurred shadows; this
+// card used to cast four different ones and lift on hover, which is Material,
+// not Onganda. Depth here is the weave, the hairline and the spine. The card
+// moves on hover instead (MOTION.hoverLift) and the spine holds the colour.
 export const SystemCard = ({
   sys,
   idx
@@ -1116,78 +1126,63 @@ export const SystemCard = ({
   sys: SystemEntry;
   idx: number;
 }) => {
-  const [hovered, setHovered] = React.useState(false);
-  const {
-    isDark
-  } = useDark();
-  const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
-  const cardBorder = isDark ? `${sys.borderHex}30` : 'rgba(30,26,23,0.10)';
-  const titleColor = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const descColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.70)';
-  const shadowHover = isDark ? `0 4px 28px 0 rgba(0,0,0,0.45), 0 0 0 1px ${sys.borderHex}40` : '0 4px 24px 0 rgba(30,26,23,0.10)';
-  const shadowRest = isDark ? `0 1px 6px 0 rgba(0,0,0,0.30), 0 0 0 1px ${sys.borderHex}18` : '0 1px 4px 0 rgba(30,26,23,0.05)';
-  return <motion.article initial={{
-    opacity: 0,
-    y: 16
-  }} whileInView={{
-    opacity: 1,
-    y: 0
-  }} viewport={{
-    once: true,
-    margin: '-40px'
-  }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className="relative flex flex-col border p-8 cursor-default overflow-hidden" style={{
-    background: cardBg,
-    borderColor: cardBorder,
-    transition: 'box-shadow 0.2s, background 0.35s, border-color 0.35s',
-    boxShadow: hovered ? shadowHover : shadowRest
-  }}>
-      <WeaveOverlay isDark={isDark} opacity={isDark ? 0.045 : 0.04} />
+  const { isDark } = useDark();
+  const c = roles(isDark);
+  return <motion.article
+    {...MOTION.fadeUp}
+    {...MOTION.hoverLift}
+    className="relative flex min-h-[320px] flex-col border p-8 cursor-default overflow-hidden"
+    style={{ background: c.surface, borderColor: c.line }}
+  >
+      <WeaveOverlay isDark={isDark} opacity={0.035} />
 
-      {isDark && <div aria-hidden="true" className="absolute left-0 top-0 bottom-0 w-[3px]" style={{
-      background: sys.borderHex,
-      opacity: hovered ? 0.85 : 0.4,
-      transition: 'opacity 0.25s'
-    }} />}
-
-      <div className="w-14 h-14 flex items-center justify-center mb-7 shrink-0" style={isDark ? {
-      background: `${sys.borderHex}18`,
-      border: `1px solid ${sys.borderHex}40`
-    } : {}}>
-        {isDark ? systemIconForName(sys.name) : <div className={`w-full h-full flex items-center justify-center border ${sys.accent}`}>{systemIconForName(sys.name)}</div>}
+      <div className="relative mb-8 flex items-start justify-between">
+        <div className="border p-3" style={{
+          borderColor: `${sys.borderHex}40`,
+          background: `${sys.borderHex}14`
+        }}>
+          {systemIconForName(sys.name, 50)}
+        </div>
+        <PixelTag hex={sys.borderHex} label={String(idx + 1).padStart(2, '0')} />
       </div>
 
-      <div className="mb-1">
-        <h3 className="text-lg font-semibold tracking-tight mb-3" style={{
-        color: titleColor
-      }}>{sys.name}</h3>
-        <p className="text-sm font-medium mt-0.5" style={{
-        color: subColor
-      }}>{sys.english}</p>
+      <div className="relative">
+        <h3 style={{
+          fontSize: TYPE.headline.size,
+          fontWeight: TYPE.headline.weight,
+          lineHeight: TYPE.headline.lineHeight,
+          color: c.text,
+          margin: 0
+        }}>{sys.name}</h3>
+        <p style={{
+          fontSize: TYPE.meta.size,
+          fontWeight: TYPE.meta.weight,
+          lineHeight: TYPE.meta.lineHeight,
+          color: c.textMuted,
+          margin: '4px 0 0'
+        }}>{sys.english}</p>
+        {/* The role line is muted, not accent-coloured. The site keeps the
+            system's hue on the spine, the tag and the dither — putting it on
+            the label too is the "colour everywhere" failure the roles exist
+            to prevent. */}
+        <p className="uppercase" style={{
+          fontSize: TYPE.eyebrow.size,
+          fontWeight: TYPE.eyebrow.weight,
+          letterSpacing: TYPE.eyebrow.tracking,
+          lineHeight: TYPE.eyebrow.lineHeight,
+          color: c.textMuted,
+          margin: '20px 0 0'
+        }}>{sys.role}</p>
+        <p style={{
+          fontSize: TYPE.body.size,
+          lineHeight: TYPE.body.lineHeight,
+          color: c.textMuted,
+          margin: '16px 0 0'
+        }}>{sys.desc}</p>
       </div>
-      <div className="text-[10px] font-bold uppercase tracking-[0.15em] mb-5" style={{
-      // Ochre is 2.4:1 on the light card; the accent ink carries it there.
-      color: isDark ? sys.borderHex : roles(false).accentInk
-    }}>{sys.role}</div>
-      <p className="leading-relaxed text-sm flex-1" style={{
-      color: descColor
-    }}>{sys.desc}</p>
 
-      <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold" style={{
-      color: sys.borderHex,
-      opacity: hovered ? 1 : 0,
-      transform: hovered ? 'translateX(0)' : 'translateX(-6px)',
-      transition: 'opacity 0.2s, transform 0.2s'
-    }} aria-hidden="true">
-        <span>Explore system</span>
-        <Px size={12} viewBox="0 0 8 8">
-          <rect x="0" y="3" width="6" height="2" fill="currentColor" />
-          <rect x="4" y="1" width="2" height="2" fill="currentColor" />
-          <rect x="4" y="5" width="2" height="2" fill="currentColor" />
-        </Px>
-      </div>
-
-      <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.5} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`} />
+      <div aria-hidden="true" className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} />
+      <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />
     </motion.article>;
 };
 
@@ -1204,7 +1199,8 @@ export const FlowNodeCard = ({
   border: `1px solid ${node.hex}`,
   borderLeftWidth: 4,
   borderLeftColor: node.hex,
-  boxShadow: isHovered ? `0 6px 24px rgba(30,26,23,0.13), -3px 0 0 0 ${node.hex}` : '0 2px 8px rgba(30,26,23,0.06)',
+  // The accent edge stays; the blur does not.
+  boxShadow: isHovered ? `-3px 0 0 0 ${node.hex}` : 'none',
   transition: 'box-shadow 0.2s'
 }}>
     <div aria-hidden="true" style={{

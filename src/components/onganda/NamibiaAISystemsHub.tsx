@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
+import { PixelLabCard } from './onganda-site';
 import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, PixelButton, OngandaFooter } from './onganda-primitives';
 import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab, ControlStandards, ProductPatterns } from './onganda-sections';
 import { ChartGallery } from './onganda-charts';
@@ -82,38 +83,18 @@ export const NamibiaAISystemsHub = () => {
             {SYSTEMS.map((sys, idx) => <SystemCard key={sys.name} sys={sys} idx={idx} />)}
 
             {/* Institute promo card */}
-            <motion.div initial={{
-            opacity: 0,
-            y: 16
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true,
-            margin: '-40px'
-          }} transition={{
-            delay: 0.42,
-            duration: 0.5
-          }} className="relative p-8 flex flex-col justify-between overflow-hidden" style={{
-            background: isDark ? COLOR.darkCardAlt : COLOR.charBlack,
-            border: isDark ? `1px solid rgba(217,121,31,0.25)` : 'none'
-          }}>
-              <WeaveOverlay isDark opacity={0.06} />
-              {isDark && <div aria-hidden="true" className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#D9791F]" style={{
-              opacity: 0.55
-            }} />}
-              <div className="relative">
-                <div className="w-3 h-3 bg-[#D9791F] mb-8" aria-hidden="true" />
-                <h3 className="text-lg font-semibold tracking-tight mb-3 text-[#E8E1CF]">The Institute</h3>
-                <p className="leading-relaxed text-sm mb-8" style={{
-                color: isDark ? 'rgba(232,225,207,0.50)' : 'rgba(232,225,207,0.60)'
-              }}>
-                  A science and technology park driving applied research, piloting, and technology transfer. Sovereign AI infrastructure for Namibia.
-                </p>
-              </div>
-              {/* isDark: the button sits on the inverse (black) card, so it takes the dark role set — see DESIGN_SYSTEM.md §5 */}
-              <PixelButton variant="accent" isDark className="relative self-start">Read the manifesto</PixelButton>
-            </motion.div>
+            <PixelLabCard
+              tag="Institute"
+              title="The Institute"
+              accent={COLOR.ochreOrange}
+              footer={
+                // isDark: the button sits on the inverse card, so it takes the
+                // dark role set — see DESIGN_SYSTEM.md §5.
+                <PixelButton variant="accent" isDark className="relative self-start">Read the manifesto</PixelButton>
+              }
+            >
+              A science and technology park driving applied research, piloting, and technology transfer. Sovereign AI infrastructure for Namibia.
+            </PixelLabCard>
           </div>
         </section>
 

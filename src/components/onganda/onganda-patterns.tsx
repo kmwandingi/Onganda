@@ -15,7 +15,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
 import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity } from './onganda-primitives';
-import { MOTION } from './onganda-motion';
+import { MOTION, useMotionOK } from './onganda-motion';
 import { TYPE, SPACE_SCALE } from './onganda-type';
 
 // ─── PixelNotice — inline callout tied to the four status states ─────────────
@@ -305,6 +305,7 @@ export const PixelSkeleton = ({
   className?: string;
 }) => {
   const c = roles(isDark);
+  const moving = useMotionOK();
   return (
     <div className={className} role="status" aria-label="Loading" style={{ display: 'grid', gap: 10 }}>
       {Array.from({ length: lines }).map((_, i) => (
@@ -312,7 +313,7 @@ export const PixelSkeleton = ({
           key={i}
           aria-hidden="true"
           initial={{ opacity: 0.35 }}
-          animate={{ opacity: [0.35, 0.7, 0.35] }}
+          animate={moving ? { opacity: [0.35, 0.7, 0.35] } : { opacity: 0.5 }}
           transition={{ duration: 1.4, repeat: Infinity, ease: 'linear', delay: i * 0.12 }}
           style={{
             height: 10,

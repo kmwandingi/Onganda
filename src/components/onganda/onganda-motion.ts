@@ -1,7 +1,24 @@
+import { useReducedMotion } from 'framer-motion';
+
 // ─── Onganda Design System — Motion & Spacing Tokens ──────────────────────────
 // Canonical motion values from DESIGN_GUIDELINES.md: quiet, mechanical,
 // pixel-system aligned. Spread MOTION presets into framer-motion props so the
 // whole system can be retuned from one place.
+
+/**
+ * True when the viewer has not asked for less motion.
+ *
+ * Every animation in the system that repeats forever — the ticker, the hero
+ * edge strips, the loading sweep — must be guarded by this. Two reasons:
+ *
+ *  1. WCAG 2.2.2. Content that moves automatically for more than five seconds
+ *     needs a way to stop. `prefers-reduced-motion` is that way.
+ *  2. A page with a perpetual animation is never visually stable, so a
+ *     screenshot of it never converges. Playwright's `animations: 'disabled'`
+ *     only freezes CSS animations; framer-motion drives transforms in JS and
+ *     keeps going. That is what made the Linux visual baselines flake.
+ */
+export const useMotionOK = () => !useReducedMotion();
 
 export const MOTION = {
   // Section / card entrance: <motion.div {...MOTION.entrance} />

@@ -152,6 +152,35 @@ const RULES = [
     }
   },
   {
+    id: 'elevation-shadow',
+    why: 'A drop shadow. Onganda has no elevation: the public site renders zero blurred shadows, and depth comes from the weave texture, a hairline border and stepped pixel marks. A card lifts on hover by moving (MOTION.hoverLift), not by casting. A `0 0 0 Npx` ring is allowed — it is a border that does not reflow the layout.',
+    files: /\.tsx$/,
+    // Matching `boxShadow:` alone is not enough: the value is usually a
+    // ternary over consts declared elsewhere, which is how 37 shadows sat on
+    // /showcase while the guard reported clean. Match the property AND any
+    // shadow-named const, then read the literals inside.
+    //
+    // Scoped to shadow context on purpose: `padding: '20px 20px 16px'` is
+    // three lengths too, and an earlier, shape-only version of this rule
+    // flagged every one of them.
+    re: /(?:boxShadow|textShadow)\s*:[^\n]*|\bconst\s+\w*[Ss]hadow\w*\s*=[^\n]*|\bshadow-(?:sm|md|lg|xl|2xl|inner)\b/g,
+    filter: m => {
+      if (/^shadow-/.test(m)) return true;
+      const LEN = String.raw`(?:-?[\d.]+px|0)`;
+      const literals = m.match(/`[^`]*`|'[^']*'|"[^"]*"/g) ?? [];
+      return literals.some(lit => {
+        const body = lit.slice(1, -1);
+        if (!new RegExp(`${LEN}\\s+${LEN}\\s+${LEN}`).test(body)) return false;
+        // Each comma-separated layer: a ring is `<x> <y> 0 <spread>` with no
+        // blur. A non-zero third length is elevation.
+        return body.split(/,(?![^(]*\))/).some(layer => {
+          const lengths = layer.trim().match(new RegExp(LEN, 'g')) ?? [];
+          return lengths.length >= 3 && parseFloat(lengths[2]) !== 0;
+        });
+      });
+    }
+  },
+  {
     id: 'rounded-geometry',
     why: 'Rounded corner on a brand surface. Onganda geometry is sharp — use PixelCornerMarks.',
     // Bare `rounded` only counts inside a class attribute; elsewhere it is prose.

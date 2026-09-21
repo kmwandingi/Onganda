@@ -5,6 +5,64 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Fixed — perpetual motion
+
+- **`useMotionOK` guards every animation that repeats forever** — the ticker,
+  the hero edge strips, the loading sweep. Two reasons. WCAG 2.2.2: content
+  that moves automatically for more than five seconds needs a way to stop,
+  and `prefers-reduced-motion` is that way. And a page with a perpetual
+  animation is never visually stable, so a screenshot of it never converges —
+  `animations: 'disabled'` only freezes CSS animations, while framer-motion
+  drives transforms in JS and keeps going. The visual baselines now run under
+  reduced motion.
+- **Raised the screenshot time budget to 20s.** The Control Standards section
+  is ~1900px tall and takes 5–6.5s to capture twice in the CI container,
+  against a 5s default, so it timed out under load while passing alone. The
+  comparison threshold stays at `maxDiffPixelRatio: 0.0015` — only the budget
+  moved. Verified with three consecutive clean full runs in the Linux
+  container.
+
+### Changed — no elevation, and the site's compositions are now in the system
+
+- **Removed every drop shadow.** The public site renders zero blurred shadows;
+  `/showcase` was carrying fourteen — `0 4px 24px` on system cards,
+  `0 12px 40px` on publication cards, `0 24px 80px` on editor panels — while
+  `GEOMETRY.shadow` said `none` and nothing checked it. Added the
+  `elevation-shadow` guard rule, which reads the shadow value wherever it is
+  written (the offenders were ternaries over consts declared elsewhere, so a
+  rule matching only `boxShadow:` reported clean). A `0 0 0 Npx` ring is
+  permitted: it is a border that does not reflow.
+- **`SystemCard` rebuilt as the site's card.** It cast four different shadows
+  and lifted on hover, which is Material, not Onganda. Now: icon tile edged in
+  the system's colour, numbered tag, 24px name (was 18px), English reading,
+  12px role eyebrow (was 10px, and accent-coloured — the site keeps the hue on
+  the spine, tag and dither), a 3px spine in both modes (was dark-mode only)
+  and a dither rule that is always on (was hover-only).
+- **`Okaanda.english` is "Granary".** The data said "Namibia AI Systems Lab" —
+  the lab's name, not the system's — and the public site carried a local
+  override to correct it. The data tells the truth now and the override is
+  gone.
+- The Institute card on `/showcase` was hand-rolled from hardcoded hexes and
+  two off-scale ink opacities; it is a `PixelLabCard` now.
+
+### Added — `onganda-site.tsx`
+
+The public site's building blocks, extracted and exported. They were private
+markup inside the site file, which meant the one thing the design system
+exists to describe was the one thing it did not contain. The site imports
+them, so there is one implementation and no copy to drift.
+
+- **`PixelTicker`** — the full-bleed marquee of system names.
+- **`PixelEditorialSection`** — label, headline, dither column, prose column.
+- **`PixelFocusRow`** — a numbered row for a list that reads as a sequence.
+- **`PixelLabCard`** — the inverted cell that closes a grid.
+- **`PixelContactPanel`** — the closing inquiry surface.
+- **`PixelEdgeStrips`** — the drifting palette columns beside a hero.
+- Two more fidelity tests: the system card against the site card, and a
+  zero-blurred-shadow sweep over all three routes. Both verified to fail on a
+  reintroduced shadow.
+- `DESIGN_SYSTEM.md` §6b documents all of it.
+
 ### Changed — the system is now a transcript of the public site
 
 The public site (`/`, `/full`) is the reference implementation of the brand:

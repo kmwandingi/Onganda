@@ -713,6 +713,45 @@ fill through `statusFor`.
 
 ---
 
+## 6b. Site Compositions
+
+The public site's own building blocks, exported from
+`onganda-site.tsx`. These are not "examples of the system" — they **are** the
+brand's surfaces, and until they were extracted they lived as private markup
+inside the site file. That meant the one thing the design system exists to
+describe was the one thing it did not contain, and a consumer could import a
+button and a panel and still have to re-derive the brand by eye.
+
+The public site imports these, so there is a single implementation and no copy
+to drift.
+
+| Component | What it is | Rule |
+|---|---|---|
+| `PixelTicker` | The full-bleed black marquee of system names | The only place all five system colours appear together; it reads as a legend for the page below it |
+| `PixelEditorialSection` | Label, headline, dither column, prose column | The empty left column is the composition. Collapsing it to full-width prose is what makes a page look like documentation |
+| `PixelFocusRow` | Ordinal, icon, title, line, in a row | For a list that should read as a sequence rather than a grid |
+| `PixelLabCard` | The inverted cell that closes a grid | One per grid, in the last cell. It is the grid's full stop |
+| `PixelContactPanel` | The closing inquiry surface | Deliberately the largest surface on the page. A page that ends in a thin footer link reads as unfinished |
+| `PixelEdgeStrips` | Drifting palette columns beside a hero | 16–27s a cycle, so it reads as texture rather than motion |
+| `SystemCard` | The five-system card | Icon tile, numbered tag, 24px name, English reading, role eyebrow, line — closed by a 3px spine and a bottom dither rule |
+
+### No elevation, anywhere
+
+The public site renders **zero blurred shadows**. Depth is the weave texture, a
+hairline border and stepped pixel marks — never a cast shadow. A card lifts on
+hover by *moving* (`MOTION.hoverLift`), not by casting.
+
+This is enforced by the `elevation-shadow` rule in `check:tokens` and by
+`tests/browser/fidelity.spec.ts`. A `0 0 0 Npx` ring is permitted: it is a
+border that does not reflow the layout.
+
+The rule exists because `/showcase` was carrying fourteen drop shadows —
+`0 4px 24px`, `0 8px 48px`, `0 24px 80px` — on system cards, publication
+cards and editor panels, while `GEOMETRY.shadow` said `none` and nothing
+checked it.
+
+---
+
 ## 7. Content & Data Tokens
 
 Import structured data for the five Onganda systems and shared datasets:

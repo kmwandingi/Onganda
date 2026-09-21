@@ -8,6 +8,7 @@ import { COLOR, EDITOR_SURFACE, roles, onColor, inkOn, statusFor, SYSTEM_COLOR, 
 import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
+import { PixelTicker, PixelFocusRow, PixelLabCard } from './onganda-site';
 import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
@@ -1369,7 +1370,7 @@ export const SystemConnectionDiagram = ({
                   border: `2px solid ${node.hex}`,
                   padding: '6px 8px',
                   transition: 'background 0.18s, border-color 0.18s, box-shadow 0.18s',
-                  boxShadow: isActive ? `0 0 0 3px ${node.hex}44, 0 4px 16px ${node.hex}33` : 'none'
+                  boxShadow: isActive ? `0 0 0 3px ${node.hex}44` : 'none'
                 }}>
                       <div className="text-[9px] font-bold uppercase tracking-[0.18em] mb-1 text-center" style={{
                     color: isActive || isLinked ? COLOR.milletClay : inkOn(node.hex, COLOR.charBlack, true)
@@ -1423,7 +1424,7 @@ export const SystemConnectionDiagram = ({
                   background: COLOR.charBlack,
                   border: `2px solid ${node.hex}`,
                   padding: '10px 12px',
-                  boxShadow: `0 8px 32px rgba(30,26,23,0.65), 0 0 0 1px ${node.hex}22`
+                  boxShadow: `0 0 0 1px ${node.hex}22`
                 }}>
                         <PixelCornerMarks hex={node.hex} size={6} />
                         <div style={{
@@ -2815,6 +2816,45 @@ export const ProductPatterns = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* ── Site compositions — the brand's own surfaces ──
+            These are the public site's building blocks. They were private
+            markup inside the site file until now, which meant the thing the
+            design system exists to describe was the one thing it did not
+            contain. A consumer had to re-derive them by eye. */}
+        <div className="mt-4">
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+            Site composition · ticker — the only place all five system colours meet
+          </p>
+          <PixelTicker />
+        </div>
+
+        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+          <div>
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+              Site composition · focus rows — a list that reads as a sequence
+            </p>
+            <div className="grid gap-3">
+              {[
+                { t: 'Adapt models', hex: COLOR.ochreOrange, b: 'Select, adapt, evaluate, and organize models for local use.' },
+                { t: 'Run workflows', hex: COLOR.barkRust, b: 'Build repeatable adaptation and deployment paths.' },
+                { t: 'Hold systems', hex: COLOR.mahanguGold, b: 'Package agents, memory, and runtimes into portable units.' }
+              ].map((f, i) => (
+                <PixelFocusRow key={f.t} index={i} accent={f.hex} title={f.t} isDark={isDark}>
+                  {f.b}
+                </PixelFocusRow>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>
+              Site composition · lab card — one per grid, in the last cell
+            </p>
+            <PixelLabCard tag="Lab" title="Onganda" accent={COLOR.ochreOrange}>
+              Five systems working as one compound: from readiness to delivery.
+            </PixelLabCard>
           </div>
         </div>
 

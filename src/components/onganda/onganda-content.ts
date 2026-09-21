@@ -14,7 +14,9 @@ import type {
 // `long` = paragraph description used on the full-site system sections
 export const SYSTEMS: SystemEntry[] = [{
   name: 'Okaanda',
-  english: 'Namibia AI Systems Lab',
+  // The granary. The public site carried a local override to say this while
+  // the data said "Namibia AI Systems Lab" — the lab's name, not the system's.
+  english: 'Granary',
   role: 'Model & Data Platform',
   desc: 'Storage, resilience, readiness, and future capacity. Repositories for evaluation, memory, and large-scale datasets. The foundation that holds before it feeds.',
   line: 'Storage, readiness, and model organization.',

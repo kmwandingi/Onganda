@@ -152,4 +152,67 @@ test.describe('the design system reproduces the public site', () => {
     expect(header.headlineWeight).toBe('500');
     expect(header.hasDot).toBe(true);
   });
+
+  test('the system card is the site card', async ({ page }) => {
+    // Both grids render the same component now; this asserts the component
+    // still produces the site's recipe rather than drifting back to the
+    // shadowed, 18px-title, hover-only-dither version it used to be.
+    const read = async (url: string, sel: string) => {
+      await page.goto(url);
+      await settle(page);
+      return page.locator(sel).first().evaluate((node: Element) => {
+        const cs = getComputedStyle(node);
+        const h = node.querySelector('h3')!;
+        const hs = getComputedStyle(h);
+        const eyebrow = [...node.querySelectorAll('p')]
+          .find(e => getComputedStyle(e).textTransform === 'uppercase');
+        const es = eyebrow ? getComputedStyle(eyebrow) : null;
+        return {
+          shadow: cs.boxShadow,
+          padding: cs.paddingTop,
+          spine: cs.borderLeftWidth,
+          title: `${parseFloat(hs.fontSize)}/${hs.fontWeight}`,
+          eyebrow: es && `${parseFloat(es.fontSize)}/${es.fontWeight}`,
+          // The dither rule is always on, not revealed on hover.
+          ditherOpacity: (() => {
+            const d = [...node.children].find(el => {
+              const s = getComputedStyle(el);
+              return s.position === 'absolute' && el.classList.contains('flex');
+            });
+            return d ? getComputedStyle(d).opacity : null;
+          })(),
+        };
+      });
+    };
+
+    const site = await read('/', '#systems article');
+    const system = await read('/showcase', '#systems article');
+
+    expect(site.shadow).toBe('none');
+    expect(system.shadow).toBe('none');
+    expect(system.padding).toBe(site.padding);
+    expect(system.spine).toBe(site.spine);
+    expect(system.title).toBe(site.title);
+    expect(system.eyebrow).toBe(site.eyebrow);
+    expect(system.ditherOpacity).toBe('1');
+  });
+
+  test('nothing in the system casts a shadow', async ({ page }) => {
+    // The site renders zero blurred shadows. Depth is the weave, the hairline
+    // and the stepped marks — never elevation. /showcase carried 14 of them.
+    for (const route of ['/', '/full', '/showcase']) {
+      await page.goto(route);
+      await settle(page);
+      const blurred = await page.evaluate(() =>
+        [...document.querySelectorAll('body *')].filter(el => {
+          const v = getComputedStyle(el).boxShadow;
+          if (v === 'none') return false;
+          const lens = v.match(/-?[\d.]+px/g) ?? [];
+          // A `0 0 0 Npx` ring is a border, not elevation.
+          return lens.length >= 3 && parseFloat(lens[2]) !== 0;
+        }).length
+      );
+      expect(blurred, `${route} casts ${blurred} blurred shadow(s)`).toBe(0);
+    }
+  });
 });

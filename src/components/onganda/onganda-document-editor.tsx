@@ -3542,7 +3542,6 @@ const DocExportModal = ({
       width: 420,
       background: panelBg,
       border: `1px solid ${borderC}`,
-      boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden'
@@ -5035,7 +5034,6 @@ export const DocumentEditor = ({
           }} style={{
             background: paperBg,
             outline: `1px solid ${paperBorder}`,
-            boxShadow: isDark ? '0 8px 48px rgba(0,0,0,0.5)' : '0 8px 48px rgba(30,26,23,0.10)',
             position: 'relative',
             overflow: 'hidden',
             width: '210mm',
