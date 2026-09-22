@@ -652,6 +652,7 @@ export const PixelChoice = ({
   isDark = false,
   name,
   tabIndex,
+  showIndicator = true,
   ...rest
 }: {
   label: React.ReactNode;
@@ -662,6 +663,8 @@ export const PixelChoice = ({
   state?: 'correct' | 'incorrect';
   isDark?: boolean;
   name?: string;
+  /** Hide the built-in square when the product supplies its own option mark. */
+  showIndicator?: boolean;
   /** override the roving tab stop; the list normally handles this */
   tabIndex?: number;
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onSelect' | 'name' | 'disabled' | 'tabIndex' | 'style' | 'className' | 'children'>) => {
@@ -700,11 +703,11 @@ export const PixelChoice = ({
       } as React.CSSProperties}
     >
       {selected && <WeaveOverlay isDark={isDark} opacity={0.05} />}
-      <span
+      {showIndicator && <span
         aria-hidden="true"
         className="relative shrink-0"
         style={{ width: d.controlBox - 4, height: d.controlBox - 4, border: `1px solid ${edge}`, background: selected ? c.controlOn : 'transparent' }}
-      />
+      />}
       <span className="relative min-w-0">{label}</span>
     </button>
   );
