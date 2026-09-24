@@ -510,7 +510,7 @@ export const OngandaMap = ({
       }}
     >
       <style>{MAP_STYLES}</style>
-      <WeaveOverlay isDark={isDark} opacity={0.028} />
+      <WeaveOverlay isDark={isDark} opacity={0.026} />
       <PixelCornerMarks hex={COLOR.ochreOrange} size={8} />
 
       <header className="relative grid gap-5 p-6 md:grid-cols-[1fr_auto] md:items-end md:p-8">

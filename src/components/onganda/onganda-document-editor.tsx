@@ -2829,7 +2829,7 @@ function DocBlockView({
     if (block.type === 'divider') {
       return <div style={{
         padding: '8px 0'
-      }}><DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.35} /></div>;
+      }}><DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.42} /></div>;
     }
     if (block.type === 'signature') {
       return <SignatureBlock block={block} isDark={isDark} isConfiguring={isConfiguring} onEditChange={onEdit} onStartEdit={onStartEdit} />;
@@ -3618,7 +3618,7 @@ const DocExportModal = ({
               }}>{row.value}</span>
                   </div>)}
               </div>
-              <DitherBar color={formatColor} segments={18} height={2} opacity={0.3} />
+              <DitherBar color={formatColor} segments={18} height={2} opacity={0.25} />
               <button onClick={handleExport} style={{
             width: '100%',
             padding: '12px',
@@ -3748,7 +3748,7 @@ const DocExportModal = ({
               lineHeight: 1.6
             }}>{format === 'PDF' ? 'Use Save as PDF in the print dialog.' : 'Your Word-compatible document has downloaded.'}</p>
               </div>
-              <DitherBar color={COLOR.mahanguGold} segments={14} height={3} opacity={0.6} />
+              <DitherBar color={COLOR.mahanguGold} segments={14} height={3} opacity={0.55} />
               <div style={{
             display: 'flex',
             gap: 10,
@@ -3779,7 +3779,7 @@ const DocExportModal = ({
               </div>
             </div>}
         </div>
-        <DitherBar color={formatColor} segments={55} height={2} opacity={0.2} />
+        <DitherBar color={formatColor} segments={55} height={2} opacity={0.25} />
       </motion.div>
     </div>;
 };
@@ -4469,7 +4469,7 @@ const TemplatePicker = ({
               </div>
             </button>)}
         </div>
-        <DitherBar color={COLOR.ochreOrange} segments={30} height={2} opacity={0.2} />
+        <DitherBar color={COLOR.ochreOrange} segments={30} height={2} opacity={0.25} />
       </div>
     </div>;
 };
@@ -5039,7 +5039,7 @@ export const DocumentEditor = ({
             width: '210mm',
             minHeight: '297mm'
           }} onClick={e => e.stopPropagation()}>
-              <WeaveOverlay isDark={isDark} opacity={0.024} />
+              <WeaveOverlay isDark={isDark} opacity={0.026} />
               <PageGuideOverlay pageCount={pageCount} isDark={isDark} />
               {showAutoLetterhead && !blocks.some(b => b.type === 'letterhead') && <DocLetterhead isDark={isDark} title={docTitle} />}
               {blocks.filter(b => b.type === 'letterhead').map(lhBlock => <DocBlockView key={lhBlock.id} block={lhBlock} idx={0} isDark={isDark} isSelected={selectedBlockId === lhBlock.id} isEditing={editingBlockId === lhBlock.id} isConfiguring={configuringBlockId === lhBlock.id} dragState={dragState} citationCount={citationCount} onSelect={() => setSelectedBlockId(lhBlock.id)} onStartEdit={() => {
@@ -5116,7 +5116,7 @@ export const DocumentEditor = ({
               <div style={{
               padding: '16px 56px 36px'
             }}>
-                <DitherBar color={COLOR.ochreOrange} segments={48} height={2} opacity={0.20} />
+                <DitherBar color={COLOR.ochreOrange} segments={48} height={2} opacity={0.25} />
                 <div style={{
                 display: 'flex',
                 alignItems: 'center',

@@ -354,7 +354,7 @@ export const AiAuthoringPanel = ({
             <IconSettings size={16} color={muted} />
           </button>
         </div>
-        <DitherBar color={COLOR.ochreOrange} segments={20} height={2} opacity={0.35} />
+        <DitherBar color={COLOR.ochreOrange} segments={20} height={2} opacity={0.42} />
         {settingsOpen && <div style={{ marginTop: 12, padding: 12, background: bg, border: `1px solid ${border}` }}>
           <label style={{ fontSize: 9, color: muted, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800 }}>Provider</label>
           <select value={config.provider} onChange={e => updateConfig({ provider: e.target.value as EndpointConfig['provider'] })} style={{ ...inputStyle(isDark), marginTop: 6 }}>

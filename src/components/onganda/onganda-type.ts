@@ -156,13 +156,16 @@ export const TEXTURE = {
 // heights across the components, so the same object read as a different
 // weight in every section.
 //
-// Three jobs, and one discipline: ONE RULE PER BLOCK. A card that carries a
+// Four jobs, and one discipline: ONE RULE PER BLOCK. A card that carries a
 // section rule, a rule under its title and a rule at its foot is not
 // structured, it is striped. That includes dashed borders: a control's
 // boundary is solid, and `PixelCornerMarks` does the work a dashed edge was
 // reaching for.
 export const RULE = {
-  /** beside a section's prose, the boldest of the three */
+  /** a quiet divider inside a dense surface, where a full-weight rule would
+   *  compete with the content it separates */
+  faint: { segments: 24, height: 2, opacity: 0.25 },
+  /** beside a section's prose, the boldest of the four */
   section: { segments: 34, height: 4, opacity: 0.42 },
   /** closing the foot of a card */
   edge: { segments: 24, height: 2, opacity: 0.55 },

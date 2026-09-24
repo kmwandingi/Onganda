@@ -706,7 +706,7 @@ export const OngandaHero = () => {
     justifyContent: 'center',
     alignItems: 'center'
   }}>
-      <WeaveOverlay isDark={false} opacity={0.022} />
+      <WeaveOverlay isDark={false} opacity={0.026} />
 
       {/* Basket-centre glow */}
       <div aria-hidden="true" style={{
@@ -1282,7 +1282,7 @@ export const SystemConnectionDiagram = ({
           width: '100%',
           paddingBottom: '82%'
         }}>
-            <WeaveOverlay isDark opacity={0.05} />
+            <WeaveOverlay isDark opacity={0.055} />
             <svg style={{
             position: 'absolute',
             inset: 0,
@@ -1562,7 +1562,7 @@ export const PixelHeatmap = ({
         duration: 0.6
       }} className="min-w-0 flex-1 bg-[#1E1A17] p-6 md:p-8">
           <div className="relative overflow-x-auto">
-            <WeaveOverlay isDark opacity={0.06} />
+            <WeaveOverlay isDark opacity={0.055} />
             <div className="relative flex gap-1.5 mb-2 pl-24">
               {colLabels.map((label, i) => <div key={`hx-${i}`} className="flex-1 text-center text-[9px] font-bold uppercase tracking-widest" style={{
               color: COLOR.milletClay,
@@ -1801,7 +1801,7 @@ export const FieldApplications = () => <section className="max-w-7xl mx-auto px-
   }} transition={{
     duration: 0.5
   }} className="relative mt-5 bg-[#1E1A17] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden">
-      <WeaveOverlay isDark opacity={0.04} />
+      <WeaveOverlay isDark opacity={0.035} />
       <div className="relative">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#D9791F] mb-1">Partner with us</p>
         <p className="text-sm text-[#E8E1CF]/55 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
@@ -1846,7 +1846,7 @@ export const PixelFlowchart = () => {
             <div className="relative border-2 bg-[#1E1A17] flex items-center gap-5 px-6 py-5 overflow-hidden" style={{
             borderColor: rootNode.hex
           }}>
-              <WeaveOverlay isDark opacity={0.06} />
+              <WeaveOverlay isDark opacity={0.055} />
               <PixelCornerMarks hex={rootNode.hex} size={10} />
               <div className="relative flex items-center gap-4">
                 <FlowNodeIcon id="root" hex={rootNode.hex} />
@@ -1861,7 +1861,7 @@ export const PixelFlowchart = () => {
                 }}>{rootNode.role}</p>
                 </div>
               </div>
-              <DitherBar color={rootNode.hex} segments={40} height={2} opacity={1} className="absolute bottom-0 left-0 right-0" />
+              <DitherBar color={rootNode.hex} segments={40} height={2} opacity={0.65} className="absolute bottom-0 left-0 right-0" />
             </div>
             {/* Connector SVG — xl only */}
             <div aria-hidden="true" className="hidden xl:block w-full" style={{
@@ -2600,7 +2600,7 @@ export const ControlStandards = () => {
             control dropped into one without `isDark` resolves its hover
             against the wrong ground and can vanish. */}
         <div data-testid="controls-inverse" className="relative mt-4 overflow-hidden p-8" style={{ background: roles(false).inverse }}>
-          <WeaveOverlay isDark opacity={0.06} />
+          <WeaveOverlay isDark opacity={0.055} />
           <div className="relative">
             <SubLabel isDark>
               Inverse · a locally dark surface on a light page

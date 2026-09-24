@@ -150,7 +150,7 @@ const PresentationMockup = ({
   boxShadow: hovered ? `0 0 0 2px ${hex}55` : 'none',
   transform: hovered ? 'translateY(-4px) rotate(0.5deg)' : 'none'
 }}>
-    <WeaveOverlay isDark opacity={0.05} />
+    <WeaveOverlay isDark opacity={0.055} />
     {/* Top bar */}
     <div style={{
     height: 2,
@@ -519,7 +519,7 @@ const PublicationCard = ({
         </p>
       </div>
 
-      <DitherBar color={fmt.hex} segments={28} height={3} opacity={1} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`} />
+      <DitherBar color={fmt.hex} segments={28} height={3} opacity={0.65} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`} />
     </motion.article>;
 };
 

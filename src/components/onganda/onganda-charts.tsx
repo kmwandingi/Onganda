@@ -540,7 +540,7 @@ const ChartCard = ({
       {children}
     </div>
     <ChartLegend items={legend} />
-    <DitherBar color={C.p[CHART_CATEGORIES.indexOf(category) % C.p.length]} segments={24} height={2} opacity={0.45} className="mt-3" />
+    <DitherBar color={C.p[CHART_CATEGORIES.indexOf(category) % C.p.length]} segments={24} height={2} opacity={0.42} className="mt-3" />
   </motion.div>;
 
 // ─── Individual chart definitions ─────────────────────────────────────────────

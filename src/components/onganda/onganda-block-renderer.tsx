@@ -35,7 +35,7 @@ export const DocBlockDisplay = ({
 
   if (block.type === 'divider') {
     return <div style={{ padding: '8px 0' }}>
-      <DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.35} />
+      <DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.42} />
     </div>;
   }
 

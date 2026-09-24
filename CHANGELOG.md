@@ -43,9 +43,14 @@ whole product was two colours. Nothing in it was wrong.
   site at a time. Texture belongs to grounds and inverse panels, and never
   stacks: a textured card on a textured ground is the weave twice, which is
   what makes a page muddy.
-- **`RULE`** — three steps, replacing thirteen dither opacities and three
+- **`RULE`** — four steps, replacing thirteen dither opacities and three
   heights. One rule per block. A card with a section rule, a rule under its
   title and a rule at its foot is striped, not structured.
+
+- **`off-scale-texture` guard** so neither scale can drift back. 35 call
+  sites remapped to their nearest step, and `PixelEmptyState` traded its
+  dashed border for a solid edge with corner marks: a dashed border reads as
+  provisional, and an empty state is what a product shows first.
 
 ### Added — `reference/`
 

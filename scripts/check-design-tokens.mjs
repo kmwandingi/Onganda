@@ -80,6 +80,15 @@ const PALETTE_RGB = new Set(
 
 // The closed type scale, read from source like the palette is.
 const typeSrc = readFileSync(resolveTokenFile('onganda-type.ts'), 'utf8');
+
+const literalOf = (text, name) => {
+  const start = text.indexOf(`export const ${name} = {`);
+  if (start === -1) throw new Error(`check-design-tokens: ${name} not found`);
+  const end = text.indexOf('} as const;', start);
+  if (end === -1) throw new Error(`check-design-tokens: ${name} is not a closed literal`);
+  return text.slice(start, end);
+};
+
 const TYPE_SIZES = new Set(
   [...typeSrc.slice(typeSrc.indexOf('export const TYPE = {'), typeSrc.indexOf('} as const;'))
     .matchAll(/size:\s*(\d+)/g)].map(m => Number(m[1]))
@@ -95,6 +104,20 @@ const ALPHA_STEPS = new Set(
 // Fully opaque and fully transparent are not ramp steps but are always legal.
 ALPHA_STEPS.add(0); ALPHA_STEPS.add(1);
 if (ALPHA_STEPS.size < 6) throw new Error('check-design-tokens: could not read the alpha ramp');
+
+// The permitted weave opacities and dither weights, READ FROM SOURCE. Both
+// were being chosen one call site at a time — ten weave opacities and
+// thirteen dither opacities — so the same object read as a different weight
+// in every section.
+const TEXTURE_STEPS = new Set(
+  [...literalOf(typeSrc, 'TEXTURE').matchAll(/:\s*([\d.]+)/g)].map(m => Number(m[1]))
+);
+const RULE_OPACITIES = new Set(
+  [...literalOf(typeSrc, 'RULE').matchAll(/opacity:\s*([\d.]+)/g)].map(m => Number(m[1]))
+);
+if (TEXTURE_STEPS.size < 3 || RULE_OPACITIES.size < 3) {
+  throw new Error('check-design-tokens: could not read the texture or rule scales');
+}
 
 // Tailwind's default steps, mapped to px so they are checked too.
 const TW_SIZES = { xs: 12, sm: 14, base: 16, lg: 18, xl: 20, '2xl': 24, '3xl': 30, '4xl': 36, '5xl': 48, '6xl': 60, '7xl': 72 };
@@ -193,6 +216,17 @@ const RULES = [
     filter: m => {
       const a = Number(m.match(/,\s*([\d.]+)\s*\)/)[1]);
       return !ALPHA_STEPS.has(a);
+    }
+  },
+  {
+    id: 'off-scale-texture',
+    why: 'A weave opacity or dither opacity that is not a step in TEXTURE or RULE (onganda-type.ts). Both were chosen per call site — ten weave opacities and thirteen dither opacities — so the same object read as a different weight in every section. Texture belongs to grounds and inverse panels and never stacks; a block gets one rule.',
+    files: /\.tsx$/,
+    exclude: /onganda-type\.ts$/,
+    re: /<WeaveOverlay[^>]*opacity=\{([\d.]+)\}|<DitherBar[^>]*opacity=\{([\d.]+)\}/g,
+    filter: m => {
+      const value = Number(m.match(/opacity=\{([\d.]+)\}/)[1]);
+      return /WeaveOverlay/.test(m) ? !TEXTURE_STEPS.has(value) : !RULE_OPACITIES.has(value);
     }
   },
   {

@@ -231,7 +231,7 @@ export const SectionHeader = ({
 };
 
 // ─── WeaveOverlay — Oshiwambo basket-weave texture overlay ───────────────────
-// Usage: <WeaveOverlay isDark opacity={0.05} />
+// Usage: <WeaveOverlay isDark opacity={0.055} />
 export const WeaveOverlay = ({
   isDark = false,
   opacity = 0.045
@@ -1184,7 +1184,7 @@ export const TerminalCard = ({
             <span>{line.text || '\u00A0'}</span>
           </div>)}
       </div>
-      <DitherBar color={block.tagHex} segments={32} height={2} opacity={0.45} />
+      <DitherBar color={block.tagHex} segments={32} height={2} opacity={0.42} />
     </motion.div>;
 };
 
@@ -1308,7 +1308,7 @@ export const FlowNodeCard = ({
         </span>
       </div>
     </div>
-    <DitherBar color={node.hex} segments={16} height={2} opacity={0.7} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+    <DitherBar color={node.hex} segments={16} height={2} opacity={0.65} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
   </div>;
 };
 
@@ -1365,7 +1365,7 @@ export const FieldAppCard = ({
     <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{
     background: app.hex
   }} aria-hidden="true" />
-    <DitherBar color={app.hex} segments={20} height={2} opacity={1} className="absolute bottom-0 left-0 right-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+    <DitherBar color={app.hex} segments={20} height={2} opacity={0.65} className="absolute bottom-0 left-0 right-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
   </motion.article>;
 };
 
@@ -1484,19 +1484,19 @@ export const CodeSnippetBlock = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '10px 16px',
+      padding: '12px 16px',
       borderBottom: `1px solid ${accentHex}22`,
       background: `${accentHex}0a`
     }}>
         <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10
+        gap: 12
       }}>
           {/* Traffic lights */}
           <div style={{
           display: 'flex',
-          gap: 5
+          gap: 4
         }} aria-hidden="true">
             <div style={{
             width: 8,
@@ -1543,7 +1543,7 @@ export const CodeSnippetBlock = ({
       }} aria-label="Copy code snippet" style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
         padding: '4px 12px',
         background: copied ? `${accentHex}22` : 'transparent',
         border: `1px solid ${copied ? accentHex : 'rgba(232,225,207,0.1)'}`,
@@ -1594,7 +1594,7 @@ export const CodeSnippetBlock = ({
           </div>)}
       </div>
 
-      <DitherBar color={accentHex} segments={32} height={2} opacity={0.45} />
+      <DitherBar color={accentHex} segments={32} height={2} opacity={0.42} />
     </motion.div>;
 };
 

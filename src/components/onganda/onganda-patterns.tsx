@@ -56,7 +56,7 @@ export const PixelNotice = ({
       className={`relative overflow-hidden ${className}`}
       style={{ background: c.surface, borderLeft: `3px solid ${hue}`, border: `1px solid ${c.line}`, borderLeftWidth: 3, borderLeftColor: hue, padding: '16px 20px' }}
     >
-      <WeaveOverlay isDark={isDark} opacity={0.03} />
+      <WeaveOverlay isDark={isDark} opacity={0.026} />
       <div className="relative flex items-start gap-3">
         <PixelDot color={hue} size={8} ring={c.lineStrong} offset={5} />
         <div className="min-w-0 flex-1">
@@ -169,14 +169,14 @@ export const PixelDialog = ({
             className="relative w-full overflow-hidden"
             style={{ maxWidth: width, background: c.surface, border: `1px solid ${c.lineStrong}` }}
           >
-            <WeaveOverlay isDark={isDark} opacity={0.04} />
+            <WeaveOverlay isDark={isDark} opacity={0.035} />
             <PixelCornerMarks hex={c.accentInk} size={10} />
             <div className="relative" style={{ padding: '28px 28px 0' }}>
               {eyebrow && (
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>{eyebrow}</p>
               )}
               <h2 className="text-lg font-semibold tracking-tight" style={{ color: c.text }}>{title}</h2>
-              <DitherBar color={c.accentInk} segments={40} height={3} opacity={0.35} />
+              <DitherBar color={c.accentInk} segments={40} height={3} opacity={0.42} />
             </div>
             {children && (
               <div className="relative text-sm leading-relaxed" style={{ color: c.textBody, padding: '16px 28px 0' }}>{children}</div>
@@ -286,12 +286,17 @@ export const PixelEmptyState = ({
   isDark?: boolean;
 }) => {
   const c = roles(isDark);
+  // A solid edge with corner marks, not a dashed one. A dashed border reads
+  // as provisional, and an empty state is a real surface: it is what a
+  // product shows first. The recessed well already says "nothing here yet",
+  // and PixelCornerMarks does the work the dashes were reaching for.
   return (
-    <div className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px dashed ${c.lineStrong}`, padding: '56px 32px' }}>
-      <WeaveOverlay isDark={isDark} opacity={0.05} />
+    <div className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: '56px 32px' }}>
+      <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
+      <PixelCornerMarks hex={c.accentInk} size={7} />
       <div className="relative mx-auto flex max-w-sm flex-col items-center">
         {icon && <div className="mb-5" aria-hidden="true">{icon}</div>}
-        <DitherBar color={c.accentInk} segments={24} height={3} opacity={0.3} />
+        <DitherBar color={c.accentInk} segments={RULE.edge.segments} height={RULE.edge.height} opacity={RULE.edge.opacity} />
         <p className="mt-5 text-base font-semibold" style={{ color: c.text }}>{title}</p>
         {body && <p className="mt-2 text-sm leading-relaxed" style={{ color: c.textMuted }}>{body}</p>}
         {action && <div className="mt-7">{action}</div>}
@@ -719,7 +724,7 @@ export const PixelChoice = ({
         ['--onganda-focus' as string]: c.focusRing
       } as React.CSSProperties}
     >
-      {selected && <WeaveOverlay isDark={isDark} opacity={0.05} />}
+      {selected && <WeaveOverlay isDark={isDark} opacity={0.055} />}
       {showIndicator && <span
         aria-hidden="true"
         className="relative shrink-0"
