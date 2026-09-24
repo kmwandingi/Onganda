@@ -54,11 +54,24 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 npm install github:kmwandingi/Onganda
 ```
 
+Pin a commit rather than tracking the branch, and bump it in every
+`package.json` that carries it:
+
+```json
+"@onganda/design-system": "github:kmwandingi/Onganda#<sha>"
+```
+
+A pin is a commit, not a version, so `npm install` alone will not move it —
+edit the pin and reinstall with `--force`. The package builds on install via
+its `prepare` script, which is how the compiled layout utilities reach
+`dist/package/style.css`; a stale `node_modules` serves an older build with no
+warning. If an export or a style is missing, delete
+`node_modules/@onganda/design-system` and reinstall before looking elsewhere.
+
 ### From the npm registry
 
-```bash
-npm install @onganda/design-system
-```
+Not published yet. GitHub is the distribution path; `npm install
+@onganda/design-system` returns a 404 until the scoped package exists.
 
 ### Peer dependencies
 

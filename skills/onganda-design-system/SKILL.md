@@ -24,10 +24,37 @@ patterns that fit the product instead of inventing equivalents.
 
 Inspect the relevant public export before writing code. Use the smallest suitable path: the package root or `/core` for foundations, then `/charts`, `/editors`, `/ai`, `/maps`, or `/sites` for larger features. Never deep-import package source files.
 
+## Consume the package correctly
+
+The package is not on npm. Consumers install it straight from GitHub, pinned
+to a commit:
+
+```json
+"@onganda/design-system": "github:kmwandingi/Onganda#<sha>"
+```
+
+Two consequences, both of which have already cost a debugging session:
+
+- **A pin is a commit, not a version.** Bumping means editing the pin in every
+  `package.json` that carries it — a monorepo usually has several — and
+  reinstalling with `--force`. A plain `npm install` will not pick up a new
+  commit behind an unchanged range.
+- **The package builds on install**, via its `prepare` script. That is how the
+  compiled Tailwind layout utilities reach `dist/package/style.css`. A stale
+  `node_modules` therefore serves an older build even when the lockfile points
+  at the right commit, and nothing warns you. If a component renders without
+  the styles or exports you expect, delete
+  `node_modules/@onganda/design-system` and reinstall before looking anywhere
+  else.
+
+Verify the bump landed rather than assuming it: check that a symbol you expect
+is actually exported from the installed package, not just present in the
+source you read on GitHub.
+
 ## Apply the language
 
 - Preserve the product's business goals, domain model, and information architecture. Onganda governs presentation and interaction.
-- Reuse existing tokens, primitives, icons, and patterns before adding anything.
+- Reuse existing tokens, primitives, icons, and patterns EXCLUSIVELY.
 - Style from `roles(isDark)`, not from the palette. Being in `COLOR` does not make a token available for any purpose, and every role value is measured against WCAG AA.
 - Ochre orange is the accent as a **fill**, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — read `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. System colours mean membership: mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo, and bark rust identifies Oshini. The palette has no green and no blue; do not add one. Read status through `statusFor(name, isDark)`.
 - Colour is never the only carrier of state: an invalid field has a border, a marker, and a message; a status mark has a label and a hairline ring.

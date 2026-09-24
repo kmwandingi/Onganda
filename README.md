@@ -29,11 +29,14 @@ Install the current package from GitHub:
 npm install github:kmwandingi/Onganda
 ```
 
-Install a registry release with:
+Pin a commit and bump it in every `package.json` that carries it. A pin is a
+commit, not a version, so `npm install` alone will not move it: edit the pin
+and reinstall with `--force`. The package builds on install, so a stale
+`node_modules` serves an older build with no warning — delete
+`node_modules/@onganda/design-system` if an export or a style is missing.
 
-```bash
-npm install @onganda/design-system
-```
+There is no registry release yet. `npm install @onganda/design-system`
+returns a 404 until the scoped package is published.
 
 Import the design tokens once in the project entry:
 
