@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import 'tailwindcss';
+/* The showcase loads the stylesheet it ships, so what a consumer gets and
+   what the reference screenshots show cannot drift apart. It carries the
+   colour tokens, the compiled layout utilities and the display face. */
+@import './design-system/lib-style.css';
 
 @plugin "tailwindcss-animate";
 

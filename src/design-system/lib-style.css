@@ -16,6 +16,14 @@
  */
 
 :root {
+  /* Type faces. Two roles: the display face carries the brand on headings and
+     letterspaced caps, the reading face stays neutral for body and controls.
+     Load both — the package does not fetch webfonts for you:
+       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+     Both fall back to Arial, so a consumer that skips this still renders. */
+  --onganda-font: 'Inter', Arial, Helvetica, sans-serif;
+  --onganda-font-display: 'Space Grotesk', 'Inter', Arial, Helvetica, sans-serif;
+
   /* Typography scale */
   --type-hero:        clamp(3.2rem, 10vw, 9rem);
   --type-hero-public: clamp(3rem, 7.4vw, 7.1rem);
@@ -78,3 +86,15 @@
   outline: 2px solid var(--onganda-focus, var(--onganda-bark-rust, #8F3E21));
   outline-offset: 2px;
 }
+
+/* The display face on headings. Applied here rather than at 50 call sites so
+   a consumer gets it by importing the stylesheet, and so changing the face is
+   one edit. A product that wants it on a letterspaced label sets
+   `fontFamily: FONT.display` deliberately. */
+h1, h2, h3, h4 {
+  font-family: var(--onganda-font-display);
+}
+/* Family only. An earlier version also set letter-spacing here, which
+   silently overrode every `tracking-*` utility on a heading — including the
+   0.16em on a section's uppercase label, which stopped reading as a label at
+   all. Tracking belongs to the type scale, per step. */

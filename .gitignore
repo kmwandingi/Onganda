@@ -1,37 +1,33 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
+!.vscode/extensions.json
+# Editor directories and files
+# Local export verification scratch
+# Logs
+# Packed tarballs from `npm pack`
+# Playwright MCP scratch output
+*.local
+*.log
+*.njsproj
+*.ntvs*
+*.sln
+*.suo
+*.sw?
+*.tgz
+.DS_Store
+.idea
+.playwright-mcp/
+.vscode/*
+artifacts/
 dist
 dist-ssr
-playwright-report
-test-results
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Playwright MCP scratch output
-.playwright-mcp/
-
-# Packed tarballs from `npm pack`
-*.tgz
-
-# Local export verification scratch
 export-verification/
-artifacts/
+lerna-debug.log*
+logs
+node_modules
+npm-debug.log*
+playwright-report
+pnpm-debug.log*
 src/design-system/lib-layout.css
+test-results
+yarn-debug.log*
+yarn-error.log*

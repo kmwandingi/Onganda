@@ -5,6 +5,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — two type roles, and the showcase loads what it ships
+
+`FONT` had one family, on the reasoning that the brand's character lives in
+the pixel marks so the letterforms could stay neutral. That holds on the
+marketing site, where the marks are dense. It does not hold on a product
+surface, where they are sparse and the page reads as unbranded.
+
+- **`FONT.display` is Space Grotesk**, applied to headings by the shipped
+  stylesheet. Its squared terminals echo the pixel geometry, so a headline
+  carries the brand where the marks are thin. `FONT.family` stays Inter for
+  body, controls and tables, so reading is unaffected. Both fall back to
+  Arial, so a consumer that does not load the webfonts still renders.
+- **The showcase now imports `lib-style.css`**, the stylesheet it ships.
+  Previously it used only its own Tailwind entry, so what a consumer received
+  and what the showcase demonstrated could drift — and did: the display face
+  applied to consumers and not to the showcase.
+
+The first version of the heading rule also set `letter-spacing`, which
+silently overrode every `tracking-*` utility on a heading, including the
+0.16em on a section's uppercase label. That section stopped counting as
+carrying the language, and the composition test caught it. Tracking belongs
+to the type scale, per step, not to the font rule.
+
 ### Added — the system distributes colour, texture and rules
 
 A product can follow every rule in this repo and still look flat. Measured on
