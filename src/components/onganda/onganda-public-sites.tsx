@@ -1,21 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, roles, onColor, inkOn, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
-import {
-  DarkContext,
-  DitherBar,
-  OngandaLogoMark,
-  PixelButton,
-  PixelCornerMarks,
-  PixelDot,
-  PixelField,
-  PixelInput,
-  PixelTag,
-  PixelTextarea,
-  TerminalCard,
-  WeaveOverlay,
-  systemIconForName
-} from './onganda-primitives';
+import { DarkContext, DitherBar, OngandaLogoMark, PixelButton, PixelCornerMarks, PixelDot, PixelField, PixelInput, PixelTag, PixelTextarea, SectionHeader, TerminalCard, WeaveOverlay, systemIconForName } from './onganda-primitives';
 import {
   PixelTicker,
   PixelEditorialSection,
@@ -214,19 +200,9 @@ const PublicHero = ({
   </header>
 );
 
-const SectionTitle = ({ label, headline, accent = COLOR.ochreOrange }: { label: string; headline: string; accent?: string }) => (
-  <div className="mb-12 border-b pb-6" style={{ borderColor: line }}>
-    <div className="mb-3 flex items-center gap-3">
-      <PixelDot color={accent} size={7} />
-      <h2 className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{label}</h2>
-    </div>
-    <p className="max-w-4xl text-2xl font-medium leading-tight md:text-3xl" style={{ color: COLOR.charBlack }}>{headline}</p>
-  </div>
-);
-
 const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
   <section id="systems" className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
-    <SectionTitle label="Systems" headline="Five systems. One compound." accent={COLOR.mahanguGold} />
+    <SectionHeader label="Systems" headline="Five systems. One compound." accent={COLOR.mahanguGold} />
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {SYSTEMS.map((sys, index) => (
         <motion.article
@@ -321,7 +297,7 @@ const WhatBuildingBand = () => (
 
 const TerminalBand = () => (
   <section className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
-    <SectionTitle label="Studio" headline="Built like a lab. Run like a startup." accent={COLOR.barkRust} />
+    <SectionHeader label="Studio" headline="Built like a lab. Run like a startup." accent={COLOR.barkRust} />
     <div className="grid gap-4 lg:grid-cols-3">
       {TERMINAL_BLOCKS.slice(0, 3).map(block => <TerminalCard key={block.title} block={block} />)}
     </div>

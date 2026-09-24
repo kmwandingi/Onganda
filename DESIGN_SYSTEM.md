@@ -939,7 +939,7 @@ Must be inside a `position: relative; overflow: hidden` parent.
 import { WeaveOverlay } from '@onganda/design-system';
 
 <div style={{ position: 'relative', overflow: 'hidden', background: '#F3E8C3' }}>
-  <WeaveOverlay isDark={false} opacity={0.045} />
+  <WeaveOverlay isDark={false} opacity={TEXTURE.surface} />
   {/* card content */}
 </div>
 ```

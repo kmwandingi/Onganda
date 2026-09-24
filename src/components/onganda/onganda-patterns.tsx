@@ -277,21 +277,22 @@ export const PixelEmptyState = ({
   body,
   action,
   icon,
-  isDark = false
+  isDark = false,
+  ...rest
 }: {
   title: string;
   body?: string;
   action?: React.ReactNode;
   icon?: React.ReactNode;
   isDark?: boolean;
-}) => {
+} & React.HTMLAttributes<HTMLDivElement>) => {
   const c = roles(isDark);
   // A solid edge with corner marks, not a dashed one. A dashed border reads
   // as provisional, and an empty state is a real surface: it is what a
   // product shows first. The recessed well already says "nothing here yet",
   // and PixelCornerMarks does the work the dashes were reaching for.
   return (
-    <div className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: '56px 32px' }}>
+    <div {...rest} className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: '56px 32px', ...rest.style }}>
       <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
       <PixelCornerMarks hex={c.accentInk} size={7} />
       <div className="relative mx-auto flex max-w-sm flex-col items-center">
@@ -309,16 +310,17 @@ export const PixelEmptyState = ({
 export const PixelSkeleton = ({
   lines = 3,
   isDark = false,
-  className = ''
+  className = '',
+  ...rest
 }: {
   lines?: number;
   isDark?: boolean;
   className?: string;
-}) => {
+} & React.HTMLAttributes<HTMLDivElement>) => {
   const c = roles(isDark);
   const moving = useMotionOK();
   return (
-    <div className={className} role="status" aria-label="Loading" style={{ display: 'grid', gap: 10 }}>
+    <div {...rest} className={className} role="status" aria-label="Loading" style={{ display: 'grid', gap: 10, ...rest.style }}>
       {Array.from({ length: lines }).map((_, i) => (
         <div
           key={i}
@@ -362,18 +364,33 @@ export const PixelTabs = <T extends string>({
   value,
   onChange,
   isDark = false,
-  label = 'Sections'
+  label = 'Sections',
+  scrollable = false,
+  className = '',
+  ...rest
 }: {
   tabs: { value: T; label: string }[];
   value: T;
   onChange: (next: T) => void;
   isDark?: boolean;
   label?: string;
-}) => {
+  /** one row that scrolls sideways instead of wrapping. A narrow surface with
+   *  four tabs wrapped to two rows and read as a keypad; the only way to stop
+   *  it was a descendant selector reaching into this component's internals,
+   *  which is the hack the system exists to prevent. */
+  scrollable?: boolean;
+  className?: string;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>) => {
   const c = roles(isDark);
   const d = useDensity();
   return (
-    <div role="tablist" aria-label={label} className="flex flex-wrap gap-2">
+    <div
+      {...rest}
+      role="tablist"
+      aria-label={label}
+      className={`flex gap-2 ${scrollable ? 'flex-nowrap overflow-x-auto' : 'flex-wrap'} ${className}`}
+      style={scrollable ? { scrollbarWidth: 'none', ...rest.style } : rest.style}
+    >
       {tabs.map(tab => {
         const active = tab.value === value;
         return (
@@ -410,19 +427,20 @@ export const PixelProgress = ({
   value,
   label,
   status = 'active',
-  isDark = false
+  isDark = false,
+  ...rest
 }: {
   /** 0–100 */
   value: number;
   label?: string;
   status?: StatusName;
   isDark?: boolean;
-}) => {
+} & React.HTMLAttributes<HTMLDivElement>) => {
   const c = roles(isDark);
   const clamped = Math.max(0, Math.min(100, value));
   const hue = statusFor(status, isDark);
   return (
-    <div>
+    <div {...rest}>
       {label && (
         <div className="mb-2 flex items-baseline justify-between gap-4">
           <span className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: c.textMuted }}>{label}</span>
@@ -486,6 +504,8 @@ export const PixelPanel = ({
   note,
   accent,
   spine = false,
+  rule,
+  texture = 'surface',
   children,
   footer,
   isDark = false,
@@ -502,6 +522,15 @@ export const PixelPanel = ({
    *  instead of corner marks. Use it when the card stands for a thing that
    *  has its own colour — a system, a feature area — not for chrome. */
   spine?: boolean;
+  /** the closing dither rule. Defaults to on with `spine`, off without.
+   *  Separate from `spine` because a product may want the identity edge
+   *  without a foot rule, and hiding it with a descendant selector is the
+   *  hack this system exists to prevent. */
+  rule?: boolean;
+  /** which step of TEXTURE the card carries. Use `none` when it sits on a
+   *  ground that is already textured — stacking the weave is what makes a
+   *  page muddy. */
+  texture?: 'surface' | 'none' | 'inverse';
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -512,7 +541,9 @@ export const PixelPanel = ({
 } & Omit<React.HTMLAttributes<HTMLElement>, 'title'>) => {
   const c = roles(isDark);
   const d = useDensity();
-  const rule = accent ?? c.accentInk;
+  const hue = accent ?? c.accentInk;
+  // The foot rule follows the spine unless the caller says otherwise.
+  const showRule = rule ?? spine;
   const pad = d.stackGap > 12 ? 24 : 16;
   return (
     <section
@@ -522,11 +553,11 @@ export const PixelPanel = ({
       style={{
         background: c.surface,
         border: `1px solid ${c.line}`,
-        ...(spine ? { borderLeft: `3px solid ${rule}` } : {})
+        ...(spine ? { borderLeft: `3px solid ${hue}` } : {})
       }}
     >
-      <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
-      {!spine && <PixelCornerMarks hex={rule} size={7} />}
+      <WeaveOverlay isDark={isDark} opacity={TEXTURE[texture]} />
+      {!spine && <PixelCornerMarks hex={hue} size={7} />}
       <div className="relative" style={{ padding: pad }}>
         {eyebrow && (
           <p
@@ -575,9 +606,9 @@ export const PixelPanel = ({
         )}
         {children}
       </div>
-      {spine && (
+      {showRule && (
         <DitherBar
-          color={rule}
+          color={hue}
           segments={RULE.edge.segments}
           height={RULE.edge.height}
           opacity={RULE.edge.opacity}
@@ -797,24 +828,32 @@ export const PixelChoiceList = ({
 export const PixelActions = ({
   children,
   align = 'start',
-  stack = false
+  stack = false,
+  share = false,
+  ...rest
 }: {
   children: React.ReactNode;
   align?: 'start' | 'end' | 'between';
   /** full-width stacked buttons, for very narrow surfaces */
   stack?: boolean;
-}) => {
+  /** the row's buttons divide its width evenly. Products were reinventing
+   *  this as a local `.btn-row` because there was no way to ask for it. */
+  share?: boolean;
+} & React.HTMLAttributes<HTMLDivElement>) => {
   const d = useDensity();
   return (
     <div
+      {...rest}
       style={{
         display: 'flex',
         flexDirection: stack ? 'column' : 'row',
-        flexWrap: stack ? 'nowrap' : 'wrap',
+        flexWrap: stack || share ? 'nowrap' : 'wrap',
         alignItems: stack ? 'stretch' : 'center',
         justifyContent: align === 'end' ? 'flex-end' : align === 'between' ? 'space-between' : 'flex-start',
         gap: d.labelGap,
-        marginTop: d.stackGap
+        marginTop: d.stackGap,
+        ...(share ? { display: 'grid', gridTemplateColumns: `repeat(${React.Children.count(children)}, minmax(0, 1fr))` } : null),
+        ...rest.style
       }}
     >
       {children}

@@ -6,6 +6,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, statusFor, onColor, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
+import { TEXTURE } from './onganda-type';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
 import { AiAuthoringPanel, AiAuthoringResult, AiSlideBlock } from './onganda-ai-authoring';
 import { SLIDE_COMPONENT_PALETTE, SLIDE_PALETTE_CATEGORIES } from './onganda-block-palette';
@@ -3094,7 +3095,7 @@ const SlideCanvas = ({
     width: '100%',
     cursor: 'default'
   }}>
-    <WeaveOverlay isDark={isDark} opacity={isDark ? 0.03 : 0.02} />
+    <WeaveOverlay isDark={isDark} opacity={isDark ? TEXTURE.surface : TEXTURE.ground} />
     <div style={{
       height: 4,
       background: COLOR.ochreOrange,

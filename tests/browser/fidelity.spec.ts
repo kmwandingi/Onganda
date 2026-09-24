@@ -128,10 +128,13 @@ test.describe('the design system reproduces the public site', () => {
     // Accent dot, 12px uppercase label, 30px MEDIUM headline, hairline rule.
     // The headline weight is the load-bearing part: a semibold section
     // headline competes with the card titles underneath it.
+    // The eyebrow is a <p> and the headline is the <h2>. They used to be the
+    // other way round, which put the section's largest text outside the
+    // display-face rule and gave every section two competing headings.
     const header = await page.locator('#systems').locator('xpath=.//div[h2]').first().evaluate(node => {
-      const label = node.querySelector('h2')!;
+      const label = node.querySelector('p')!;
       const ls = getComputedStyle(label);
-      const headline = node.parentElement!.querySelector('p')!;
+      const headline = node.querySelector('h2')!;
       const ps = getComputedStyle(headline);
       // PixelDot renders a <span>, not a <div>.
       const dot = node.querySelector('span[aria-hidden]');

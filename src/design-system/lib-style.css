@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 /*
  * Onganda Design System — CSS Tokens
  *
@@ -91,7 +92,10 @@
    a consumer gets it by importing the stylesheet, and so changing the face is
    one edit. A product that wants it on a letterspaced label sets
    `fontFamily: FONT.display` deliberately. */
-h1, h2, h3, h4 {
+/* :where() so the rule has zero specificity. A library stylesheet that wins
+   against a consumer's own heading styles is a library that cannot be mixed
+   into an existing app; any rule the consumer writes now takes precedence. */
+:where(h1, h2, h3, h4) {
   font-family: var(--onganda-font-display);
 }
 /* Family only. An earlier version also set letter-spacing here, which

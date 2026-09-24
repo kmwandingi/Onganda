@@ -5,6 +5,66 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — the system bends where products were forced to hack it
+
+From a consumer's report of what it could not do without reaching into
+component internals. Each item was verified against the code before acting.
+
+- **Every exported component forwards its rest props.** `data-testid` on a
+  component compiles and is silently dropped, because TypeScript does not
+  type-check hyphenated attributes. Only the four fixed reactively, one
+  reported bug at a time, were forwarding. Now all of them are.
+- **`PixelTabs` takes `className`, `style`, rest props and `scrollable`.** It
+  hard-coded `flex-wrap`, so a one-row strip needed a descendant selector
+  into its internals — the exact hack the system exists to prevent.
+- **`PixelPanel` separates its recipes**: `rule` toggles the foot rule
+  independently of `spine`, and `texture` selects a `TEXTURE` step, including
+  `none` for a card on an already-textured ground. Both were previously
+  reachable only by hiding internal classes.
+- **`WeaveOverlay.opacity` is the `TEXTURE` union**, not a free number. It
+  immediately caught two off-scale values inside ternaries that the lexical
+  guard could not see, and one in the README's own example.
+- **`PixelActions` gains `share`** — buttons divide the row evenly. Products
+  were reinventing it as a local `.btn-row`.
+- **Controls resolve dark mode from `DarkProvider`.** The provider existed to
+  hold the toggle but no control read it, so every call site threaded
+  `isDark={isDark}` by hand. The prop still wins where it is passed.
+- **`PixelButton.onClick` forwards the event.** It was `() => void`, so a
+  button inside a clickable card could not stop propagation.
+- **`SystemEntry` requires only what `PixelTicker` reads.** A consumer was
+  passing empty strings for `role`, `desc`, `line` and `long` to satisfy a
+  shape the component never touches.
+
+### Fixed — the section headline was not a heading
+
+`SectionHeader` rendered its eyebrow as `<h2>` and its headline as `<p>`, so
+the largest text on a page sat outside the display-face rule while the
+smallest sat inside it, and every section contributed two competing headings
+to the outline. The elements are the right way round now.
+
+The public site also kept a private `SectionTitle` duplicating
+`SectionHeader`, so none of that component's fixes had ever reached it. The
+duplicate is gone.
+
+### Fixed — the package version never changed
+
+It stayed `1.1.1` across every commit. Bundlers key dependency caches on the
+version, so a consumer bumping the pin got new code on disk and a stale
+bundle from cache — which presented as a blank page when a newly exported
+token was missing at runtime. `prepare` now stamps the commit into the
+version, so every commit is a distinct version and those caches invalidate on
+their own. Base version bumped to 1.2.0.
+
+### Fixed — the display face and the library stylesheet
+
+- The stylesheet **fetches the faces it names**. It referenced Space Grotesk
+  and left the consumer to discover it, so headings silently fell back to
+  Inter with no indication anything was wrong.
+- The heading rule is `:where(...)`, so it has zero specificity. A library
+  rule that beats a consumer's own heading styles cannot be mixed into an
+  existing app.
+
+
 ### Changed — two type roles, and the showcase loads what it ships
 
 `FONT` had one family, on the reasoning that the brand's character lives in

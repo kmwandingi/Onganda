@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, inkOn, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
+import { TEXTURE } from './onganda-type';
 import { Px, PixelDot, DitherBar, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './onganda-primitives';
 
 // ─── Document mockup — pixel-art A4 page preview ──────────────────────────────
@@ -297,7 +298,7 @@ const PublicationCard = ({
     boxShadow: hovered ? `0 0 0 1px ${fmt.hex}33` : 'none',
     overflow: 'hidden'
   }}>
-      <WeaveOverlay isDark={isDark} opacity={isDark ? 0.04 : 0.03} />
+      <WeaveOverlay isDark={isDark} opacity={isDark ? TEXTURE.surface : TEXTURE.ground} />
 
       {/* Left accent bar */}
       <div aria-hidden="true" style={{

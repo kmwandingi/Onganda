@@ -81,7 +81,7 @@ import {
   DarkProvider, useDark, roles,
   SectionHeader, WeaveOverlay, PixelCornerMarks, PixelDot,
   PixelButton, PixelField, PixelInput, PixelSelect, PixelCheckbox,
-  MOTION, statusFor,
+  MOTION, statusFor, TEXTURE, accentFor,
 } from '@onganda/design-system';
 import { motion } from 'framer-motion';
 import '@onganda/design-system/style.css';
@@ -99,7 +99,7 @@ function RequestAccess() {
         className="relative overflow-hidden"
         style={{ background: c.surface, border: `1px solid ${c.line}`, padding: 32 }}
       >
-        <WeaveOverlay isDark={isDark} opacity={0.045} />
+        <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
         <PixelCornerMarks hex={c.accentInk} size={10} />
 
         <p style={{ color: c.textBody, marginBottom: 24 }}>

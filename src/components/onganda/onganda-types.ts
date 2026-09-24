@@ -5,13 +5,16 @@
 export interface SystemEntry {
   name: string;
   english: string;
-  role: string;
-  desc: string;
-  line: string;
-  long: string;
-  accent: string;
-  iconColor: string;
   borderHex: string;
+  // Only the card surfaces read these. A consumer feeding PixelTicker was
+  // passing empty strings to satisfy the shape, which is the type telling a
+  // lie about what the component needs.
+  role?: string;
+  desc?: string;
+  line?: string;
+  long?: string;
+  accent?: string;
+  iconColor?: string;
 }
 export interface PrincipleEntry {
   label: string;

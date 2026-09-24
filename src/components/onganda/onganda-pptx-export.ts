@@ -205,7 +205,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     const sys = systemForType(t, block.systemIdx);
     const accent = hx(sys.borderHex);
     const name = block.customName ?? sys.name;
-    const role = block.customRole ?? sys.role;
+    const role = block.customRole ?? sys.role ?? '';
     slide.addShape('rect', { ...b, fill: { color: PAPER }, line: { color: accent, width: 0.75 } });
     slide.addShape('rect', { x: b.x, y: b.y, w: 0.05, h: b.h, fill: { color: accent } });
     slide.addShape('rect', { x: b.x + 0.12, y: b.y + b.h / 2 - 0.14, w: 0.28, h: 0.28, fill: { color: accent } });

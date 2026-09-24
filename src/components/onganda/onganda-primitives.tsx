@@ -7,7 +7,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { MOTION } from './onganda-motion';
-import { TYPE } from './onganda-type';
+import { TYPE, TEXTURE } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
@@ -19,6 +19,20 @@ export const DarkContext = createContext<{
   toggle: () => {}
 });
 export const useDark = () => useContext(DarkContext);
+
+/**
+ * Resolve a control's mode: the explicit prop wins, otherwise the surrounding
+ * DarkProvider decides.
+ *
+ * DarkProvider existed to hold the toggle, but no control read it, so every
+ * call site threaded `isDark={isDark}` by hand — dozens of times in a single
+ * product, and one missed thread is a control resolving its hover against the
+ * wrong ground. Passing the prop still works and still wins.
+ */
+export const useIsDark = (explicit?: boolean) => {
+  const { isDark } = useContext(DarkContext);
+  return explicit ?? isDark;
+};
 
 // ─── DarkProvider — ready-made context wrapper with localStorage persistence ──
 // Usage: <DarkProvider><App /></DarkProvider>
@@ -75,7 +89,8 @@ export const PixelDot = ({
   size = 4,
   opacity = 1,
   ring,
-  offset
+  offset,
+  ...rest
 }: {
   color: string;
   size?: number;
@@ -83,7 +98,7 @@ export const PixelDot = ({
   ring?: string;
   /** nudge down to sit on a text baseline when inline with a line of copy */
   offset?: number;
-}) => <span aria-hidden="true" style={{
+} & Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'>) => <span aria-hidden="true" {...rest} style={{
   display: 'block',
   width: size,
   height: size,
@@ -138,22 +153,30 @@ export const DitherStrip = ({
 export const PixelTag = ({
   hex,
   label,
-  isDark = false
+  isDark,
+  className = '',
+  ...rest
 }: {
   hex: string;
   label: string;
   isDark?: boolean;
-}) => {
+  className?: string;
+  // TypeScript does not type-check hyphenated JSX attributes, so `data-testid`
+  // on a component compiles and is then silently dropped. Every exported
+  // component forwards its rest props for that reason.
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'color'>) => {
   // Chosen by measured luminance, not by comparing against one token. Some
   // fills — fired red tops out at 3.85:1 — cannot host small text at all, so
   // the tag outlines instead of filling and the hue still reads as identity.
   // `transparent` is a valid request for the outlined form.
+  // Resolved before the branch: a hook inside the ternary runs conditionally.
+  const c = roles(useIsDark(isDark));
   const parsable = /^#[0-9a-fA-F]{6}$/.test(hex);
   const fg = parsable ? onColor(hex) : COLOR.charBlack;
   const filled = parsable && contrast(fg, hex) >= 4.5;
-  return <div className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]" style={filled
+  return <div {...rest} className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] ${className}`} style={filled
     ? { background: hex, color: fg }
-    : { background: 'transparent', border: `1px solid ${parsable ? hex : 'currentColor'}`, color: roles(isDark).text }}>
+    : { background: 'transparent', border: `1px solid ${parsable ? hex : 'currentColor'}`, color: c.text }}>
     {label}
   </div>;
 };
@@ -193,20 +216,27 @@ export const SectionHeader = ({
   label,
   headline,
   accent,
-  isDark = false
+  isDark = false,
+  className = '',
+  ...rest
 }: {
   label: string;
   headline: string;
   /** the section's one permitted accent; defaults to the accent ink */
   accent?: string;
   isDark?: boolean;
-}) => {
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) => {
   const c = roles(isDark);
   return (
-    <div className="border-b pb-6 mb-12" style={{ borderColor: c.line }}>
+    <div {...rest} className={`border-b pb-6 mb-12 ${className}`} style={{ borderColor: c.line, ...rest.style }}>
       <div className="mb-3 flex items-center gap-3">
         <PixelDot color={accent ?? c.accentInk} size={7} />
-        <h2 className="uppercase" style={{
+        {/* The eyebrow is a label, not a heading. It was an <h2> while the
+            headline below it was a <p>, which put the section's largest text
+            outside the display-face rule and the smallest text inside it —
+            and gave the section two competing headings in the outline. */}
+        <p className="uppercase" style={{
           fontSize: TYPE.eyebrow.size,
           fontWeight: TYPE.eyebrow.weight,
           letterSpacing: TYPE.eyebrow.tracking,
@@ -215,9 +245,9 @@ export const SectionHeader = ({
           margin: 0
         }}>
           {label}
-        </h2>
+        </p>
       </div>
-      <p className="max-w-4xl" style={{
+      <h2 className="max-w-4xl" style={{
         fontSize: TYPE.pageTitle.size,
         fontWeight: TYPE.pageTitle.weight,
         lineHeight: TYPE.pageTitle.lineHeight,
@@ -225,7 +255,7 @@ export const SectionHeader = ({
         margin: 0
       }}>
         {headline}
-      </p>
+      </h2>
     </div>
   );
 };
@@ -234,11 +264,16 @@ export const SectionHeader = ({
 // Usage: <WeaveOverlay isDark opacity={0.055} />
 export const WeaveOverlay = ({
   isDark = false,
-  opacity = 0.045
+  opacity = TEXTURE.surface,
+  ...rest
 }: {
   isDark?: boolean;
-  opacity?: number;
-}) => <div aria-hidden="true" data-onganda-paper-texture className="absolute inset-0 pointer-events-none" style={{
+  /** a step of TEXTURE, not a free number. Off-scale values compiled fine
+   *  and only `check:tokens` caught them, after the fact; the union catches
+   *  them in the editor. Texture belongs to grounds and inverse panels and
+   *  never stacks. */
+  opacity?: (typeof TEXTURE)[keyof typeof TEXTURE];
+} & React.HTMLAttributes<HTMLDivElement>) => <div aria-hidden="true" data-onganda-paper-texture {...rest} className="absolute inset-0 pointer-events-none" style={{
   backgroundImage: isDark ? WEAVE.dark : WEAVE.light,
   backgroundSize: WEAVE.size,
   opacity
@@ -599,7 +634,9 @@ export type PixelButtonProps = {
   variant?: PixelButtonVariant;
   isDark?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  /** the event is forwarded: a button inside a clickable card needs
+   *  stopPropagation, and a bare `() => void` makes that impossible. */
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   href?: string;
   className?: string;
 } & Omit<React.HTMLAttributes<HTMLElement>, MotionConflicting>;
@@ -620,14 +657,14 @@ const buttonPalette = (variant: PixelButtonVariant, c: ColorRoles) => {
 export const PixelButton = ({
   children,
   variant = 'primary',
-  isDark = false,
+  isDark,
   disabled = false,
   onClick,
   href,
   className = '',
   ...rest
 }: PixelButtonProps) => {
-  const c = roles(isDark);
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const p = buttonPalette(variant, c);
   // A disabled control RECEDES. Fading the variant's own recipe does the
@@ -776,8 +813,8 @@ interface FieldFlags {
   invalid?: boolean;
 }
 
-export const PixelInput = ({ isDark = false, invalid = false, style, ...props }: React.InputHTMLAttributes<HTMLInputElement> & FieldFlags) => {
-  const c = roles(isDark);
+export const PixelInput = ({ isDark, invalid = false, style, ...props }: React.InputHTMLAttributes<HTMLInputElement> & FieldFlags) => {
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const h = useFieldHandlers(c, invalid);
   return <input
@@ -790,8 +827,8 @@ export const PixelInput = ({ isDark = false, invalid = false, style, ...props }:
   />;
 };
 
-export const PixelTextarea = ({ isDark = false, invalid = false, style, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & FieldFlags) => {
-  const c = roles(isDark);
+export const PixelTextarea = ({ isDark, invalid = false, style, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & FieldFlags) => {
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const h = useFieldHandlers(c, invalid);
   return <textarea
@@ -810,8 +847,8 @@ export const PixelTextarea = ({ isDark = false, invalid = false, style, ...props
 const chevron = (hex: string) =>
   `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Crect x='0' y='0' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='2' y='2' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='4' y='4' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='6' y='2' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3Crect x='8' y='0' width='2' height='2' fill='${encodeURIComponent(hex)}'/%3E%3C/svg%3E")`;
 
-export const PixelSelect = ({ isDark = false, invalid = false, style, children, className = '', ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & FieldFlags) => {
-  const c = roles(isDark);
+export const PixelSelect = ({ isDark, invalid = false, style, children, className = '', ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & FieldFlags) => {
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const h = useFieldHandlers(c, invalid);
   return <select
@@ -847,9 +884,10 @@ export const PixelField = ({
   hint,
   error,
   htmlFor,
-  isDark = false,
+  isDark,
   children,
-  className = ''
+  className = '',
+  ...rest
 }: {
   label: string;
   hint?: string;
@@ -858,11 +896,11 @@ export const PixelField = ({
   isDark?: boolean;
   children: React.ReactNode;
   className?: string;
-}) => {
-  const c = roles(isDark);
+} & React.HTMLAttributes<HTMLDivElement>) => {
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   return (
-    <div className={className}>
+    <div {...rest} className={className}>
       <label htmlFor={htmlFor} className="block text-xs font-bold uppercase tracking-[0.15em]" style={{ color: c.textMuted }}>
         {label}
       </label>
@@ -900,11 +938,11 @@ const controlLabelStyle = (c: ColorRoles, disabled: boolean, d: Density): React.
 /** Square box with a stepped pixel check. Sharp corners, ochre when on. */
 export const PixelCheckbox = ({
   label,
-  isDark = false,
+  isDark,
   className = '',
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
-  const c = roles(isDark);
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const on = !!props.checked;
   const disabled = !!props.disabled;
@@ -948,11 +986,11 @@ export const PixelCheckbox = ({
 /** Stepped-octagon frame with a square core. The pixel system has no circles. */
 export const PixelRadio = ({
   label,
-  isDark = false,
+  isDark,
   className = '',
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
-  const c = roles(isDark);
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const on = !!props.checked;
   const disabled = !!props.disabled;
@@ -993,7 +1031,7 @@ export const PixelToggle = ({
   label,
   checked = false,
   disabled = false,
-  isDark = false,
+  isDark,
   onChange,
   className = '',
   ...rest
@@ -1005,7 +1043,7 @@ export const PixelToggle = ({
   onChange?: (next: boolean) => void;
   className?: string;
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange' | 'type' | 'color'>) => {
-  const c = roles(isDark);
+  const c = roles(useIsDark(isDark));
   const d = useDensity();
   const w = d.toggleWidth;
   const h = d.toggleHeight;

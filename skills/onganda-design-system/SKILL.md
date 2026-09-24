@@ -71,6 +71,31 @@ Four causes account for nearly all of it:
 - **A rule under every element.** One per block.
 - **A dead control that shouts.** Disabled takes the disabled roles.
 
+## When a component does not fit
+
+Every exported component forwards its rest props, so `data-testid`, ARIA
+attributes, `className` and `style` all reach the DOM. Reaching into a
+component's internals with a descendant selector is never the answer; if you
+find yourself writing one, the prop you need is probably already there:
+
+| Need | Prop |
+|---|---|
+| A tab strip that scrolls instead of wrapping | `<PixelTabs scrollable />` |
+| Buttons that divide a row evenly | `<PixelActions share />` |
+| A card's identity edge without the foot rule | `<PixelPanel spine rule={false} />` |
+| A card on an already-textured ground | `<PixelPanel texture="none" />` |
+| Controls that fit a narrow surface | `<DensityProvider value="compact">` |
+| Dark controls without threading a prop | `<DarkProvider>` — controls read it |
+
+`DensityProvider` is the sanctioned answer to "these buttons must fit one
+row". It is on `/showcase` in Control Standards, comfortable and compact side
+by side. Reach for it before you reach for a smaller font: density changes
+spacing, never type.
+
+If none of these fit, the gap is in the system. Add the prop or the primitive,
+put it on `/showcase`, document it, and re-run `npm run reference` — do not
+work around it in the product.
+
 ## Changing a surface someone else already built
 
 Assume the previous pass was partial. Measure before you judge it, and again

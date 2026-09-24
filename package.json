@@ -1,6 +1,6 @@
 {
   "name": "@onganda/design-system",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
   "description": "Onganda pixel editorial design system — tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
   "keywords": [
@@ -85,7 +85,7 @@
     "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
     "build:showcase": "vite build",
     "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
-    "prepare": "npm run build:lib",
+    "prepare": "node scripts/stamp-version.mjs && npm run build:lib",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-design-tokens.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",

@@ -208,7 +208,7 @@ import { DitherBar, COLOR } from '@onganda/design-system';
 import { WeaveOverlay, PixelCornerMarks, PixelTag, COLOR } from '@onganda/design-system';
 
 <div style={{ position: 'relative', overflow: 'hidden', background: COLOR.dustLight, padding: 32 }}>
-  <WeaveOverlay opacity={0.045} />
+  <WeaveOverlay opacity={TEXTURE.surface} />
   <PixelCornerMarks hex={COLOR.ochreOrange} size={10} />
   <PixelTag hex={COLOR.ochreOrange} label="01" />
   <p style={{ color: COLOR.charBlack }}>Okaanda — Granary</p>
