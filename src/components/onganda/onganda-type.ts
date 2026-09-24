@@ -117,6 +117,48 @@ export const GEOMETRY = {
   shadow: 'none'
 } as const;
 
+// ─── Texture ─────────────────────────────────────────────────────────────────
+// How much weave, and where. The system shipped with ten different opacities
+// between 0.022 and 0.06 chosen one call site at a time, which is why a page
+// of cards can come out muddy: a textured card sitting on a textured ground
+// is the same weave twice.
+//
+// Three steps, one rule: TEXTURE BELONGS TO GROUNDS AND INVERSE PANELS.
+// A card repeats it only when it sits on a plain ground, which is how the
+// public site does it — the hero is textured, the section grounds between are
+// not, and the cards carry their own.
+//
+// Never stack it. If the container behind a card is textured, the card is not.
+export const TEXTURE = {
+  /** the page ground behind everything; barely present */
+  ground: 0.026,
+  /** a raised card on a PLAIN ground */
+  surface: 0.035,
+  /** an inverse panel, the one place the weave actually reads */
+  inverse: 0.055,
+  /** no texture: a card on a textured ground, a dense control surface */
+  none: 0
+} as const;
+
+// ─── Rules ───────────────────────────────────────────────────────────────────
+// The dither bar is the system's divider. It had thirteen opacities and three
+// heights across the components, so the same object read as a different
+// weight in every section.
+//
+// Three jobs, and one discipline: ONE RULE PER BLOCK. A card that carries a
+// section rule, a rule under its title and a rule at its foot is not
+// structured, it is striped. That includes dashed borders: a control's
+// boundary is solid, and `PixelCornerMarks` does the work a dashed edge was
+// reaching for.
+export const RULE = {
+  /** beside a section's prose, the boldest of the three */
+  section: { segments: 34, height: 4, opacity: 0.42 },
+  /** closing the foot of a card */
+  edge: { segments: 24, height: 2, opacity: 0.55 },
+  /** inside an inverse panel, where it has to carry against black */
+  inverse: { segments: 28, height: 3, opacity: 0.65 }
+} as const;
+
 // ─── Density ─────────────────────────────────────────────────────────────────
 // Density changes SPACING. It never changes type.
 //

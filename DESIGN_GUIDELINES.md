@@ -248,6 +248,66 @@ calling a surface done, ask which of these it could legitimately carry:
 
 Not every page needs every one. Every page needs more than cards and buttons.
 
+### Look at the reference screenshots
+
+`reference/` holds every primitive and pattern as the showcase renders it,
+with [`reference/INDEX.md`](./reference/INDEX.md) saying what each one shows.
+Regenerate with `npm run reference`.
+
+**Look at them before you build a surface, and again after.** Everything else
+in this document says what is forbidden. A surface can satisfy every rule here
+and still be flat, because the rules cannot describe how much colour a page
+carries or how the weights sit together. The screenshots can.
+
+When your surface is built, put a screenshot of it beside the closest
+reference and ask what is different. In practice it is almost always one of
+four things, measured in real products:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Every card the same colour | `accent` never passed, so everything is `accentInk` | `accentFor(i)` |
+| Muddy, tiring page | Texture on the ground *and* on every card | `TEXTURE`, and never stack it |
+| Striped, restless | A rule under every element | `RULE`, one per block |
+| A dead control shouts | A disabled fill is still a fill | Disabled takes the disabled roles, not a faded variant |
+
+### Colour has to be distributed, not defaulted
+
+A component takes one accent and falls back to the accent ink. So a product
+built entirely from defaults is **one colour**. That is not hypothetical: a
+studio app using 21 `PixelPanel`s, 12 `SectionHeader`s and 38 `PixelButton`s
+passed `accent` exactly zero times, and came out entirely bark rust and ochre.
+Nothing in it broke a rule.
+
+The public site does not work that way. Each section owns an accent and spends
+it on the dot, the rule and the card marks. For anything enumerable, let the
+system do it:
+
+```tsx
+{items.map((item, i) => (
+  <PixelPanel accent={accentFor(i)} eyebrow={item.kind} title={item.name} />
+))}
+```
+
+`ACCENT_CYCLE` is the site's own order, reading down the page. This is for
+variety among **peers**. Where a hue already means something, meaning wins: a
+system's colour comes from `SYSTEM_COLOR`, a state's from `statusFor()`. Never
+rotate an accent across items a reader could mistake for system membership.
+
+### Texture and rules have scales too
+
+`TEXTURE` and `RULE` in `onganda-type.ts` exist because both were being chosen
+one call site at a time — ten weave opacities and thirteen dither opacities
+across the components, so the same object read as a different weight in every
+section.
+
+- **Texture belongs to grounds and inverse panels.** A card repeats it only
+  when it sits on a plain ground. Never stack it: a textured card on a
+  textured ground is the weave twice, and that is what makes a page muddy.
+- **One rule per block.** A card carrying a section rule, a rule under its
+  title and a rule at its foot is not structured, it is striped.
+- **A control's boundary is solid.** Dashed edges read as provisional. Use
+  `PixelCornerMarks` for the emphasis a dashed border was reaching for.
+
 ### Read the showcase first
 
 `/showcase` is the reference implementation and the inventory. Before building,

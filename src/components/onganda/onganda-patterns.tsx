@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
 import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
-import { TYPE, SPACE_SCALE } from './onganda-type';
+import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
 
 // ─── PixelNotice — inline callout tied to the four status states ─────────────
 // Usage: <PixelNotice status="caution" title="Pilot closes Friday">body</PixelNotice>
@@ -315,20 +315,37 @@ export const PixelSkeleton = ({
   return (
     <div className={className} role="status" aria-label="Loading" style={{ display: 'grid', gap: 10 }}>
       {Array.from({ length: lines }).map((_, i) => (
-        <motion.div
+        <div
           key={i}
           aria-hidden="true"
-          initial={{ opacity: 0.35 }}
-          animate={moving ? { opacity: [0.35, 0.7, 0.35] } : { opacity: 0.5 }}
-          transition={{ duration: 1.4, repeat: Infinity, ease: 'linear', delay: i * 0.12 }}
           style={{
+            position: 'relative',
+            overflow: 'hidden',
             height: 10,
             width: i === lines - 1 ? '60%' : '100%',
             // A stepped dither, not a gradient shimmer: the loading state stays
             // inside the pixel language.
             backgroundImage: `repeating-linear-gradient(90deg, ${c.lineStrong} 0 4px, transparent 4px 8px)`
           }}
-        />
+        >
+          {/* A travelling sweep, not a whole-row pulse. Fading the entire bar
+              in and out is easy to read as a static block — it was reported as
+              one — because nothing in it moves. A highlight crossing the
+              dither says the work is progressing, not merely pending. */}
+          {moving && (
+            <motion.div
+              animate={{ x: ['-40%', '140%'] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'linear', delay: i * 0.18 }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '40%',
+                backgroundImage: `repeating-linear-gradient(90deg, ${c.text} 0 4px, transparent 4px 8px)`,
+                opacity: 0.45
+              }}
+            />
+          )}
+        </div>
       ))}
     </div>
   );
@@ -503,7 +520,7 @@ export const PixelPanel = ({
         ...(spine ? { borderLeft: `3px solid ${rule}` } : {})
       }}
     >
-      <WeaveOverlay isDark={isDark} opacity={0.035} />
+      <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
       {!spine && <PixelCornerMarks hex={rule} size={7} />}
       <div className="relative" style={{ padding: pad }}>
         {eyebrow && (
@@ -556,9 +573,9 @@ export const PixelPanel = ({
       {spine && (
         <DitherBar
           color={rule}
-          segments={24}
-          height={2}
-          opacity={0.55}
+          segments={RULE.edge.segments}
+          height={RULE.edge.height}
+          opacity={RULE.edge.opacity}
           className="absolute bottom-0 left-0 right-0"
         />
       )}
@@ -607,7 +624,7 @@ export const PixelInversePanel = ({
       className={`relative overflow-hidden ${className}`}
       style={{ background: roles(false).inverse, color: c.text, padding: SPACE_SCALE['8'] }}
     >
-      <WeaveOverlay isDark opacity={0.055} />
+      <WeaveOverlay isDark opacity={TEXTURE.inverse} />
       <div className="relative">
         {tag}
         {headline && (
@@ -636,7 +653,7 @@ export const PixelInversePanel = ({
           </div>
         )}
         <div style={{ marginTop: SPACE_SCALE['10'] }}>
-          <DitherBar color={rule} segments={28} height={3} opacity={0.65} />
+          <DitherBar color={rule} segments={RULE.inverse.segments} height={RULE.inverse.height} opacity={RULE.inverse.opacity} />
         </div>
       </div>
     </section>

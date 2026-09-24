@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, EDITOR_SURFACE, roles, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
+import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
 import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
@@ -2852,6 +2852,25 @@ export const ProductPatterns = () => {
         <div className="mt-4">
           <SubLabel isDark={isDark}>Site composition · ticker — the only place all five system colours meet</SubLabel>
           <PixelTicker />
+        </div>
+
+        {/* The rotation. Peers in a list take successive accents; the same
+            four cards with the default accent are the flat page a product
+            ships when it never passes one. */}
+        <div className="mt-10">
+          <SubLabel isDark={isDark}>Accent rotation · peers take successive hues, defaults do not</SubLabel>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {['Adapt models', 'Run workflows', 'Hold systems', 'Shape interfaces'].map((title, i) => (
+              <PixelPanel
+                key={title}
+                isDark={isDark}
+                accent={accentFor(i)}
+                eyebrow={`accentFor(${i})`}
+                title={title}
+                note="One hue per peer, spent on the corner marks."
+              />
+            ))}
+          </div>
         </div>
 
         <div className="mt-10">

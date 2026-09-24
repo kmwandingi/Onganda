@@ -100,7 +100,8 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build:layout": "node scripts/build-layout-css.mjs"
+    "build:layout": "node scripts/build-layout-css.mjs",
+    "reference": "node scripts/capture-reference.mjs"
   },
   "peerDependencies": {
     "framer-motion": ">=10.0.0",

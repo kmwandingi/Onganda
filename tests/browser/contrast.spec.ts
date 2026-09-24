@@ -44,6 +44,10 @@ const AUDIT_SOURCE = () => {
     // Decorative text is exempt, and marking it aria-hidden is how that
     // exemption is declared rather than assumed.
     if (el.closest('[aria-hidden="true"]')) continue;
+    // WCAG 1.4.3 exempts inactive controls, which is what ALPHA.faint is for
+    // ("disabled text and decorative ordinals ONLY"). Read the real state:
+    // a control is exempt because it is disabled, not because it looks it.
+    if (el.closest('[disabled], [aria-disabled="true"], fieldset:disabled')) continue;
 
     const bg = bgOf(el);
     const raw = parse(st.color);
@@ -126,7 +130,10 @@ test('the Control Standards section is compliant in dark mode too', async ({ pag
       const el = n.parentElement; if (!el || seen.has(el)) continue; seen.add(el);
       const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) continue;
       const st = getComputedStyle(el);
+      // Same two exemptions as the page-wide audit above: decorative text,
+      // and inactive controls, which WCAG 1.4.3 exempts.
       if (st.visibility === 'hidden' || parseFloat(st.opacity) < 0.15 || el.closest('[aria-hidden="true"]')) continue;
+      if (el.closest('[disabled], [aria-disabled="true"], fieldset:disabled')) continue;
       const bg = bgOf(el); const raw = parse(st.color); const a = raw[3] === undefined ? 1 : raw[3];
       const size = parseFloat(st.fontSize); const weight = parseInt(st.fontWeight) || 400;
       const need = (size >= 24 || (size >= 18.66 && weight >= 700)) ? 3 : 4.5;

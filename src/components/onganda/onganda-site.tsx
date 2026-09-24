@@ -16,7 +16,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { roles, onColor, inkOn, SYSTEMS, SystemEntry, StatEntry } from './onganda-tokens';
-import { TYPE, SPACE_SCALE } from './onganda-type';
+import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
 import { MOTION, useMotionOK } from './onganda-motion';
 import {
   DitherBar,
@@ -137,7 +137,7 @@ export const PixelEditorialSection = ({
       <SectionHeader label={labelText} headline={headline} accent={rule} isDark={isDark} />
       <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]">
         <div className="hidden lg:block">
-          <DitherBar color={rule} segments={34} height={4} opacity={0.42} />
+          <DitherBar color={rule} segments={RULE.section.segments} height={RULE.section.height} opacity={RULE.section.opacity} />
         </div>
         <div
           className="space-y-5"
@@ -233,7 +233,7 @@ export const PixelLabCard = ({
       className="relative flex min-h-[320px] flex-col justify-between overflow-hidden p-8"
       style={{ background: light.inverse, color: light.textOnInverse }}
     >
-      <WeaveOverlay isDark opacity={0.06} />
+      <WeaveOverlay isDark opacity={TEXTURE.inverse} />
       <div className="relative">
         {/* A filled bar, not a tag: at this size the label needs the whole
             width to register against the black. */}

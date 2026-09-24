@@ -5,6 +5,56 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — the system distributes colour, texture and rules
+
+A product can follow every rule in this repo and still look flat. Measured on
+a real consumer: 21 `PixelPanel`s, 12 `SectionHeader`s, 38 `PixelButton`s, and
+`accent` passed **zero** times. Everything defaulted to the accent ink, so the
+whole product was two colours. Nothing in it was wrong.
+
+- **`ACCENT_CYCLE` and `accentFor(i)`** — the site's own accent order. Peers
+  in a list take successive hues, so distributing colour is the easy path
+  rather than the remembered one. On `/showcase` beside the same four cards
+  built from defaults.
+- **`TEXTURE`** — three steps, replacing ten weave opacities chosen one call
+  site at a time. Texture belongs to grounds and inverse panels, and never
+  stacks: a textured card on a textured ground is the weave twice, which is
+  what makes a page muddy.
+- **`RULE`** — three steps, replacing thirteen dither opacities and three
+  heights. One rule per block. A card with a section rule, a rule under its
+  title and a rule at its foot is striped, not structured.
+
+### Added — `reference/`
+
+Every primitive and pattern as the showcase renders it, with an index saying
+what each shows and which exports it demonstrates. `npm run reference`
+regenerates it. `DESIGN_GUIDELINES.md`, `SKILL.md`, `AGENTS.md` and
+`CLAUDE.md` all now tell an agent to compare its finished surface against the
+closest one, because the written rules are prohibitions and cannot describe
+how much colour a page carries.
+
+`SKILL.md` also gains a checklist for changing a surface someone else built:
+measure before judging, check whether colour was ever distributed, and re-run
+`npm run reference` after changing how a primitive looks.
+
+### Fixed — a disabled control no longer outweighs a live one
+
+`opacity: 0.45` on the variant's own recipe: char black at 45% on cream is a
+solid mid-grey slab, heavier than the enabled ghost button beside it, so the
+dead control drew the eye first. Every disabled control takes the disabled
+roles instead, whatever variant it was.
+
+The contrast audit gained the exemption WCAG 1.4.3 already makes for inactive
+controls, read from the real `disabled` state rather than assumed. Verified
+still to catch an enabled node at the same opacity.
+
+### Fixed — the loading state reads as static
+
+`PixelSkeleton` faded whole rows in and out, which was reported as a static
+block because nothing in it moves. A highlight travels across the dither now:
+progressing, not merely pending.
+
+
 ### Added — two guard rules that were failing open
 
 - **`off-ramp-ink`** — an ink or paper opacity that is not a step on the

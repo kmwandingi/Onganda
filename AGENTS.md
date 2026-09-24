@@ -12,6 +12,14 @@ rendered DOM. To change the system, change the public site first and
 re-measure; never retune a token to suit a new surface.
 `tests/browser/fidelity.spec.ts` fails when the two disagree.
 
+**Look at `reference/` before building a visual surface.** It holds every
+primitive as the showcase renders it, with an index. The rules in this file
+are prohibitions; a surface can satisfy all of them and still be flat. The
+four usual causes: one accent everywhere (use `accentFor(i)`), texture on
+every card instead of the ground (`TEXTURE`), a rule under every element
+(`RULE`, one per block), and a disabled control that outweighs a live one.
+Re-run `npm run reference` if you change how a primitive looks.
+
 For Onganda UI, design-system, or new-project work, read and follow `skills/onganda-design-system/SKILL.md` before changing code. Treat `DESIGN_SYSTEM.md` as the language specification and `DESIGN_GUIDELINES.md` as the implementation contract.
 
 Two sections govern most day-to-day decisions and are enforced by `npm run check:design`:

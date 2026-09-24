@@ -51,6 +51,52 @@ Verify the bump landed rather than assuming it: check that a symbol you expect
 is actually exported from the installed package, not just present in the
 source you read on GitHub.
 
+## Look at the reference screenshots before you build
+
+`reference/` holds every primitive and pattern as the showcase renders it;
+`reference/INDEX.md` says what each shows and which exports it demonstrates.
+
+Open them first, and open them again when your surface is built. Put your
+screenshot beside the closest reference and name the difference. The written
+rules are prohibitions — a surface can satisfy all of them and still be flat,
+and that is the failure this repo sees most often in real products.
+
+Four causes account for nearly all of it:
+
+- **One accent everywhere.** Components default to the accent ink, so a
+  product that never passes `accent` is one colour. Use `accentFor(i)` for
+  anything enumerable.
+- **Texture on everything.** Weave belongs to grounds and inverse panels.
+  Never put it on a card that already sits on a textured ground.
+- **A rule under every element.** One per block.
+- **A dead control that shouts.** Disabled takes the disabled roles.
+
+## Changing a surface someone else already built
+
+Assume the previous pass was partial. Measure before you judge it, and again
+before you claim it is done.
+
+1. **Check whether colour is distributed at all.** `grep -c "accent=" src/`
+   returning zero means every panel, header and tag is the same hue, whatever
+   else looks right.
+2. **Check for hand-rolled cards.** An inline style setting a `surface`
+   background plus a `line` border *is* `PixelPanel`. `check:tokens` catches
+   this as `hand-rolled-card`.
+3. **Run `npx onganda-check <dirs>`.** It catches token drift. It does not
+   catch flatness, so the screenshots are still the test for that.
+4. **Verify a test hook survived.** TypeScript does not type-check hyphenated
+   JSX attributes, so `data-testid` on a component compiles and is silently
+   dropped unless that component forwards its rest props. If a selector stops
+   matching after a refactor, check this before rewriting the test.
+5. **Before editing a shared component, find its consumers.** A pattern used
+   on the showcase is also used by products pinned to this package.
+6. **Regenerate visual baselines in the same commit as the change that moved
+   them**, so the reason is in the history rather than in a later "update
+   snapshots" commit.
+7. **Re-run `npm run reference`** if you changed a primitive's appearance.
+   Stale reference screenshots are worse than none: the next agent will match
+   the old look.
+
 ## Apply the language
 
 - Preserve the product's business goals, domain model, and information architecture. Onganda governs presentation and interaction.

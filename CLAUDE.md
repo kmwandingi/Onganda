@@ -43,11 +43,12 @@ Before you make any changes to UI, styling, components, or layout, you MUST:
 
 ### Composition
 20. **Every rule above is a prohibition; a thin page passes all of them.** A finished Onganda surface also carries: the `SectionHeader` label/headline rhythm, at least one `WeaveOverlay` texture, pixel marks (`PixelDot`/`PixelTag`/`PixelCornerMarks`), a `DitherBar` rule, pixel iconography, an inverse band, real `MOTION`, and system controls. `tests/browser/composition.spec.ts` fails without them.
-21. **Open `/showcase` before building.** It is the inventory: Control Standards for every control, Product Patterns for dialog/table/notice/empty/loading/tabs/progress, plus diagrams, heatmap, roadmap, charts, icons, maps and publications. Take what fits instead of inventing an equivalent.
-22. **Use `PixelDialog`, `PixelTable`, `PixelNotice`, `PixelEmptyState`, `PixelSkeleton`, `PixelTabs`, `PixelProgress`** for product surfaces. A missing pattern is a gap in the system: build it as a primitive, add it to the showcase in every state, document it, and extend the composition test.
-23. **Give every surface that loads an empty, loading and error state.** They are part of the design, not an afterthought.
+21. **Open `reference/` and `/showcase` before building.** `reference/` holds every primitive as the showcase renders it, with an index. Compare your finished surface against the closest one. The rules above are prohibitions and a surface can satisfy all of them and still be flat: the usual causes are one accent everywhere (use `accentFor(i)`), texture on every card instead of the ground (`TEXTURE`), a rule under every element (`RULE`, one per block), and a disabled control that outweighs a live one. Re-run `npm run reference` if you change how a primitive looks.
+22. **Open `/showcase` before building.** It is the inventory: Control Standards for every control, Product Patterns for dialog/table/notice/empty/loading/tabs/progress, plus diagrams, heatmap, roadmap, charts, icons, maps and publications. Take what fits instead of inventing an equivalent.
+23. **Use `PixelDialog`, `PixelTable`, `PixelNotice`, `PixelEmptyState`, `PixelSkeleton`, `PixelTabs`, `PixelProgress`** for product surfaces. A missing pattern is a gap in the system: build it as a primitive, add it to the showcase in every state, document it, and extend the composition test.
+24. **Give every surface that loads an empty, loading and error state.** They are part of the design, not an afterthought.
 
 ### Validation
-24. **Run `npm run check:design`** before considering any UI change complete — it runs the token guard and re-measures every documented contrast ratio. Then run `npm run test:browser` and a Playwright pass for rendered desktop/mobile layout, motion, hover/tap states, and console errors.
+25. **Run `npm run check:design`** before considering any UI change complete — it runs the token guard and re-measures every documented contrast ratio. Then run `npm run test:browser` and a Playwright pass for rendered desktop/mobile layout, motion, hover/tap states, and console errors.
 
 Failure to follow these rules will result in visual regressions and break the cultural and architectural alignment of the project.

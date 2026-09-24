@@ -630,6 +630,14 @@ export const PixelButton = ({
   const c = roles(isDark);
   const d = useDensity();
   const p = buttonPalette(variant, c);
+  // A disabled control RECEDES. Fading the variant's own recipe does the
+  // opposite for a filled one: char black at 45% on cream is a solid mid-grey
+  // slab, heavier than the live ghost button beside it, so the dead control
+  // draws the eye first. Every disabled control takes the same quiet surface
+  // instead, whatever variant it was.
+  const off = disabled
+    ? { bg: c.fieldDisabledBg, fg: c.fieldDisabledText, border: c.line }
+    : null;
   const style: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -640,11 +648,10 @@ export const PixelButton = ({
     letterSpacing: '0.02em',
     textDecoration: 'none',
     borderRadius: 0,
-    border: `1px solid ${p.border}`,
-    background: p.bg,
-    color: p.fg,
+    border: `1px solid ${off ? off.border : p.border}`,
+    background: off ? off.bg : p.bg,
+    color: off ? off.fg : p.fg,
     cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.45 : 1,
     transition: CONTROL_TRANSITION,
     // Read by the `:focus-visible` rule in style.css.
     ['--onganda-focus' as string]: c.focusRing

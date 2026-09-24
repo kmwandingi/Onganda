@@ -379,3 +379,38 @@ export const COLOR_POLICY: Record<keyof typeof COLOR, { allowed: string; never: 
   darkCard: { allowed: 'Dark surface: cards, panels.', never: 'Light mode.' },
   darkCardAlt: { allowed: 'The inverse card in dark mode, marked with an ochre edge.', never: 'Light mode.' }
 };
+
+// ─── Accent rotation ─────────────────────────────────────────────────────────
+// A component takes ONE accent and defaults to the accent ink. So a product
+// built entirely from defaults is one colour, and that is how a consumer can
+// follow every rule in this repo and still look nothing like the site.
+//
+// Measured: a studio app using 21 PixelPanels, 12 SectionHeaders and 38
+// PixelButtons passed `accent` exactly zero times. Every card, every header
+// and every tag came out bark rust, every action ochre. Nothing was wrong
+// with it; the default was simply monochrome.
+//
+// The public site does not work that way. It gives each section its own
+// accent by hand — ochre, bark rust, gold, brown, plum — and spends it on the
+// dot, the rule and the card marks. This does the same for anything
+// enumerable, so distributing colour is the easy path rather than the
+// remembered one:
+//
+//   {items.map((item, i) => <PixelPanel accent={accentFor(i)} … />)}
+//
+// The order is the site's own, reading down the page.
+//
+// This is for variety among PEERS — cards in a feed, rows in a list, blocks
+// in a section. Where a hue already means something, meaning wins: a system's
+// colour comes from SYSTEM_COLOR and a state's from statusFor(). Never rotate
+// an accent across items that a reader could mistake for system membership.
+export const ACCENT_CYCLE = [
+  COLOR.ochreOrange,
+  COLOR.barkRust,
+  COLOR.mahanguGold,
+  COLOR.mopaneBrown,
+  COLOR.dyePlum
+] as const;
+
+export const accentFor = (index: number): string =>
+  ACCENT_CYCLE[((index % ACCENT_CYCLE.length) + ACCENT_CYCLE.length) % ACCENT_CYCLE.length];
