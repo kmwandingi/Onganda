@@ -22,7 +22,9 @@ test.beforeEach(async ({ page }) => {
   await stubMapTiles(page);
 });
 
-test.use({ reducedMotion: 'reduce' });
+// contextOptions, not the top-level option: in Playwright 1.62 `reducedMotion`
+// under `use` never reaches the page, so these tests ran with full motion.
+test.use({ contextOptions: { reducedMotion: 'reduce' } });
 
 test('map markers and legend work with keyboard and pointer input', async ({ page }) => {
   const errors = capturePageErrors(page);

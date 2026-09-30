@@ -251,7 +251,18 @@ deployments that are not real, and have names validated before they lock.
 
 Motion is part of the language, not a garnish. It is quiet and mechanical:
 things slide, step and settle. Nothing springs, bounces, glows, floats or
-scales on hover. Spread the `MOTION` presets instead of writing timings:
+scales on hover.
+
+**The primitives carry it.** `PixelPanel`, `SectionHeader`, `PixelStatBand`,
+`PixelEditorialSection`, `PixelInversePanel`, `PixelEmptyState` and
+`PixelDropZone` enter on their own; the stat band staggers; tabs, choices and
+buttons compress on press; a `PixelPanel` with `onClick` lifts on hover. For
+your own elements, use the same CSS attributes from `style.css`:
+`data-onganda-enter`, `data-onganda-stagger` (on a grid), `data-onganda-lift`
+(a clickable card), `data-onganda-press`. Wrap the app in `DarkProvider`,
+which also makes framer entrances honour reduced motion.
+
+In framer-motion, spread the `MOTION` presets instead of writing timings:
 
 | Preset | Use |
 |---|---|

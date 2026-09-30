@@ -5,7 +5,7 @@
 // Import from this file in any Onganda project.
 
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import { MOTION } from './onganda-motion';
 import { TYPE, TEXTURE } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
@@ -67,10 +67,13 @@ export const DarkProvider = ({
     if (typeof document === 'undefined') return;
     document.documentElement.setAttribute('data-onganda-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
-  return <DarkContext.Provider value={{
+  // framer-motion ignores prefers-reduced-motion unless told otherwise, so
+  // every MOTION entrance slid in for viewers who had asked for less. "user"
+  // drops the transform and keeps the fade.
+  return <MotionConfig reducedMotion="user"><DarkContext.Provider value={{
     isDark,
     toggle
-  }}>{children}</DarkContext.Provider>;
+  }}>{children}</DarkContext.Provider></MotionConfig>;
 };
 
 // ─── Px — pixel SVG primitive ─────────────────────────────────────────────────
@@ -251,7 +254,7 @@ export const SectionHeader = ({
   const c = roles(isDark);
   const Heading = level === 1 ? 'h1' : 'h2';
   return (
-    <div {...rest} className={`border-b pb-6 mb-12 ${className}`} style={{ borderColor: c.line, ...rest.style }}>
+    <div data-onganda-enter="" {...rest} className={`border-b pb-6 mb-12 ${className}`} style={{ borderColor: c.line, ...rest.style }}>
       <div className="mb-3 flex items-center gap-3">
         <PixelDot color={accent ?? c.accentInk} size={7} />
         {/* The eyebrow is a label, not a heading. It was an <h2> while the

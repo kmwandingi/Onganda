@@ -5,6 +5,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — motion from the defaults
+
+The guidelines called motion part of the language, but the primitives a
+product is built from were static: `PixelPanel`, `SectionHeader`, the stat
+band, the editorial and inverse sections, the empty state, tabs and choices.
+Products built from them came out still.
+
+- **A CSS motion layer in `style.css`**: `data-onganda-enter`,
+  `data-onganda-stagger`, `data-onganda-lift`, `data-onganda-press`. The
+  primitives set them; products can use them on their own elements. Off under
+  `prefers-reduced-motion`, frozen by screenshot tools, and no change to any
+  component's props.
+- **`DarkProvider` adds `MotionConfig reducedMotion="user"`.** framer-motion
+  ignores the setting otherwise, so every `MOTION` entrance slid in for viewers
+  who had asked for less.
+- **The browser tests never ran with reduced motion.** In Playwright 1.62,
+  `test.use({ reducedMotion })` does not reach the page; the visual baselines
+  and map tests now use `contextOptions`, and the baselines are regenerated.
+- **`tests/browser/motion.spec.ts`** checks entrance, stagger, press and
+  reduced motion on the consumer test pages.
+
 ### Changed — cards are flat, and colour goes on the work
 
 A product built from the latest package came out with texture on every card

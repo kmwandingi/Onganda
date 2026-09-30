@@ -1,5 +1,6 @@
 // ─── Test pages — router ─────────────────────────────────────────────────────
 import type { ReactElement } from 'react';
+import { DarkProvider } from '@onganda/design-system';
 import { AppScreen } from './AppScreen';
 import { Article } from './Article';
 import { Dashboard } from './Dashboard';
@@ -17,5 +18,6 @@ const PAGES: Record<string, () => ReactElement> = {
 
 export const TestPages = ({ path }: { path: string }) => {
   const Page = PAGES[path] ?? TestIndex;
-  return <Page />;
+  // Every consumer app wraps in DarkProvider; so do these.
+  return <DarkProvider><Page /></DarkProvider>;
 };

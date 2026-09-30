@@ -406,12 +406,30 @@ All visual flair must be pixelated.
 *   **Basket-Weave (`WEAVE`)**: Derived from Oshiwambo coil strands + stepped diamond patterns. Use the `WeaveOverlay` primitive on page grounds, hero sections and inverse panels — not on cards. It comes in both `light` and `dark` variants.
 
 ### Motion & Interaction
-Motion is part of the design language, not a garnish.
+Motion is part of the design language, not a garnish — and it comes from the
+defaults. `PixelPanel`, `SectionHeader`, `PixelStatBand`,
+`PixelEditorialSection`, `PixelInversePanel`, `PixelEmptyState` and
+`PixelDropZone` enter on their own; the stat band staggers; tabs, choices and
+buttons compress on press; a `PixelPanel` with an `onClick` lifts on hover. A
+product built from the primitives moves without writing any motion. Until
+this was the case, every product screen came out still.
 
-*   Use existing showcase patterns first: moving black system tickers, subtle pixel-column motion, staggered headline entrances, card entrance motion, card hover lifts, tap feedback on buttons, and animated diagram/flow affordances.
-*   Motion should be quiet, mechanical, and pixel-system aligned. Avoid springy, glossy, floating, or generic SaaS animation.
-*   Every card or control with an interactive affordance should have a small, clear response: hover lift/slide, border or spine highlight, state highlight, or tap compression.
-*   Do not remove showcase motion from public surfaces unless a specific accessibility or layout issue requires it.
+*   **Quiet and mechanical.** Things rise, step and settle: a short ease-out, no spring, no bounce, no glow, no scale on hover. Avoid glossy, floating, or generic SaaS animation.
+*   **Use the presets, never your own timings.** In CSS, the attributes in `style.css`:
+
+    | Attribute | Motion |
+    |---|---|
+    | `data-onganda-enter` | rises 12px and fades in on mount (0.45s) |
+    | `data-onganda-stagger` | on a grid or list: children arrive in turn, 60ms apart |
+    | `data-onganda-lift` | a clickable card lifts 4px on hover |
+    | `data-onganda-press` | compresses to 0.97 on press |
+
+    In framer-motion, `MOTION.entrance`, `fadeUp`, `staggerParent` / `staggerChild`, `hoverLift`, `tap`, `ticker`.
+*   **Every interactive thing answers.** A clickable card lifts or takes its accent edge; a control shows hover, focus and pressed; a selected item takes `controlOn` or the accent edge — never texture.
+*   **Loading moves, and stops.** `PixelSkeleton` sweeps and `PixelProgress` fills while work progresses; an error replaces them with a `PixelNotice status="critical"`. Nothing sweeps forever.
+*   **Reduced motion is honoured everywhere.** The CSS presets switch off under `prefers-reduced-motion`; `DarkProvider` wraps the tree in `MotionConfig reducedMotion="user"`, so framer entrances drop their slide; perpetual animations (ticker, sweep, edge strips) check `useMotionOK()`. The page is complete without motion.
+*   **Public pages keep the showcase's motion**: the moving black system ticker, pixel-column motion, staggered headline entrance, card entrance, hover lift, animated diagram and flow affordances. Do not remove it unless an accessibility or layout issue requires it. A product screen uses entrance, stagger, lift and press — never the ticker.
+*   `tests/browser/motion.spec.ts` checks all of this on the consumer test pages.
 
 ---
 

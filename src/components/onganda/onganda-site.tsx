@@ -132,7 +132,7 @@ export const PixelEditorialSection = ({
   const c = roles(isDark);
   const rule = accent ?? c.accentInk;
   return (
-    <section id={id} className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
+    <section id={id} data-onganda-enter="" className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
       <SectionHeader label={labelText} headline={headline} accent={rule} isDark={isDark} />
       <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]">
         <div className="hidden lg:block">
@@ -306,7 +306,7 @@ export const PixelContactPanel = ({
   const c = roles(isDark);
   const rule = accent ?? c.accentInk;
   return (
-    <section id={id} className="px-6 pb-24 md:px-12">
+    <section id={id} data-onganda-enter="" className="px-6 pb-24 md:px-12">
       <div className="mx-auto max-w-7xl">
         <div
           className="relative overflow-hidden border p-8 md:p-12"
@@ -405,6 +405,7 @@ export const PixelStatBand = ({
   const cols = columns ?? stats.length;
   return (
     <div
+      data-onganda-stagger=""
       className={className}
       style={{
         display: 'grid',

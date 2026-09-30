@@ -19,7 +19,9 @@ import { stubMapTiles } from './support/map-tiles';
 // going, so a section containing a ticker or a loading sweep never reaches
 // two identical consecutive frames and the screenshot times out. Reduced
 // motion stops those at the source — see useMotionOK in onganda-motion.ts.
-test.use({ reducedMotion: 'reduce' });
+// contextOptions, not the top-level option: in Playwright 1.62 `reducedMotion`
+// under `use` never reaches the page, so these tests ran with full motion.
+test.use({ contextOptions: { reducedMotion: 'reduce' } });
 
 const settle = async (page: Page, selector: string) => {
   await stubMapTiles(page);

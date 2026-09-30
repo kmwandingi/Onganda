@@ -321,6 +321,7 @@ export const PixelDropZone = ({
     <div
       {...rest}
       data-onganda-dropzone={over ? 'over' : 'idle'}
+      data-onganda-enter=""
       className={`relative overflow-hidden text-center ${className}`}
       onDragOver={e => { if (disabled) return; e.preventDefault(); setOver(true); }}
       onDragLeave={() => setOver(false)}
@@ -383,7 +384,7 @@ export const PixelEmptyState = ({
   // product shows first. The recessed well already says "nothing here yet",
   // and PixelCornerMarks does the work the dashes were reaching for.
   return (
-    <div {...rest} className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: '56px 32px', ...rest.style }}>
+    <div data-onganda-enter="" {...rest} className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: '56px 32px', ...rest.style }}>
       <PixelCornerMarks hex={c.accentInk} size={7} />
       <div className="relative mx-auto flex max-w-sm flex-col items-center">
         {icon && <div className="mb-5" aria-hidden="true">{icon}</div>}
@@ -484,6 +485,7 @@ export const PixelTabs = <T extends string>({
         return (
           <button
             key={tab.value}
+            data-onganda-press=""
             role="tab"
             type="button"
             className="onganda-focus"
@@ -498,7 +500,7 @@ export const PixelTabs = <T extends string>({
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               cursor: 'pointer',
-              transition: 'background 0.18s, border-color 0.18s, color 0.18s',
+              transition: 'background 0.18s, border-color 0.18s, color 0.18s, transform 0.1s',
               background: active ? c.controlOn : 'transparent',
               border: `1px solid ${active ? c.controlOnBorder : c.fieldBorder}`,
               color: active ? c.controlOnFg : c.textMuted
@@ -657,6 +659,10 @@ export const PixelPanel = ({
   return (
     <section
       data-onganda-panel={emphasis === 'quiet' ? 'quiet' : spine ? 'spine' : 'corners'}
+      // Motion from the defaults: every panel enters, a clickable one lifts.
+      // CSS in style.css, off under reduced motion.
+      data-onganda-enter=""
+      data-onganda-lift={rest.onClick ? '' : undefined}
       {...rest}
       className={`relative overflow-hidden ${className}`}
       style={{
@@ -766,6 +772,7 @@ export const PixelInversePanel = ({
   const rule = accent ?? c.accentInk;
   return (
     <section
+      data-onganda-enter=""
       {...rest}
       className={`relative overflow-hidden ${className}`}
       style={{ background: roles(false).inverse, color: c.text, padding: SPACE_SCALE['8'] }}
@@ -844,6 +851,7 @@ export const PixelChoice = ({
       tabIndex={tabIndex ?? (selected ? 0 : -1)}
       disabled={disabled}
       onClick={onSelect}
+      data-onganda-press={disabled ? undefined : ''}
       className="onganda-focus relative w-full overflow-hidden text-left"
       style={{
         display: 'flex',
@@ -858,7 +866,7 @@ export const PixelChoice = ({
         color: c.textBody,
         fontSize: d.fieldFont,
         lineHeight: 1.45,
-        transition: 'background 0.18s, border-color 0.18s',
+        transition: 'background 0.18s, border-color 0.18s, transform 0.1s',
         ['--onganda-focus' as string]: c.focusRing
       } as React.CSSProperties}
     >
