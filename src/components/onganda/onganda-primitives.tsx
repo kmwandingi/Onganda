@@ -117,43 +117,41 @@ export const PixelDot = ({
 }} />;
 
 // ─── DitherBar — horizontal pixel-dither accent bar ──────────────────────────
-// Usage: <DitherBar color="#D9791F" segments={24} height={4} opacity={0.55} />
+// Usage: <DitherBar color={c.line} opacity={1} />   (a solid hairline)
 export const DitherBar = ({
   color,
-  segments = 24,
-  height = 4,
   opacity = 0.55,
   className = ''
 }: {
   color: string;
+  /** retired: the rule is solid now. Accepted so existing calls compile. */
   segments?: number;
+  /** retired: a rule is a 1px hairline. Accepted so existing calls compile. */
   height?: number;
   opacity?: number;
   className?: string;
-}) => <div aria-hidden="true" className={`flex ${className}`} style={{
-  height
-}}>
-    {Array.from({
-    length: segments
-  }, (_, k) => <div key={`db-${k}`} className="flex-1 h-full" style={{
-    background: k % 2 === 0 ? color : 'transparent',
-    opacity
-  }} />)}
-  </div>;
+}) => (
+  // A solid hairline. This used to render alternating segments — the dotted
+  // line — and it was retired as a product decision: repeated under every
+  // block, the dots read as fussy and never quite consistent from one section
+  // to the next. The API is unchanged so every existing call, including in
+  // products pinned to this package, loses the dots without an edit.
+  <div
+    aria-hidden="true"
+    data-onganda-rule
+    className={className}
+    style={{ height: 1, background: color, opacity }}
+  />
+);
 
-// ─── DitherStrip — SVG dither strip used in section headers ──────────────────
-// Usage: <DitherStrip color="#D9791F" opacity={0.3} />
-export const DitherStrip = ({
-  color = COLOR.ochreOrange,
-  opacity = 0.18
-}: {
+// ─── DitherStrip — retired ────────────────────────────────────────────────────
+// It drew a stepped run of dots. Retired with the dotted rule; it renders
+// nothing so pinned products lose the dots without an edit. Do not use it.
+/** @deprecated The dotted strip is retired. Remove the call. */
+export const DitherStrip = (_props: {
   color?: string;
   opacity?: number;
-}) => <Px size={64} viewBox="0 0 16 4">
-    {[0, 2, 4, 6, 8, 10, 12, 14].map(x => <rect key={`d-${x}`} x={x} y="0" width="1" height="1" fill={color} fillOpacity={opacity * 2} />)}
-    {[1, 3, 5, 7, 9, 11, 13].map(x => <rect key={`d2-${x}`} x={x} y="2" width="1" height="1" fill={color} fillOpacity={opacity} />)}
-    {[0, 4, 8, 12].map(x => <rect key={`d3-${x}`} x={x} y="3" width="1" height="1" fill={color} fillOpacity={opacity * 0.5} />)}
-  </Px>;
+}) => null;
 
 // ─── PixelTag — small coloured badge  ────────────────────────────────────────
 // Usage: <PixelTag hex="#D9791F" label="01" />
@@ -1240,7 +1238,6 @@ export const TerminalCard = ({
             <span>{line.text || '\u00A0'}</span>
           </div>)}
       </div>
-      <DitherBar color={block.tagHex} segments={32} height={2} opacity={0.42} />
     </motion.div>;
 };
 
@@ -1318,7 +1315,6 @@ export const SystemCard = ({
       </div>
 
       <div aria-hidden="true" className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} />
-      <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />
     </motion.article>;
 };
 
@@ -1364,7 +1360,6 @@ export const FlowNodeCard = ({
         </span>
       </div>
     </div>
-    <DitherBar color={node.hex} segments={16} height={2} opacity={0.65} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
   </div>;
 };
 
@@ -1421,7 +1416,6 @@ export const FieldAppCard = ({
     <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{
     background: app.hex
   }} aria-hidden="true" />
-    <DitherBar color={app.hex} segments={20} height={2} opacity={0.65} className="absolute bottom-0 left-0 right-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
   </motion.article>;
 };
 
@@ -1649,8 +1643,6 @@ export const CodeSnippetBlock = ({
             {line.text || '\u00A0'}
           </div>)}
       </div>
-
-      <DitherBar color={accentHex} segments={32} height={2} opacity={0.42} />
     </motion.div>;
 };
 

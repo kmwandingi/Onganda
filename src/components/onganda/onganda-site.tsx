@@ -16,10 +16,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { roles, onColor, inkOn, SYSTEMS, SystemEntry, StatEntry } from './onganda-tokens';
-import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
+import { TYPE, SPACE_SCALE, TEXTURE } from './onganda-type';
 import { MOTION, useMotionOK } from './onganda-motion';
 import {
-  DitherBar,
   StatCard,
   PixelDot,
   PixelTag,
@@ -137,7 +136,6 @@ export const PixelEditorialSection = ({
       <SectionHeader label={labelText} headline={headline} accent={rule} isDark={isDark} />
       <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]">
         <div className="hidden lg:block">
-          <DitherBar color={rule} segments={RULE.section.segments} height={RULE.section.height} opacity={RULE.section.opacity} />
         </div>
         <div
           className="space-y-5"

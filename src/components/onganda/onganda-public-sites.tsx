@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, roles, onColor, inkOn, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
-import { DarkContext, DitherBar, OngandaLogoMark, PixelButton, PixelCornerMarks, PixelDot, PixelField, PixelInput, PixelTag, PixelTextarea, SectionHeader, TerminalCard, WeaveOverlay, systemIconForName } from './onganda-primitives';
+import { DarkContext, OngandaLogoMark, PixelButton, PixelCornerMarks, PixelDot, PixelField, PixelInput, PixelTag, PixelTextarea, SectionHeader, TerminalCard, WeaveOverlay, systemIconForName } from './onganda-primitives';
 import {
   PixelTicker,
   PixelEditorialSection,
@@ -226,7 +226,6 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
             <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{detailed ? sys.long : sys.line}</p>
           </div>
           <div className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} aria-hidden="true" />
-          <DitherBar color={sys.borderHex} segments={24} height={2} opacity={0.55} className="absolute bottom-0 left-0 right-0" />
         </motion.article>
       ))}
       <PixelLabCard
@@ -259,7 +258,6 @@ const SignalBand = () => (
           <p className="mt-8 max-w-lg text-sm leading-relaxed md:text-base" style={{ color: 'rgba(232,225,207,0.58)' }}>
             Onganda is building the missing layer: adaptation, evaluation, deployment, interfaces, and delivered tools.
           </p>
-          <DitherBar color={COLOR.ochreOrange} segments={28} height={3} opacity={0.65} className="mt-10" />
         </div>
       </motion.div>
       <div className="grid gap-4 sm:grid-cols-2">

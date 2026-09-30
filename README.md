@@ -210,7 +210,6 @@ A finished surface also carries:
 - the `SectionHeader` label-above-headline rhythm on every major section
 - at least one surface with `WeaveOverlay` texture
 - pixel marks — `PixelDot`, `PixelTag`, `PixelCornerMarks`
-- a `DitherBar` rule where a section breaks
 - pixel iconography
 - an inverse band (the black-card language), with `isDark` on its controls
 - motion from `MOTION`, actually applied

@@ -38,7 +38,7 @@ const SHOTS = [
    'An APP screen, not a marketing page. Quiet chrome, one feature surface, neutral metadata, colour only for identity and state, no ticker or stat band. Copy this for a tool; copy the site shots for a public page.',
    ['PixelPanel', 'PixelTable', 'PixelTag', 'PixelField', 'PixelSelect', 'PixelProgress', 'PixelButton', 'statusFor']],
   ['/showcase', '#systems', 'system-cards',
-   'The five-system card and the inverse cell that closes a grid. Note one accent per card, spent on the spine, the tag and the foot rule.',
+   'The five-system card and the inverse cell that closes a grid. Note one accent per card, spent on the spine and the tag.',
    ['SystemCard', 'PixelLabCard', 'SectionHeader', 'PixelTag']],
   ['/showcase', '#connection-diagram', 'connection-diagram',
    'A diagram in the pixel language rather than a generic chart.',

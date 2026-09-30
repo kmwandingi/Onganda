@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
 import { PixelLabCard } from './onganda-site';
-import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, PixelButton, OngandaFooter } from './onganda-primitives';
+import { DarkContext, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, PixelButton, OngandaFooter } from './onganda-primitives';
 import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab, ControlStandards, ProductPatterns, ProductSurface } from './onganda-sections';
 import { ChartGallery } from './onganda-charts';
 import { NAMIBIA_MAP_POINTS, NAMIBIA_MAP_ROUTES } from './onganda-map-data';
@@ -63,22 +63,7 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Systems grid ── */}
         <section id="systems" className="max-w-7xl mx-auto px-6 pb-24 md:px-12 pt-16">
-          <div className="flex items-end justify-between mb-10 border-b pb-6" style={{
-          borderColor: isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.10)'
-        }}>
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-[0.15em] mb-2" style={{
-              color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
-            }}>System Architecture</h2>
-              <p className="text-2xl md:text-3xl font-medium tracking-tight" style={{
-              color: isDark ? COLOR.milletClay : COLOR.charBlack
-            }}>Five tools. One workshop.</p>
-            </div>
-            <div aria-hidden="true" className="hidden md:flex gap-1.5 items-end pb-1">
-              <DitherStrip color={COLOR.ochreOrange} opacity={0.3} />
-              <DitherStrip color={COLOR.mahanguGold} opacity={0.25} />
-            </div>
-          </div>
+          <SectionHeader label="System Architecture" headline="Five tools. One workshop." accent={COLOR.mahanguGold} isDark={isDark} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {SYSTEMS.map((sys, idx) => <SystemCard key={sys.name} sys={sys} idx={idx} />)}
 

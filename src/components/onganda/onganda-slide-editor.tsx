@@ -2528,7 +2528,6 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
           <span>{line.text || '\u00A0'}</span>
         </div>)}
       </div>
-      <DitherBar color={terminal.tagHex} segments={20} height={2} opacity={0.55} />
     </div>;
   }
   return <div data-onganda-export-ui="true" data-onganda-export-modal="true" style={{
@@ -3344,7 +3343,6 @@ const SlideCanvas = ({
         </div>;
       })}
     </div>
-    <DitherBar color={COLOR.ochreOrange} segments={80} height={2} opacity={0.25} />
   </div>;
 };
 
@@ -3767,7 +3765,6 @@ const ExportModal = ({
               }}>{row.value}</span>
             </div>)}
           </div>
-          <DitherBar color={formatColor} segments={20} height={2} opacity={0.25} />
           <button onClick={handleExport} style={{
             width: '100%',
             padding: '12px',
@@ -3897,7 +3894,6 @@ const ExportModal = ({
               lineHeight: 1.6
             }}>{format === 'PDF' ? 'Use Save as PDF in the print dialog.' : 'Your PowerPoint-compatible deck has downloaded.'}</p>
           </div>
-          <DitherBar color={COLOR.mahanguGold} segments={16} height={3} opacity={0.55} />
           <div style={{
             display: 'flex',
             gap: 10,
@@ -3928,7 +3924,6 @@ const ExportModal = ({
           </div>
         </div>}
       </div>
-      <DitherBar color={formatColor} segments={60} height={2} opacity={0.25} />
     </motion.div>
   </div>;
 };
@@ -4399,7 +4394,6 @@ const SlidePicker = ({
           </button>;
         })}
       </div>
-      <DitherBar color={COLOR.dyePlum} segments={30} height={2} opacity={0.25} />
     </div>
   </div>;
 };

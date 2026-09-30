@@ -47,11 +47,12 @@ const GATHER = (): Evidence => {
       && getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)';
   }).length;
 
-  // DitherBar / DitherStrip render runs of alternating segments.
+  // Runs of alternating segments — the dotted rule the system retired. It
+  // read as texture laid on every edge; a divider is a solid hairline now.
   const ditherRules = all.filter(el => {
     const s = getComputedStyle(el);
     return s.backgroundImage.includes('repeating-linear-gradient')
-      || (el.children.length >= 12 && el.getBoundingClientRect().height <= 6);
+      || (el.children.length >= 12 && el.getBoundingClientRect().height > 0 && el.getBoundingClientRect().height <= 6);
   }).length;
 
   // Pixel SVGs are drawn with <rect> only — no paths, circles or ellipses.
@@ -147,7 +148,7 @@ const GATHER = (): Evidence => {
 // Calibrating a floor from the pages that pass it proves nothing. Each number
 // below is derived instead:
 //
-//   • The counts (weave, marks, dither, icons, labels, inverse, motion,
+//   • The counts (weave, marks, icons, labels, inverse, motion,
 //     controls, headings) are set at the MINIMUM a surface needs to show the
 //     ingredient at all — one of a thing means the author used it; zero means
 //     they did not. They are presence gates, deliberately low, and the
@@ -167,7 +168,7 @@ const GATHER = (): Evidence => {
 const FLOOR: Record<keyof Evidence, number> = {
   weave: 1,              // at least one textured surface
   pixelMarks: 3,         // dots, tags, corner marks
-  ditherRules: 1,        // a dither bar or strip
+  ditherRules: 0,        // the retired dotted rule — never
   pixelSvgs: 3,          // system or interface icons
   sectionLabels: 2,      // the editorial label/headline rhythm
   inverseSurfaces: 1,    // the black-card language
@@ -182,8 +183,8 @@ const FLOOR: Record<keyof Evidence, number> = {
   bareSections: 0
 };
 
-// Two of these are ceilings, the rest are floors.
-const CEILINGS = new Set<keyof Evidence>(['rounded', 'bareSections']);
+// Three of these are ceilings, the rest are floors.
+const CEILINGS = new Set<keyof Evidence>(['rounded', 'ditherRules', 'bareSections']);
 
 const describe = (e: Evidence) =>
   (Object.keys(FLOOR) as (keyof Evidence)[])
@@ -428,7 +429,7 @@ test('no section is markedly flatter than its peers', async ({ page }) => {
       }).length;
       const dither = all.filter(el =>
         cs(el).backgroundImage.includes('repeating-linear-gradient')
-        || (el.children.length >= 12 && el.getBoundingClientRect().height <= 6)).length;
+        || (el.children.length >= 12 && el.getBoundingClientRect().height > 0 && el.getBoundingClientRect().height <= 6)).length;
       const pixelSvg = [...root.querySelectorAll('svg')]
         .filter(sv => sv.querySelector('rect') && !sv.querySelector('path,circle,ellipse')).length;
       const inverse = all.filter(el => {
@@ -441,7 +442,7 @@ test('no section is markedly flatter than its peers', async ({ page }) => {
         missing: false as const,
         inverse,
         dither,
-        perThousand: ((weave + marks + dither + pixelSvg + inverse) / height) * 1000,
+        perThousand: ((weave + marks + pixelSvg + inverse) / height) * 1000,
       };
     });
   });

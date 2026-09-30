@@ -178,14 +178,11 @@ test.describe('the design system reproduces the public site', () => {
           spine: cs.borderLeftWidth,
           title: `${parseFloat(hs.fontSize)}/${hs.fontWeight}`,
           eyebrow: es && `${parseFloat(es.fontSize)}/${es.fontWeight}`,
-          // The dither rule is always on, not revealed on hover.
-          ditherOpacity: (() => {
-            const d = [...node.children].find(el => {
-              const s = getComputedStyle(el);
-              return s.position === 'absolute' && el.classList.contains('flex');
-            });
-            return d ? getComputedStyle(d).opacity : null;
-          })(),
+          // No dotted rule at the foot. Runs of 12+ tiny segments were the
+          // retired dither effect.
+          dotted: [...node.querySelectorAll('*')].filter(el =>
+            el.children.length >= 12 && el.getBoundingClientRect().height > 0
+            && el.getBoundingClientRect().height <= 6).length,
         };
       });
     };
@@ -199,7 +196,8 @@ test.describe('the design system reproduces the public site', () => {
     expect(system.spine).toBe(site.spine);
     expect(system.title).toBe(site.title);
     expect(system.eyebrow).toBe(site.eyebrow);
-    expect(system.ditherOpacity).toBe('1');
+    expect(site.dotted).toBe(0);
+    expect(system.dotted).toBe(0);
   });
 
   test('nothing in the system casts a shadow', async ({ page }) => {

@@ -160,7 +160,7 @@ export const PIXEL_RULES: PixelRule[] = [{
 }, {
   rule: 'Stepped corners, not rounded, for brand assets.'
 }, {
-  rule: 'Dither and checker fills as core texture — not decoration.'
+  rule: 'Texture on grounds, solid lines everywhere else — no dotted rules.'
 }, {
   rule: 'Typography stays clean so pixel elements breathe.'
 }];

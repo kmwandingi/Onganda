@@ -98,7 +98,7 @@ ${Object.entries(t.SPACE_SCALE).map(([k, v]) => `  --onganda-space-${k}: ${px(v)
   /* ── Texture: grounds and inverse panels; never stacked ─────── */
 ${Object.entries(t.TEXTURE).map(([k, v]) => `  --onganda-texture-${kebab(k)}: ${v};`).join('\n')}
 
-  /* ── Rules: one per block ───────────────────────────────────── */
+  /* ── Rules: solid hairlines; most blocks need none ─────────── */
 ${Object.entries(t.RULE).map(([k, v]) => `  --onganda-rule-${kebab(k)}-height: ${v.height}px;\n  --onganda-rule-${kebab(k)}-opacity: ${v.opacity};`).join('\n')}
 
   /* ── Geometry: no radius, no elevation ──────────────────────── */

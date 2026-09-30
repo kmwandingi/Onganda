@@ -186,7 +186,7 @@ A finished Onganda surface carries all of these, and
 - **Editorial rhythm** — `SectionHeader`'s uppercase label above a headline, on every major section.
 - **Texture** — at least one surface with `WeaveOverlay` at 0.03–0.08.
 - **Pixel marks** — `PixelDot`, `PixelTag`, or `PixelCornerMarks` as punctuation.
-- **A dither rule** — `DitherBar` or `DitherStrip` where a section breaks.
+- **No dotted rules.** The dither rule is retired; a divider is a solid hairline, and most blocks need none.
 - **Pixel iconography** — `Icon*`, `systemIconForName`, or `createPixelIcon`.
 - **An inverse band** — the black-card language, with `isDark` passed to its controls.
 - **Real motion** — `MOTION` presets on entrance, hover and tap.

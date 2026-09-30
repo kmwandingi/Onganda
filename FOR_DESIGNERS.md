@@ -145,7 +145,6 @@ A finished surface carries:
 - the **eyebrow label above a headline** on every major section
 - at least one surface with the **basket-weave texture** (3–8% opacity)
 - **pixel marks** — dots, tags, stepped corner accents
-- a **dither rule** where a section breaks, rather than a plain hairline
 - **pixel iconography**: icons drawn as squares on an integer grid, never an
   icon library, never rounded or organic shapes
 - an **inverse band** — the black-card language — somewhere on the page
@@ -169,7 +168,7 @@ diagrams, heatmaps, charts, icons, maps and authoring surfaces. Take what fits.
 |---|---|
 | **Controls** | Button (4 intents), text input, textarea, select, field wrapper with label/hint/error, checkbox, radio, toggle |
 | **Patterns** | Dialog, table, notice (4 statuses), empty state, loading skeleton, tabs, progress bar, panel, choice list, action row |
-| **Marks** | Pixel dot, pixel tag, dither bar, dither strip, stepped corner marks, basket-weave overlay, arrow connector |
+| **Marks** | Pixel dot, pixel tag, stepped corner marks, basket-weave overlay, arrow connector |
 | **Icons** | 95 interface icons plus 5 system icons, all `<rect>` on a 12 or 24 grid |
 | **Sections** | Hero, nav, systems grid, connection diagram, heatmap, roadmap, field applications, flowchart, research signals, footer |
 | **Data** | 15+ chart types on the fixed series order; Leaflet maps with pixel markers |

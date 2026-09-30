@@ -14,8 +14,8 @@ earthy palette, sharp geometry, and quiet mechanical motion.
 Two rules govern every decision:
 
 - **Pixel by default** — icons, diagrams, textures, decorative marks, and
-  corner accents must be pixel art (integer-grid SVG rects, alternating dither
-  strips, basket-weave CSS backgrounds).
+  corner accents must be pixel art (integer-grid SVG rects, basket-weave CSS
+  backgrounds). Lines and dividers are solid — the dotted dither rule is retired.
 - **Non-pixel by default** — body copy, headings, labels, and reading
   interfaces use clean Inter/Arial. No pixel fonts for text. Ever.
 
@@ -85,16 +85,13 @@ Icon construction rules Cascade must follow:
 
 ---
 
-## DitherBar
+## DitherBar — a solid hairline divider
 
 ```tsx
-const DitherBar = ({ color, segments=24, height=4, opacity=0.55 }) => (
-  <div aria-hidden="true" style={{ display:'flex', height }}>
-    {Array.from({ length:segments }, (_,k) => (
-      <div key={k} style={{ flex:1, height:'100%',
-        background: k%2===0 ? color : 'transparent', opacity }} />
-    ))}
-  </div>
+// A solid hairline. The dotted, alternating-segment rule is retired — repeated
+// under every block it read as noise. Most blocks need no divider at all.
+const DitherBar = ({ color, opacity = 0.55 }) => (
+  <div aria-hidden="true" style={{ height: 1, background: color, opacity }} />
 );
 ```
 

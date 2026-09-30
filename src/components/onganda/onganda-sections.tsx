@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
-import { Px, PixelDot, DitherBar, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { Px, PixelDot, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
@@ -1499,7 +1499,6 @@ export const SystemConnectionDiagram = ({
                       }}>{c}</span>)}
                             </div>
                           </div>}
-                        <DitherBar color={node.hex} segments={16} height={2} opacity={0.55} className="mt-2" />
                         <div aria-hidden="true" style={{
                     position: 'absolute',
                     left: tooltipLeft === '50%' ? '50%' : tooltipLeft === '0' ? 24 : undefined,
@@ -1722,9 +1721,6 @@ export const RoadmapTimeline = ({
               }} style={{
                 background: phase.hex
               }}>
-                    <div aria-hidden="true" className="absolute inset-0" style={{
-                  backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(30,26,23,0.12) 3px, rgba(30,26,23,0.12) 4px)'
-                }} />
                     {phase.status === 'active' && <motion.div aria-hidden="true" className="absolute right-0 top-0 bottom-0 w-3" style={{
                   background: COLOR.charBlack
                 }} animate={{
@@ -1764,12 +1760,6 @@ export const RoadmapTimeline = ({
               </ul>
             </div>
           </motion.div>)}
-      </div>
-      <div aria-hidden="true" className="flex mt-4 h-1">
-        {phases.map(phase => [0, 1, 2, 3, 4, 5, 6, 7].map(i => <div key={`btm-${phase.tag}-${i}`} className="flex-1 h-full" style={{
-        background: i % 2 === 0 ? phase.hex : 'transparent',
-        opacity: 0.45
-      }} />))}
       </div>
       <div className="flex items-center gap-6 mt-5 flex-wrap">
         {STATUS_LEGEND.map(item => <div key={item.status} className="flex items-center gap-2">
@@ -1861,7 +1851,6 @@ export const PixelFlowchart = () => {
                 }}>{rootNode.role}</p>
                 </div>
               </div>
-              <DitherBar color={rootNode.hex} segments={40} height={2} opacity={0.65} className="absolute bottom-0 left-0 right-0" />
             </div>
             {/* Connector SVG — xl only */}
             <div aria-hidden="true" className="hidden xl:block w-full" style={{
@@ -1882,7 +1871,7 @@ export const PixelFlowchart = () => {
             {/* Simple trunk — non-xl */}
             <div className="xl:hidden flex justify-center py-3" aria-hidden="true">
               <div className="w-px h-8" style={{
-              background: `repeating-linear-gradient(to bottom, ${rootNode.hex} 0px, ${rootNode.hex} 3px, transparent 3px, transparent 6px)`
+              background: rootNode.hex
             }} />
             </div>
             {/* Child nodes */}
@@ -1903,7 +1892,7 @@ export const PixelFlowchart = () => {
                   <div aria-hidden="true" className="xl:hidden" style={{
                 width: 2,
                 height: 20,
-                background: `repeating-linear-gradient(to bottom, ${node.hex} 0px, ${node.hex} 3px, transparent 3px, transparent 6px)`
+                background: node.hex
               }} />
                   <div aria-hidden="true" className="flex flex-col items-center mb-1"><PixelArrowDown color={node.hex} /></div>
                   <div className="w-full" style={{
@@ -2708,7 +2697,7 @@ export const ProductPatterns = () => {
               </div>
 
               <div className="grid gap-5">
-                <SubLabel isDark={isDark} spaced>Progress · dithered fill, never a smooth gradient</SubLabel>
+                <SubLabel isDark={isDark} spaced>Progress · a solid fill, never a smooth gradient</SubLabel>
                 <PixelProgress isDark={isDark} label="Corpus ingestion" value={100} status="settled" />
                 <PixelProgress isDark={isDark} label="Fine-tuning" value={78} status="active" />
                 <PixelProgress isDark={isDark} label="Container rollout" value={34} status="caution" />
@@ -2779,7 +2768,7 @@ export const ProductPatterns = () => {
               </PixelPanel>
 
               {/* The second recipe. A card that stands for a thing with its own
-                  colour takes a spine and a closing dither rule instead of
+                  colour takes a spine instead of
                   corner marks — never both sets of marks at once. */}
               <SubLabel isDark={isDark} spaced>Panel · spine recipe — for a card that carries an identity</SubLabel>
               <PixelPanel
@@ -2835,7 +2824,7 @@ export const ProductPatterns = () => {
                 />
               </div>
               <div>
-                <SubLabel isDark={isDark} spaced>Loading · a dither sweep, not a soft shimmer</SubLabel>
+                <SubLabel isDark={isDark} spaced>Loading · a slow sweep that stops for reduced motion</SubLabel>
                 <div style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: 20 }}>
                   <PixelSkeleton isDark={isDark} lines={4} />
                 </div>

@@ -101,44 +101,17 @@ const IconGranary = ({ size = 48 }) => (
 
 ---
 
-## DitherBar — horizontal pixel-dither accent
+## DitherBar — a solid hairline divider
 
 ```tsx
-const DitherBar = ({
-  color,
-  segments = 24,
-  height = 4,
-  opacity = 0.55,
-}) => (
-  <div aria-hidden="true" style={{ display: 'flex', height }}>
-    {Array.from({ length: segments }, (_, k) => (
-      <div key={k} style={{
-        flex: 1,
-        height: '100%',
-        background: k % 2 === 0 ? color : 'transparent',
-        opacity,
-      }} />
-    ))}
-  </div>
+// A solid hairline. The dotted, alternating-segment rule is retired — repeated
+// under every block it read as noise. Most blocks need no divider at all.
+const DitherBar = ({ color, opacity = 0.55 }) => (
+  <div aria-hidden="true" style={{ height: 1, background: color, opacity }} />
 );
 ```
 
-Use as section dividers, block separators, and decorative accents.
-Standard usage: `<DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.35} />`
-
----
-
-## DitherStrip — SVG micro-dither (section headers)
-
-```tsx
-const DitherStrip = ({ color = '#D9791F', opacity = 0.18 }) => (
-  <svg width={64} height={64} viewBox="0 0 16 4" fill="none" aria-hidden="true">
-    {[0,2,4,6,8,10,12,14].map(x => <rect key={x}    x={x} y="0" width="1" height="1" fill={color} fillOpacity={opacity * 2} />)}
-    {[1,3,5,7,9,11,13].map(x =>   <rect key={x+20}  x={x} y="2" width="1" height="1" fill={color} fillOpacity={opacity} />)}
-    {[0,4,8,12].map(x =>           <rect key={x+40}  x={x} y="3" width="1" height="1" fill={color} fillOpacity={opacity * 0.5} />)}
-  </svg>
-);
-```
+No `DitherStrip`: it is retired too.
 
 ---
 

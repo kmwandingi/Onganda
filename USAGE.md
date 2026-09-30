@@ -201,11 +201,12 @@ import { PixelDot, COLOR } from '@onganda/design-system';
 <PixelDot color={COLOR.ochreOrange} size={5} />
 ```
 
-### Dither bar divider
+### Divider
 ```tsx
-import { DitherBar, COLOR } from '@onganda/design-system';
+import { DitherBar, roles } from '@onganda/design-system';
 
-<DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.35} />
+// A solid hairline. The dotted rule is retired; most blocks need no divider.
+<DitherBar color={roles(isDark).line} opacity={1} />
 ```
 
 ### Card with basket-weave texture and corner marks

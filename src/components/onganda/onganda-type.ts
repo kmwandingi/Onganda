@@ -152,15 +152,11 @@ export const TEXTURE = {
 } as const;
 
 // ─── Rules ───────────────────────────────────────────────────────────────────
-// The dither bar is the system's divider. It had thirteen opacities and three
-// heights across the components, so the same object read as a different
-// weight in every section.
-//
-// Four jobs, and one discipline: ONE RULE PER BLOCK. A card that carries a
-// section rule, a rule under its title and a rule at its foot is not
-// structured, it is striped. That includes dashed borders: a control's
-// boundary is solid, and `PixelCornerMarks` does the work a dashed edge was
-// reaching for.
+// The dotted dither rule is retired: a divider is a 1px solid hairline, and
+// most blocks need none. `segments` and `height` are kept so existing imports
+// compile; `DitherBar` ignores them. The opacities still pick the weight of a
+// hairline for each job. A control's boundary is solid too — `PixelCornerMarks`
+// does the work a dashed edge was reaching for.
 export const RULE = {
   /** a quiet divider inside a dense surface, where a full-weight rule would
    *  compete with the content it separates */

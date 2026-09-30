@@ -35,7 +35,7 @@ Before you make any changes to UI, styling, components, or layout, you MUST:
 14. **No rounded corners anywhere.** `borderRadius: 0` on every control and brand surface. Use `PixelCornerMarks` for corner decoration.
 
 ### Language
-15. **Respect the Pixel vs. Type dichotomy**: icons, diagrams, and brand elements are pixelated (stepped corners, dither, basket-weave). Typography and reading interfaces are clean sans-serif (Inter/Arial).
+15. **Respect the Pixel vs. Type dichotomy**: icons, diagrams, and brand elements are pixelated (stepped corners, pixel marks, basket-weave). Lines and fills are solid: the dotted dither rule is retired. Typography and reading interfaces are clean sans-serif (Inter/Arial).
 16. **Oshiwambo First**: use the Oshiwambo system names (Okaanda, Oshini, Ombiga, Etiti, Oshitoo) first, English second.
 17. **Use the showcase as the reference implementation**: public pages must feel like peers of `/showcase`, including its pixel primitives, system icons, black ticker/lab-card language, and subtle motion patterns.
 18. **Keep public IA intentional**: `/` is the current one-page public home, `/full` is the fuller future-facing version, `/showcase` is the preserved design-system showcase. Do not add thin `/systems` or `/contact` routes unless explicitly asked.

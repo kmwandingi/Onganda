@@ -221,7 +221,6 @@ contains.** `tests/browser/composition.spec.ts` enforces it.
 | **Editorial rhythm** | A small uppercase tracked label above a headline, on every major section | `SectionHeader` |
 | **Texture** | At least one surface carrying the basket-weave | `WeaveOverlay` at 0.03–0.08 |
 | **Pixel marks** | Dots, tags, or stepped corner accents — the system's punctuation | `PixelDot`, `PixelTag`, `PixelCornerMarks` |
-| **A dither rule** | A stepped divider, not a plain hairline, where a section breaks | `DitherBar`, `DitherStrip` |
 | **Pixel iconography** | Icons drawn as `<rect>` on an integer grid | `Icon*`, `systemIconForName`, `createPixelIcon` |
 | **An inverse band** | The black-card language somewhere on the page | `c.inverse`, and `isDark` on its controls |
 | **Real motion** | Entrance, hover and tap that actually move | `MOTION` presets |
@@ -323,8 +322,11 @@ section.
 - **Texture belongs to grounds and inverse panels.** A card repeats it only
   when it sits on a plain ground. Never stack it: a textured card on a
   textured ground is the weave twice, and that is what makes a page muddy.
-- **One rule per block.** A card carrying a section rule, a rule under its
-  title and a rule at its foot is not structured, it is striped.
+- **No dotted rules.** The dither rule is retired. Repeated under every
+  header, card foot and progress bar, the dots read as fussy and were never
+  consistent from one section to the next. A divider is a solid hairline
+  (`border-line`, or `DitherBar`, which now draws one); most blocks need none —
+  spacing separates them. `npm run check:tokens` rejects striped fills.
 - **A control's boundary is solid.** Dashed edges read as provisional. Use
   `PixelCornerMarks` for the emphasis a dashed border was reaching for.
 
@@ -335,7 +337,7 @@ open it and take the patterns that fit:
 
 | Showcase section | What it teaches |
 |---|---|
-| Hero | Layered display type, dither columns, ticker |
+| Hero | Layered display type, pixel columns, ticker |
 | Systems grid | Card composition, system identity, the black lab card |
 | Control Standards | Every control in every state, both modes |
 | **Product Patterns** | Dialog, table, notice, empty, loading, tabs, progress |
@@ -387,15 +389,15 @@ All visual flair must be pixelated.
 *   **Corners**: **Stepped corners, not rounded**, for all brand assets. Avoid `rounded-lg` on major brand cards; instead, build stepped pseudo-elements or use sharp rectangles.
 
 ### Core Textures
-*   **Dither & Checker Fills**: Use these for texture, not just decoration. They represent digital processing and raw material.
+*   **No dotted or striped fills.** Pixels live in icons, marks and the hero's columns; a line or a fill is solid.
 *   **Basket-Weave (`WEAVE`)**: Derived from Oshiwambo coil strands + stepped diamond patterns. Use the `WeaveOverlay` primitive to add depth to cards and hero sections. It comes in both `light` and `dark` variants.
 
 ### Motion & Interaction
 Motion is part of the design language, not a garnish.
 
-*   Use existing showcase patterns first: moving black system tickers, subtle dither-column motion, staggered headline entrances, card entrance motion, card hover lifts, tap feedback on buttons, and animated diagram/flow affordances.
+*   Use existing showcase patterns first: moving black system tickers, subtle pixel-column motion, staggered headline entrances, card entrance motion, card hover lifts, tap feedback on buttons, and animated diagram/flow affordances.
 *   Motion should be quiet, mechanical, and pixel-system aligned. Avoid springy, glossy, floating, or generic SaaS animation.
-*   Every card or control with an interactive affordance should have a small, clear response: hover lift/slide, dither reveal, state highlight, or tap compression.
+*   Every card or control with an interactive affordance should have a small, clear response: hover lift/slide, border or spine highlight, state highlight, or tap compression.
 *   Do not remove showcase motion from public surfaces unless a specific accessibility or layout issue requires it.
 
 ---
@@ -453,7 +455,7 @@ Import larger features through `@onganda/design-system/charts`, `/editors`, `/ai
 The implementation modules are:
 
 1.  `onganda-tokens.ts`: color constants, cultural system data, charts, publication formats, guide annotations, and TypeScript interfaces.
-2.  `onganda-primitives.tsx`: atomic Onganda UI primitives such as pixel marks, dither bars, tags, overlays, cards, buttons, logo marks, and dark-mode context.
+2.  `onganda-primitives.tsx`: atomic Onganda UI primitives such as pixel marks, hairline rules, tags, overlays, cards, buttons, logo marks, and dark-mode context.
 3.  `onganda-icons.tsx`: pixel-art interface and system icons.
 4.  `onganda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
 5.  `onganda-maps.tsx`: Leaflet-backed maps with Onganda controls, markers, routes, popups, and accessibility behavior.
@@ -499,7 +501,7 @@ The homepage should avoid repeated editorial sections. If "What we are building"
 The design system is implemented through focused modules in `src/components/onganda/`:
 1.  `onganda-design-system.ts`: Preferred import surface for new app code.
 2.  `onganda-tokens.ts`: **Do not hardcode new colors or constant data.** If you need a color or system definition, import `COLOR`, `SYSTEMS`, `SWATCHES`, or a typed data constant from this file through the barrel.
-3.  `onganda-primitives.tsx`: Base UI elements (section headers, dither strips, standard cards, overlays). When building a new page section, compose it using these primitives.
+3.  `onganda-primitives.tsx`: Base UI elements (section headers, standard cards, overlays). When building a new page section, compose it using these primitives.
 4.  `onganda-sections.tsx`: Large, composed page sections (hero, timelines, heatmaps).
 5.  `onganda-icons.tsx`: All pixel-art SVG icons.
 6.  `onganda-ai-authoring.tsx`: AI/chat authoring rail. Keep it lightweight, local/endpoint-driven, and visually constrained to the Onganda rail pattern.

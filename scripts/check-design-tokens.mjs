@@ -230,6 +230,12 @@ const RULES = [
     }
   },
   {
+    id: 'dotted-rule',
+    why: 'A striped or dotted fill. The system retired the dither rule: laid on every card foot, header and progress bar it read as noise, not texture. A divider is a solid hairline (`DitherBar` now renders one, or `border-line`); a progress fill is solid; texture belongs to grounds through `WeaveOverlay`.',
+    files: /\.(tsx|css)$/,
+    re: /repeating-linear-gradient|border(?:Top|Bottom|Left|Right)?:\s*[`'"][^`'"\n]*\bdotted\b/g
+  },
+  {
     id: 'elevation-shadow',
     why: 'A drop shadow. Onganda has no elevation: the public site renders zero blurred shadows, and depth comes from the weave texture, a hairline border and stepped pixel marks. A card lifts on hover by moving (MOTION.hoverLift), not by casting. A `0 0 0 Npx` ring is allowed — it is a border that does not reflow the layout.',
     files: /\.tsx$/,

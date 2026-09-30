@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, inkOn, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
 import { TEXTURE } from './onganda-type';
-import { Px, PixelDot, DitherBar, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './onganda-primitives';
+import { Px, PixelDot, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './onganda-primitives';
 
 // ─── Document mockup — pixel-art A4 page preview ──────────────────────────────
 const DocumentMockup = ({
@@ -110,24 +110,6 @@ const DocumentMockup = ({
       background: COLOR.charBlack,
       opacity: 0.18,
       marginBottom: 3
-    }} />)}
-    </div>
-    {/* Bottom DitherBar hint */}
-    <div style={{
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 4,
-    display: 'flex',
-    opacity: hovered ? 0.9 : 0.4,
-    transition: 'opacity 0.25s'
-  }}>
-      {Array.from({
-      length: 20
-    }, (_, k) => <div key={`dm-${k}`} style={{
-      flex: 1,
-      background: k % 2 === 0 ? hex : 'transparent'
     }} />)}
     </div>
   </div>;
@@ -237,24 +219,6 @@ const PresentationMockup = ({
         }} />)}
         </div>
       </div>
-    </div>
-    {/* Bottom strip */}
-    <div style={{
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    display: 'flex',
-    opacity: hovered ? 1 : 0.45,
-    transition: 'opacity 0.25s'
-  }}>
-      {Array.from({
-      length: 24
-    }, (_, k) => <div key={`pm-${k}`} style={{
-      flex: 1,
-      background: k % 2 === 0 ? hex : 'transparent'
-    }} />)}
     </div>
   </div>;
 
@@ -520,7 +484,6 @@ const PublicationCard = ({
         </p>
       </div>
 
-      <DitherBar color={fmt.hex} segments={28} height={3} opacity={0.65} className={`absolute bottom-0 left-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`} />
     </motion.article>;
 };
 

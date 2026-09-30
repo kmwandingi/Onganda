@@ -931,7 +931,6 @@ const TerminalBlock = ({
             <span>{line.text || '\u00A0'}</span>
           </div>)}
       </div>
-      <DitherBar color={terminal.tagHex} segments={32} height={3} opacity={0.55} />
     </div>;
 };
 
@@ -1039,8 +1038,7 @@ const TimelineBlock = ({
         <div style={{
         height: '100%',
         width: `${phase.progress}%`,
-        background: phase.hex,
-        backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(30,26,23,0.12) 3px, rgba(30,26,23,0.12) 4px)'
+        background: phase.hex
       }} />
       </div>
       <div style={{
@@ -2649,7 +2647,6 @@ const LetterheadBlock = ({
 
   return <div>
     <div style={{ height: 3, background: COLOR.ochreOrange, width: '100%' }} />
-    <DitherBar color={COLOR.ochreOrange} segments={48} height={2} opacity={0.25} />
     <div style={{
       display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
       padding: '28px 56px 24px', borderBottom: `1px solid ${border}`, gap: 20
@@ -3618,7 +3615,6 @@ const DocExportModal = ({
               }}>{row.value}</span>
                   </div>)}
               </div>
-              <DitherBar color={formatColor} segments={18} height={2} opacity={0.25} />
               <button onClick={handleExport} style={{
             width: '100%',
             padding: '12px',
@@ -3748,7 +3744,6 @@ const DocExportModal = ({
               lineHeight: 1.6
             }}>{format === 'PDF' ? 'Use Save as PDF in the print dialog.' : 'Your Word-compatible document has downloaded.'}</p>
               </div>
-              <DitherBar color={COLOR.mahanguGold} segments={14} height={3} opacity={0.55} />
               <div style={{
             display: 'flex',
             gap: 10,
@@ -3779,7 +3774,6 @@ const DocExportModal = ({
               </div>
             </div>}
         </div>
-        <DitherBar color={formatColor} segments={55} height={2} opacity={0.25} />
       </motion.div>
     </div>;
 };
@@ -4148,7 +4142,6 @@ const DocLetterhead = ({
       background: COLOR.ochreOrange,
       width: '100%'
     }} />
-      <DitherBar color={COLOR.ochreOrange} segments={48} height={2} opacity={0.25} />
       <div style={{
       display: 'flex',
       alignItems: 'flex-start',
@@ -4469,7 +4462,6 @@ const TemplatePicker = ({
               </div>
             </button>)}
         </div>
-        <DitherBar color={COLOR.ochreOrange} segments={30} height={2} opacity={0.25} />
       </div>
     </div>;
 };
@@ -5116,7 +5108,6 @@ export const DocumentEditor = ({
               <div style={{
               padding: '16px 56px 36px'
             }}>
-                <DitherBar color={COLOR.ochreOrange} segments={48} height={2} opacity={0.25} />
                 <div style={{
                 display: 'flex',
                 alignItems: 'center',

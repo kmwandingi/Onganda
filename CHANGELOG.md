@@ -5,6 +5,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Removed — the dotted rule
+
+The dither rule — runs of alternating segments under headers, at card feet,
+beside prose, across progress bars and skeletons — is retired. Repeated
+everywhere it read as fussy, and it was never consistent from one section to
+the next.
+
+- **`DitherBar`** draws a 1px solid hairline. `segments` and `height` are
+  accepted and ignored, so pinned products lose the dots without an edit.
+- **`DitherStrip`** renders nothing and is deprecated.
+- **`PixelPanel`** no longer adds a rule under the spine recipe; `rule` is
+  opt-in. Dialog, empty state and the inverse panel drop theirs.
+- **`PixelProgress`** and **`PixelSkeleton`** fill solid; the skeleton still
+  sweeps, and stops for reduced motion.
+- Decorative rules and striped fills removed from the showcase, site, charts,
+  publications, roadmap, and both editors. A user-inserted divider block stays,
+  as a hairline.
+- **`dotted-rule`** in `check:tokens` rejects `repeating-linear-gradient` and
+  dotted borders; `composition.spec.ts` now treats dotted runs as a ceiling of
+  zero instead of a required ingredient.
+
 ### Added — semantic tokens as CSS, and the Tailwind theme
 
 The only CSS variables the package shipped were the thirteen raw pigments.

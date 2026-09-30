@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
 import { COLOR } from './onganda-colors';
 import { CHART_SERIES, onColor } from './onganda-roles';
-import { SectionHeader, DitherBar, PixelTag, PixelDot } from './onganda-primitives';
+import { SectionHeader, PixelTag, PixelDot } from './onganda-primitives';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
 const C = {
@@ -540,7 +540,6 @@ const ChartCard = ({
       {children}
     </div>
     <ChartLegend items={legend} />
-    <DitherBar color={C.p[CHART_CATEGORIES.indexOf(category) % C.p.length]} segments={24} height={2} opacity={0.42} className="mt-3" />
   </motion.div>;
 
 // ─── Individual chart definitions ─────────────────────────────────────────────

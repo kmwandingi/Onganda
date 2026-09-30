@@ -156,7 +156,7 @@
   --onganda-texture-inverse: 0.055;
   --onganda-texture-none: 0;
 
-  /* ── Rules: one per block ───────────────────────────────────── */
+  /* ── Rules: solid hairlines; most blocks need none ─────────── */
   --onganda-rule-faint-height: 2px;
   --onganda-rule-faint-opacity: 0.25;
   --onganda-rule-section-height: 4px;

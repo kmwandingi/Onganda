@@ -604,8 +604,8 @@ the others get `role="status"`.
 ```
 
 Traps focus, closes on Escape or scrim click, restores focus to the trigger,
-locks body scroll, and carries `PixelCornerMarks` and a `DitherBar` so the
-modal is Onganda rather than generic chrome.
+locks body scroll, and carries `PixelCornerMarks` so the modal is Onganda
+rather than generic chrome.
 
 ### PixelTable
 
@@ -648,8 +648,8 @@ marks in the card's accent, a 12px eyebrow, an 18px semibold title, 14px body.
 Padding follows density: 24 on a page, 16 in a side panel.
 
 **It does not stack its marks.** The site never does. Its feature card has
-corner marks and no spine and no dither rule; its system card has a 3px spine
-and a bottom dither rule and no corner marks. Pass `spine` to get the second
+corner marks and no spine; its system card has a 3px spine and no corner
+marks. Pass `spine` to get the second
 recipe — you get one or the other, never both. An earlier version of this
 component did all three at once, and cards built from it read as busy and
 over-ruled beside the site they were meant to match.
@@ -698,7 +698,7 @@ buttons for very narrow surfaces.
 />
 ```
 
-A dashed boundary, the weave texture, and a dither rule — the empty state is a
+A solid edge with corner marks and the weave texture — the empty state is a
 designed surface, not a blank panel.
 
 ### PixelSkeleton
@@ -707,8 +707,8 @@ designed surface, not a blank panel.
 <PixelSkeleton lines={4} />
 ```
 
-Loading as a stepped dither sweep, not a soft gradient shimmer, so the waiting
-state stays inside the pixel language. Carries `role="status"`.
+Solid bars with a slow sweep that stops for reduced motion — the waiting state
+breathes without a gradient shimmer. Carries `role="status"`.
 
 ### PixelTabs
 
@@ -730,7 +730,7 @@ active. Proper `role="tablist"` and `aria-selected`.
 <PixelProgress label="Fine-tuning" value={78} status="active" />
 ```
 
-A dithered fill over a recessed well, with the percentage as tabular figures
+A solid fill over a recessed well, with the percentage as tabular figures
 beside the label. Full `role="progressbar"` semantics. The status hue picks the
 fill through `statusFor`.
 
@@ -751,13 +751,13 @@ to drift.
 | Component | What it is | Rule |
 |---|---|---|
 | `PixelTicker` | The full-bleed black marquee of system names | The only place all five system colours appear together; it reads as a legend for the page below it |
-| `PixelEditorialSection` | Label, headline, dither column, prose column | The empty left column is the composition. Collapsing it to full-width prose is what makes a page look like documentation |
+| `PixelEditorialSection` | Label, headline, empty column, prose column | The empty left column is the composition. Collapsing it to full-width prose is what makes a page look like documentation |
 | `PixelFocusRow` | Ordinal, icon, title, line, in a row | For a list that should read as a sequence rather than a grid |
 | `PixelLabCard` | The inverted cell that closes a grid | One per grid, in the last cell. It is the grid's full stop |
 | `PixelContactPanel` | The closing inquiry surface | Deliberately the largest surface on the page. A page that ends in a thin footer link reads as unfinished |
 | `PixelStatBand` | The strip of measured numbers under a hero | Cells divided by a hairline, never by a gap — a gap reads as four cards, and this is one object |
 | `PixelEdgeStrips` | Drifting palette columns beside a hero | 16–27s a cycle, so it reads as texture rather than motion |
-| `SystemCard` | The five-system card | Icon tile, numbered tag, 24px name, English reading, role eyebrow, line — closed by a 3px spine and a bottom dither rule |
+| `SystemCard` | The five-system card | Icon tile, numbered tag, 24px name, English reading, role eyebrow, line — carried by a 3px spine |
 
 ### No elevation, anywhere
 
@@ -901,33 +901,20 @@ Use in bullet lists, stat rows, section accents.
 
 ---
 
-### DitherBar — horizontal alternating-pixel divider
+### DitherBar — a solid hairline divider
 
 ```tsx
-import { DitherBar, COLOR } from '@onganda/design-system';
+import { DitherBar, roles } from '@onganda/design-system';
 
-<DitherBar
-  color={COLOR.ochreOrange}
-  segments={48}
-  height={3}
-  opacity={0.35}
-/>
+<DitherBar color={roles(isDark).line} opacity={1} />
 ```
 
-Props: `color`, `segments` (default `24`), `height` (default `4`), `opacity` (default `0.55`).
-Standard usage: `segments={48}` `height={3}` `opacity={0.35}`.
+Props: `color`, `opacity` (default `0.55`), `className`. It used to draw
+alternating segments; the dotted rule is retired, and `segments` and `height`
+are accepted and ignored so existing calls keep compiling. Most blocks need no
+divider at all — spacing separates them.
 
----
-
-### DitherStrip — SVG micro-dither accent
-
-```tsx
-import { DitherStrip, COLOR } from '@onganda/design-system';
-
-<DitherStrip color={COLOR.ochreOrange} opacity={0.18} />
-```
-
-Used inside `SectionHeader`. Renders a 3-row stepped dither pattern as a 64×64 SVG.
+`DitherStrip` is retired the same way and renders nothing. Remove the call.
 
 ---
 
@@ -1064,7 +1051,7 @@ import { OngandaFooter } from '@onganda/design-system';
 <OngandaFooter />
 ```
 
-Full dark footer with system links, pixel dither strips, and the Onganda logo mark.
+Full dark footer with system links, pixel marks, and the Onganda logo mark.
 
 ---
 
@@ -1249,7 +1236,7 @@ import { OngandaHero } from '@onganda/design-system/sites';
 <OngandaHero />
 ```
 
-Full-width hero with animated dither columns, headline at `--type-hero` scale,
+Full-width hero with animated pixel columns, headline at `--type-hero` scale,
 system ticker strip, and CTA buttons.
 
 ---
@@ -1425,7 +1412,7 @@ import { DocBlockDisplay, BlockRenderer } from '@onganda/design-system/editors';
 <BlockRenderer block={myBlock} context="document" isDark={false} idx={0} />
 ```
 
-`BlockRenderer` handles: `divider` → `DitherBar`, `signature` → logo + text,
+`BlockRenderer` handles: `divider` → a hairline `DitherBar`, `signature` → logo + text,
 `heading` → accented h2, `body` → Georgia paragraph, `pullquote` → bordered italic,
 `callout` → firedRed alert box, `list` → pixel-dot list.
 Design blocks show a labelled placeholder.
@@ -1739,6 +1726,7 @@ guards over every design-system module and fails the build.
 | `system-colour-as-chrome` | A system hue bound to a `background` or `border*` property |
 | `raw-status-colour` | `STATUS.settled` read directly instead of `statusFor(name, isDark)` |
 | `off-scale-texture` | A weave or dither opacity outside `TEXTURE` / `RULE`. Both were chosen per call site — ten weave opacities, thirteen dither opacities — so the same object read as a different weight in every section |
+| `dotted-rule` | A `repeating-linear-gradient` or a dotted border. The dither rule is retired: laid on every card foot, header and progress bar it read as noise. A divider is a solid hairline |
 | `off-ramp-ink` | An ink or paper opacity that is not a step on the `ALPHA` ramp, on a `color`, `border*` or `outline*` property. `off-palette-rgba` passes these because char black **is** a palette colour, so only the alpha is invented. Scoped to text and lines: a background wash and a modal scrim are surfaces, and the ramp says nothing about them |
 | `rounded-geometry` | `rounded-lg`, `borderRadius` with a non-zero value |
 

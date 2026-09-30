@@ -15,8 +15,8 @@ simplify, or substitute unless the user explicitly asks.
 Two rules that override everything else:
 
 - **Pixel by default**: icons, diagrams, textures, brand marks, corner accents,
-  dividers, and decorative elements are pixel-art (SVG rects on integer grid,
-  alternating dither strips, basket-weave overlays).
+  and decorative elements are pixel-art (SVG rects on integer grid,
+  basket-weave overlays). Dividers are solid hairlines — no dotted rules.
 - **Non-pixel by default**: all body copy, headings, labels, and reading
   interfaces use clean Inter/Arial. Never use pixel fonts for text.
 
@@ -102,27 +102,17 @@ const IconVessel = ({ size = 48 }: { size?: number }) => (
 
 ---
 
-## Dither bar (horizontal pixel divider)
-
-Alternating filled/empty segments. Always use `aria-hidden="true"`.
+## DitherBar — a solid hairline divider
 
 ```tsx
-const DitherBar = ({
-  color, segments = 24, height = 4, opacity = 0.55
-}: { color: string; segments?: number; height?: number; opacity?: number }) => (
-  <div aria-hidden="true" style={{ display:'flex', height }}>
-    {Array.from({ length: segments }, (_, k) => (
-      <div key={k} style={{
-        flex: 1, height: '100%',
-        background: k % 2 === 0 ? color : 'transparent',
-        opacity
-      }} />
-    ))}
-  </div>
+// A solid hairline. The dotted, alternating-segment rule is retired — repeated
+// under every block it read as noise. Most blocks need no divider at all.
+const DitherBar = ({ color, opacity = 0.55 }) => (
+  <div aria-hidden="true" style={{ height: 1, background: color, opacity }} />
 );
 ```
 
-Standard: `<DitherBar color={COLOR.ochreOrange} segments={48} height={3} opacity={0.35} />`
+Standard: `<DitherBar color={line} opacity={1} />`, and only where spacing alone does not separate two blocks.
 
 ---
 

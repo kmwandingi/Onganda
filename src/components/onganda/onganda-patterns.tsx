@@ -176,7 +176,6 @@ export const PixelDialog = ({
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>{eyebrow}</p>
               )}
               <h2 className="text-lg font-semibold tracking-tight" style={{ color: c.text }}>{title}</h2>
-              <DitherBar color={c.accentInk} segments={40} height={3} opacity={0.42} />
             </div>
             {children && (
               <div className="relative text-sm leading-relaxed" style={{ color: c.textBody, padding: '16px 28px 0' }}>{children}</div>
@@ -297,7 +296,6 @@ export const PixelEmptyState = ({
       <PixelCornerMarks hex={c.accentInk} size={7} />
       <div className="relative mx-auto flex max-w-sm flex-col items-center">
         {icon && <div className="mb-5" aria-hidden="true">{icon}</div>}
-        <DitherBar color={c.accentInk} segments={RULE.edge.segments} height={RULE.edge.height} opacity={RULE.edge.opacity} />
         <p className="mt-5 text-base font-semibold" style={{ color: c.text }}>{title}</p>
         {body && <p className="mt-2 text-sm leading-relaxed" style={{ color: c.textMuted }}>{body}</p>}
         {action && <div className="mt-7">{action}</div>}
@@ -330,15 +328,14 @@ export const PixelSkeleton = ({
             overflow: 'hidden',
             height: 10,
             width: i === lines - 1 ? '60%' : '100%',
-            // A stepped dither, not a gradient shimmer: the loading state stays
-            // inside the pixel language.
-            backgroundImage: `repeating-linear-gradient(90deg, ${c.lineStrong} 0 4px, transparent 4px 8px)`
+            // A solid block, not a gradient shimmer and not the retired dither.
+            background: c.lineStrong
           }}
         >
           {/* A travelling sweep, not a whole-row pulse. Fading the entire bar
               in and out is easy to read as a static block — it was reported as
-              one — because nothing in it moves. A highlight crossing the
-              dither says the work is progressing, not merely pending. */}
+              one — because nothing in it moves. A highlight crossing the bar
+              says the work is progressing, not merely pending. */}
           {moving && (
             <motion.div
               animate={{ x: ['-40%', '140%'] }}
@@ -347,8 +344,8 @@ export const PixelSkeleton = ({
                 position: 'absolute',
                 inset: 0,
                 width: '40%',
-                backgroundImage: `repeating-linear-gradient(90deg, ${c.text} 0 4px, transparent 4px 8px)`,
-                opacity: 0.45
+                background: c.surface,
+                opacity: 0.7
               }}
             />
           )}
@@ -461,8 +458,9 @@ export const PixelProgress = ({
           transition={{ duration: 0.6, ease: 'easeOut' }}
           style={{
             height: '100%',
-            backgroundColor: hue,
-            backgroundImage: `repeating-linear-gradient(90deg, rgba(30,26,23,0.18) 0 2px, transparent 2px 6px)`
+            // A solid fill. The stripes were the same dotted effect as the
+            // rules, and were retired with them.
+            backgroundColor: hue
           }}
         />
       </div>
@@ -555,7 +553,9 @@ export const PixelPanel = ({
   const hue = accent ?? c.accentInk;
   // The foot rule follows the spine unless the caller says otherwise.
   const quiet = emphasis === 'quiet';
-  const showRule = rule ?? (spine && !quiet);
+  // The foot rule is opt-in. It used to follow the spine by default, which
+  // put a rule at the foot of every identity card.
+  const showRule = rule ?? false;
   // Quiet cards carry no weave unless asked; feature cards default to the
   // surface step.
   const weave = TEXTURE[texture ?? (quiet ? 'none' : 'surface')];
@@ -703,9 +703,6 @@ export const PixelInversePanel = ({
             {children}
           </div>
         )}
-        <div style={{ marginTop: SPACE_SCALE['10'] }}>
-          <DitherBar color={rule} segments={RULE.inverse.segments} height={RULE.inverse.height} opacity={RULE.inverse.opacity} />
-        </div>
       </div>
     </section>
   );
