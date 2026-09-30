@@ -54,8 +54,13 @@ import '@onganda/design-system/style.css';
 
 This gives you the CSS custom properties and the layout rules used by packaged
 components:
+- every colour role, in both modes — `--onganda-surface`, `--onganda-text-muted`,
+  `--onganda-line`, `--onganda-action-bg` … (from `tokens.css`; **use these**)
+- the type scale, space, texture, rules and geometry — `--onganda-type-eyebrow-size`,
+  `--onganda-space-4`, `--onganda-texture-surface`, `--onganda-radius`
 - `--type-hero`, `--type-hero-public`, `--type-hero-gap`, `--type-subhead`
-- `--onganda-ochre-orange`, `--onganda-char-black`, etc. (full palette as CSS vars)
+- `--onganda-ochre-orange`, `--onganda-char-black`, etc. — the raw pigments,
+  for a system's identity only. A surface, label, line or control reads its role.
 
 ### 2. Add to your Tailwind content path only when extending components
 

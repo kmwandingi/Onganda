@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+/* Every role, type step, space, texture and rule as a CSS variable. */
+@import './tokens.css';
 /*
  * Onganda Design System — CSS Tokens
  *

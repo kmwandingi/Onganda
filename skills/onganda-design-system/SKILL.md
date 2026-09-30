@@ -56,20 +56,55 @@ source you read on GitHub.
 `reference/` holds every primitive and pattern as the showcase renders it;
 `reference/INDEX.md` says what each shows and which exports it demonstrates.
 
-Open them first, and open them again when your surface is built. Put your
-screenshot beside the closest reference and name the difference. The written
-rules are prohibitions — a surface can satisfy all of them and still be flat,
-and that is the failure this repo sees most often in real products.
+**Copy the right kind of reference.** Building a tool, a dashboard or an app
+screen: copy `product-surface.png`. Building a public page: copy the `site-*`
+shots. Almost every other screenshot is editorial, and transplanting editorial
+devices onto a tool is the single most common way a product comes out as a
+cheap imitation — correct parts, wrong register.
 
-Four causes account for nearly all of it:
+Open the reference first, and again when your surface is built. Put your
+screenshot beside it and name the difference.
 
-- **One accent everywhere.** Components default to the accent ink, so a
-  product that never passes `accent` is one colour. Use `accentFor(i)` for
-  anything enumerable.
+### What separates a product surface from a cheap imitation
+
+Measured on real products that followed every rule and still looked cheap.
+It was never a missing component. It was decoration spread evenly:
+
+- **Colour spent on things that carry no meaning.** A row of seven metadata
+  tags in five colours is confetti. Colour in this system means identity (a
+  system, a peer in a list) or state (`statusFor`). A metadata tag omits `hex`
+  and renders neutral. `accentFor(i)` is for **peer cards in a list** — never
+  for tags, labels, chrome or metadata.
+- **Every surface at feature weight.** Six cards each with weave and corner
+  marks reads as noise. One or two surfaces per screen are `feature` — the
+  thing the user came to work on. Everything they work *in* — inspectors,
+  export bars, transcripts, sidebars — is `<PixelPanel emphasis="quiet">`.
+- **Editorial devices on a tool.** The ticker, stat band, edge strips,
+  inverse hero panel and display-size type belong to public pages. A ticker
+  used as the footer of an app is the clearest sign of a copy.
+- **Notices used as content.** `PixelNotice` is for an exception. Three
+  stacked notices as the body of a screen reads as a wall of warnings; state
+  the condition once, and put the real content where the notices were.
 - **Texture on everything.** Weave belongs to grounds and inverse panels.
-  Never put it on a card that already sits on a textured ground.
-- **A rule under every element.** One per block.
 - **A dead control that shouts.** Disabled takes the disabled roles.
+
+## Style with tokens, not the palette
+
+`@onganda/design-system/tokens.css` (imported by `style.css`) holds every
+colour role, type step, space, texture, rule and geometry value as a CSS
+variable, light and dark. Open it: it is the entire vocabulary in one file,
+which is what makes a token file work for a tool like Figma.
+
+- In CSS: `color: var(--onganda-text-muted); border: 1px solid var(--onganda-line);`
+- In Tailwind 4: `@import '@onganda/design-system/tailwind.css';` then
+  `bg-surface text-text-muted border-line`. Tailwind's own colour palette is
+  reset, so `bg-blue-500` does not compile.
+- Dark mode follows `<DarkProvider>`, which marks `<html data-onganda-theme>`.
+
+**Read a role, not a pigment.** `--onganda-mopane-brown` exists for a system's
+identity. A surface, a label, a line or a control reads its role. The pigments
+were the only CSS variables the package used to ship, which is exactly how
+"use the design tokens" kept turning into "use every colour".
 
 ## When a component does not fit
 

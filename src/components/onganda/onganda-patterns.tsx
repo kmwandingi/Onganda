@@ -505,7 +505,8 @@ export const PixelPanel = ({
   accent,
   spine = false,
   rule,
-  texture = 'surface',
+  texture,
+  emphasis = 'feature',
   children,
   footer,
   isDark = false,
@@ -531,6 +532,16 @@ export const PixelPanel = ({
    *  ground that is already textured — stacking the weave is what makes a
    *  page muddy. */
   texture?: 'surface' | 'none' | 'inverse';
+  /** how loudly the card speaks. `feature` is the decorated card — corner
+   *  marks, weave — and a screen carries one or two of them. `quiet` is
+   *  surface and hairline only, for working chrome: inspectors, transcripts,
+   *  export bars, anything a user works IN rather than reads.
+   *
+   *  Every card at feature weight is the most common way a product ends up
+   *  looking like a cheap copy of the showcase: the decoration is right, and
+   *  spread evenly it reads as noise. The showcase's own Product Patterns sit
+   *  on ONE stage for that reason. */
+  emphasis?: 'feature' | 'quiet';
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -543,11 +554,15 @@ export const PixelPanel = ({
   const d = useDensity();
   const hue = accent ?? c.accentInk;
   // The foot rule follows the spine unless the caller says otherwise.
-  const showRule = rule ?? spine;
+  const quiet = emphasis === 'quiet';
+  const showRule = rule ?? (spine && !quiet);
+  // Quiet cards carry no weave unless asked; feature cards default to the
+  // surface step.
+  const weave = TEXTURE[texture ?? (quiet ? 'none' : 'surface')];
   const pad = d.stackGap > 12 ? 24 : 16;
   return (
     <section
-      data-onganda-panel={spine ? 'spine' : 'corners'}
+      data-onganda-panel={emphasis === 'quiet' ? 'quiet' : spine ? 'spine' : 'corners'}
       {...rest}
       className={`relative overflow-hidden ${className}`}
       style={{
@@ -556,8 +571,8 @@ export const PixelPanel = ({
         ...(spine ? { borderLeft: `3px solid ${hue}` } : {})
       }}
     >
-      <WeaveOverlay isDark={isDark} opacity={TEXTURE[texture]} />
-      {!spine && <PixelCornerMarks hex={hue} size={7} />}
+      {weave > 0 && <WeaveOverlay isDark={isDark} opacity={weave} />}
+      {!spine && !quiet && <PixelCornerMarks hex={hue} size={7} />}
       <div className="relative" style={{ padding: pad }}>
         {eyebrow && (
           <p

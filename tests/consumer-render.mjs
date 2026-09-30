@@ -43,6 +43,9 @@ function App() {
         <PixelButton variant="primary">Primary</PixelButton>
         <PixelButton variant="danger">Delete</PixelButton>
         <div id="stat"><StatCard stat={{ value: '5', label: 'Active systems', sub: 'in architecture', hex: COLOR.ochreOrange }} /></div>
+        <p id="css-var" style={{ color: 'var(--onganda-text-muted)' }}>styled from tokens.css</p>
+        <div id="tw-surface" className="bg-surface">Tailwind role utility</div>
+        <div id="tw-blue" className="bg-blue-500">a hue the system does not have</div>
       </main>
     </DarkProvider>
   );
@@ -93,6 +96,9 @@ try {
     { name: 'configured', source: WITH_SOURCE, tailwind: true, expectStyled: true },
     { name: 'misconfigured', source: '', tailwind: true, expectStyled: true },
     { name: 'no-tailwind', source: '', tailwind: false, expectStyled: true },
+    // The semantic tokens as Tailwind utilities. `bg-surface` must resolve to
+    // the role and `bg-blue-500` must not exist at all.
+    { name: 'tailwind-theme', source: `@import '@onganda/design-system/tailwind.css';`, tailwind: true, expectStyled: true, theme: true },
   ];
 
   browser = await chromium.launch();
@@ -103,7 +109,7 @@ try {
   const root = await buildApp('app', cases[0].source);
   await run('npm', ['install', '--no-package-lock', '--no-audit', '--no-fund', '--prefer-offline', ...deps], { cwd: root, maxBuffer: 1 << 26 });
 
-  for (const { name, source, tailwind, expectStyled } of cases) {
+  for (const { name, source, tailwind, expectStyled, theme } of cases) {
     await writeFile(
       path.join(root, 'app.css'),
       tailwind ? `@import 'tailwindcss';\n${source}\n` : '/* package CSS only */\n',
@@ -172,6 +178,11 @@ try {
         utilityEmitted,
         eyebrowTracking: s ? s.letterSpacing : null,
         labelFound: !!label,
+        rootMuted: getComputedStyle(document.documentElement).getPropertyValue('--onganda-text-muted').trim(),
+        rootSurface: getComputedStyle(document.documentElement).getPropertyValue('--onganda-surface').trim(),
+        cssVarColor: getComputedStyle(document.getElementById('css-var')).color,
+        twSurfaceBg: getComputedStyle(document.getElementById('tw-surface')).backgroundColor,
+        twBlueBg: getComputedStyle(document.getElementById('tw-blue')).backgroundColor,
       };
     });
     await page.close();
@@ -192,6 +203,24 @@ try {
       throw new Error(`${name}: a control rendered with a ${probe.primaryRadius} corner radius in a consumer app.`);
     }
 
+    // The semantic tokens reach every consumer through style.css.
+    // Compare numbers, not strings: a consumer's minifier writes 0.66 as .66.
+    const nums = v => (v.match(/[\d.]+/g) || []).map(Number).join(',');
+    if (nums(probe.rootMuted) !== '30,26,23,0.66') {
+      throw new Error(`${name}: --onganda-text-muted is "${probe.rootMuted}" on :root; tokens.css did not reach the consumer.`);
+    }
+    if (probe.cssVarColor !== 'rgba(30, 26, 23, 0.66)') {
+      throw new Error(`${name}: an element styled with var(--onganda-text-muted) computed to ${probe.cssVarColor}.`);
+    }
+    if (theme) {
+      if (probe.twSurfaceBg !== 'rgb(243, 232, 195)') {
+        throw new Error(`${name}: bg-surface computed to ${probe.twSurfaceBg}; the Tailwind theme did not map the role.`);
+      }
+      if (probe.twBlueBg !== 'rgba(0, 0, 0, 0)') {
+        throw new Error(`${name}: bg-blue-500 computed to ${probe.twBlueBg}; the theme should reset Tailwind's palette so it does not compile.`);
+      }
+    }
+
     // Computed style is the contract: it is what the consumer sees.
     const styled = probe.eyebrowTransform === 'uppercase';
     if (styled !== expectStyled) {
@@ -207,6 +236,7 @@ try {
     console.log(`  ${name.padEnd(13)} → eyebrow ${probe.eyebrowTransform}, tracking ${probe.eyebrowTracking}, primary ${probe.primaryBg}`);
   }
   console.log('  Packaged components retain layout with configured, unconfigured, or absent Tailwind.');
+  console.log(`  tokens.css reaches every case; with the theme, bg-surface = ${results['tailwind-theme'].probe.twSurfaceBg} and bg-blue-500 = ${results['tailwind-theme'].probe.twBlueBg}.`);
 } finally {
   if (browser) await browser.close();
   await rm(testRoot, { recursive: true, force: true });

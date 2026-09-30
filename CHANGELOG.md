@@ -5,6 +5,57 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — semantic tokens as CSS, and the Tailwind theme
+
+The only CSS variables the package shipped were the thirteen raw pigments.
+None of the 42 colour roles, and none of the type, space, texture, rule or
+geometry scales, were reachable from CSS. So an agent styling in CSS or
+Tailwind could reach `--onganda-mahangu-gold` but not `--onganda-text-muted`:
+"use the design tokens" meant "use the palette", which is exactly what
+produces colour everywhere. A token file works in Figma because the tokens
+are semantic; the package now ships that file.
+
+- **`tokens.css`** — every role in both modes, status, peer accents, the type
+  scale, space, texture, rules and geometry. Generated from the real
+  `roles()` and scales, committed so an agent can read the whole vocabulary
+  in one file, and imported by `style.css`. `check:token-css` fails if stale.
+- **`tailwind.css`** — a Tailwind 4 `@theme` mapping, so `bg-surface
+  text-text-muted border-line` are the easy utilities. Tailwind's own palette
+  is reset: `bg-blue-500` does not compile.
+- **`DarkProvider` marks `<html data-onganda-theme>`**, so CSS tokens follow
+  the same toggle the components read.
+- The consumer test builds four real apps and asserts the tokens reach each,
+  that `bg-surface` resolves, and that `bg-blue-500` produces nothing. Verified
+  to fail when the token import is removed.
+
+### Added — a product surface, and the weights to build one
+
+Every reference was editorial: a hero, a ticker, a stat band, feature cards.
+Told to match the showcase, an agent building a tool transplanted those
+devices onto a working screen and came out as a cheap imitation — correct
+parts, wrong register. Measured on a real product: seven metadata tags in
+five colours, six surfaces all at feature weight, a ticker as the footer.
+
+- **`ProductSurface`** on `/showcase`, captured as
+  `reference/product-surface.png`: an app screen with quiet chrome, one feature
+  surface, neutral metadata, colour only for identity and state.
+- **`<PixelPanel emphasis="quiet">`** — surface and hairline only, for
+  working chrome. A screen carries one or two feature surfaces.
+- **`PixelTag` without `hex` is neutral** — outlined in ink, for metadata.
+
+### Fixed — guidance that caused the confetti
+
+`CLAUDE.md` rule 20 required every surface to carry weave, marks, rules and an
+inverse band. That is an editorial checklist, and applied to a tool it
+produced decoration spread evenly. It is scoped to editorial surfaces now, with
+the product register stated beside it.
+
+The previous pass also said "distribute colour" with `accentFor(i)`, and a
+product applied it to metadata chips. `accentFor` is for peer cards in a list
+only; colour means identity or state. Corrected in `CLAUDE.md`, `AGENTS.md`,
+`SKILL.md`, `DESIGN_GUIDELINES.md` and the reference index.
+
+
 ### Changed — the system bends where products were forced to hack it
 
 From a consumer's report of what it could not do without reaching into

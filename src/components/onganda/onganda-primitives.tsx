@@ -4,7 +4,7 @@
 // node card, field app card, annotation panel, and dark-mode context.
 // Import from this file in any Onganda project.
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MOTION } from './onganda-motion';
 import { TYPE, TEXTURE } from './onganda-type';
@@ -60,6 +60,13 @@ export const DarkProvider = ({
     } catch { /* storage unavailable (SSR, private mode) */ }
     return next;
   }), [storageKey]);
+  // Mark the document so the CSS tokens (tokens.css) follow the same toggle
+  // the components read. Without it, anything styled with
+  // var(--onganda-surface) stayed light while the React tree went dark.
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.documentElement.setAttribute('data-onganda-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
   return <DarkContext.Provider value={{
     isDark,
     toggle
@@ -157,7 +164,14 @@ export const PixelTag = ({
   className = '',
   ...rest
 }: {
-  hex: string;
+  /** the tag's identity or status colour. OMIT IT for metadata.
+   *
+   *  Colour in a tag means something: which system, which state, which
+   *  ordinal. A row of metadata chips — "4 assets", "2.2 MB", "0:06" — is
+   *  not identity, and giving each one a hue turns the row into confetti
+   *  that a reader tries and fails to decode. Without `hex` the tag is
+   *  neutral: outlined in ink, which is how metadata should read. */
+  hex?: string;
   label: string;
   isDark?: boolean;
   className?: string;
@@ -171,12 +185,16 @@ export const PixelTag = ({
   // `transparent` is a valid request for the outlined form.
   // Resolved before the branch: a hook inside the ternary runs conditionally.
   const c = roles(useIsDark(isDark));
-  const parsable = /^#[0-9a-fA-F]{6}$/.test(hex);
-  const fg = parsable ? onColor(hex) : COLOR.charBlack;
-  const filled = parsable && contrast(fg, hex) >= 4.5;
-  return <div {...rest} className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] ${className}`} style={filled
-    ? { background: hex, color: fg }
-    : { background: 'transparent', border: `1px solid ${parsable ? hex : 'currentColor'}`, color: c.text }}>
+  const neutral = hex === undefined;
+  const parsable = !neutral && /^#[0-9a-fA-F]{6}$/.test(hex);
+  const fg = parsable ? onColor(hex!) : COLOR.charBlack;
+  const filled = parsable && contrast(fg, hex!) >= 4.5;
+  const style: React.CSSProperties = neutral
+    ? { background: 'transparent', border: `1px solid ${c.lineStrong}`, color: c.textMuted }
+    : filled
+      ? { background: hex, color: fg }
+      : { background: 'transparent', border: `1px solid ${parsable ? hex : 'currentColor'}`, color: c.text };
+  return <div {...rest} data-onganda-tag={neutral ? 'neutral' : 'identity'} className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] ${className}`} style={style}>
     {label}
   </div>;
 };

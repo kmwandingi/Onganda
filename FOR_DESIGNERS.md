@@ -15,6 +15,19 @@ system, not to work around it.** See [Asking for something new](#asking-for-some
 
 ---
 
+## Hand the tokens to a design tool
+
+Two files, the same values:
+
+- **`tokens/onganda.tokens.json`** — W3C Design Tokens, for Tokens Studio,
+  Style Dictionary and Figma. Load it as below.
+- **`src/design-system/tokens.css`** (shipped as
+  `@onganda/design-system/tokens.css`) — the same roles and scales as CSS
+  variables, in both modes. This is the file to give an AI design or coding
+  tool: it is the entire vocabulary, and it is *semantic* — `surface`,
+  `text-muted`, `line` — rather than a list of pigments. Handing over the
+  pigments alone is how "use the design system" turns into "use every colour".
+
 ## Load the tokens into Figma
 
 1. Install the **Tokens Studio for Figma** plugin.

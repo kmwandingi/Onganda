@@ -44,6 +44,24 @@ Import the design tokens once in the project entry:
 import '@onganda/design-system/style.css';
 ```
 
+That stylesheet carries `tokens.css`: every colour role, type step, space,
+texture, rule and geometry value as a CSS variable, in both modes. Style with
+the **roles**, not the pigments:
+
+```css
+.card { background: var(--onganda-surface); border: 1px solid var(--onganda-line); }
+.meta { color: var(--onganda-text-muted); font-size: var(--onganda-type-meta-size); }
+```
+
+With Tailwind 4, add the theme and the roles become utilities
+(`bg-surface text-text-muted border-line`). Tailwind's own colour palette is
+reset, so `bg-blue-500` does not compile:
+
+```css
+@import 'tailwindcss';
+@import '@onganda/design-system/tailwind.css';
+```
+
 Wrap the app with the built-in theme provider:
 
 ```tsx

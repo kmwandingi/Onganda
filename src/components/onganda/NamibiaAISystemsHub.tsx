@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
 import { PixelLabCard } from './onganda-site';
 import { DarkContext, DitherStrip, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, PixelButton, OngandaFooter } from './onganda-primitives';
-import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab, ControlStandards, ProductPatterns } from './onganda-sections';
+import { OngandaNav, OngandaHero, ResearchSignals, PixelTerminal, SystemConnectionDiagram, PixelHeatmap, RoadmapTimeline, FieldApplications, PixelFlowchart, IconShowcase, IconFactoryLab, ControlStandards, ProductPatterns, ProductSurface } from './onganda-sections';
 import { ChartGallery } from './onganda-charts';
 import { NAMIBIA_MAP_POINTS, NAMIBIA_MAP_ROUTES } from './onganda-map-data';
 import { OngandaMap } from './onganda-maps';
@@ -117,6 +117,7 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Product Patterns — dialog, table, notice, empty, loading, tabs ── */}
         <ProductPatterns />
+        <ProductSurface />
 
         {/* ── Research Heatmap ── */}
         <PixelHeatmap />

@@ -118,6 +118,8 @@ test.describe('the design system reproduces the public site', () => {
       // And each recipe must carry the marks it claims to.
       if (r.declared === 'spine') expect(r.spine).toBe(true);
       if (r.declared === 'corners') expect(r.corners).toBe(4);
+      // Quiet is working chrome: no marks at all, or it is not quiet.
+      if (r.declared === 'quiet') expect(r.corners).toBe(0);
     }
   });
 

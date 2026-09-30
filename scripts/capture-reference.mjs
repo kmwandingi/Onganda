@@ -34,6 +34,9 @@ const SHOTS = [
   ['/showcase', '#patterns-stage', 'patterns-light',
    'The compounds a product needs on day one, plus the site compositions.',
    ['PixelNotice', 'PixelDialog', 'PixelTable', 'PixelEmptyState', 'PixelSkeleton', 'PixelTabs', 'PixelProgress', 'PixelPanel', 'PixelChoice', 'PixelChoiceList', 'PixelActions', 'PixelTicker', 'PixelFocusRow', 'PixelLabCard', 'PixelStatBand']],
+  ['/showcase', '#product-surface', 'product-surface',
+   'An APP screen, not a marketing page. Quiet chrome, one feature surface, neutral metadata, colour only for identity and state, no ticker or stat band. Copy this for a tool; copy the site shots for a public page.',
+   ['PixelPanel', 'PixelTable', 'PixelTag', 'PixelField', 'PixelSelect', 'PixelProgress', 'PixelButton', 'statusFor']],
   ['/showcase', '#systems', 'system-cards',
    'The five-system card and the inverse cell that closes a grid. Note one accent per card, spent on the spine, the tag and the foot rule.',
    ['SystemCard', 'PixelLabCard', 'SectionHeader', 'PixelTag']],
@@ -136,10 +139,14 @@ rules say what is forbidden; a surface can satisfy every one of them and
 still be flat. These show what finished looks like — how much colour a page
 carries, how much texture, how many rules, and how the weights sit together.
 
+**Copy the right kind.** \`product-surface.png\` is an app screen; the
+\`site-*\` shots are public pages; the rest are editorial specimens. A tool
+built from editorial devices is the most common cheap imitation.
+
 When you have built something, put your screenshot beside the closest one
-here and ask what is different. Usually it is one of three things: one accent
-where there should be several, texture on every card instead of the ground,
-or a rule under every element instead of one per block.
+here and ask what is different. Usually: colour spent on metadata instead of
+identity or state, every surface at feature weight instead of one or two, or
+an editorial device (ticker, stat band) on a working screen.
 
 | Screenshot | Shows | Demonstrates |
 |---|---|---|

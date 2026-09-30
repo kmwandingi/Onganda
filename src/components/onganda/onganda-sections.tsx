@@ -2937,3 +2937,128 @@ export const ProductPatterns = () => {
 
 export const OkaandaNav = OngandaNav;
 export const OkaandaHero = OngandaHero;
+
+// ─── Product Surface — what an Onganda APP screen looks like ─────────────────
+// Every other reference on this page is editorial: a hero, a ticker, a stat
+// band, a grid of feature cards. Told to "match the showcase", an agent
+// building a tool had nothing else to copy, so it transplanted those devices
+// onto a working screen — a ticker as a footer, every panel decorated, a row
+// of metadata tags in five colours. The result followed every rule and read
+// as a cheap imitation.
+//
+// This is the other half. A tool is quiet: chrome is surface and hairline,
+// ONE surface carries the feature treatment, metadata is neutral, colour is
+// spent on identity and state, and there is no marketing device on it at all.
+const PRODUCT_ROWS = [
+  { id: 'm1', name: 'Opening hook', at: '0:04–0:14', score: 'active' as StatusName, label: 'Strong' },
+  { id: 'm2', name: 'The reveal', at: '0:31–0:42', score: 'caution' as StatusName, label: 'Needs trim' },
+  { id: 'm3', name: 'Closing line', at: '1:02–1:09', score: 'settled' as StatusName, label: 'Kept' }
+];
+
+export const ProductSurface = () => {
+  const { isDark } = useDark();
+  const c = roles(isDark);
+  const [nav, setNav] = useState('Studio');
+  return (
+    <section id="product-surface" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader
+        label="Product Surface"
+        headline="A tool is quiet. The work is the loud part."
+        accent={COLOR.mopaneBrown}
+        isDark={isDark}
+      />
+      <div
+        data-testid="product-surface-frame"
+        className="grid lg:grid-cols-[200px_1fr]"
+        style={{ border: `1px solid ${c.line}`, background: c.canvas }}
+      >
+        {/* Sidebar — quiet chrome. The active item takes the accent ink on
+            its edge; nothing else here carries colour. */}
+        <nav aria-label="Product" style={{ borderRight: `1px solid ${c.line}`, padding: 16 }}>
+          <div className="flex items-center gap-2" style={{ marginBottom: 20 }}>
+            <OngandaLogoMark size={20} />
+            <span style={{ fontWeight: 600, color: c.text }}>Klippr</span>
+          </div>
+          {['Studio', 'Discover', 'Ideas', 'Library'].map(item => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => setNav(item)}
+              aria-current={nav === item ? 'page' : undefined}
+              className="onganda-focus block w-full text-left"
+              style={{
+                padding: '8px 12px',
+                marginBottom: 2,
+                border: 'none',
+                borderLeft: `3px solid ${nav === item ? c.accentInk : 'transparent'}`,
+                background: nav === item ? c.surface : 'transparent',
+                color: nav === item ? c.text : c.textMuted,
+                fontWeight: nav === item ? 600 : 400,
+                cursor: 'pointer'
+              }}
+            >
+              {item}
+            </button>
+          ))}
+        </nav>
+
+        <div style={{ padding: 24 }}>
+          {/* Header: title, NEUTRAL metadata, one primary action. */}
+          <div className="flex flex-wrap items-end justify-between gap-4" style={{ marginBottom: 20 }}>
+            <div>
+              <p className="uppercase" style={{ margin: 0, fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', color: c.textMuted }}>Session</p>
+              <h3 style={{ margin: '4px 0 10px', fontSize: 24, fontWeight: 600, color: c.text }}>The exam day journey</h3>
+              <div className="flex flex-wrap gap-2">
+                <PixelTag label="4 assets" isDark={isDark} />
+                <PixelTag label="0:12" isDark={isDark} />
+                <PixelTag label="2.2 MB" isDark={isDark} />
+              </div>
+            </div>
+            <PixelButton isDark={isDark}>Render video</PixelButton>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+            {/* The ONE feature surface: the thing the user came to work on. */}
+            <PixelPanel isDark={isDark} eyebrow="Moments" title="Three proposals" accent={COLOR.ochreOrange}>
+              <PixelTable
+                isDark={isDark}
+                rowKey={r => r.id}
+                rows={PRODUCT_ROWS}
+                columns={[
+                  { key: 'name', header: 'Moment', render: r => r.name },
+                  { key: 'at', header: 'Range', render: r => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{r.at}</span> },
+                  {
+                    key: 'score',
+                    header: 'State',
+                    render: r => (
+                      <span className="inline-flex items-center gap-2">
+                        <PixelDot color={statusFor(r.score, isDark)} size={6} />
+                        {r.label}
+                      </span>
+                    )
+                  }
+                ]}
+              />
+            </PixelPanel>
+
+            {/* Inspector: quiet. Working chrome is surface and hairline. */}
+            <div className="grid gap-4">
+              <PixelPanel isDark={isDark} emphasis="quiet" eyebrow="Export" title="TikTok · 1080×1920">
+                <PixelField label="Caption style" htmlFor="ps-caption" isDark={isDark}>
+                  <PixelSelect id="ps-caption" isDark={isDark} defaultValue="burned">
+                    <option value="burned">Burned in</option>
+                    <option value="none">None</option>
+                  </PixelSelect>
+                </PixelField>
+                <div style={{ marginTop: 16 }}>
+                  <PixelProgress isDark={isDark} value={62} label="Render" status="active" />
+                </div>
+              </PixelPanel>
+              <PixelPanel isDark={isDark} emphasis="quiet" eyebrow="Notes" note="Two moments are ready to render. The reveal needs a tighter cut before it ships." />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

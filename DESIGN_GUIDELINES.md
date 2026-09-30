@@ -259,39 +259,59 @@ in this document says what is forbidden. A surface can satisfy every rule here
 and still be flat, because the rules cannot describe how much colour a page
 carries or how the weights sit together. The screenshots can.
 
+**Copy the right kind of reference.** `product-surface.png` is an app screen;
+the `site-*` shots are public pages; most of the rest are editorial
+specimens. A tool built by copying editorial devices is the most common way a
+product comes out as a cheap imitation.
+
 When your surface is built, put a screenshot of it beside the closest
-reference and ask what is different. In practice it is almost always one of
-four things, measured in real products:
+reference and ask what is different. Measured on real products, it is almost
+always one of these:
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Every card the same colour | `accent` never passed, so everything is `accentInk` | `accentFor(i)` |
+| Confetti: tags and chips in many colours | Colour spent on metadata, which carries no identity | Omit `hex`; the tag renders neutral |
+| Every surface decorated, nothing stands out | Every card at feature weight | One or two `feature` surfaces; the rest `emphasis="quiet"` |
+| A tool that looks like a landing page | Editorial devices transplanted: ticker, stat band, edge strips | Keep them on public pages |
+| A wall of warnings | `PixelNotice` used as the page body | State the condition once; notices are for exceptions |
+| Every card the same colour in a list of peers | `accent` never passed | `accentFor(i)` — for peers only |
 | Muddy, tiring page | Texture on the ground *and* on every card | `TEXTURE`, and never stack it |
-| Striped, restless | A rule under every element | `RULE`, one per block |
-| A dead control shouts | A disabled fill is still a fill | Disabled takes the disabled roles, not a faded variant |
+| A dead control shouts | A disabled fill is still a fill | Disabled takes the disabled roles |
 
-### Colour has to be distributed, not defaulted
+### Colour means identity or state
 
-A component takes one accent and falls back to the accent ink. So a product
-built entirely from defaults is **one colour**. That is not hypothetical: a
-studio app using 21 `PixelPanel`s, 12 `SectionHeader`s and 38 `PixelButton`s
-passed `accent` exactly zero times, and came out entirely bark rust and ochre.
-Nothing in it broke a rule.
+The palette has nine hues and a page is not better for using more of them.
+Colour in this system says something: which system, which peer, which state.
+Spent anywhere else it becomes noise that a reader tries and fails to decode.
 
-The public site does not work that way. Each section owns an accent and spends
-it on the dot, the rule and the card marks. For anything enumerable, let the
-system do it:
+- **Peers in a list** — cards in a feed, blocks in a section — take successive
+  accents with `accentFor(i)`, the site's own order. That is the one place
+  colour is distributed on purpose.
+- **Metadata** — counts, durations, sizes, file types — is neutral. A
+  `PixelTag` without `hex` renders outlined in ink.
+- **State** reads through `statusFor()`, and always with a label.
+- **Identity** comes from `SYSTEM_COLOR`. Never rotate an accent across items a
+  reader could mistake for system membership.
+
+An earlier version of this section said only "distribute colour", and a
+product applied it to a row of metadata chips: seven tags, five colours, no
+meaning. The rule is not "use more colours". It is "let colour carry meaning,
+and only there".
+
+### Hierarchy: one or two feature surfaces
+
+`PixelPanel` has two weights. `feature` — corner marks and weave — is for the
+surface the user came to work on. `quiet` — surface and hairline — is for
+everything they work *in*: sidebars, inspectors, export bars, transcripts.
 
 ```tsx
-{items.map((item, i) => (
-  <PixelPanel accent={accentFor(i)} eyebrow={item.kind} title={item.name} />
-))}
+<PixelPanel eyebrow="Moments" title="Three proposals">…</PixelPanel>   {/* the work */}
+<PixelPanel emphasis="quiet" eyebrow="Export" title="TikTok">…</PixelPanel>  {/* chrome */}
 ```
 
-`ACCENT_CYCLE` is the site's own order, reading down the page. This is for
-variety among **peers**. Where a hue already means something, meaning wins: a
-system's colour comes from `SYSTEM_COLOR`, a state's from `statusFor()`. Never
-rotate an accent across items a reader could mistake for system membership.
+The decoration is correct on every one of them; spread evenly it stops
+meaning anything. The showcase's own Product Patterns sit on one stage for
+the same reason.
 
 ### Texture and rules have scales too
 
