@@ -63,8 +63,13 @@ try {
       const canvas = hexRgb(COLOR.milletClay);
       const mutedClears45 = contrastOf(over(hexRgb(COLOR.charBlack), canvas, ALPHA.muted.light), canvas) >= 4.5;
       const roleLayerIsIntact =
-        light.actionBg === COLOR.charBlack &&
-        dark.actionBg === COLOR.milletClay &&
+        // The primary is ochre in both modes, never black; the accent is gold.
+        light.actionBg === COLOR.ochreOrange &&
+        dark.actionBg === COLOR.ochreOrange &&
+        light.actionFg === COLOR.charBlack &&
+        light.actionBorder === COLOR.barkRust &&
+        light.accentBg === COLOR.mahanguGold &&
+        light.dangerBorder === COLOR.firedRed &&
         // Ochre is 2.4:1 as ink on light, so the light accent ink is bark rust.
         light.accentInk === COLOR.barkRust &&
         dark.accentInk === COLOR.ochreOrange &&

@@ -15,7 +15,7 @@ Style from roles, not from the palette. Call `roles(isDark)` and read `surface`,
 
 Never write a raw hex, an `rgba()`, or a generic Tailwind colour class in a component. All three fail `npm run check:design`.
 
-Ochre orange is the accent as a fill, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — use `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. Mahangu gold, mopane brown, and dye plum identify systems and carry chart series; they are not interface chrome. The palette has no green and no blue; do not add one. Read status through `statusFor(name, isDark)`.
+The primary action is ochre with a char black label and a bark rust edge; the in-card accent is mahangu gold with a mopane edge; danger is bark rust with a fired red edge. Char black is ink and the inverse band, never the primary fill. Ochre is a fill, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — use `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. Mahangu gold, mopane brown, and dye plum identify systems and carry chart series; they reach chrome only through roles, never picked by a component. The palette has no green and no blue; do not add one. Read status through `statusFor(name, isDark)`.
 
 Colour is never the only carrier of state: an invalid field has a border, a marker, and a message; a status mark has a label and a hairline ring.
 

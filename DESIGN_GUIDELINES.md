@@ -47,16 +47,16 @@ The Onganda color palette is strictly defined. **Do not use generic Tailwind col
 ### Base & Backgrounds
 *   **Millet Clay** (`#E8E1CF`): The primary light background. Used as the canvas for the `light` theme.
 *   **Dust Light** (`#F3E8C3`): Lifted surfaces, secondary backgrounds in `light` theme.
-*   **Char Black** (`#1E1A17`): The primary dark background. Warm, not pure black. Used as the canvas for the `dark` theme.
+*   **Char Black** (`#1E1A17`): The brand ink — text, lines, and the inverse band (footer, ticker, lab card). Warm, not pure black. Not the primary action fill.
 *   **Dark Card** (`#1C1713`) / **Dark Card Alt** (`#271F1A`): Used for elevated surfaces in the `dark` theme.
 
 ### Semantic Highlights & Accents
-*   **Ochre Orange** (`#D9791F`): Warm accent, representing the **Okaanda** (Granary / Parent) system.
+*   **Ochre Orange** (`#D9791F`): The primary action fill and the checked-control fill; also **Okaanda** (Granary / Parent).
 *   **Bark Rust** (`#8F3E21`): Support accent, representing the **Oshini** (Mill) system.
-*   **Mahangu Gold** (`#DFAE2B`): Secondary highlight, representing the **Ombiga** (Vessel) system.
+*   **Mahangu Gold** (`#DFAE2B`): Secondary highlight — the accent action fill; also **Ombiga** (Vessel).
 *   **Mopane Brown** (`#6A4B2E`): Support neutral, representing the **Etiti** (Surface) system.
 *   **Dye Plum** (`#6F4A6E`): Rare accent, representing the **Oshitoo** (Delivery) system.
-*   **Fired Red** (`#C84A1B`): Primary highlight for actionable or critical UI elements.
+*   **Fired Red** (`#C84A1B`): Critical indicator — status marks, invalid borders, the danger button's edge.
 
 ### The palette is an inventory, not a permission
 
@@ -77,33 +77,41 @@ const c = roles(isDark);
 
 The colour rules, all measured and all enforced by `npm run check:design`:
 
-1.  **Ochre Orange is the interactive accent, but only as a fill.** Millet clay
+1.  **The primary action is ochre, not black.** A black primary made every
+    screen read as a black slab with some cream around it — the heaviest thing
+    on the page was chrome. `primary` fills with ochre (char black label,
+    5.52:1, bark rust edge); `accent` fills with mahangu gold (8.41:1, mopane
+    edge); `danger` fills with bark rust (fired red edge). A fill under 3:1
+    against the surface always carries an edge that clears it. Char black is
+    ink and the inverse band, never the primary fill.
+2.  **Ochre Orange works as a fill, not as ink on light.** Millet clay
     on ochre is 2.4:1 and ochre on millet clay is 2.4:1. Ochre works as a
     **fill** with Char Black on it (5.5:1) and as **ink** on dark surfaces
     (6.1:1). On light surfaces the accent ink is **Bark Rust** (5.6:1) — the
     deep ochre. That is what `accentInk` and `focusRing` resolve to in light mode.
-2.  **Fired Red is an indicator, not a fill behind text.** Its best foreground
+3.  **Fired Red is an indicator, not a fill behind text.** Its best foreground
     reaches 4.05:1, under the 4.5:1 floor. Use it for critical status marks and
     invalid field borders, where the 3:1 non-text threshold applies. The danger
     button fills with Bark Rust. Error message text runs at full contrast with a
     red marker beside it.
-3.  **System colours mean membership, not decoration.** Mahangu Gold, Mopane
-    Brown, and Dye Plum identify Ombiga, Etiti, and Oshitoo; Bark Rust identifies
-    Oshini and doubles as the light-mode accent ink. None of them is a button, a
-    label, or a background. The check fails on a system hue bound to a
-    `background` or `border*` property.
-4.  **Text and lines are brand ink at a fixed opacity, not new hues.** Use the
+4.  **System colours mean membership when a component picks them.** Mahangu
+    Gold, Mopane Brown, and Dye Plum identify Ombiga, Etiti, and Oshitoo; Bark
+    Rust identifies Oshini. They reach interface chrome only through measured
+    roles — gold is the accent fill, mopane and plum are hover fills, bark rust
+    is the accent ink and the danger fill. A component never binds one to a
+    `background` or `border*` directly; the check fails when it does.
+5.  **Text and lines are brand ink at a fixed opacity, not new hues.** Use the
     steps in `ALPHA`, which is mode-aware. Only `textFaint`, `line`, and
     `lineStrong` sit below the contrast floors, and they are reserved for
     disabled text, ordinals, and decorative dividers.
-5.  **The palette has no green and no blue, and none may be added.** The four
+6.  **The palette has no green and no blue, and none may be added.** The four
     status colours are `active` (ochre), `caution` (gold), `critical` (fired
     red), and `settled` (mopane brown). Read them through
     `statusFor(name, isDark)` — mopane brown drops to 2.25:1 on a dark card.
-6.  **Colour is never the only carrier of state.** An invalid field has a red
+7.  **Colour is never the only carrier of state.** An invalid field has a red
     border, a marker, and a message. A status mark has a text label and a
     hairline ring.
-7.  **A control on an inverse surface takes the dark role set.** The footer, the
+8.  **A control on an inverse surface takes the dark role set.** The footer, the
     ticker, and the black lab card are locally dark. Pass `isDark` to controls
     sitting on them, or their hover resolves against the wrong background.
 

@@ -183,11 +183,11 @@ import { COLOR } from '@onganda/design-system';
 | `milletClay`    | `#E8E1CF` | Millet Clay    | Light mode canvas             |
 | `dustLight`     | `#F3E8C3` | Dust Light     | Lifted surface / paper        |
 | `mahanguGold`   | `#DFAE2B` | Mahangu Gold   | Secondary highlight           |
-| `ochreOrange`   | `#D9791F` | Ochre Orange   | Primary warm accent / CTA     |
+| `ochreOrange`   | `#D9791F` | Ochre Orange   | Primary action / CTA          |
 | `firedRed`      | `#C84A1B` | Fired Red      | Actionable / critical         |
 | `barkRust`      | `#8F3E21` | Bark Rust      | Support accent                |
 | `mopaneBrown`   | `#6A4B2E` | Mopane Brown   | Support neutral               |
-| `charBlack`     | `#1E1A17` | Char Black     | Dark mode canvas (warm)       |
+| `charBlack`     | `#1E1A17` | Char Black     | Ink; inverse surfaces         |
 | `dyePlum`       | `#6F4A6E` | Dye Plum       | Rare accent                   |
 | `darkBg`        | `#120F0D` | Dark BG        | Deepest dark                  |
 | `darkCard`      | `#1C1713` | Dark Card      | Elevated dark surface         |
@@ -266,11 +266,12 @@ most of the design:
 | | `lineStrong` | ink 20% | paper 20% | Emphasized divider |
 | | `focusRing` | Bark Rust | Ochre Orange | Focus ring (3:1 floor) |
 | | `accentInk` | Bark Rust | Ochre Orange | The accent as ink: link, ghost hover, field focus |
-| Action | `actionBg` / `actionFg` | Char Black / Millet Clay | Millet Clay / Char Black | Primary action |
-| | `actionHoverBg` / `actionHoverFg` | Ochre / Char Black | Ochre / Char Black | Primary hover — both modes warm up to ochre |
-| | `accentBg` / `accentFg` | Ochre / Char Black | Ochre / Char Black | Warm in-card action |
-| | `accentHoverBg` / `accentHoverFg` | Char Black / Millet Clay | Millet Clay / Char Black | Accent hover |
+| Action | `actionBg` / `actionFg` / `actionBorder` | Ochre / Char Black / Bark Rust | Ochre / Char Black / Ochre | Primary action |
+| | `actionHoverBg` / `actionHoverFg` | Mopane Brown / Millet Clay | Mahangu Gold / Char Black | Primary hover — deepens to earth in light, lifts to gold in dark |
+| | `accentBg` / `accentFg` / `accentBorder` | Mahangu Gold / Char Black / Mopane Brown | Mahangu Gold / Char Black / Mahangu Gold | The in-card accent action |
+| | `accentHoverBg` / `accentHoverFg` | Dye Plum / Millet Clay | Millet Clay / Char Black | Accent hover |
 | | `dangerBg` / `dangerFg` | Bark Rust / Millet Clay | Bark Rust / Millet Clay | Destructive action |
+| | `dangerBorder` | Fired Red | Fired Red | The danger edge — where "red means danger" lives on the button |
 | | `dangerHoverBg` / `dangerHoverFg` | Char Black / Millet Clay | Millet Clay / Char Black | Danger hover |
 | | `ghostBorder` / `ghostFg` | ink 51% / Char Black | paper 42% / Millet Clay | Quiet alternative |
 | | `ghostHoverBorder` / `ghostHoverFg` | Bark Rust | Ochre Orange | Ghost hover |
@@ -313,16 +314,16 @@ reading the docs.
 
 | Token | Allowed | Never |
 |---|---|---|
-| `milletClay` | Light canvas; text and icons on any dark surface; the primary action fill in dark mode | A fill on a light surface |
+| `milletClay` | Light canvas; text and icons on any dark surface; the label on mopane, plum and bark rust fills; the accent hover in dark mode | A fill on a light surface |
 | `dustLight` | Lifted surface on the light canvas | Text, borders, any action |
-| `charBlack` | Primary action fill in light mode; the hover fill for accent and danger; inverse surfaces; ink for text and lines | The dark-mode canvas — use `darkBg` |
-| `ochreOrange` | A **fill** with char black on it (5.5:1): accent button, checked control, action hover. **Ink on dark surfaces only** (6.1:1). Also Okaanda | Ink on a light surface — 2.4:1. Use bark rust. Never body text |
-| `firedRed` | Critical status marks and invalid field borders, where the 3:1 floor applies | A fill behind small text (best 4.05:1). Never error message text. Never a second accent |
-| `mahanguGold` | Caution status; Ombiga; chart series 3. Needs char black on it (8.4:1) | Light-mode body text or small type — 1.6:1 on cream |
-| `barkRust` | The accent as **ink** on light surfaces (5.6:1); the danger fill with millet clay on it. Also Oshini and chart series 2 | A surface or a large decorative fill |
-| `mopaneBrown` | Settled status on light; Etiti; chart series 4 | Generic chrome. Never on a dark card — 2.25:1. Use `mopaneBrownLight` |
+| `charBlack` | Ink: text, and lines via the alpha ramp; the label on ochre and gold fills; inverse surfaces; the danger hover | **The primary action fill** — a black primary makes chrome the heaviest thing on the screen. The dark-mode canvas — use `darkBg` |
+| `ochreOrange` | A **fill** with char black on it (5.5:1): the primary action, checked control, active tab. **Ink on dark surfaces only** (6.1:1). Also Okaanda | Ink on a light surface — 2.4:1. Use bark rust. Never body text |
+| `firedRed` | Critical status marks, invalid field borders and the danger button edge, where the 3:1 floor applies | A fill behind small text (best 4.05:1). Never error message text. Never a second accent |
+| `mahanguGold` | The accent action fill (8.4:1 with char black) with a mopane edge; the dark primary hover; caution status; Ombiga; chart series 3 | Light-mode body text or small type — 1.6:1 on cream |
+| `barkRust` | The accent as **ink** on light surfaces (5.6:1); the danger fill with millet clay on it; the primary action's edge. Also Oshini and chart series 2 | A surface or a large decorative fill |
+| `mopaneBrown` | The primary hover fill (6.1:1 with millet clay) and the accent edge, light only; settled status on light; Etiti; chart series 4 | Picked directly for chrome — read the role. Never on a dark card — 2.25:1 |
 | `mopaneBrownLight` | Settled status and Etiti on dark surfaces | A sixth system color |
-| `dyePlum` | Oshitoo; chart series 5. Rare by design | An accent, a status, or a background |
+| `dyePlum` | The accent hover fill (5.6:1 with millet clay), light only; Oshitoo; chart series 5 | A status, a surface, or a resting fill |
 | `darkBg` | Dark canvas; the recessed well on a dark card | Light mode |
 | `darkCard` | Dark surface: cards, panels | Light mode |
 | `darkCardAlt` | The inverse card in dark mode, marked with an ochre edge | Light mode |
@@ -429,13 +430,18 @@ Use `PixelIconButton` for a familiar icon action inside a compact toolbar or row
 
 | Variant | Light | Dark | When |
 |---|---|---|---|
-| `primary` | Char black → ochre on hover | Millet clay → ochre on hover | The one main action in a view |
-| `accent` | Ochre → char black | Ochre → millet clay | An action inside a card that already sits on the page's primary |
+| `primary` | Ochre, bark rust edge → mopane brown | Ochre → mahangu gold | The one main action in a view |
+| `accent` | Mahangu gold, mopane edge → dye plum | Mahangu gold → millet clay | An action inside a card that already sits on the page's primary |
 | `ghost` | Transparent, ink-50% border → bark rust | Transparent, paper-42% border → ochre | The quiet alternative next to a primary |
-| `danger` | Bark rust → char black | Bark rust → millet clay | Destroys something |
+| `danger` | Bark rust, fired red edge → char black | Bark rust, fired red edge → millet clay | Destroys something |
 
-Both modes warm up to ochre on the primary hover; the neutral extreme is char
-black in light and millet clay in dark, because char black is the dark canvas.
+The primary is ochre, not char black. A black primary made every screen read
+as a black slab with some cream around it: the heaviest object on the page was
+chrome, and the palette's warmth went unused. Ochre with a char black label is
+5.52:1. The fill alone is 2.56:1 against dust light, under the 3:1 boundary
+floor, so every filled button carries an edge that clears it: bark rust on the
+primary (5.95:1), mopane on the gold accent (6.45:1), fired red on danger
+(3.85:1). `npm run check:contrast` measures each edge on both surfaces.
 
 Danger fills with bark rust rather than fired red. Fired red's best foreground
 is 4.05:1, under the floor for a 14px label; a fired-red marker on a bark rust
@@ -447,8 +453,9 @@ other intents. Fired red remains the critical **status** and **border** color,
 where the 3:1 threshold applies, so "red means danger" survives in the system's
 semantics.
 
-Accent and danger both press into ink on hover; primary warms up to ochre. Two
-directions, each consistent across both modes.
+On hover, light mode deepens: ochre to mopane, gold to its complement dye
+plum, bark rust to char black. Dark mode lifts toward the light: ochre to gold,
+gold and bark rust to millet clay. Every hover label is measured.
 
 Props: `variant`, `isDark`, `disabled`, `onClick`, `href`, `className`.
 Passing `href` renders an `<a>` with identical styling. Every button carries the
@@ -1590,9 +1597,12 @@ on this system.
 - Never use Tailwind generic colors (`text-blue-500`, `bg-orange-400`).
 - Never write a raw hex or rgba in a component. Both are build failures.
 - A system color (bark rust, mahangu gold, mopane brown, dye plum) means
-  "this belongs to that system." It is never interface chrome.
-- Ochre orange is the only interactive accent — as a **fill** anywhere, as
-  **ink** on dark surfaces only. On light surfaces the accent ink is bark rust.
+  "this belongs to that system" when a component picks it. It reaches chrome
+  only through a measured role — gold is `accentBg`, mopane and plum are hover
+  fills — never by a component choosing the hue.
+- Ochre orange is the primary action fill and the checked-control fill. As
+  **ink** it works on dark surfaces only; on light surfaces the accent ink is
+  bark rust. Char black is ink, never the primary fill.
 - Fired red is an indicator: critical status and invalid borders. It never sits
   behind small text and is never error-message text.
 - The palette has no green and no blue. Do not add one for success or info.

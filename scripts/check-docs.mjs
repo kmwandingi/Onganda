@@ -76,11 +76,18 @@ const CLAIMS = [
     in: ['DESIGN_SYSTEM.md', 'DESIGN_GUIDELINES.md', 'CLAUDE.md']
   },
   {
-    what: 'the dark primary action fill',
-    truth: () => roleValue('ROLE_DARK', 'actionBg'),
-    expect: 'milletClay',
-    mustSay: /millet clay/i,
-    in: ['DESIGN_SYSTEM.md']
+    what: 'the primary action fill',
+    truth: () => roleValue('ROLE_LIGHT', 'actionBg'),
+    expect: 'ochreOrange',
+    mustSay: /primary.{0,80}ochre|ochre.{0,80}primary/is,
+    in: ['DESIGN_SYSTEM.md', 'DESIGN_GUIDELINES.md', 'CLAUDE.md', 'skills/onganda-design-system/SKILL.md']
+  },
+  {
+    what: 'the accent action fill',
+    truth: () => roleValue('ROLE_LIGHT', 'accentBg'),
+    expect: 'mahanguGold',
+    mustSay: /accent.{0,80}(mahangu )?gold|gold.{0,80}accent/is,
+    in: ['DESIGN_SYSTEM.md', 'DESIGN_GUIDELINES.md', 'CLAUDE.md']
   },
   {
     what: 'the checked-control foreground',

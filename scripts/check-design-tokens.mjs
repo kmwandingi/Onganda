@@ -153,7 +153,7 @@ const RULES = [
   },
   {
     id: 'system-colour-as-chrome',
-    why: 'A system colour bound to a surface or border. Mahangu gold, mopane brown, dye plum, and bark rust identify Oshini, Ombiga, Etiti, and Oshitoo — they are not interface chrome. Use a role.',
+    why: 'A system colour bound to a surface or border. Mahangu gold, mopane brown, dye plum, and bark rust identify Oshini, Ombiga, Etiti, and Oshitoo — a component does not pick one for its chrome. The palette reaches interface chrome through measured roles — gold is `accentBg`, mopane and plum are hover fills — so read `roles(isDark)` and the edge, label and hover come with it.',
     // Identity hues assigned directly to a surface or boundary property.
     // Data-driven uses (sys.borderHex, CHART_SERIES[i], statusFor(...)) are not
     // literal COLOR.x references and correctly do not trip this.

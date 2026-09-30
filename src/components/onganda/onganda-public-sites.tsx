@@ -184,13 +184,13 @@ const PublicHero = ({
     <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pb-16 text-center md:px-12">
       <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
-        <a href={primary.href} className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold no-underline" style={{ background: COLOR.charBlack, color: COLOR.milletClay }}>
+        <PixelButton href={primary.href}>
           {primary.label}<IconArrowRight size={14} />
-        </a>
+        </PixelButton>
         {secondary && (
-          <a href={secondary.href} className="inline-flex items-center gap-2 border px-6 py-3 text-sm font-semibold no-underline" style={{ borderColor: line, color: COLOR.charBlack }}>
+          <PixelButton href={secondary.href} variant="ghost">
             {secondary.label}<IconArrowRight size={14} />
-          </a>
+          </PixelButton>
         )}
       </div>
       <div className="mt-8 flex gap-1" aria-hidden="true">

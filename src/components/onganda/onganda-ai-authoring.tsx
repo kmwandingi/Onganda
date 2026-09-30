@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR } from './onganda-tokens';
-import { OngandaLogoMark, PixelDot, PixelTag } from './onganda-primitives';
+import { OngandaLogoMark, PixelButton, PixelDot, PixelTag } from './onganda-primitives';
 import { IconCheck, IconRefresh, IconSettings, IconTerminal } from './onganda-icons';
 import type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult, AiGeneratableDocBlockType } from './onganda-block-types';
 
@@ -399,9 +399,9 @@ export const AiAuthoringPanel = ({
         {result && <div style={{ marginTop: 12, padding: 12, border: `1px solid ${COLOR.ochreOrange}50`, background: bg }}>
           <p style={{ margin: 0, color: fg, fontSize: 14, fontWeight: 700 }}>{result.title}</p>
           <p style={{ margin: '6px 0 12px', color: muted, fontSize: 11, lineHeight: 1.5 }}>{result.summary}</p>
-          <button onClick={() => onApply(result)} style={{ width: '100%', padding: 11, border: 0, background: COLOR.charBlack, color: COLOR.milletClay, cursor: 'pointer', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
+          <PixelButton isDark={isDark} onClick={() => onApply(result)} className="w-full justify-center">
             Apply to editor
-          </button>
+          </PixelButton>
         </div>}
       </motion.div>}
     </AnimatePresence>

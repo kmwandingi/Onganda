@@ -73,29 +73,33 @@ file, so the rule travels with the value.
 
 ---
 
-## The five things that trip people up
+## The six things that trip people up
 
 Every one of these is a measured fact, not an opinion. The ratios are in
 `scripts/check-contrast.mjs` and re-verified on every build.
 
-1. **Ochre orange is a fill, not ink.** Ochre text on the light canvas measures
+1. **The primary button is ochre, not black.** Ochre with a char black label
+   (5.52:1) and a bark rust edge. The in-card accent is mahangu gold with a
+   mopane edge. A black primary makes chrome the heaviest thing on the screen.
+
+2. **Ochre orange is a fill, not ink.** Ochre text on the light canvas measures
    **2.4:1** — unreadable. Fill with ochre and put char black on it. For
    accent-coloured *text* on a light surface, use `accentInk`, which is bark
    rust (5.6:1). In dark mode `accentInk` is ochre.
 
-2. **Fired red never sits behind small text.** Its best possible foreground is
+3. **Fired red never sits behind small text.** Its best possible foreground is
    **4.05:1**, below the floor. It is an indicator only: status marks and
    invalid field borders. Destructive buttons fill with bark rust.
 
-3. **The four system colours mean membership.** Mahangu gold, mopane brown and
+4. **The four system colours mean membership.** Mahangu gold, mopane brown and
    dye plum identify Ombiga, Etiti and Oshitoo; bark rust identifies Oshini.
-   They are never a button, a border, a label or a background. If you name a
+   A component never picks one for a button, a border, a label or a background; they reach chrome only through measured roles (gold is the accent fill). If you name a
    system, put its hue on a mark beside the name — never *as* the name.
 
-4. **There is no green and no blue.** Success is a check glyph on the settled
+5. **There is no green and no blue.** Success is a check glyph on the settled
    tone, not a new hue. Do not add one.
 
-5. **Nothing is rounded and nothing has a shadow.** `geometry/radius` is `0px`
+6. **Nothing is rounded and nothing has a shadow.** `geometry/radius` is `0px`
    and `geometry/shadow` is `none`. Corner decoration is the stepped
    `PixelCornerMarks` mark. Depth comes from the basket-weave texture.
 

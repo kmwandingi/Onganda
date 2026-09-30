@@ -126,6 +126,15 @@ const uiChecks = [
   ['focus ring on surface', 'focusRing', 'surface', UI],
   ['focus ring on canvas', 'focusRing', 'canvas', UI],
   ['ghost button border', 'ghostBorder', 'surface', UI],
+  ['primary button edge on surface', 'actionBorder', 'surface', UI],
+  ['primary button edge on canvas', 'actionBorder', 'canvas', UI],
+  ['primary button edge, hover', 'actionHoverBorder', 'surface', UI],
+  ['accent button edge on surface', 'accentBorder', 'surface', UI],
+  ['accent button edge on canvas', 'accentBorder', 'canvas', UI],
+  ['accent button edge, hover', 'accentHoverBorder', 'surface', UI],
+  ['danger button edge on surface', 'dangerBorder', 'surface', UI],
+  ['danger button edge on canvas', 'dangerBorder', 'canvas', UI],
+  ['danger button edge, hover', 'dangerHoverBorder', 'surface', UI],
   ['checked control edge on surface', 'controlOnBorder', 'surface', UI],
   ['checked control edge on canvas', 'controlOnBorder', 'canvas', UI]
 ];

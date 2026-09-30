@@ -5,6 +5,30 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — the primary action is ochre, not black
+
+A char black primary made every screen read as a black slab with some cream
+around it: the heaviest object on the page was chrome, and the palette's
+warmth went unused. The action roles now spend the palette, each value
+measured in both modes by `check:contrast`.
+
+| Intent | Light | Dark |
+|---|---|---|
+| `primary` | ochre, char black label (5.52:1), bark rust edge → mopane, millet label (6.06:1) | ochre, ochre edge → mahangu gold |
+| `accent` | mahangu gold (8.41:1), mopane edge → dye plum, millet label (5.59:1) | gold → millet clay |
+| `danger` | bark rust (5.59:1), fired red edge → char black | bark rust, fired red edge → millet clay |
+
+- **New roles** — `actionBorder`, `actionHoverBorder`, `accentBorder`,
+  `accentHoverBorder`, `dangerBorder`, `dangerHoverBorder` (48 roles). A fill
+  under 3:1 against the surface carries an edge that clears it; eighteen new
+  edge measurements guard this.
+- **Fired red** reaches the danger button as its edge, where the 3:1 boundary
+  floor applies — "red means danger" is now on the button itself.
+- **System hues** reach chrome only through these roles. A component still
+  may not bind one to `background` or `border*` directly.
+- The public hero CTA and the editor's "Apply" button were hand-styled black;
+  both are `PixelButton` now.
+
 ### Removed — the dotted rule
 
 The dither rule — runs of alternating segments under headers, at card feet,

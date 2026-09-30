@@ -2346,8 +2346,8 @@ const ROLE_ROWS: { role: keyof ColorRoles; use: string }[] = [
   { role: 'textMuted', use: 'Labels, captions, meta' },
   { role: 'textFaint', use: 'Disabled text and ordinals only' },
   { role: 'line', use: 'Hairline borders and dividers' },
-  { role: 'actionBg', use: 'Primary action fill' },
-  { role: 'accentBg', use: 'Warm in-card action fill' },
+  { role: 'actionBg', use: 'Primary action fill — ochre, never black' },
+  { role: 'accentBg', use: 'In-card accent fill — mahangu gold' },
   { role: 'accentInk', use: 'The accent as ink: link, focus ring, ghost hover' },
   { role: 'dangerBg', use: 'Destructive action fill' },
   { role: 'fieldBorder', use: 'Field boundary at rest' },
@@ -2440,9 +2440,9 @@ export const ControlStandards = () => {
                 ))}
               </dl>
               <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                Ochre is the accent as a <em>fill</em>. As ink on a light surface it measures 2.4:1, so the
-                accent ink is bark rust there and ochre in dark mode. Mahangu gold, mopane brown, and dye
-                plum are absent: they identify systems and carry chart series.
+                The primary is ochre, never black; the in-card accent is mahangu gold; mopane and plum are
+                their hovers. Each fill carries an edge that clears 3:1 on the surface. Ochre is a{' '}
+                <em>fill</em>: as ink on light it is 2.4:1, so the accent ink is bark rust there.
               </p>
             
           </PixelPanel>

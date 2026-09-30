@@ -660,13 +660,13 @@ export type PixelButtonProps = {
 const buttonPalette = (variant: PixelButtonVariant, c: ColorRoles) => {
   switch (variant) {
     case 'accent':
-      return { bg: c.accentBg, fg: c.accentFg, border: 'transparent', hoverBg: c.accentHoverBg, hoverFg: c.accentHoverFg, hoverBorder: 'transparent' };
+      return { bg: c.accentBg, fg: c.accentFg, border: c.accentBorder, hoverBg: c.accentHoverBg, hoverFg: c.accentHoverFg, hoverBorder: c.accentHoverBorder };
     case 'ghost':
       return { bg: 'transparent', fg: c.ghostFg, border: c.ghostBorder, hoverBg: 'transparent', hoverFg: c.ghostHoverFg, hoverBorder: c.ghostHoverBorder };
     case 'danger':
-      return { bg: c.dangerBg, fg: c.dangerFg, border: 'transparent', hoverBg: c.dangerHoverBg, hoverFg: c.dangerHoverFg, hoverBorder: 'transparent' };
+      return { bg: c.dangerBg, fg: c.dangerFg, border: c.dangerBorder, hoverBg: c.dangerHoverBg, hoverFg: c.dangerHoverFg, hoverBorder: c.dangerHoverBorder };
     default:
-      return { bg: c.actionBg, fg: c.actionFg, border: 'transparent', hoverBg: c.actionHoverBg, hoverFg: c.actionHoverFg, hoverBorder: 'transparent' };
+      return { bg: c.actionBg, fg: c.actionFg, border: c.actionBorder, hoverBg: c.actionHoverBg, hoverFg: c.actionHoverFg, hoverBorder: c.actionHoverBorder };
   }
 };
 

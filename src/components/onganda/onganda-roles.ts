@@ -78,19 +78,27 @@ export interface ColorRoles {
   /** the accent used as ink — link, ghost hover, focus ring. Not the same
    *  token as accentBg: ochre fails as ink on light surfaces. */
   accentInk: string;
-  // Action — one recipe per intent, each with its own hover foreground
+  // Action — one recipe per intent, each with its own hover foreground.
+  // A fill that sits under 3:1 against the surface gets an edge that clears
+  // it: the edge, not the fill, is the control's boundary.
   actionBg: string;
   actionFg: string;
+  actionBorder: string;
   actionHoverBg: string;
   actionHoverFg: string;
+  actionHoverBorder: string;
   accentBg: string;
   accentFg: string;
+  accentBorder: string;
   accentHoverBg: string;
   accentHoverFg: string;
+  accentHoverBorder: string;
   dangerBg: string;
   dangerFg: string;
+  dangerBorder: string;
   dangerHoverBg: string;
   dangerHoverFg: string;
+  dangerHoverBorder: string;
   ghostBorder: string;
   ghostFg: string;
   ghostHoverBorder: string;
@@ -130,35 +138,37 @@ export const ROLE_LIGHT: ColorRoles = {
   focusRing: COLOR.barkRust,
   accentInk: COLOR.barkRust,
 
-  // char black → ochre. The warm-up on hover is the Onganda signature.
-  actionBg: COLOR.charBlack,
-  actionFg: COLOR.milletClay,
-  actionHoverBg: COLOR.ochreOrange,
-  actionHoverFg: COLOR.charBlack,
-  // ochre → char black. Presses into ink.
-  accentBg: COLOR.ochreOrange,
+  // The primary is ochre, not char black. A black primary made every screen
+  // read as a black slab with some cream around it — the heaviest thing on
+  // the page was chrome, and the palette's warmth went unused. Measured:
+  //   ochre fill, char black label ........ 5.52:1
+  //   bark rust edge on dust / millet ..... 5.95 / 5.59:1  (the fill alone is
+  //     2.56:1 on dust, so the edge carries the 3:1 boundary)
+  //   hover: mopane fill, millet label .... 6.06:1  — the fill deepens to earth
+  actionBg: COLOR.ochreOrange,
+  actionFg: COLOR.charBlack,
+  actionBorder: COLOR.barkRust,
+  actionHoverBg: COLOR.mopaneBrown,
+  actionHoverFg: COLOR.milletClay,
+  actionHoverBorder: COLOR.mopaneBrown,
+  // The in-card action is mahangu gold, the palette's secondary highlight.
+  //   gold fill, char black label ......... 8.41:1
+  //   mopane edge on dust ................. 6.45:1  (gold alone is 1.68:1)
+  //   hover: dye plum fill, millet label .. 5.59:1  — gold's complement
+  accentBg: COLOR.mahanguGold,
   accentFg: COLOR.charBlack,
-  // Accent and danger both press into ink on hover; primary warms up to
-  // ochre. Two directions, each consistent across modes.
-  accentHoverBg: COLOR.charBlack,
+  accentBorder: COLOR.mopaneBrown,
+  accentHoverBg: COLOR.dyePlum,
   accentHoverFg: COLOR.milletClay,
-  // Danger fills with bark rust. This is settled, and the alternatives were
-  // measured, not assumed:
-  //   fired red fill, millet clay label ....... 3.62:1  fails
-  //   fired red fill, best possible label ..... 4.05:1  fails
-  //   bark rust fill, millet clay label ....... 5.59:1  passes
-  //   fired red MARKER on a bark rust fill .... 1.55:1  invisible
-  //   outlined: fired red border + rust label . passes, but makes the
-  //     destructive action quieter than the primary, which is wrong in a
-  //     confirmation dialog where deleting IS the primary action.
-  // Bark rust is 2.37:1 from char black and 2.33:1 from ochre, so it stays
-  // distinct from the other intents. Fired red remains the critical colour
-  // for status marks and invalid borders, where the 3:1 floor applies — so
-  // "red means danger" survives in the system's semantics.
+  accentHoverBorder: COLOR.dyePlum,
   dangerBg: COLOR.barkRust,
   dangerFg: COLOR.milletClay,
+  // The fired red edge (3.85:1 on dust) is where "red means danger" lives on
+  // the button itself — it is a boundary, so the 3:1 floor applies.
+  dangerBorder: COLOR.firedRed,
   dangerHoverBg: COLOR.charBlack,
   dangerHoverFg: COLOR.milletClay,
+  dangerHoverBorder: COLOR.charBlack,
   ghostBorder: ink(ALPHA.control.light),
   ghostFg: COLOR.charBlack,
   ghostHoverBorder: COLOR.barkRust,
@@ -196,20 +206,28 @@ export const ROLE_DARK: ColorRoles = {
   focusRing: COLOR.ochreOrange,
   accentInk: COLOR.ochreOrange,
 
-  // Mirrors light mode: the neutral extreme → ochre. Char black is the dark
-  // canvas, so the neutral extreme inverts to millet clay.
-  actionBg: COLOR.milletClay,
+  // Ochre on the dark card is 5.68:1 by itself, so the edge matches the fill.
+  // Hover lifts to gold (8.66:1 on the card); the in-card accent is gold at
+  // rest and lifts to millet clay.
+  actionBg: COLOR.ochreOrange,
   actionFg: COLOR.charBlack,
-  actionHoverBg: COLOR.ochreOrange,
+  actionBorder: COLOR.ochreOrange,
+  actionHoverBg: COLOR.mahanguGold,
   actionHoverFg: COLOR.charBlack,
-  accentBg: COLOR.ochreOrange,
+  actionHoverBorder: COLOR.mahanguGold,
+  accentBg: COLOR.mahanguGold,
   accentFg: COLOR.charBlack,
+  accentBorder: COLOR.mahanguGold,
   accentHoverBg: COLOR.milletClay,
   accentHoverFg: COLOR.charBlack,
+  accentHoverBorder: COLOR.milletClay,
+  // Bark rust is 2.44:1 on the dark card; the fired red edge is 3.77:1.
   dangerBg: COLOR.barkRust,
   dangerFg: COLOR.milletClay,
+  dangerBorder: COLOR.firedRed,
   dangerHoverBg: COLOR.milletClay,
   dangerHoverFg: COLOR.charBlack,
+  dangerHoverBorder: COLOR.milletClay,
   ghostBorder: paper(ALPHA.control.dark),
   ghostFg: COLOR.milletClay,
   ghostHoverBorder: COLOR.ochreOrange,
@@ -336,7 +354,7 @@ export const CHART_SERIES = [
 // §4 so docs and code cannot drift apart.
 export const COLOR_POLICY: Record<keyof typeof COLOR, { allowed: string; never: string }> = {
   milletClay: {
-    allowed: 'Light canvas; text and icons on any dark surface; the primary action fill in dark mode.',
+    allowed: 'Light canvas; text and icons on any dark surface; the label on mopane, plum and bark rust fills; the accent hover fill in dark mode.',
     never: 'A fill on a light surface — it disappears.'
   },
   dustLight: {
@@ -344,36 +362,36 @@ export const COLOR_POLICY: Record<keyof typeof COLOR, { allowed: string; never: 
     never: 'Text, borders, or any action.'
   },
   charBlack: {
-    allowed: 'Primary action fill in light mode; the hover fill for accent and danger; inverse surfaces (footer, ticker, lab card); ink for text and lines via the alpha ramp.',
-    never: 'The dark-mode canvas — use darkBg.'
+    allowed: 'Ink: text, and lines via the alpha ramp; the label on ochre and gold fills; inverse surfaces (footer, ticker, lab card); the danger hover fill.',
+    never: 'The primary action fill — a black primary makes chrome the heaviest thing on the screen. The dark-mode canvas — use darkBg.'
   },
   ochreOrange: {
-    allowed: 'A FILL with char black on it (5.5:1): accent button, checked control, action hover. INK on dark surfaces only (6.1:1): link, focus ring, ghost hover. Also Okaanda.',
+    allowed: 'A FILL with char black on it (5.5:1): the primary action, checked control, active tab. INK on dark surfaces only (6.1:1): link, focus ring, ghost hover. Also Okaanda.',
     never: 'Ink on a light surface — 2.4:1. Use bark rust there. Never body text at any size.'
   },
   firedRed: {
-    allowed: 'Critical status marks and invalid field borders, where the 3:1 non-text floor applies.',
+    allowed: 'Critical status marks, invalid field borders and the danger button edge, where the 3:1 non-text floor applies.',
     never: 'A fill behind small text — its best foreground is 4.05:1. Never error message text. Never a second general-purpose accent.'
   },
   mahanguGold: {
-    allowed: 'Caution status; Ombiga; chart series 3. Needs char black on it (8.4:1).',
+    allowed: 'The accent action fill (8.4:1 with char black) with a mopane edge; the primary hover fill in dark mode; caution status; Ombiga; chart series 3.',
     never: 'Light-mode body text or any small type — 1.6:1 on cream. Never millet clay on it.'
   },
   barkRust: {
-    allowed: 'The accent as INK on light surfaces (5.6:1): link, focus ring, ghost hover, field focus. The danger fill, with millet clay on it. Also Oshini and chart series 2.',
+    allowed: 'The accent as INK on light surfaces (5.6:1): link, focus ring, ghost hover, field focus. The danger fill, with millet clay on it; the edge of the primary action. Also Oshini and chart series 2.',
     never: 'A surface or a large decorative fill.'
   },
   mopaneBrown: {
-    allowed: 'Settled status on light surfaces; Etiti; chart series 4.',
-    never: 'Generic interface chrome. Never on a dark card — 2.25:1. Use mopaneBrownLight.'
+    allowed: 'The primary hover fill with millet clay (6.1:1) and the accent edge, light mode only; settled status on light surfaces; Etiti; chart series 4.',
+    never: 'Picked directly for chrome — read the role. Never on a dark card — 2.25:1. Use mopaneBrownLight.'
   },
   mopaneBrownLight: {
     allowed: 'Settled status and Etiti on dark surfaces, where the base tone loses contrast.',
     never: 'A sixth system color.'
   },
   dyePlum: {
-    allowed: 'Oshitoo; chart series 5. Rare by design.',
-    never: 'An accent, a status, or a background.'
+    allowed: 'The accent hover fill with millet clay (5.6:1), light mode; Oshitoo; chart series 5.',
+    never: 'A status, a surface, or a resting fill.'
   },
   darkBg: { allowed: 'Dark canvas; the recessed well on a dark card.', never: 'Light mode.' },
   darkCard: { allowed: 'Dark surface: cards, panels.', never: 'Light mode.' },

@@ -357,7 +357,7 @@ import '@onganda/design-system/style.css';
 | `firedRed`      | `#C84A1B` | Actionable / critical       |
 | `barkRust`      | `#8F3E21` | Support accent              |
 | `mopaneBrown`   | `#6A4B2E` | Support neutral             |
-| `charBlack`     | `#1E1A17` | Dark mode canvas (warm)     |
+| `charBlack`     | `#1E1A17` | Ink; inverse surfaces       |
 | `dyePlum`       | `#6F4A6E` | Rare accent                 |
 | `darkCard`      | `#1C1713` | Elevated dark surface       |
 | `darkCardAlt`   | `#271F1A` | Alt elevated dark surface   |
@@ -367,9 +367,9 @@ import '@onganda/design-system/style.css';
 ## Design rules
 
 1. **Style from `roles(isDark)`** — not from the raw palette. Being in `COLOR` does not make a token available for any purpose.
-2. **Ochre orange is the accent as a fill**, with char black on it. As ink on a light surface it is 2.4:1 — read `accentInk` (bark rust in light, ochre in dark) for links, focus rings, and ghost hover.
+2. **The primary action is ochre, the accent mahangu gold** — never a black primary. **Ochre is a fill**, with char black on it. As ink on a light surface it is 2.4:1 — read `accentInk` (bark rust in light, ochre in dark) for links, focus rings, and ghost hover.
 3. **Fired red is an indicator only** — status marks and invalid borders. Never behind small text, never error-message text.
-4. **System colours mean membership.** Mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo. Never interface chrome.
+4. **System colours mean membership.** Mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo. They reach chrome only through roles.
 5. **The palette has no green and no blue.** Read status through `statusFor(name, isDark)`.
 6. **Colour is never the only carrier of state** — pair it with a marker, a label, or a message.
 7. **Never hand-roll a control** — use `PixelButton`, `PixelInput`, `PixelTextarea`, `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, `PixelToggle`. One primary per view. A control on an inverse surface takes `isDark`.

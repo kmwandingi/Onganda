@@ -193,8 +193,8 @@ try {
     if (!probe.rendered) throw new Error(`${name}: the package did not render at all.`);
 
     // Inline role styles come from the package and must work either way.
-    if (probe.primaryBg !== 'rgb(30, 26, 23)') {
-      throw new Error(`${name}: PixelButton primary background is ${probe.primaryBg}, expected char black. The role layer did not survive packaging.`);
+    if (probe.primaryBg !== 'rgb(217, 121, 31)') {
+      throw new Error(`${name}: PixelButton primary background is ${probe.primaryBg}, expected ochre. The role layer did not survive packaging.`);
     }
     if (probe.dangerBg !== 'rgb(143, 62, 33)') {
       throw new Error(`${name}: PixelButton danger background is ${probe.dangerBg}, expected bark rust.`);

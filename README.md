@@ -173,8 +173,8 @@ Three habits carry almost everything:
 | Body copy | `c.textBody` | `rgba(30,26,23,0.8)` |
 | A label, caption, or meta line | `c.textMuted` | any lower opacity |
 | A divider | `c.line` | `border-gray-200` |
-| The main action | `<PixelButton variant="primary">` | a styled `<button>` |
-| A warm action inside a card | `variant="accent"` | ochre text |
+| The main action | `<PixelButton variant="primary">` (ochre) | a styled black `<button>` |
+| A warm action inside a card | `variant="accent"` (mahangu gold) | ochre text |
 | The quiet alternative | `variant="ghost"` | a link |
 | Something destructive | `variant="danger"` | a red button you style yourself |
 | A link, focus ring, or hover accent | `c.accentInk` | `COLOR.ochreOrange` |
@@ -294,7 +294,9 @@ Style from `roles(isDark)`, not from the raw palette. Being in `COLOR` does not
 make a token available for any purpose, and every role value is measured against
 WCAG AA rather than chosen by eye:
 
-- Ochre orange is the accent as a **fill**, with char black on it. As ink on a
+- The primary action is ochre, the in-card accent mahangu gold — never a
+  black primary. Each fill carries an edge that clears 3:1 on the surface.
+- Ochre orange is a **fill**, with char black on it. As ink on a
   light surface it measures 2.4:1, so the light-mode accent ink is bark rust.
 - Fired red is an **indicator** — status marks and invalid borders. Its best
   foreground is 4.05:1, so it never sits behind small text.

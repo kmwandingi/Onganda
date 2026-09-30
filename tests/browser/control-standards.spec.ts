@@ -11,6 +11,8 @@ const OCHRE = 'rgb(217, 121, 31)';      // accent as a FILL — needs char black
 const BARK_RUST = 'rgb(143, 62, 33)';   // accent as INK on light, and the danger fill
 const FIRED_RED = 'rgb(200, 74, 27)';   // indicator only — status marks, invalid borders
 const CHAR_BLACK = 'rgb(30, 26, 23)';
+const GOLD = 'rgb(223, 174, 43)';       // the accent fill — char black on it, 8.41:1
+const MOPANE = 'rgb(106, 75, 46)';
 const MILLET_CLAY = 'rgb(232, 225, 207)';
 
 // Scoped to the light specimen grid, not the whole section: the inverse band
@@ -48,6 +50,10 @@ const expectBg = (scope: Page | ReturnType<Page['locator']>, name: string, value
 const expectFg = (scope: Page | ReturnType<Page['locator']>, name: string, value: string) =>
   expect.poll(() => fgOf(scope, name), { message: `${name} foreground` }).toBe(value);
 
+const expectEdge = (scope: Page | ReturnType<Page['locator']>, name: string, value: string) =>
+  expect.poll(() => scope.getByRole('button', { name, exact: true })
+    .evaluate(el => getComputedStyle(el).borderTopColor), { message: `${name} edge` }).toBe(value);
+
 test('every sanctioned control is present in the showcase', async ({ page }) => {
   const section = await openControls(page);
 
@@ -69,29 +75,37 @@ test('light mode: each button intent has its measured recipe', async ({ page }) 
   const section = await openControls(page);
   await setMode(page, 'light');
 
-  await expectBg(section, 'Primary', CHAR_BLACK);
-  await expectFg(section, 'Primary', MILLET_CLAY);
+  // The primary is ochre, never black. Ochre needs char black on it
+  // (millet clay on ochre is 2.4:1), and its fill is 2.56:1 on dust light, so
+  // a bark rust edge carries the boundary.
+  await expectBg(section, 'Primary', OCHRE);
+  await expectFg(section, 'Primary', CHAR_BLACK);
+  await expectEdge(section, 'Primary', BARK_RUST);
 
-  // Ochre fills need char black on them: millet clay on ochre is 2.4:1.
-  await expectBg(section, 'Accent', OCHRE);
+  // The accent is mahangu gold with a mopane edge — gold alone is 1.68:1.
+  await expectBg(section, 'Accent', GOLD);
   await expectFg(section, 'Accent', CHAR_BLACK);
+  await expectEdge(section, 'Accent', MOPANE);
 
-  // Danger is bark rust, not fired red — fired red tops out at 4.05:1.
+  // Danger is bark rust, not fired red — fired red tops out at 4.05:1. Fired
+  // red is the edge, where the 3:1 boundary floor applies.
   await expectBg(section, 'Delete', BARK_RUST);
   await expectFg(section, 'Delete', MILLET_CLAY);
+  await expectEdge(section, 'Delete', FIRED_RED);
 
   await expectBg(section, 'Ghost', 'rgba(0, 0, 0, 0)');
 });
 
-test('dark mode: the primary action inverts and the accent holds', async ({ page }) => {
+test('dark mode: the fills hold and the edges match them', async ({ page }) => {
   const section = await openControls(page);
   await setMode(page, 'dark');
 
-  // Char black is the dark canvas, so the neutral extreme flips to millet clay.
-  await expectBg(section, 'Primary', MILLET_CLAY);
+  // Ochre is 5.68:1 on the dark card by itself, so the edge matches the fill.
+  await expectBg(section, 'Primary', OCHRE);
   await expectFg(section, 'Primary', CHAR_BLACK);
+  await expectEdge(section, 'Primary', OCHRE);
 
-  await expectBg(section, 'Accent', OCHRE);
+  await expectBg(section, 'Accent', GOLD);
   await expectFg(section, 'Accent', CHAR_BLACK);
   await expectBg(section, 'Delete', BARK_RUST);
 });
@@ -211,16 +225,16 @@ test('the inverse band renders controls with the dark role set', async ({ page }
   await band.scrollIntoViewIfNeeded();
   await expect(band).toBeVisible();
 
-  // Char black is the dark canvas, so the neutral extreme flips to millet clay
-  // exactly as it does when the whole section is switched to dark.
+  // The dark set: ochre primary with an ochre edge, gold accent — the same
+  // recipe as the whole section switched to dark.
   await expect
     .poll(() => band.getByRole('button', { name: 'Primary', exact: true })
-      .evaluate(el => getComputedStyle(el).backgroundColor))
-    .toBe(MILLET_CLAY);
+      .evaluate(el => getComputedStyle(el).borderTopColor))
+    .toBe(OCHRE);
   await expect
     .poll(() => band.getByRole('button', { name: 'Accent', exact: true })
       .evaluate(el => getComputedStyle(el).backgroundColor))
-    .toBe(OCHRE);
+    .toBe(GOLD);
 
   // And the band really is a dark surface on a light page.
   await expect

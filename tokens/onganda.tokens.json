@@ -5,7 +5,7 @@
     "milletClay": {
       "$type": "color",
       "$value": "#E8E1CF",
-      "$description": "ALLOWED: Light canvas; text and icons on any dark surface; the primary action fill in dark mode. — NEVER: A fill on a light surface — it disappears."
+      "$description": "ALLOWED: Light canvas; text and icons on any dark surface; the label on mopane, plum and bark rust fills; the accent hover fill in dark mode. — NEVER: A fill on a light surface — it disappears."
     },
     "dustLight": {
       "$type": "color",
@@ -15,27 +15,27 @@
     "mahanguGold": {
       "$type": "color",
       "$value": "#DFAE2B",
-      "$description": "ALLOWED: Caution status; Ombiga; chart series 3. Needs char black on it (8.4:1). — NEVER: Light-mode body text or any small type — 1.6:1 on cream. Never millet clay on it."
+      "$description": "ALLOWED: The accent action fill (8.4:1 with char black) with a mopane edge; the primary hover fill in dark mode; caution status; Ombiga; chart series 3. — NEVER: Light-mode body text or any small type — 1.6:1 on cream. Never millet clay on it."
     },
     "ochreOrange": {
       "$type": "color",
       "$value": "#D9791F",
-      "$description": "ALLOWED: A FILL with char black on it (5.5:1): accent button, checked control, action hover. INK on dark surfaces only (6.1:1): link, focus ring, ghost hover. Also Okaanda. — NEVER: Ink on a light surface — 2.4:1. Use bark rust there. Never body text at any size."
+      "$description": "ALLOWED: A FILL with char black on it (5.5:1): the primary action, checked control, active tab. INK on dark surfaces only (6.1:1): link, focus ring, ghost hover. Also Okaanda. — NEVER: Ink on a light surface — 2.4:1. Use bark rust there. Never body text at any size."
     },
     "firedRed": {
       "$type": "color",
       "$value": "#C84A1B",
-      "$description": "ALLOWED: Critical status marks and invalid field borders, where the 3:1 non-text floor applies. — NEVER: A fill behind small text — its best foreground is 4.05:1. Never error message text. Never a second general-purpose accent."
+      "$description": "ALLOWED: Critical status marks, invalid field borders and the danger button edge, where the 3:1 non-text floor applies. — NEVER: A fill behind small text — its best foreground is 4.05:1. Never error message text. Never a second general-purpose accent."
     },
     "barkRust": {
       "$type": "color",
       "$value": "#8F3E21",
-      "$description": "ALLOWED: The accent as INK on light surfaces (5.6:1): link, focus ring, ghost hover, field focus. The danger fill, with millet clay on it. Also Oshini and chart series 2. — NEVER: A surface or a large decorative fill."
+      "$description": "ALLOWED: The accent as INK on light surfaces (5.6:1): link, focus ring, ghost hover, field focus. The danger fill, with millet clay on it; the edge of the primary action. Also Oshini and chart series 2. — NEVER: A surface or a large decorative fill."
     },
     "mopaneBrown": {
       "$type": "color",
       "$value": "#6A4B2E",
-      "$description": "ALLOWED: Settled status on light surfaces; Etiti; chart series 4. — NEVER: Generic interface chrome. Never on a dark card — 2.25:1. Use mopaneBrownLight."
+      "$description": "ALLOWED: The primary hover fill with millet clay (6.1:1) and the accent edge, light mode only; settled status on light surfaces; Etiti; chart series 4. — NEVER: Picked directly for chrome — read the role. Never on a dark card — 2.25:1. Use mopaneBrownLight."
     },
     "mopaneBrownLight": {
       "$type": "color",
@@ -45,12 +45,12 @@
     "charBlack": {
       "$type": "color",
       "$value": "#1E1A17",
-      "$description": "ALLOWED: Primary action fill in light mode; the hover fill for accent and danger; inverse surfaces (footer, ticker, lab card); ink for text and lines via the alpha ramp. — NEVER: The dark-mode canvas — use darkBg."
+      "$description": "ALLOWED: Ink: text, and lines via the alpha ramp; the label on ochre and gold fills; inverse surfaces (footer, ticker, lab card); the danger hover fill. — NEVER: The primary action fill — a black primary makes chrome the heaviest thing on the screen. The dark-mode canvas — use darkBg."
     },
     "dyePlum": {
       "$type": "color",
       "$value": "#6F4A6E",
-      "$description": "ALLOWED: Oshitoo; chart series 5. Rare by design. — NEVER: An accent, a status, or a background."
+      "$description": "ALLOWED: The accent hover fill with millet clay (5.6:1), light mode; Oshitoo; chart series 5. — NEVER: A status, a surface, or a resting fill."
     },
     "darkBg": {
       "$type": "color",
@@ -188,43 +188,63 @@
       },
       "actionBg": {
         "$type": "color",
+        "$value": "#D9791F",
+        "$description": "light — ochreOrange"
+      },
+      "actionFg": {
+        "$type": "color",
         "$value": "#1E1A17",
         "$description": "light — charBlack"
       },
-      "actionFg": {
+      "actionBorder": {
+        "$type": "color",
+        "$value": "#8F3E21",
+        "$description": "light — barkRust"
+      },
+      "actionHoverBg": {
+        "$type": "color",
+        "$value": "#6A4B2E",
+        "$description": "light — mopaneBrown"
+      },
+      "actionHoverFg": {
         "$type": "color",
         "$value": "#E8E1CF",
         "$description": "light — milletClay"
       },
-      "actionHoverBg": {
+      "actionHoverBorder": {
         "$type": "color",
-        "$value": "#D9791F",
-        "$description": "light — ochreOrange"
-      },
-      "actionHoverFg": {
-        "$type": "color",
-        "$value": "#1E1A17",
-        "$description": "light — charBlack"
+        "$value": "#6A4B2E",
+        "$description": "light — mopaneBrown"
       },
       "accentBg": {
         "$type": "color",
-        "$value": "#D9791F",
-        "$description": "light — ochreOrange"
+        "$value": "#DFAE2B",
+        "$description": "light — mahanguGold"
       },
       "accentFg": {
         "$type": "color",
         "$value": "#1E1A17",
         "$description": "light — charBlack"
       },
+      "accentBorder": {
+        "$type": "color",
+        "$value": "#6A4B2E",
+        "$description": "light — mopaneBrown"
+      },
       "accentHoverBg": {
         "$type": "color",
-        "$value": "#1E1A17",
-        "$description": "light — charBlack"
+        "$value": "#6F4A6E",
+        "$description": "light — dyePlum"
       },
       "accentHoverFg": {
         "$type": "color",
         "$value": "#E8E1CF",
         "$description": "light — milletClay"
+      },
+      "accentHoverBorder": {
+        "$type": "color",
+        "$value": "#6F4A6E",
+        "$description": "light — dyePlum"
       },
       "dangerBg": {
         "$type": "color",
@@ -236,6 +256,11 @@
         "$value": "#E8E1CF",
         "$description": "light — milletClay"
       },
+      "dangerBorder": {
+        "$type": "color",
+        "$value": "#C84A1B",
+        "$description": "light — firedRed"
+      },
       "dangerHoverBg": {
         "$type": "color",
         "$value": "#1E1A17",
@@ -245,6 +270,11 @@
         "$type": "color",
         "$value": "#E8E1CF",
         "$description": "light — milletClay"
+      },
+      "dangerHoverBorder": {
+        "$type": "color",
+        "$value": "#1E1A17",
+        "$description": "light — charBlack"
       },
       "ghostBorder": {
         "$type": "color",
@@ -401,33 +431,48 @@
       },
       "actionBg": {
         "$type": "color",
-        "$value": "#E8E1CF",
-        "$description": "dark — milletClay"
+        "$value": "#D9791F",
+        "$description": "dark — ochreOrange"
       },
       "actionFg": {
         "$type": "color",
         "$value": "#1E1A17",
         "$description": "dark — charBlack"
       },
-      "actionHoverBg": {
+      "actionBorder": {
         "$type": "color",
         "$value": "#D9791F",
         "$description": "dark — ochreOrange"
+      },
+      "actionHoverBg": {
+        "$type": "color",
+        "$value": "#DFAE2B",
+        "$description": "dark — mahanguGold"
       },
       "actionHoverFg": {
         "$type": "color",
         "$value": "#1E1A17",
         "$description": "dark — charBlack"
       },
+      "actionHoverBorder": {
+        "$type": "color",
+        "$value": "#DFAE2B",
+        "$description": "dark — mahanguGold"
+      },
       "accentBg": {
         "$type": "color",
-        "$value": "#D9791F",
-        "$description": "dark — ochreOrange"
+        "$value": "#DFAE2B",
+        "$description": "dark — mahanguGold"
       },
       "accentFg": {
         "$type": "color",
         "$value": "#1E1A17",
         "$description": "dark — charBlack"
+      },
+      "accentBorder": {
+        "$type": "color",
+        "$value": "#DFAE2B",
+        "$description": "dark — mahanguGold"
       },
       "accentHoverBg": {
         "$type": "color",
@@ -439,6 +484,11 @@
         "$value": "#1E1A17",
         "$description": "dark — charBlack"
       },
+      "accentHoverBorder": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
+      },
       "dangerBg": {
         "$type": "color",
         "$value": "#8F3E21",
@@ -449,6 +499,11 @@
         "$value": "#E8E1CF",
         "$description": "dark — milletClay"
       },
+      "dangerBorder": {
+        "$type": "color",
+        "$value": "#C84A1B",
+        "$description": "dark — firedRed"
+      },
       "dangerHoverBg": {
         "$type": "color",
         "$value": "#E8E1CF",
@@ -458,6 +513,11 @@
         "$type": "color",
         "$value": "#1E1A17",
         "$description": "dark — charBlack"
+      },
+      "dangerHoverBorder": {
+        "$type": "color",
+        "$value": "#E8E1CF",
+        "$description": "dark — milletClay"
       },
       "ghostBorder": {
         "$type": "color",
