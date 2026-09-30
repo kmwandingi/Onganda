@@ -7,7 +7,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
 import { COLOR } from './onganda-colors';
-import { CHART_SERIES, onColor } from './onganda-roles';
+import { CHART_SERIES, onColor, roles } from './onganda-roles';
+import { TYPE } from './onganda-type';
 import { SectionHeader, PixelTag, PixelDot } from './onganda-primitives';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
@@ -436,15 +437,50 @@ const ChartTooltip = ({
     </div>;
 };
 
-// Minimal legend that sits below each chart
-const ChartLegend = ({
-  items
+// ─── For products: style your own charts like the gallery ────────────────────
+// The gallery is a showcase, not a component. A product drawing its own
+// recharts chart reads these instead of guessing axis ink and tooltip chrome —
+// guessing is how a dashboard ends up with default grey axes and a rounded
+// white tooltip beside Onganda panels.
+//
+//   const t = chartTheme(isDark);
+//   <CartesianGrid {...t.grid} />
+//   <XAxis dataKey="week" {...t.axis} />
+//   <Tooltip {...t.tooltip} />
+//   <Bar dataKey="health" fill={t.series[0]} />
+//   <ChartLegend isDark={isDark} items={[{ label: 'Health', color: t.series[0] }]} />
+export const chartTheme = (isDark = false) => {
+  const c = roles(isDark);
+  return {
+    /** take colours from the front, in order — see CHART_SERIES */
+    series: CHART_SERIES,
+    grid: { stroke: c.line, vertical: false },
+    axis: {
+      tick: { fontSize: TYPE.micro.size, fill: c.textMuted },
+      axisLine: { stroke: c.lineStrong },
+      tickLine: false
+    },
+    tooltip: {
+      contentStyle: { background: c.surface, border: `1px solid ${c.lineStrong}`, borderRadius: 0, boxShadow: 'none', fontSize: TYPE.meta.size },
+      labelStyle: { color: c.text, fontWeight: TYPE.ui.weight },
+      itemStyle: { color: c.textBody },
+      cursor: { fill: c.line }
+    }
+  } as const;
+};
+
+/** The legend that sits under every chart: a square per series (a short bar
+ *  for a dashed line) and a tracked uppercase label in muted ink. */
+export const ChartLegend = ({
+  items,
+  isDark = false
 }: {
   items: Array<{
     label: string;
     color: string;
     dash?: boolean;
   }>;
+  isDark?: boolean;
 }) => <div style={{
   display: 'flex',
   gap: 16,
@@ -472,7 +508,7 @@ const ChartLegend = ({
       fontWeight: 700,
       letterSpacing: '0.12em',
       textTransform: 'uppercase',
-      color: C.label
+      color: roles(isDark).textMuted
     }}>
           {item.label}
         </span>

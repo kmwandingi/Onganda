@@ -94,7 +94,7 @@
     "check:docs": "node scripts/check-docs.mjs",
     "check:tokens:export": "node scripts/build-tokens.mjs --check",
     "build:tokens": "node scripts/build-tokens.mjs",
-    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs && npm run check:tokens:export && npm run check:token-css",
+    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs && npm run check:tokens:export && npm run check:token-css && npm run check:test-pages",
     "test:package": "node tests/package-smoke.mjs",
     "test:consumer": "node tests/consumer-render.mjs",
     "test:browser": "playwright test",
@@ -105,7 +105,9 @@
     "build:layout": "node scripts/build-layout-css.mjs",
     "reference": "node scripts/capture-reference.mjs",
     "build:token-css": "node scripts/build-token-css.mjs",
-    "check:token-css": "node scripts/build-token-css.mjs --check"
+    "check:token-css": "node scripts/build-token-css.mjs --check",
+    "test-pages": "node scripts/capture-test-pages.mjs",
+    "check:test-pages": "node scripts/check-design-tokens.mjs --paths src/test-pages"
   },
   "peerDependencies": {
     "framer-motion": ">=10.0.0",

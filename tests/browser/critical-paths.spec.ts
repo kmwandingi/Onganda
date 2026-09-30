@@ -1,6 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 import { stubMapTiles } from './support/map-tiles';
 
+// The consumer test pages (src/test-pages) are built only from the package.
+// They sit under every guard the public routes do, so a primitive that breaks
+// in a product's layout fails here rather than in the product.
+const TEST_PAGES = ['/test/app', '/test/dashboard', '/test/form', '/test/landing', '/test/article'];
+
 const capturePageErrors = (page: Page) => {
   const errors: string[] = [];
   page.on('console', message => {
@@ -25,7 +30,7 @@ for (const width of [320, 360, 390, 768, 834, 1024, 1440]) {
   test(`no horizontal overflow on any public route at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await stubMapTiles(page);
-    for (const route of ['/', '/full', '/showcase']) {
+    for (const route of ['/', '/full', '/showcase', ...TEST_PAGES]) {
       await page.goto(route);
       await page.waitForTimeout(400);
       const overflow = await page.evaluate(
@@ -36,7 +41,7 @@ for (const width of [320, 360, 390, 768, 834, 1024, 1440]) {
   });
 }
 
-for (const route of ['/', '/full', '/showcase']) {
+for (const route of ['/', '/full', '/showcase', ...TEST_PAGES]) {
   test(`${route} renders its primary content`, async ({ page }) => {
     const errors = capturePageErrors(page);
     await stubMapTiles(page);

@@ -224,7 +224,11 @@ export const PixelTable = <Row,>({
       tabIndex={0}
       role="region"
       aria-label={caption ? `${caption} (scrolls horizontally)` : 'Data table, scrolls horizontally'}
-      style={{ border: `1px solid ${c.line}`, background: c.surface }}
+      // `contain: inline-size` keeps the table's width out of its parent's
+      // sizing. Without it a table in a grid column widens the column to its
+      // own width, and the page scrolls sideways on a phone instead of the
+      // table scrolling inside its frame.
+      style={{ border: `1px solid ${c.line}`, background: c.surface, contain: 'inline-size' }}
     >
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
         {caption && <caption className="px-4 pt-4 pb-2 text-left text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c.textMuted }}>{caption}</caption>}
@@ -258,7 +262,9 @@ export const PixelTable = <Row,>({
                     textAlign: col.numeric ? 'right' : 'left',
                     padding: '12px 16px',
                     color: c.textBody,
-                    fontVariantNumeric: col.numeric ? 'tabular-nums' : undefined
+                    fontVariantNumeric: col.numeric ? 'tabular-nums' : undefined,
+                    // "2.1 GB" broken over two lines reads as two values.
+                    whiteSpace: col.numeric ? 'nowrap' : undefined
                   }}
                 >{col.render(row)}</td>
               ))}

@@ -165,6 +165,7 @@ export const PixelFocusRow = ({
   children,
   isDark = false
 }: {
+  /** 0-based position in the list; the row shows index + 1 as its ordinal */
   index: number;
   accent: string;
   title: string;
@@ -277,6 +278,9 @@ export const PixelLabCard = ({
 // The site's last surface, and deliberately the largest: a wide card with
 // corner marks, a heading column and a form column. A page that ends in a
 // thin footer link instead of this reads as unfinished.
+// Renders its own full-width <section> and max-w-7xl container, like
+// PixelEditorialSection. Place it straight in the page; wrapping it in another
+// padded container indents it from every other section.
 export const PixelContactPanel = ({
   id,
   eyebrow,

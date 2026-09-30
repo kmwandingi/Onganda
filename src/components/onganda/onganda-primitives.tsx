@@ -232,6 +232,7 @@ export const SectionHeader = ({
   label,
   headline,
   accent,
+  level = 2,
   isDark = false,
   className = '',
   ...rest
@@ -240,10 +241,15 @@ export const SectionHeader = ({
   headline: string;
   /** the section's one permitted accent; defaults to the accent ink */
   accent?: string;
+  /** 1 when this header opens the page. A screen whose first header is its
+   *  title needs an <h1>; a page built only from section headers otherwise
+   *  has no top of its outline. Same look either way. */
+  level?: 1 | 2;
   isDark?: boolean;
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) => {
   const c = roles(isDark);
+  const Heading = level === 1 ? 'h1' : 'h2';
   return (
     <div {...rest} className={`border-b pb-6 mb-12 ${className}`} style={{ borderColor: c.line, ...rest.style }}>
       <div className="mb-3 flex items-center gap-3">
@@ -263,7 +269,7 @@ export const SectionHeader = ({
           {label}
         </p>
       </div>
-      <h2 className="max-w-4xl" style={{
+      <Heading className="max-w-4xl" style={{
         fontSize: TYPE.pageTitle.size,
         fontWeight: TYPE.pageTitle.weight,
         lineHeight: TYPE.pageTitle.lineHeight,
@@ -271,7 +277,7 @@ export const SectionHeader = ({
         margin: 0
       }}>
         {headline}
-      </h2>
+      </Heading>
     </div>
   );
 };

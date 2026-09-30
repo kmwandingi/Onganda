@@ -65,6 +65,12 @@ cheap imitation — correct parts, wrong register.
 Open the reference first, and again when your surface is built. Put your
 screenshot beside it and name the difference.
 
+**See it done from the package.** `/test/app`, `/test/dashboard`,
+`/test/form`, `/test/landing` and `/test/article` (`src/test-pages`) are built
+only from `@onganda/design-system`, as a product would build them.
+`screenshots/test-pages/compare-*.png` lays each one beside the reference
+shots it should resemble. Start from the page closest to what you are building.
+
 ### What separates a product surface from a cheap imitation
 
 Measured on real products that followed every rule and still looked cheap.
@@ -212,6 +218,10 @@ licence to invent generic chrome.
 Run `npm run check:design` first. It runs two guards: `check:tokens` for lexical drift (generic framework colors, off-palette hex and `rgba()`, `oklch`, system colors used as chrome, raw `STATUS` reads, rounded geometry) and `check:contrast` for every measured ratio behind §4. Never widen a guard to make it pass. In a consumer project the same gate runs as `npx onganda-check src/`.
 
 Then run the repository's type check, lint, builds, and package consumer test.
+When you change a primitive, run `npm run test-pages` and open the
+`compare-*.png` sheets: the consumer pages are where a primitive meets a real
+layout, and they are under the same overflow, contrast and console guards as
+the public routes.
 Run `npm run test:browser`, which includes the contrast audit over every
 rendered text node and the composition standard above. For visible changes, inspect desktop and mobile renders with Playwright. Exercise keyboard, pointer, responsive, overflow, loading, and error states. Check browser console errors and update focused visual snapshots when the intended design changes.
 

@@ -5,6 +5,31 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — consumer test pages, compared with the reference
+
+- **`/test/app`, `/test/dashboard`, `/test/form`, `/test/landing`,
+  `/test/article`** (`src/test-pages`) — built only from
+  `@onganda/design-system`, as a product would build them. They run under the
+  overflow, contrast and console guards of the public routes, and
+  `check:test-pages` runs the token guard on them in consumer mode.
+- **`npm run test-pages`** screenshots each page at desktop and phone width and
+  writes `screenshots/test-pages/compare-*.png`, the page beside the reference
+  shots it should resemble. Every reference shot is paired with a page.
+
+What building them found, and fixed in the package:
+
+- **`PixelTable` widened its grid column.** A wide table in a grid column
+  pushed the page sideways on a phone. The frame now uses
+  `contain: inline-size` and scrolls inside itself. Numeric cells no longer
+  wrap ("2.1 / GB").
+- **No way to style a product's own chart.** The charts module exported only
+  the gallery. `chartTheme(isDark)` (grid, axes, tooltip, series) and
+  `ChartLegend` are exported now, both role-aware.
+- **A page titled by `SectionHeader` had no `<h1>`.** `level={1}` renders the
+  headline as the page heading, same look.
+- `PixelFocusRow`'s `index` is documented as 0-based, and `PixelContactPanel`
+  as bringing its own container. Both were misread while building the pages.
+
 ### Changed — the primary action is ochre, not black
 
 A char black primary made every screen read as a black slab with some cream

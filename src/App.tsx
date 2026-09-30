@@ -8,6 +8,9 @@ const NamibiaAISystemsHub = lazy(() =>
   import('./components/onganda/NamibiaAISystemsHub').then(m => ({ default: m.NamibiaAISystemsHub }))
 );
 
+// Consumer test pages: built only from the package, see src/test-pages.
+const TestPages = lazy(() => import('./test-pages').then(m => ({ default: m.TestPages })));
+
 const theme: Theme = 'light';
 // only use 'centered' container for standalone components, never for full page apps or websites.
 const container: Container = 'none';
@@ -35,6 +38,7 @@ function App() {
   const generatedComponent = useMemo(() => {
     if (routePath === '/showcase') return <Suspense fallback={null}><NamibiaAISystemsHub /></Suspense>;
     if (routePath === '/full') return <OngandaPublicSite page="full" />;
+    if (routePath === '/test' || routePath.startsWith('/test/')) return <Suspense fallback={null}><TestPages path={routePath} /></Suspense>;
     return <OngandaPublicSite page="home" />;
   }, [routePath]);
 

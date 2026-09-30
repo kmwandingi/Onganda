@@ -8,6 +8,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
+      // The test pages import the package by name, as a consumer does.
+      '@onganda/design-system': path.resolve(__dirname, './src/design-system/index.ts'),
       '@': path.resolve(__dirname, './src'),
     },
   },

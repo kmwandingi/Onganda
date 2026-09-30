@@ -49,6 +49,6 @@ Before you make any changes to UI, styling, components, or layout, you MUST:
 24. **Give every surface that loads an empty, loading and error state.** They are part of the design, not an afterthought.
 
 ### Validation
-25. **Run `npm run check:design`** before considering any UI change complete — it runs the token guard and re-measures every documented contrast ratio. Then run `npm run test:browser` and a Playwright pass for rendered desktop/mobile layout, motion, hover/tap states, and console errors.
+25. **Run `npm run check:design`** before considering any UI change complete — it runs the token guard and re-measures every documented contrast ratio. Then run `npm run test:browser` and a Playwright pass for rendered desktop/mobile layout, motion, hover/tap states, and console errors. When you change a primitive, run `npm run test-pages` and open `screenshots/test-pages/compare-*.png` — the consumer pages under `/test` are built only from the package and show how the change lands in a real product layout.
 
 Failure to follow these rules will result in visual regressions and break the cultural and architectural alignment of the project.

@@ -631,7 +631,11 @@ rather than generic chrome.
 
 Uppercase tracked headers, hairline row rules, tabular figures on `numeric`
 columns, horizontal scroll rather than page overflow, and a real `<caption>`.
-Pass `empty` and the table renders that instead of an empty body.
+Pass `empty` and the table renders that instead of an empty body. Numeric
+cells never wrap, and the frame uses `contain: inline-size`, so a wide table in
+a grid column scrolls inside its frame instead of widening the column and the
+page. Inside a titled `PixelPanel`, the caption repeats the panel title; keep
+the caption short or make it the panel's eyebrow.
 
 ### PixelPanel
 
@@ -998,7 +1002,10 @@ import { SectionHeader } from '@onganda/design-system';
 />
 ```
 
-Props: `label`, `headline`, `accent` (default `accentInk`), `isDark` (default `false`).
+Props: `label`, `headline`, `accent` (default `accentInk`), `level` (`1` or `2`,
+default `2`), `isDark` (default `false`). Pass `level={1}` when the header opens
+the page: a screen whose title is a `SectionHeader` otherwise has no `<h1>`.
+The look does not change.
 
 Renders the four-part rhythm the public site opens every section with, in this
 order every time: an accent `PixelDot`, a 12px uppercase label, a 30px
@@ -1215,7 +1222,32 @@ import { ChartGallery } from '@onganda/design-system/charts';
 A composed showcase of all chart types using Recharts and the Onganda palette:
 bar, line, area, pie, radar, scatter, treemap, funnel, radial bar, and composed charts.
 
-All chart colours derive from `COLOR` — no hardcoded hex in chart code.
+**Drawing your own chart.** The gallery is a specimen, not a component. A
+product charting its own data reads `chartTheme(isDark)` for the grid, axes,
+tooltip and series, and puts `ChartLegend` under the chart inside a
+`PixelPanel`. Without them a dashboard gets default grey axes, a rounded white
+tooltip and no legend beside Onganda panels.
+
+```tsx
+import { chartTheme, ChartLegend } from '@onganda/design-system/charts';
+
+const t = chartTheme(isDark);
+<PixelPanel eyebrow="Queries by sector" title="Weekly volume">
+  <ResponsiveContainer width="100%" height={240}>
+    <BarChart data={weekly}>
+      <CartesianGrid {...t.grid} />
+      <XAxis dataKey="week" {...t.axis} />
+      <YAxis {...t.axis} axisLine={false} />
+      <Tooltip {...t.tooltip} />
+      <Bar dataKey="health" fill={t.series[0]} />
+    </BarChart>
+  </ResponsiveContainer>
+  <ChartLegend isDark={isDark} items={[{ label: 'Health', color: t.series[0] }]} />
+</PixelPanel>
+```
+
+Take series colours from the front of `t.series`, in order. See
+`/test/dashboard` for a full page.
 
 ---
 
