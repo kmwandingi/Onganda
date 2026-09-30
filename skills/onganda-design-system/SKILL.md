@@ -227,21 +227,117 @@ before you claim it is done.
 
 For geospatial work, import `OngandaMap` from `@onganda/design-system/maps` and load `@onganda/design-system/maps.css`. Keep tile providers and attribution configurable. Preserve geographic accuracy, keyboard navigation, marker labels, responsive fit, and reduced-motion behavior.
 
+## The five systems
+
+Onganda borrows the path grain takes through an Oshiwambo homestead: stored,
+ground, held, set down where it is used, delivered. Each system has a name
+(Oshiwambo first, English second), a role, a colour and an ordinal tag. When
+you build a feature, name the system it belongs to and use its identity.
+
+| Tag | System | English | Role | Colour |
+|---|---|---|---|---|
+| `01` | Okaanda | Granary | Model & data platform — storage, repositories, datasets | Ochre Orange |
+| `02` | Oshini | Mill | Adaptation workflows — fine-tuning, distillation, compression | Bark Rust |
+| `03` | Ombiga | Vessel | Agents & containers — runtimes, agent memory, model containers | Mahangu Gold |
+| `04` | Etiti | Surface | Interfaces & dashboards — UIs, read surfaces, workspaces | Mopane Brown |
+| `05` | Oshitoo | Delivery | Applications & sector products — health, agriculture, education | Dye Plum |
+
+Read the colours through `SYSTEM_COLOR` and the data through `SYSTEMS`; draw
+the icons with `systemIconForName`. A system colour identifies that system.
+It is never chosen for decoration. Do not invent cultural meanings or imply
+deployments that are not real, and have names validated before they lock.
+
+## Motion and interaction
+
+Motion is part of the language, not a garnish. It is quiet and mechanical:
+things slide, step and settle. Nothing springs, bounces, glows, floats or
+scales on hover. Spread the `MOTION` presets instead of writing timings:
+
+| Preset | Use |
+|---|---|
+| `MOTION.entrance` | A section or card appearing on mount |
+| `MOTION.fadeUp` | A section entering on scroll (`whileInView`, once) |
+| `MOTION.staggerParent` / `staggerChild` | A list or grid arriving item by item (80ms) |
+| `MOTION.hoverLift` | A card that is a link or opens something: lifts 4px, tween, no scale |
+| `MOTION.tap` | Every button: compresses to 0.97 on press (built into `PixelButton`) |
+| `MOTION.ticker` | The system ticker's continuous marquee — editorial pages only |
+
+- **Every interactive thing answers.** A clickable card lifts or takes its
+  accent edge; a control shows hover, focus and pressed; a selected item takes
+  `controlOn` or the accent edge. Never texture as a state.
+- **Loading moves, and stops.** `PixelSkeleton` and `PixelProgress` show work
+  progressing; an error replaces them with a `PixelNotice status="critical"`,
+  not a skeleton that sweeps forever.
+- **Respect reduced motion.** Anything that repeats — ticker, sweep, edge
+  strips — is guarded by `useMotionOK()`, and the page is complete and
+  readable without motion.
+- Keep the showcase's motion on public pages: ticker, pixel-column motion,
+  staggered headline entrance, card entrance and hover lift. A product screen
+  uses entrance, stagger, hover and tap. Never the ticker.
+
+## Type, space and layout
+
+- **Two faces, both clean.** Inter for body and interface; Space Grotesk for
+  headings (`h1`–`h4` pick it up from `style.css`). Never a pixel font for text.
+- **The type scale is closed.** Use `TYPE` steps (`eyebrow`, `label`, `meta`,
+  `body`, `title`, `headline`, `pageTitle`, `display`) or the matching CSS
+  variables. `check:tokens` fails any other font size. No `tracking-tight`.
+- **Space is the 4px grid** (`SPACE_SCALE`, `--onganda-space-*`) with the
+  editorial rhythm in `SPACE`: 96px between sections, 24px / 48px gutters,
+  `max-w-7xl` containers. Calm and generous; if it feels cluttered, remove
+  something rather than shrinking it.
+- **Density changes spacing, never type.** A popup or side panel wraps in
+  `<DensityProvider value="compact">`; the labels stay the same size.
+- **Sharp geometry.** No rounded corners, no shadows. Depth is a hairline, a
+  spine, stepped corner marks, and the weave on grounds.
+- **Display type scales with `clamp()`** (`DISPLAY.hero`, `DISPLAY.heroPublic`),
+  never with viewport width alone. Check the real line breaks at 360, 768 and
+  1280px; a hero's tags, ticker and CTA must not collide with the headline.
+- **One `<h1>` per page.** When a `SectionHeader` is the page title, pass
+  `level={1}`.
+
+## Pixel by default, type by default
+
+Pixels are for symbol: icons on an integer grid (`Icon*`, `createPixelIcon`),
+system icons, corner marks, tags, dots, the hero's pixel columns. Diagrams use
+step-lines — horizontal then vertical, 90° turns — and blocky nodes, never
+curves. Everything you read is clean type. Lines and fills are solid: no
+dotted or dashed rules.
+
+## Public pages
+
+A public page explains why Onganda exists, what it is building, how the five
+systems fit together, and how to start a conversation. It is not a brand
+guide: no palette explanations, component inventories or design-system prose
+for visitors. Keep the black lab card in a systems grid, make the main contact
+a rich inquiry surface (`PixelContactPanel`), not a footer link, and do not
+repeat a point in two sections.
+
+## Generated content
+
+Anything an AI generates — a document, a deck, a section — lands as normal,
+editable blocks or slides, never as an image or an opaque blob. Keep a
+schema-first response contract, keep the endpoint user-configured, and ask for
+missing brief context before generating. `AiAuthoringPanel` is the pattern.
+
 ## Build the whole language, not the safe corner of it
 
 Every prohibition below can be satisfied by a thin page — a few bordered cards
 and a button — that passes every automated check and looks nothing like
 Onganda. That is the most common failure, and it is the one to guard against.
 
-A finished Onganda surface carries all of these, and
-`tests/browser/composition.spec.ts` fails without them:
+A finished **editorial** surface — a public page, a landing page, the
+showcase — carries all of these, and `tests/browser/composition.spec.ts`
+fails without them. A **product** surface does not: it takes the rhythm,
+marks, icons, motion, controls and space, and follows "Where colour goes on a
+product screen" above. No ticker, no inverse hero, no textured cards.
 
 - **Editorial rhythm** — `SectionHeader`'s uppercase label above a headline, on every major section.
-- **Texture** — at least one surface with `WeaveOverlay` at 0.03–0.08.
+- **Texture** — the weave on the page ground or an inverse panel, at a `TEXTURE` step. Never on cards.
 - **Pixel marks** — `PixelDot`, `PixelTag`, or `PixelCornerMarks` as punctuation.
 - **No dotted rules.** The dither rule is retired; a divider is a solid hairline, and most blocks need none.
 - **Pixel iconography** — `Icon*`, `systemIconForName`, or `createPixelIcon`.
-- **An inverse band** — the black-card language, with `isDark` passed to its controls.
+- **An inverse band** — the black-card language, with `isDark` passed to its controls (editorial pages).
 - **Real motion** — `MOTION` presets on entrance, hover and tap.
 - **System controls** — every button and field from the primitives.
 - **Generous space** — the `SPACE` scale; nothing cramped.
@@ -262,7 +358,7 @@ licence to invent generic chrome.
 
 ## Verify the result
 
-Run `npm run check:design` first. It runs two guards: `check:tokens` for lexical drift (generic framework colors, off-palette hex and `rgba()`, `oklch`, system colors used as chrome, raw `STATUS` reads, rounded geometry) and `check:contrast` for every measured ratio behind §4. Never widen a guard to make it pass. In a consumer project the same gate runs as `npx onganda-check src/`.
+Run `npm run check:design` first. It runs two guards: `check:tokens` for lexical drift (generic framework colors, off-palette hex and `rgba()`, `oklch`, system colors used as chrome, raw `STATUS` reads, rounded geometry, off-scale type and texture, shadows, dotted or dashed lines, texture as a state) and `check:contrast` for every measured ratio behind §4. Never widen a guard to make it pass. In a consumer project the same gate runs as `npx onganda-check src/`.
 
 Then run the repository's type check, lint, builds, and package consumer test.
 When you change a primitive, run `npm run test-pages` and open the
@@ -271,5 +367,14 @@ layout, and they are under the same overflow, contrast and console guards as
 the public routes.
 Run `npm run test:browser`, which includes the contrast audit over every
 rendered text node and the composition standard above. For visible changes, inspect desktop and mobile renders with Playwright. Exercise keyboard, pointer, responsive, overflow, loading, and error states. Check browser console errors and update focused visual snapshots when the intended design changes.
+
+Then look, at 390px and 1280px, in light and dark:
+
+- No document-level horizontal overflow; wide tables scroll inside their frame.
+- Hero text, tags, ticker and CTAs do not collide; display type breaks well.
+- Motion actually happens — entrance, hover, tap — and stops under reduced motion.
+- Cards are flat; texture only on grounds and inverse panels.
+- Colour sits on the work: the primary is ochre, peers carry `accentFor(i)`, metadata is neutral. A black primary means you are looking at an old build.
+- Every loading surface has its empty, loading and error state.
 
 Do not deploy, publish, or change unrelated product behavior unless the task asks for it.

@@ -380,13 +380,14 @@ showcase still contains every pattern an agent will reach for.
 ## 6. Typography & Layout
 
 ### Typography
-*   **Font Families**: We use `Inter`, `Arial`, or standard sans-serif for body and headings. No pixel fonts for reading text.
+*   **Font Families**: `Inter` for body and interface, `Space Grotesk` for headings (`FONT.display`, applied to `h1`–`h4` by `style.css`). No pixel fonts for reading text.
+*   **Scale**: the closed `TYPE` scale in `onganda-type.ts`; `check:tokens` fails any other size.
 *   **Hierarchy**: Use clear font weight distinctions. Avoid overly large fonts unless it's a major section heading.
 *   **Contrast**: In dark mode, ensure text is legible against `Char Black`. Use `Millet Clay` for primary text. In light mode, use `Char Black` or variations with reduced opacity for primary text.
 
 ### Layout & Sizing
 *   **Whitespace**: Use Tailwind spacing utilities aggressively (`p-8`, `px-12`, `mb-24`). Sections should have distinct breathing room.
-*   **Borders**: Keep borders subtle and thin (`border-[#1E1A17]/10` in light mode, `border-[#E8E1CF]/10` in dark mode).
+*   **Borders**: Keep borders subtle and thin — the `line` role (`border-line`, `var(--onganda-line)`), never a raw hex.
 *   **Hero Fit**: Hero compositions may layer type, tickers, tags, and pixel textures, but overlap must be intentional, balanced, and verified at desktop and mobile sizes. If a ticker, tag, or CTA reads as accidentally colliding with the headline, add spacing or reduce scale before shipping.
 *   **No Viewport Guessing**: Do not scale typography directly with viewport width alone. Use `clamp()` with conservative bounds and verify real rendered line breaks.
 
@@ -499,7 +500,7 @@ The homepage should avoid repeated editorial sections. If "What we are building"
 *   Contact areas should feel as rich and intentional as other sections. A compact contact block is acceptable only for a small footer; the main Home contact should include the full inquiry surface.
 
 ### Stability Tiers
-*   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar`, `DitherStrip`, `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `onganda-icons.tsx`.
+*   **Stable foundation**: `COLOR`, `WEAVE`, `SYSTEMS`, `SWATCHES`, `PRINCIPLES`, `DarkContext`, `useDark`, `Px`, `PixelDot`, `DitherBar` (a hairline now), `PixelTag`, `PixelButton`, `SectionHeader`, `WeaveOverlay`, `PixelCornerMarks`, `SystemCard`, `StatCard`, `SwatchChip`, and the icons in `onganda-icons.tsx`.
 *   **Reusable but page-shaped**: `OngandaNav`, `OngandaHero`, `ResearchSignals`, `SystemConnectionDiagram`, `PixelHeatmap`, `RoadmapTimeline`, `FieldApplications`, `PixelFlowchart`, `IconShowcase`, and `Publications`.
 *   **Product shells**: `DocumentEditor` and `SlideEditor`. These are usable surfaces, but they are larger, stateful modules and should not be treated as small primitives.
 *   **AI authoring surface**: `AiAuthoringPanel`. Use it as the starting pattern for chat-like generation workflows: schema-first output, endpoint configured by the user, deterministic apply-to-editor behavior, and generated content that becomes normal editable blocks/slides.
