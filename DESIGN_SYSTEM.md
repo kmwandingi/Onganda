@@ -709,8 +709,29 @@ buttons for very narrow surfaces.
 />
 ```
 
-A solid edge with corner marks and the weave texture — the empty state is a
-designed surface, not a blank panel.
+A recessed well with a solid edge and corner marks — the empty state is a
+designed surface, not a blank panel. No texture: that belongs to grounds.
+
+### PixelDropZone
+
+```tsx
+<PixelDropZone
+  title="Drop the batch here"
+  hint="mp4 · mov · webm — up to 12 files"
+  accept="video/*"
+  multiple
+  onFiles={files => ingest(files)}
+>
+  <PixelButton variant="ghost" onClick={loadExample}>Example batch</PixelButton>
+</PixelDropZone>
+```
+
+Where a product takes files. A recessed well with a solid edge and corner
+marks; dragging over it turns the edge accent ink and lifts the ground to the
+surface. "Choose files" is built in and opens the picker; `children` add more
+actions beside it. It exists because every product that took media
+hand-rolled one with a dashed border and a weave that switched on while
+dragging — both retired, both now failed by `check:tokens`.
 
 ### PixelSkeleton
 
@@ -936,10 +957,10 @@ Must be inside a `position: relative; overflow: hidden` parent.
 ```tsx
 import { WeaveOverlay } from '@onganda/design-system';
 
-<div style={{ position: 'relative', overflow: 'hidden', background: '#F3E8C3' }}>
-  <WeaveOverlay isDark={false} opacity={TEXTURE.surface} />
-  {/* card content */}
-</div>
+<section style={{ position: 'relative', overflow: 'hidden', background: c.canvas }}>
+  <WeaveOverlay isDark={false} opacity={TEXTURE.ground} />
+  {/* the page ground — not a card */}
+</section>
 ```
 
 Props: `isDark` (default `false`), `opacity` (default `0.045`).
@@ -1853,7 +1874,7 @@ src/
   pages/
     Home.tsx       ← compose from OngandaNav, OngandaHero, sections...
   components/
-    MyCard.tsx     ← WeaveOverlay + PixelCornerMarks + roles(isDark)
+    MyCard.tsx     ← PixelPanel (flat: surface, hairline, corner marks)
     MyIcon.tsx     ← Px + <rect> only
 ```
 

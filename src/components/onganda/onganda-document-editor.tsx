@@ -2479,8 +2479,8 @@ const SpacerBlock = ({
     <div data-onganda-export-ui="true" style={{
       position: 'absolute',
       inset: 0,
-      borderTop: `1px dashed ${COLOR.ochreOrange}55`,
-      borderBottom: `1px dashed ${COLOR.ochreOrange}30`,
+      borderTop: `1px solid ${COLOR.ochreOrange}55`,
+      borderBottom: `1px solid ${COLOR.ochreOrange}30`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -3079,7 +3079,7 @@ function DocBlockView({
     onDragOver();
   }} style={{
     position: 'relative',
-    outline: isSelected ? `1.5px solid ${selBorder}` : isDragOver ? `1.5px dashed ${COLOR.ochreOrange}90` : '1.5px solid transparent',
+    outline: isSelected ? `1.5px solid ${selBorder}` : isDragOver ? `1.5px solid ${COLOR.ochreOrange}90` : '1.5px solid transparent',
     outlineOffset: 2,
     padding: '4px 0',
     marginTop: marginBefore,
@@ -4491,7 +4491,7 @@ const PageGuideOverlay = ({
         top: `${page * A4_PAGE_HEIGHT_MM}mm`,
         left: 0,
         width: '100%',
-        borderTop: `1px dashed ${COLOR.ochreOrange}80`
+        borderTop: `1px solid ${COLOR.ochreOrange}80`
       }}>
           <span data-onganda-export-ui="true" style={{
           position: 'absolute',

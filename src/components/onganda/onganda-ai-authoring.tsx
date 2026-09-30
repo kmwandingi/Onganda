@@ -393,7 +393,7 @@ export const AiAuthoringPanel = ({
           <button onClick={askForContext} disabled={busy} style={{ padding: 10, border: `1px solid ${border}`, background: 'transparent', color: fg, cursor: 'pointer', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ask</button>
           <button onClick={() => generate(true)} disabled={busy || !brief.trim()} style={{ padding: 10, border: 0, background: COLOR.ochreOrange, color: COLOR.milletClay, cursor: busy || !brief.trim() ? 'not-allowed' : 'pointer', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{busy ? 'Working' : 'Generate'}</button>
         </div>
-        <button onClick={() => generate(false)} disabled={busy || !brief.trim()} style={{ width: '100%', marginTop: 8, padding: 9, border: `1px dashed ${border}`, background: 'transparent', color: muted, cursor: busy || !brief.trim() ? 'not-allowed' : 'pointer', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <button onClick={() => generate(false)} disabled={busy || !brief.trim()} style={{ width: '100%', marginTop: 8, padding: 9, border: `1px solid ${border}`, background: 'transparent', color: muted, cursor: busy || !brief.trim() ? 'not-allowed' : 'pointer', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           <IconRefresh size={11} color={muted} /> Offline scaffold
         </button>
         {result && <div style={{ marginTop: 12, padding: 12, border: `1px solid ${COLOR.ochreOrange}50`, background: bg }}>

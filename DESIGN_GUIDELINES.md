@@ -307,7 +307,7 @@ and only there".
 
 ### Hierarchy: one or two feature surfaces
 
-`PixelPanel` has two weights. `feature` — corner marks and weave — is for the
+`PixelPanel` has two weights. `feature` — corner marks in its accent — is for the
 surface the user came to work on. `quiet` — surface and hairline — is for
 everything they work *in*: sidebars, inspectors, export bars, transcripts.
 
@@ -327,9 +327,13 @@ one call site at a time — ten weave opacities and thirteen dither opacities
 across the components, so the same object read as a different weight in every
 section.
 
-- **Texture belongs to grounds and inverse panels.** A card repeats it only
-  when it sits on a plain ground. Never stack it: a textured card on a
-  textured ground is the weave twice, and that is what makes a page muddy.
+- **Texture belongs to grounds and inverse panels, not cards.** The public
+  site's cards are flat; `PixelPanel`, `PixelNotice`, `PixelDialog` and
+  `PixelEmptyState` are flat too. The one textured card grid is the
+  five-system grid. Never switch texture on for a state — selected, active,
+  drag-over — `check:tokens` fails `texture-as-state`. When every card carried
+  the weave, every product screen came out textured, because every card a
+  product builds is a `PixelPanel`.
 - **No dotted rules.** The dither rule is retired. Repeated under every
   header, card foot and progress bar, the dots read as fussy and were never
   consistent from one section to the next. A divider is a solid hairline
@@ -398,7 +402,7 @@ All visual flair must be pixelated.
 
 ### Core Textures
 *   **No dotted or striped fills.** Pixels live in icons, marks and the hero's columns; a line or a fill is solid.
-*   **Basket-Weave (`WEAVE`)**: Derived from Oshiwambo coil strands + stepped diamond patterns. Use the `WeaveOverlay` primitive to add depth to cards and hero sections. It comes in both `light` and `dark` variants.
+*   **Basket-Weave (`WEAVE`)**: Derived from Oshiwambo coil strands + stepped diamond patterns. Use the `WeaveOverlay` primitive on page grounds, hero sections and inverse panels — not on cards. It comes in both `light` and `dark` variants.
 
 ### Motion & Interaction
 Motion is part of the design language, not a garnish.

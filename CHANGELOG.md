@@ -5,6 +5,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — cards are flat, and colour goes on the work
+
+A product built from the latest package came out with texture on every card
+and colour either everywhere or nowhere. The causes were in the package:
+
+- **`PixelPanel` defaulted to the weave.** It transcribes the site's feature
+  card, which is flat. Because every card a product builds is a `PixelPanel`,
+  every card came out textured. `texture` now defaults to `none`.
+  `PixelNotice`, `PixelDialog` and `PixelEmptyState` drop their built-in
+  weave; the publication and map cards drop theirs. Texture stays on page
+  grounds, inverse panels and the five-system grid.
+- **`PixelChoice` switched the weave on when selected**, and products copied
+  it onto active nav items, selected rows and drag-over states. Removed, and
+  `check:tokens` now fails **`texture-as-state`**.
+- **The guidance licensed it**: "a card repeats it only when it sits on a
+  plain ground" — which is nearly every card. Rewritten.
+- **No positive colour recipe.** The rules said where colour may not go, so
+  products swung between confetti and one black button on beige. SKILL.md
+  now has "Where colour goes on a product screen", and
+  `reference/product-surface.png` shows it: an ochre primary, the section's
+  accent, each peer item `accentFor(i)` on its spine and a filled ordinal,
+  state through `statusFor`, neutral metadata.
+- **`PixelDropZone`** — a solid-edged drop target. Products hand-rolled dashed
+  ones; `dotted-rule` now fails dashed borders and outlines too, and the
+  editors' dashed insertion targets are solid.
+- **Stale dev servers.** SKILL.md says to restart the dev server and clear
+  `node_modules/.vite` after upgrading, with a canary: a black primary button
+  means an old build is being served.
+
 ### Added — consumer test pages, compared with the reference
 
 - **`/test/app`, `/test/dashboard`, `/test/form`, `/test/landing`,

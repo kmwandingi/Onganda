@@ -3174,7 +3174,7 @@ const SlideCanvas = ({
           {[1, 2, 3].map(i => <div key={`guide-col-${i}`} style={{
             width: 60,
             height: 40,
-            border: `1px dashed ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.15)'}`
+            border: `1px solid ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.15)'}`
           }} />)}
         </div>
         <p style={{
@@ -4929,7 +4929,7 @@ export const SlideEditor = ({
             width: '100%',
             padding: '7px',
             background: 'transparent',
-            border: `1px dashed ${panelBorder}`,
+            border: `1px solid ${panelBorder}`,
             cursor: 'pointer',
             fontSize: 9,
             fontWeight: 600,

@@ -26,12 +26,26 @@ Inspect the relevant public export before writing code. Use the smallest suitabl
 
 ## Consume the package correctly
 
-The package is not on npm. Consumers install it straight from GitHub, pinned
-to a commit:
+The package is not on npm. Consumers install it straight from GitHub, either
+tracking `main` or pinned to a commit:
 
 ```json
-"@onganda/design-system": "github:kmwandingi/Onganda#<sha>"
+"@onganda/design-system": "github:kmwandingi/Onganda#main"
 ```
+
+To get the latest: `npm install @onganda/design-system@github:kmwandingi/Onganda#main --force`
+(or `pnpm add … --force`). The lockfile freezes a git dependency at the commit
+it first resolved, so an unchanged `#main` alone does not update. The installed
+version carries the commit — `1.2.0+5dfefce` — and must match the first seven
+characters of `git ls-remote https://github.com/kmwandingi/Onganda HEAD`.
+
+**Then restart the dev server and clear `node_modules/.vite`.** A dev server
+that was running during the install keeps serving the pre-bundled old package,
+and every screenshot you take judges code that is no longer installed. That
+has already happened: a product's screenshots showed a black primary button
+and an ochre accent from a build whose primary is ochre and accent gold.
+**Canary: if your `variant="primary"` button renders black, you are looking at
+an old build** — stop and fix the install before changing any design.
 
 Two consequences, both of which have already cost a debugging session:
 
@@ -71,6 +85,35 @@ only from `@onganda/design-system`, as a product would build them.
 `screenshots/test-pages/compare-*.png` lays each one beside the reference
 shots it should resemble. Start from the page closest to what you are building.
 
+### Where colour goes on a product screen
+
+Prohibitions alone produce either confetti (colour everywhere) or a beige
+screen with one black button (colour nowhere). Both have happened. This is
+the positive recipe, the same one `reference/product-surface.png` shows:
+
+| Element | Colour | How |
+|---|---|---|
+| The primary action | ochre | `<PixelButton>` — never hand-styled |
+| The section / screen | one accent, declared | `<SectionHeader accent={accentFor(n)}>` — rotate by section, so screens differ |
+| **Peer items** — cards, moments, results, ideas in a list | the next accent each | `accentFor(i)` on the spine or corner marks **and** a filled ordinal `<PixelTag hex={accentFor(i)} label="01">` |
+| State | status hue + a label | `statusFor(name, isDark)` on a `PixelDot` |
+| Icons | their own pixel colours | `systemIconForName`, `Icon*` |
+| Active nav / tab | accent ink edge, ochre fill for tabs | built into `PixelTabs`; nav takes `accentInk` on its edge |
+| Chrome, metadata tags, inspectors, form fields | none | neutral `PixelTag` (no `hex`), `emphasis="quiet"` |
+
+Colour lands on the WORK, not on the chrome. A list of ideas where every card
+has the same plum spine is as wrong as a row of rainbow metadata tags: the
+first gives peers one identity, the second gives metadata an identity.
+
+### Texture: grounds, never cards, never state
+
+`PixelPanel`, `PixelNotice`, `PixelDialog` and `PixelEmptyState` are flat —
+that is what the public site's cards are. The weave belongs to page grounds,
+inverse panels and the one five-system grid. Never switch it on for a state
+(selected, active, drag-over): `check:tokens` fails `texture-as-state`. Show
+state with the accent edge, `controlOn`, or a `surfaceWell` ground. Take files
+with `PixelDropZone`, not a dashed box.
+
 ### What separates a product surface from a cheap imitation
 
 Measured on real products that followed every rule and still looked cheap.
@@ -91,7 +134,11 @@ It was never a missing component. It was decoration spread evenly:
 - **Notices used as content.** `PixelNotice` is for an exception. Three
   stacked notices as the body of a screen reads as a wall of warnings; state
   the condition once, and put the real content where the notices were.
-- **Texture on everything.** Weave belongs to grounds and inverse panels.
+- **Texture on everything.** Weave belongs to grounds and inverse panels —
+  not cards, not nav items, not a selected row.
+- **Colour nowhere.** Every header dot and every panel mark in the default
+  accent ink, tags all grey, one button: correct and lifeless. Give each
+  section an accent and each peer its `accentFor(i)`.
 - **A dead control that shouts.** Disabled takes the disabled roles.
 
 ## Style with tokens, not the palette

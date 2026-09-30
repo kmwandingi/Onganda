@@ -209,16 +209,15 @@ import { DitherBar, roles } from '@onganda/design-system';
 <DitherBar color={roles(isDark).line} opacity={1} />
 ```
 
-### Card with basket-weave texture and corner marks
+### A card
 ```tsx
-import { WeaveOverlay, PixelCornerMarks, PixelTag, COLOR } from '@onganda/design-system';
+import { PixelPanel, PixelTag, accentFor } from '@onganda/design-system';
 
-<div style={{ position: 'relative', overflow: 'hidden', background: COLOR.dustLight, padding: 32 }}>
-  <WeaveOverlay opacity={TEXTURE.surface} />
-  <PixelCornerMarks hex={COLOR.ochreOrange} size={10} />
-  <PixelTag hex={COLOR.ochreOrange} label="01" />
-  <p style={{ color: COLOR.charBlack }}>Okaanda — Granary</p>
-</div>
+// Flat, like the site's cards: surface, hairline, corner marks in its accent.
+// Texture belongs to the page ground, not the card.
+<PixelPanel accent={accentFor(0)} eyebrow="System" title="Okaanda — Granary">
+  <PixelTag hex={accentFor(0)} label="01" />
+</PixelPanel>
 ```
 
 ### Section header

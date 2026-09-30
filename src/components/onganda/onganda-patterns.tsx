@@ -11,10 +11,10 @@
 // vocabulary (dither, weave, stepped marks) rather than generic chrome, and
 // pairs colour with a second signal so meaning never rests on hue alone.
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
-import { PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity, type MotionConflicting } from './onganda-primitives';
+import { PixelButton, PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
 import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
 
@@ -56,7 +56,6 @@ export const PixelNotice = ({
       className={`relative overflow-hidden ${className}`}
       style={{ background: c.surface, borderLeft: `3px solid ${hue}`, border: `1px solid ${c.line}`, borderLeftWidth: 3, borderLeftColor: hue, padding: '16px 20px' }}
     >
-      <WeaveOverlay isDark={isDark} opacity={0.026} />
       <div className="relative flex items-start gap-3">
         <PixelDot color={hue} size={8} ring={c.lineStrong} offset={5} />
         <div className="min-w-0 flex-1">
@@ -169,7 +168,6 @@ export const PixelDialog = ({
             className="relative w-full overflow-hidden"
             style={{ maxWidth: width, background: c.surface, border: `1px solid ${c.lineStrong}` }}
           >
-            <WeaveOverlay isDark={isDark} opacity={0.035} />
             <PixelCornerMarks hex={c.accentInk} size={10} />
             <div className="relative" style={{ padding: '28px 28px 0' }}>
               {eyebrow && (
@@ -276,6 +274,94 @@ export const PixelTable = <Row,>({
   );
 };
 
+// ─── PixelDropZone — where a product takes files ────────────────────────────
+// Every product that ingests media hand-rolled this, and every one reached for
+// a dashed border and a weave that switched on while dragging — the two
+// devices the system retired. The zone is a recessed well with a solid edge
+// and corner marks. Dragging over it turns the edge accent ink and lifts the
+// ground to the surface: a state you can see without any texture.
+//
+// Usage:
+//   <PixelDropZone title="Drop the batch here" hint="mp4 · mov · up to 12 files"
+//     accept="video/*" multiple onFiles={files => ingest(files)} />
+export const PixelDropZone = ({
+  title,
+  hint,
+  icon,
+  accept,
+  multiple = false,
+  disabled = false,
+  onFiles,
+  isDark = false,
+  className = '',
+  children,
+  ...rest
+}: {
+  title: string;
+  /** formats and limits, in one line */
+  hint?: string;
+  icon?: React.ReactNode;
+  accept?: string;
+  multiple?: boolean;
+  disabled?: boolean;
+  onFiles: (files: File[]) => void;
+  isDark?: boolean;
+  className?: string;
+  /** more actions beside "Choose files" — "example batch" */
+  children?: React.ReactNode;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'title' | 'onDrop'>) => {
+  const c = roles(isDark);
+  const input = useRef<HTMLInputElement>(null);
+  const [over, setOver] = useState(false);
+  const take = (list: FileList | null) => {
+    const files = list ? Array.from(list) : [];
+    if (files.length && !disabled) onFiles(multiple ? files : files.slice(0, 1));
+  };
+  return (
+    <div
+      {...rest}
+      data-onganda-dropzone={over ? 'over' : 'idle'}
+      className={`relative overflow-hidden text-center ${className}`}
+      onDragOver={e => { if (disabled) return; e.preventDefault(); setOver(true); }}
+      onDragLeave={() => setOver(false)}
+      onDrop={e => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); }}
+      style={{
+        background: over ? c.surface : c.surfaceWell,
+        border: `1px solid ${over ? c.accentInk : c.lineStrong}`,
+        outline: over ? `1px solid ${c.accentInk}` : 'none',
+        padding: '40px 24px',
+        opacity: disabled ? 0.55 : 1,
+        transition: 'background 0.18s, border-color 0.18s',
+        ...rest.style
+      }}
+    >
+      <PixelCornerMarks hex={over ? c.accentInk : c.lineStrong} size={7} />
+      <div className="relative mx-auto flex max-w-sm flex-col items-center">
+        {icon && <div className="mb-4" aria-hidden="true">{icon}</div>}
+        <p style={{ fontSize: TYPE.ui.size, fontWeight: TYPE.ui.weight, color: c.text, margin: 0 }}>{title}</p>
+        {hint && <p style={{ fontSize: TYPE.meta.size, color: c.textMuted, margin: '6px 0 0' }}>{hint}</p>}
+        <input
+          ref={input}
+          type="file"
+          accept={accept}
+          multiple={multiple}
+          disabled={disabled}
+          onChange={e => { take(e.target.files); e.target.value = ''; }}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <PixelButton variant="ghost" isDark={isDark} disabled={disabled} onClick={() => input.current?.click()}>
+            {multiple ? 'Choose files' : 'Choose a file'}
+          </PixelButton>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── PixelEmptyState — the surface a product shows most often on day one ─────
 export const PixelEmptyState = ({
   title,
@@ -298,7 +384,6 @@ export const PixelEmptyState = ({
   // and PixelCornerMarks does the work the dashes were reaching for.
   return (
     <div {...rest} className="relative overflow-hidden text-center" style={{ background: c.surfaceWell, border: `1px solid ${c.line}`, padding: '56px 32px', ...rest.style }}>
-      <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
       <PixelCornerMarks hex={c.accentInk} size={7} />
       <div className="relative mx-auto flex max-w-sm flex-col items-center">
         {icon && <div className="mb-5" aria-hidden="true">{icon}</div>}
@@ -532,9 +617,9 @@ export const PixelPanel = ({
    *  without a foot rule, and hiding it with a descendant selector is the
    *  hack this system exists to prevent. */
   rule?: boolean;
-  /** which step of TEXTURE the card carries. Use `none` when it sits on a
-   *  ground that is already textured — stacking the weave is what makes a
-   *  page muddy. */
+  /** texture on this card. Default `none`: cards are flat, like the site's
+   *  feature cards. Pass `surface` only for a single identity grid on a plain
+   *  ground (the five-system cards), never on every card of a screen. */
   texture?: 'surface' | 'none' | 'inverse';
   /** how loudly the card speaks. `feature` is the decorated card — corner
    *  marks, weave — and a screen carries one or two of them. `quiet` is
@@ -562,9 +647,12 @@ export const PixelPanel = ({
   // The foot rule is opt-in. It used to follow the spine by default, which
   // put a rule at the foot of every identity card.
   const showRule = rule ?? false;
-  // Quiet cards carry no weave unless asked; feature cards default to the
-  // surface step.
-  const weave = TEXTURE[texture ?? (quiet ? 'none' : 'surface')];
+  // No weave unless asked, in either emphasis. The site's feature card — the
+  // one this component transcribes — is flat: surface, hairline, corner
+  // marks. Texture lives on grounds and inverse panels. Defaulting feature
+  // cards to the weave put it on every card a product built, because every
+  // card a product builds is a PixelPanel.
+  const weave = TEXTURE[texture ?? 'none'];
   const pad = d.stackGap > 12 ? 24 : 16;
   return (
     <section
@@ -577,6 +665,7 @@ export const PixelPanel = ({
         ...(spine ? { borderLeft: `3px solid ${hue}` } : {})
       }}
     >
+      {/* onganda-allow: texture-as-state — the caller's `texture` prop, not a UI state */}
       {weave > 0 && <WeaveOverlay isDark={isDark} opacity={weave} />}
       {!spine && !quiet && <PixelCornerMarks hex={hue} size={7} />}
       <div className="relative" style={{ padding: pad }}>
@@ -773,7 +862,6 @@ export const PixelChoice = ({
         ['--onganda-focus' as string]: c.focusRing
       } as React.CSSProperties}
     >
-      {selected && <WeaveOverlay isDark={isDark} opacity={0.055} />}
       {showIndicator && <span
         aria-hidden="true"
         className="relative shrink-0"

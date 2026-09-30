@@ -262,7 +262,6 @@ const PublicationCard = ({
     boxShadow: hovered ? `0 0 0 1px ${fmt.hex}33` : 'none',
     overflow: 'hidden'
   }}>
-      <WeaveOverlay isDark={isDark} opacity={isDark ? TEXTURE.surface : TEXTURE.ground} />
 
       {/* Left accent bar */}
       <div aria-hidden="true" style={{

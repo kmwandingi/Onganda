@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { LatLngExpression, Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 import { COLOR } from './onganda-colors';
 import { IconMap } from './onganda-icons';
-import { PixelCornerMarks, PixelTag, WeaveOverlay, useDark } from './onganda-primitives';
+import { PixelCornerMarks, PixelTag, useDark } from './onganda-primitives';
 
 export type OngandaMapPosition = readonly [latitude: number, longitude: number];
 export type OngandaMapAccent = 'ochre' | 'gold' | 'rust' | 'brown' | 'plum' | 'red';
@@ -510,7 +510,6 @@ export const OngandaMap = ({
       }}
     >
       <style>{MAP_STYLES}</style>
-      <WeaveOverlay isDark={isDark} opacity={0.026} />
       <PixelCornerMarks hex={COLOR.ochreOrange} size={8} />
 
       <header className="relative grid gap-5 p-6 md:grid-cols-[1fr_auto] md:items-end md:p-8">

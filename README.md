@@ -117,7 +117,6 @@ function RequestAccess() {
         className="relative overflow-hidden"
         style={{ background: c.surface, border: `1px solid ${c.line}`, padding: 32 }}
       >
-        <WeaveOverlay isDark={isDark} opacity={TEXTURE.surface} />
         <PixelCornerMarks hex={c.accentInk} size={10} />
 
         <p style={{ color: c.textBody, marginBottom: 24 }}>

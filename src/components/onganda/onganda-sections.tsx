@@ -10,7 +10,7 @@ import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
-import { PixelNotice, PixelDialog, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { PixelNotice, PixelDialog, PixelDropZone, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -2258,7 +2258,7 @@ export const IconFactoryLab = () => {
             width: 22,
             height: 22,
             background: 'transparent',
-            border: activeColor === null ? `2px solid ${isDark ? COLOR.milletClay : COLOR.charBlack}` : `1px dashed ${muted}`,
+            border: activeColor === null ? `2px solid ${isDark ? COLOR.milletClay : COLOR.charBlack}` : `1px solid ${muted}`,
             cursor: 'pointer',
             fontSize: 10,
             color: muted,
@@ -2952,8 +2952,8 @@ export const ProductSurface = () => {
     <section id="product-surface" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader
         label="Product Surface"
-        headline="A tool is quiet. The work is the loud part."
-        accent={COLOR.mopaneBrown}
+        headline="Quiet chrome. The work carries the colour."
+        accent={accentFor(3)}
         isDark={isDark}
       />
       <div
@@ -2962,7 +2962,7 @@ export const ProductSurface = () => {
         style={{ border: `1px solid ${c.line}`, background: c.canvas }}
       >
         {/* Sidebar — quiet chrome. The active item takes the accent ink on
-            its edge; nothing else here carries colour. */}
+            its edge. Chrome is the one place colour is scarce. */}
         <nav aria-label="Product" style={{ borderRight: `1px solid ${c.line}`, padding: 16 }}>
           <div className="flex items-center gap-2" style={{ marginBottom: 20 }}>
             <OngandaLogoMark size={20} />
@@ -3007,28 +3007,30 @@ export const ProductSurface = () => {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-            {/* The ONE feature surface: the thing the user came to work on. */}
-            <PixelPanel isDark={isDark} eyebrow="Moments" title="Three proposals" accent={COLOR.ochreOrange}>
-              <PixelTable
-                isDark={isDark}
-                rowKey={r => r.id}
-                rows={PRODUCT_ROWS}
-                columns={[
-                  { key: 'name', header: 'Moment', render: r => r.name },
-                  { key: 'at', header: 'Range', render: r => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{r.at}</span> },
-                  {
-                    key: 'score',
-                    header: 'State',
-                    render: r => (
-                      <span className="inline-flex items-center gap-2">
-                        <PixelDot color={statusFor(r.score, isDark)} size={6} />
-                        {r.label}
-                      </span>
-                    )
-                  }
-                ]}
-              />
-            </PixelPanel>
+            {/* The work: peers, so each takes the next accent — on its spine
+                and its filled ordinal, nowhere else. That is where a product
+                screen's colour lives. Their state is a status mark with a
+                label, from statusFor. Metadata above stays neutral. */}
+            <div className="grid content-start gap-3">
+              {PRODUCT_ROWS.map((r, i) => (
+                <PixelPanel key={r.id} isDark={isDark} spine accent={accentFor(i)} data-testid="product-moment">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <PixelTag hex={accentFor(i)} label={String(i + 1).padStart(2, '0')} isDark={isDark} />
+                        <span style={{ fontSize: TYPE.title.size, fontWeight: TYPE.title.weight, color: c.text }}>{r.name}</span>
+                      </div>
+                      <p style={{ margin: '8px 0 0', fontSize: TYPE.meta.size, color: c.textMuted, fontVariantNumeric: 'tabular-nums' }}>{r.at}</p>
+                    </div>
+                    <span className="inline-flex items-center gap-2" style={{ fontSize: TYPE.meta.size, color: c.textBody }}>
+                      <PixelDot color={statusFor(r.score, isDark)} size={7} ring={c.lineStrong} />
+                      {r.label}
+                    </span>
+                  </div>
+                </PixelPanel>
+              ))}
+              <PixelDropZone isDark={isDark} title="Drop more footage" hint="mp4 · mov · webm — up to 12 files" multiple onFiles={() => {}} />
+            </div>
 
             {/* Inspector: quiet. Working chrome is surface and hairline. */}
             <div className="grid gap-4">

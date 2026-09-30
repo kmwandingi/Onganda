@@ -231,9 +231,15 @@ const RULES = [
   },
   {
     id: 'dotted-rule',
-    why: 'A striped or dotted fill. The system retired the dither rule: laid on every card foot, header and progress bar it read as noise, not texture. A divider is a solid hairline (`DitherBar` now renders one, or `border-line`); a progress fill is solid; texture belongs to grounds through `WeaveOverlay`.',
+    why: 'A striped fill, or a dotted or dashed edge. The system retired the dither rule: laid on every card foot, header and progress bar it read as noise, not texture. A divider is a solid hairline (`DitherBar` now renders one, or `border-line`); a drop zone or insertion target is a solid edge that turns accent ink when active (`PixelDropZone`); a progress fill is solid; texture belongs to grounds through `WeaveOverlay`.',
     files: /\.(tsx|css)$/,
-    re: /repeating-linear-gradient|border(?:Top|Bottom|Left|Right)?:\s*[`'"][^`'"\n]*\bdotted\b/g
+    re: /repeating-linear-gradient|(?:border(?:Top|Bottom|Left|Right)?|outline):\s*[^\n]*\b(?:dotted|dashed)\b|\bborder-(?:dotted|dashed)\b/g
+  },
+  {
+    id: 'texture-as-state',
+    why: 'The weave switched on by a state — selected, active, drag-over. Texture is a ground, not a signal: toggled on a nav item or a selected row it reads as a rendering glitch, and it teaches every surface that texture means "chosen". Show state with the accent edge, `controlOn`, or a surfaceWell background.',
+    files: /\.tsx$/,
+    re: /(?:&&|\?)\s*\(?\s*<WeaveOverlay\b/g
   },
   {
     id: 'elevation-shadow',

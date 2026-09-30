@@ -10,7 +10,7 @@ const AUTHOR_NAME = 'Kenneth Mwandingi';
 
 // ─── Document editor insert palette ──────────────────────────────────────────
 export const DOC_INSERT_PALETTE: InsertPaletteItem[] = [
-  { id: 'insert-heading',    label: 'Section Heading',  desc: 'Named section with dashed rule',          type: 'heading',      defaultContent: 'New Section',              hex: COLOR.ochreOrange, category: 'Text'   },
+  { id: 'insert-heading',    label: 'Section Heading',  desc: 'Named section with a hairline rule',          type: 'heading',      defaultContent: 'New Section',              hex: COLOR.ochreOrange, category: 'Text'   },
   { id: 'insert-body',       label: 'Body Paragraph',   desc: 'Editorial body text in Georgia',          type: 'body',         defaultContent: 'Start writing here…',  hex: COLOR.charBlack,  category: 'Text'   },
   { id: 'insert-pullquote',  label: 'Pull Quote',       desc: 'Highlighted branded quotation',           type: 'pullquote',    defaultContent: 'Build domestic AI capability first.', hex: COLOR.ochreOrange, category: 'Text' },
   { id: 'insert-callout',    label: 'Callout Box',      desc: 'Accented info or note block',             type: 'callout',      defaultContent: 'Note: Key finding.',       hex: COLOR.firedRed,   category: 'Text'   },
