@@ -8,8 +8,7 @@ import {
   PixelButton, PixelNav, PixelDialog, PixelDot, PixelEmptyState, PixelField, PixelInput,
   PixelNotice, PixelPanel, PixelProgress, PixelSelect, PixelSkeleton, PixelTable,
   PixelTabs, PixelTag, PixelToggle, roles, statusFor, systemIconForName, TYPE,
-  type PixelColumn, type StatusName
-} from '@onganda/design-system';
+  type PixelColumn, type StatusName, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 type Dataset = { name: string; language: string; records: number; size: string; status: StatusName; state: string };
@@ -29,7 +28,8 @@ const NAV = [
 ];
 
 export const AppScreen = () => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   const [tab, setTab] = useState<'all' | 'review' | 'archived'>('all');
   const [confirm, setConfirm] = useState(false);
   const [dedupe, setDedupe] = useState(true);

@@ -13,6 +13,25 @@ const animationOf = (page: Page, selector: string) =>
   });
 
 test.describe('with motion', () => {
+  // Automation never hides content (a full-page screenshot does not scroll),
+  // so these tests opt in to the viewer's behaviour.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => { (window as unknown as { __ongandaRevealUnderAutomation: boolean }).__ongandaRevealUnderAutomation = true; });
+  });
+
+  test('a page that fits the window shows everything, down to the last element', async ({ page }) => {
+    // Any overlap counts. With an inset margin, an element sitting entirely in
+    // the bottom strip of a page that cannot scroll would never appear.
+    await page.setViewportSize({ width: 1280, height: 3200 });
+    await page.goto('/test/studio');
+    await page.locator('[data-test-page]').waitFor();
+    await page.waitForTimeout(900);
+    const hidden = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-onganda-enter], [data-onganda-stagger]')]
+        .filter(el => !el.hasAttribute('data-onganda-in')).length);
+    expect(hidden).toBe(0);
+  });
+
   test('panels and section headers enter by default', async ({ page }) => {
     await page.goto('/test/app');
     await page.locator('[data-test-page]').waitFor();
@@ -91,5 +110,16 @@ test.describe('with reduced motion', () => {
     await page.waitForTimeout(100);
     const transform = await card.evaluate(el => getComputedStyle(el).transform);
     expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(transform);
+  });
+});
+
+test.describe('under automation', () => {
+  test('a full-page screenshot shows content below the fold without scrolling', async ({ page }) => {
+    await page.goto('/test/landing');
+    await page.locator('[data-test-page]').waitFor();
+    await page.waitForTimeout(600);
+    const contact = page.locator('#contact[data-onganda-enter]');
+    expect(await contact.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+    expect(await page.evaluate(() => document.documentElement.hasAttribute('data-onganda-motion'))).toBe(false);
   });
 });

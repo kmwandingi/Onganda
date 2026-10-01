@@ -247,6 +247,15 @@ const RULES = [
     }
   },
   {
+    id: 'locked-light-mode',
+    why: 'roles(false) in product code locks a surface to light mode: under DarkProvider dark its text goes dark-on-dark and disappears. Read the mode — `const { isDark } = useDark(); const c = roles(isDark);` — or use the CSS variables, which follow the theme on their own. (roles(true) for a surface that is always dark, like an inverse band, is fine.)',
+    files: /\.tsx$/,
+    // The system's own components lock modes deliberately (the inverse panel
+    // is light-mode ink on a dark card); products should not.
+    exclude: /src\/components\/onganda\//,
+    re: /\broles\(\s*false\s*\)/g
+  },
+  {
     id: 'texture-as-state',
     why: 'The weave switched on by a state — selected, active, drag-over. Texture is a ground, not a signal: toggled on a nav item or a selected row it reads as a rendering glitch, and it teaches every surface that texture means "chosen". Show state with the accent edge, `controlOn`, or a surfaceWell background.',
     files: /\.tsx$/,
@@ -254,7 +263,7 @@ const RULES = [
   },
   {
     id: 'elevation-shadow',
-    why: 'A drop shadow. Onganda has no elevation: the public site renders zero blurred shadows, and depth comes from the weave texture, a hairline border and stepped pixel marks. A card lifts on hover by moving (MOTION.hoverLift), not by casting. A `0 0 0 Npx` ring is allowed — it is a border that does not reflow the layout.',
+    why: 'A blurred shadow. Onganda never blurs: depth is a hard pixel shadow (zero blur — the shadowStep / shadowPlate / shadowBand roles, --onganda-shadow-*), the weave texture, a hairline border and stepped pixel marks. A card lifts on hover by moving (MOTION.hoverLift), not by casting. A `0 0 0 Npx` ring is allowed — it is a border that does not reflow the layout.',
     files: /\.tsx$/,
     // Matching `boxShadow:` alone is not enough: the value is usually a
     // ternary over consts declared elsewhere, which is how 37 shadows sat on

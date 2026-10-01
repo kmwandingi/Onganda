@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AUTOMATED } from './onganda-motion';
 import { COLOR, roles, onColor, inkOn, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
 import { DarkContext, OngandaLogoMark, PixelButton, PixelCornerMarks, PixelDot, PixelField, PixelInput, PixelTag, PixelTextarea, SectionHeader, TerminalCard, WeaveOverlay, systemIconForName } from './onganda-primitives';
 import {
@@ -50,7 +51,7 @@ const focusItems = [
 ];
 
 const fadeUp = {
-  initial: { opacity: 0, y: 16 },
+  initial: AUTOMATED ? false as const : { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-40px' },
   transition: { duration: 0.45 }

@@ -10,8 +10,7 @@ import { useState } from 'react';
 import {
   accentFor, ICON_SIZE, IconFile, IconLink, IconPlay, IconSettings, IconUpload, IconVideo,
   PixelButton, PixelNav, PixelDot, PixelDropZone, PixelField, PixelInput, PixelInputGroup, PixelPanel,
-  PixelTextarea, roles, SectionHeader, systemIconForName, TYPE
-} from '@onganda/design-system';
+  PixelTextarea, roles, SectionHeader, systemIconForName, TYPE, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 const NAV = [
@@ -22,7 +21,8 @@ const NAV = [
 ];
 
 export const Studio = () => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   const [files, setFiles] = useState<File[]>([]);
 
   return (

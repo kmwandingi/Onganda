@@ -8,8 +8,8 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 > [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
-> There is no green and no blue, no corner radius, no shadow, and no second
-> typeface. If the system lacks something you need, extend the system — see
+> There is no green and no blue, no corner radius, no blurred shadow, and no
+> second typeface. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
 
@@ -880,15 +880,28 @@ to drift.
 | `PixelEdgeStrips` | Drifting palette columns beside a hero | 16–27s a cycle, so it reads as texture rather than motion |
 | `SystemCard` | The five-system card | Icon tile, numbered tag, 24px name, English reading, role eyebrow, line — carried by a 3px spine |
 
-### No elevation, anywhere
+### Depth: hard pixel shadows, never blur
 
-The public site renders **zero blurred shadows**. Depth is the weave texture, a
-hairline border and stepped pixel marks — never a cast shadow. A card lifts on
-hover by *moving* (`MOTION.hoverLift`), not by casting.
+No blurred shadow, anywhere — that is the soft SaaS elevation the system
+rejects. Depth is a hairline, a spine, stepped corner marks, the weave on a
+ground — and, when a design wants a surface to stand off the page, a **hard
+pixel shadow**: zero blur, offsets on the grid, the way pixel art draws a
+block's depth.
 
-This is enforced by the `elevation-shadow` rule in `check:tokens` and by
-`tests/browser/fidelity.spec.ts`. A `0 0 0 Npx` ring is permitted: it is a
-border that does not reflow the layout.
+| Role | Light | Use |
+|---|---|---|
+| `shadowStep` / `--onganda-shadow-step` | `4px 4px 0` ink 18% | a control or card lifted on hover (`PixelButton lift`, `PixelPanel depth="lift"`) |
+| `shadowPlate` / `--onganda-shadow-plate` | `8px 8px 0` ink 8% | a raised surface at rest (`PixelPanel depth="raised"`) |
+| `shadowBand` / `--onganda-shadow-band` | `0 8px 0` ink 3% | a sticky bar's foot (`data-onganda-depth="band"`) |
+
+In dark mode the canvas is already the darkest tone, so each becomes a faint
+millet-clay offset — a stepped edge rather than a dark drop. Tailwind:
+`shadow-step`, `shadow-plate`, `shadow-band`. Depth is a creative dial, not a
+default: most cards stay flat.
+
+Blur is enforced by the `elevation-shadow` rule in `check:tokens` and by
+`tests/browser/fidelity.spec.ts`. A `0 0 0 Npx` ring is also permitted: it is
+a border that does not reflow the layout.
 
 The rule exists because `/showcase` was carrying fourteen drop shadows —
 `0 4px 24px`, `0 8px 48px`, `0 24px 80px` — on system cards, publication

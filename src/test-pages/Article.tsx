@@ -5,8 +5,7 @@
 import type { ReactNode } from 'react';
 import {
   PixelButton, PixelDot, PixelNotice, PixelPanel, PixelTable, PixelTag,
-  roles, SectionHeader, TYPE, accentFor, type PixelColumn
-} from '@onganda/design-system';
+  roles, SectionHeader, TYPE, accentFor, type PixelColumn, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 type Result = { model: string; params: string; bleu: number; chrf: number };
@@ -17,12 +16,14 @@ const RESULTS: Result[] = [
 ];
 
 const P = ({ children }: { children: ReactNode }) => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   return <p style={{ fontSize: TYPE.bodyLarge.size, lineHeight: TYPE.bodyLarge.lineHeight, color: c.textBody, margin: '0 0 20px' }}>{children}</p>;
 };
 
 export const Article = () => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   const columns: PixelColumn<Result>[] = [
     { key: 'model', header: 'Model', render: r => <span style={{ fontWeight: TYPE.ui.weight }}>{r.model}</span> },
     { key: 'params', header: 'Parameters', numeric: true, render: r => r.params },

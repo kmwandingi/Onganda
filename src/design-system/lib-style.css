@@ -217,3 +217,28 @@
 :where([data-onganda-input-group]) > :where(input, select, textarea) { flex: 1 1 auto; min-width: 0; }
 :where([data-onganda-input-group]) > :where(button, a) { flex: none; }
 :where([data-onganda-input-group]) > :not(:first-child) { margin-left: -1px; }
+
+/* ─── Depth — hard pixel shadows ─────────────────────────────────────────────
+ * Zero blur, offsets on the grid. Set by PixelPanel `depth` and PixelButton
+ * `lift`; usable directly:
+ *   data-onganda-depth="raised"  rests on an 8px plate
+ *   data-onganda-depth="lift"    steps up-left 2px onto a 4px shadow on hover
+ *   data-onganda-depth="band"    a sticky bar's solid foot band
+ * The lift moves with `translate`, not `transform`, so it never fights the
+ * press animation or an entrance. Reduced motion keeps the shadow, drops the
+ * movement: the shadow is a state, the step is motion. */
+:where([data-onganda-depth="raised"]) { box-shadow: var(--onganda-shadow-plate); }
+:where([data-onganda-depth="band"]) { box-shadow: var(--onganda-shadow-band); }
+:where([data-onganda-depth="lift"]) {
+  transition: translate var(--onganda-motion-fast) var(--onganda-motion-step),
+    box-shadow var(--onganda-motion-fast) var(--onganda-motion-step),
+    background var(--onganda-motion-base), border-color var(--onganda-motion-base), color var(--onganda-motion-base);
+}
+:where([data-onganda-depth="lift"]):hover,
+:where([data-onganda-depth="lift"]):focus-visible {
+  translate: -2px -2px;
+  box-shadow: var(--onganda-shadow-step);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-onganda-depth="lift"]:hover, [data-onganda-depth="lift"]:focus-visible { translate: none; }
+}

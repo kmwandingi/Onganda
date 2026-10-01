@@ -6,8 +6,7 @@
 import {
   OngandaFooter, PixelButton, PixelContactPanel, PixelEditorialSection, PixelField, PixelFocusRow,
   PixelInput, PixelLabCard, PixelTextarea, PixelTicker, SectionHeader, SystemCard, SYSTEMS,
-  TEXTURE, TYPE, DISPLAY, WeaveOverlay, accentFor, roles, systemIconForName, IconMail
-} from '@onganda/design-system';
+  TEXTURE, TYPE, DISPLAY, WeaveOverlay, accentFor, roles, systemIconForName, IconMail, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 const FOCUS = [
@@ -17,7 +16,8 @@ const FOCUS = [
 ];
 
 export const Landing = () => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   return (
     <TestFrame current="/test/landing" action={<PixelButton href="#contact">Start a conversation</PixelButton>}>
       <section className="relative overflow-hidden" style={{ background: c.canvas }}>

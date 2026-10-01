@@ -7,7 +7,7 @@
 // beside the reference shot it should resemble.
 
 import React from 'react';
-import { OngandaLogoMark, PixelButton, roles, TYPE } from '@onganda/design-system';
+import { OngandaLogoMark, PixelButton, roles, TYPE, useDark } from '@onganda/design-system';
 
 export const TEST_PAGES = [
   { path: '/test/app', label: 'App screen' },
@@ -15,6 +15,7 @@ export const TEST_PAGES = [
   { path: '/test/dashboard', label: 'Dashboard' },
   { path: '/test/form', label: 'Form' },
   { path: '/test/landing', label: 'Landing' },
+  { path: '/test/launch', label: 'Launch' },
   { path: '/test/article', label: 'Article' }
 ] as const;
 
@@ -22,7 +23,8 @@ export type TestPath = (typeof TEST_PAGES)[number]['path'];
 
 /** The top bar a product would put above its own screens. */
 export const TestHeader = ({ current, action }: { current: TestPath; action?: React.ReactNode }) => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   return (
     <header style={{ borderBottom: `1px solid ${c.line}`, background: c.canvas }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 md:px-12">
@@ -30,7 +32,7 @@ export const TestHeader = ({ current, action }: { current: TestPath; action?: Re
           <OngandaLogoMark size={24} />
           <span style={{ fontSize: TYPE.ui.size, fontWeight: TYPE.ui.weight }}>Onganda</span>
         </a>
-        <nav aria-label="Test pages" className="hidden items-center gap-6 md:flex">
+        <nav aria-label="Test pages" className="hidden items-center gap-6 lg:flex">
           {TEST_PAGES.map(p => (
             <a
               key={p.path}
@@ -73,7 +75,8 @@ export const TestFrame = ({ current, action, children }: {
 
 /** /test — an index of the pages. */
 export const TestIndex = () => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   return (
     <div className="min-h-screen w-full" style={{ background: c.canvas, color: c.text }}>
       <div className="mx-auto max-w-3xl px-6 py-16">

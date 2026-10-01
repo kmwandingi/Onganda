@@ -78,13 +78,26 @@ const settle = async (page: Page) => {
 
 // The consumer test pages are included: built only from the package, they are
 // what a product's screen actually looks like.
-for (const route of ['/', '/full', '/showcase', '/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/article']) {
+for (const route of ['/', '/full', '/showcase', '/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article']) {
   test(`every text node on ${route} meets its contrast floor`, async ({ page }) => {
     await stubMapTiles(page);
     await page.goto(route);
     await settle(page);
     const failures = await page.evaluate(AUDIT_SOURCE);
     expect(failures, `${failures.length} text nodes below their floor on ${route}:\n  ${failures.slice(0, 15).join('\n  ')}`).toEqual([]);
+  });
+}
+
+// The same audit with the product in dark mode. Pages built from the package
+// are dark wherever DarkProvider says so; a hard-coded light surface inside
+// one shows up here as dark-on-dark text.
+for (const route of ['/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article']) {
+  test(`every text node on ${route} meets its contrast floor in dark mode`, async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('onganda-dark', '1'));
+    await page.goto(route);
+    await settle(page);
+    const failures = await page.evaluate(AUDIT_SOURCE);
+    expect(failures, `${failures.length} text nodes below their floor on ${route} (dark):\n  ${failures.slice(0, 15).join('\n  ')}`).toEqual([]);
   });
 }
 

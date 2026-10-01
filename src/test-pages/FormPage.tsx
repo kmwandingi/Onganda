@@ -6,14 +6,14 @@ import { useState } from 'react';
 import {
   PixelActions, PixelButton, PixelCheckbox, PixelChoice, PixelChoiceList, PixelField,
   PixelInput, PixelInversePanel, PixelNotice, PixelPanel, PixelRadio, PixelSelect,
-  PixelTag, PixelTextarea, PixelToggle, roles, SectionHeader, TYPE
-} from '@onganda/design-system';
+  PixelTag, PixelTextarea, PixelToggle, roles, SectionHeader, TYPE, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 const TRACKS = ['Health', 'Agriculture', 'Education', 'Public administration'];
 
 export const FormPage = () => {
-  const c = roles(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
   const [track, setTrack] = useState('Health');
   const [size, setSize] = useState('pilot');
   const [updates, setUpdates] = useState(true);

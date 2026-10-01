@@ -4,7 +4,7 @@ import { stubMapTiles } from './support/map-tiles';
 // The consumer test pages (src/test-pages) are built only from the package.
 // They sit under every guard the public routes do, so a primitive that breaks
 // in a product's layout fails here rather than in the product.
-const TEST_PAGES = ['/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/article'];
+const TEST_PAGES = ['/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article'];
 
 const capturePageErrors = (page: Page) => {
   const errors: string[] = [];

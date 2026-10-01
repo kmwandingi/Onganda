@@ -124,7 +124,8 @@ export const GEOMETRY = {
   radius: 0,
   /** The only border widths the system uses. */
   borderWidths: [1, 3] as const,
-  /** No shadows: depth comes from the weave texture and stepped marks. */
+  /** No blurred shadow. Depth is a hard pixel shadow — the shadowStep,
+   *  shadowPlate and shadowBand roles — or the weave, a hairline and marks. */
   shadow: 'none'
 } as const;
 

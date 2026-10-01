@@ -7,8 +7,8 @@ This document serves as the single source of truth for the design language of **
 > [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
-> There is no green and no blue, no corner radius, no shadow, and no second
-> typeface. If the system lacks something you need, extend the system — see
+> There is no green and no blue, no corner radius, no blurred shadow, and no
+> second typeface. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
 
@@ -341,6 +341,17 @@ section.
   spacing separates them. `npm run check:tokens` rejects striped fills.
 - **A control's boundary is solid.** Dashed edges read as provisional. Use
   `PixelCornerMarks` for the emphasis a dashed border was reaching for.
+
+### Creative latitude
+
+The system fixes the material — colour roles, type, zero radius, zero blur,
+the controls, contrast — and leaves the composition to the page. Each page
+sets its own dials: lead accent, hero pattern, grid rhythm, depth (flat,
+raised, lift — hard pixel shadows only), tone (one tinted feature), scale
+contrast, texture placement, where the inverse band sits, and motion
+signature. One signature move per page; turn a dial up in one section, not
+all; product screens keep the dials low. SKILL.md has the full table and
+`reference/expressive-range.png` shows three settings of the same content.
 
 ### Read the showcase first
 

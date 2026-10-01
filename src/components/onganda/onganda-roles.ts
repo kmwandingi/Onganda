@@ -118,6 +118,16 @@ export interface ColorRoles {
   /** the edge of a checked control. The ochre fill alone is 2.56:1 on dust
    *  light, under the 3:1 boundary floor, so the edge carries the contrast. */
   controlOnBorder: string;
+  // Depth — hard pixel shadows. Zero blur, offsets on the grid: a stepped
+  // block under the surface, the way pixel art draws depth. A blurred shadow
+  // is still never allowed. In dark mode the canvas is already the darkest
+  // tone, so the step is a faint light offset instead of a dark one.
+  /** a sticky bar's foot: a solid band under it */
+  shadowBand: string;
+  /** a control or card lifted on hover: 4px down and right */
+  shadowStep: string;
+  /** a raised surface at rest: 8px, faint */
+  shadowPlate: string;
 }
 
 export const ROLE_LIGHT: ColorRoles = {
@@ -185,7 +195,10 @@ export const ROLE_LIGHT: ColorRoles = {
   fieldDisabledText: ink(ALPHA.faint.light),
   controlOn: COLOR.ochreOrange,
   controlOnFg: COLOR.charBlack,
-  controlOnBorder: COLOR.barkRust
+  controlOnBorder: COLOR.barkRust,
+  shadowBand: '0 8px 0 rgba(30,26,23,0.03)',
+  shadowStep: '4px 4px 0 rgba(30,26,23,0.18)',
+  shadowPlate: '8px 8px 0 rgba(30,26,23,0.08)'
 };
 
 export const ROLE_DARK: ColorRoles = {
@@ -244,7 +257,10 @@ export const ROLE_DARK: ColorRoles = {
   fieldDisabledText: paper(ALPHA.faint.dark),
   controlOn: COLOR.ochreOrange,
   controlOnFg: COLOR.charBlack,
-  controlOnBorder: COLOR.ochreOrange
+  controlOnBorder: COLOR.ochreOrange,
+  shadowBand: '0 8px 0 rgba(232,225,207,0.04)',
+  shadowStep: '4px 4px 0 rgba(232,225,207,0.14)',
+  shadowPlate: '8px 8px 0 rgba(232,225,207,0.06)'
 };
 
 /** The role set for the current mode. `const c = roles(isDark)`. */

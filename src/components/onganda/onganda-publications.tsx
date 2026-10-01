@@ -4,6 +4,7 @@
 // and tokens — no new design decisions introduced.
 
 import React, { useState } from 'react';
+import { AUTOMATED } from './onganda-motion';
 import { motion } from 'framer-motion';
 import { COLOR, inkOn, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
 import { TEXTURE } from './onganda-type';
@@ -242,7 +243,7 @@ const PublicationCard = ({
   const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const descColor = isDark ? 'rgba(232,225,207,0.60)' : 'rgba(30,26,23,0.65)';
   const hintColor = inkOn(fmt.hex, isDark ? COLOR.darkCard : COLOR.dustLight, isDark);
-  return <motion.article initial={{
+  return <motion.article initial={AUTOMATED ? false : {
     opacity: 0,
     y: 20
   }} whileInView={{
@@ -558,7 +559,7 @@ export const Publications = ({
       </div>
 
       {/* Footnote rule */}
-      <motion.div initial={{
+      <motion.div initial={AUTOMATED ? false : {
       opacity: 0
     }} whileInView={{
       opacity: 1

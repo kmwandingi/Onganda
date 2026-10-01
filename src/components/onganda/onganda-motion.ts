@@ -20,6 +20,15 @@ import { useReducedMotion } from 'framer-motion';
  */
 export const useMotionOK = () => !useReducedMotion();
 
+/** True under browser automation (navigator.webdriver — Playwright,
+ *  Puppeteer, Selenium), read once at load. Scroll-triggered entrances never
+ *  fire in a full-page screenshot, which does not scroll, so anything that
+ *  waits to be seen came out blank and an agent "fixed" it. Under automation
+ *  every entrance renders in its final state. Tests that want the real
+ *  behaviour set window.__ongandaRevealUnderAutomation = true before load. */
+export const AUTOMATED: boolean = typeof navigator !== 'undefined' && !!navigator.webdriver
+  && !(typeof window !== 'undefined' && (window as unknown as { __ongandaRevealUnderAutomation?: boolean }).__ongandaRevealUnderAutomation);
+
 /** The motion vocabulary as values — the same numbers MOTION and style.css
  *  use, exported so CSS (--onganda-motion-*), the token JSON and Figma read
  *  one source. Quiet and mechanical: short ease-out entrances, stepped
@@ -54,7 +63,7 @@ export const MOTION = {
   },
   // Scroll-triggered entrance: <motion.div {...MOTION.fadeUp} />
   fadeUp: {
-    initial: { opacity: 0, y: 16 },
+    initial: AUTOMATED ? false : { opacity: 0, y: 16 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: '-40px' },
     transition: { duration: 0.45 }
@@ -97,25 +106,41 @@ export const SPACE = {
 // ─── Reveal — entrances that actually play ───────────────────────────────────
 // A CSS entrance that starts when an element is inserted is spent before the
 // viewer sees it: measured on a consumer page, a panel's 450ms entrance was at
-// 442ms by the first paint, because the browser was busy mounting the page
-// and the animation clock kept running. Anything below the fold finished long
-// before it was scrolled to. So the entrance starts when the element comes
-// into view instead.
+// 442ms by the first paint, and anything below the fold finished long before
+// it was scrolled to. So the entrance starts when the element comes into view.
 //
 // installReveal() marks <html data-onganda-motion> and watches every
-// [data-onganda-enter] and [data-onganda-stagger]; each gets
-// data-onganda-in when it enters the viewport, and style.css plays the
-// entrance then. DarkProvider installs it. Without it — no JavaScript, an app
-// that skips DarkProvider, reduced motion, print — nothing is hidden and
-// nothing waits.
+// [data-onganda-enter] and [data-onganda-stagger]; each gets data-onganda-in
+// on its first overlap with the viewport, and style.css plays the entrance
+// then. DarkProvider installs it.
+//
+// Hiding content until it is seen is only safe when someone will scroll to
+// it, so nothing is ever hidden:
+//   • without JavaScript, without DarkProvider, or under reduced motion;
+//   • under automation (navigator.webdriver — Playwright, Puppeteer,
+//     Selenium): a full-page screenshot does not scroll, and hidden sections
+//     would come out blank and get "fixed" by the agent looking at them;
+//   • in print;
+//   • when the page opts out with <html data-onganda-reveal="off">.
+// Any overlap counts — no inset margin — so an element at the very bottom of
+// a page that cannot scroll still appears. Tests that want the real
+// behaviour under automation set window.__ongandaRevealUnderAutomation = true.
 const REVEAL = '[data-onganda-enter],[data-onganda-stagger]';
 let revealUsers = 0;
 let revealTeardown: (() => void) | null = null;
 
+const revealAllowed = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return false;
+  if (!('IntersectionObserver' in window) || !('MutationObserver' in window)) return false;
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+  if (document.documentElement.getAttribute('data-onganda-reveal') === 'off') return false;
+  const forced = (window as unknown as { __ongandaRevealUnderAutomation?: boolean }).__ongandaRevealUnderAutomation;
+  if (navigator.webdriver && !forced) return false;
+  return true;
+};
+
 export const installReveal = (): (() => void) => {
-  if (typeof window === 'undefined' || typeof document === 'undefined'
-    || !('IntersectionObserver' in window) || !('MutationObserver' in window)) return () => {};
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return () => {};
+  if (!revealAllowed()) return () => {};
   revealUsers += 1;
   if (!revealTeardown) {
     const html = document.documentElement;
@@ -125,7 +150,7 @@ export const installReveal = (): (() => void) => {
         e.target.setAttribute('data-onganda-in', '');
         io.unobserve(e.target);
       }
-    }, { rootMargin: '0px 0px -6% 0px' });
+    });
     const watch = (node: Element) => {
       if (node.matches(REVEAL) && !node.hasAttribute('data-onganda-in')) io.observe(node);
       node.querySelectorAll(REVEAL).forEach(el => { if (!el.hasAttribute('data-onganda-in')) io.observe(el); });
@@ -135,8 +160,15 @@ export const installReveal = (): (() => void) => {
       for (const r of records) r.addedNodes.forEach(n => { if (n instanceof Element) watch(n); });
     });
     mo.observe(document.body, { childList: true, subtree: true });
+    // Printing shows everything, seen or not.
+    const showAll = () => document.querySelectorAll(REVEAL).forEach(el => el.setAttribute('data-onganda-in', ''));
+    window.addEventListener('beforeprint', showAll);
     html.setAttribute('data-onganda-motion', '');
-    revealTeardown = () => { io.disconnect(); mo.disconnect(); html.removeAttribute('data-onganda-motion'); };
+    revealTeardown = () => {
+      io.disconnect(); mo.disconnect();
+      window.removeEventListener('beforeprint', showAll);
+      html.removeAttribute('data-onganda-motion');
+    };
   }
   return () => {
     revealUsers -= 1;

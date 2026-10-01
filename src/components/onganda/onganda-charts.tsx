@@ -4,12 +4,13 @@
 // Each chart ships with an inline legend. Category filter for navigation.
 
 import React, { useState } from 'react';
+import { AUTOMATED } from './onganda-motion';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
 import { COLOR } from './onganda-colors';
 import { CHART_SERIES, onColor, roles } from './onganda-roles';
 import { TYPE } from './onganda-type';
-import { SectionHeader, PixelTag, PixelDot } from './onganda-primitives';
+import { SectionHeader, PixelTag, PixelDot, useIsDark } from './onganda-primitives';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
 const C = {
@@ -473,7 +474,7 @@ export const chartTheme = (isDark = false) => {
  *  for a dashed line) and a tracked uppercase label in muted ink. */
 export const ChartLegend = ({
   items,
-  isDark = false
+  isDark: isDarkProp
 }: {
   items: Array<{
     label: string;
@@ -481,7 +482,9 @@ export const ChartLegend = ({
     dash?: boolean;
   }>;
   isDark?: boolean;
-}) => <div style={{
+}) => {
+  const isDark = useIsDark(isDarkProp);
+  return <div style={{
   display: 'flex',
   gap: 16,
   flexWrap: 'wrap',
@@ -514,6 +517,7 @@ export const ChartLegend = ({
         </span>
       </div>)}
   </div>;
+};
 
 // Card wrapper for each chart
 const ChartCard = ({
@@ -534,7 +538,7 @@ const ChartCard = ({
     dash?: boolean;
   }>;
   fullWidth?: boolean;
-}) => <motion.div initial={{
+}) => <motion.div initial={AUTOMATED ? false : {
   opacity: 0,
   y: 12
 }} whileInView={{

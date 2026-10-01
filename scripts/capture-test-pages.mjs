@@ -34,6 +34,8 @@ const PAGES = [
    ['controls-light', 'controls-inverse', 'site-contact']],
   ['landing', '/test/landing', 'An editorial page: hero, ticker, system grid, focus rows, editorial section, contact, footer.',
    ['site-systems-grid', 'system-cards', 'site-focus-rows', 'site-contact', 'icons', 'palette']],
+  ['launch', '/test/launch', 'A second landing page with the creative dials set differently from /test/landing: gold lead, split hero, bento, mid-page inverse, lift.',
+   ['expressive-range', 'site-systems-grid']],
   ['article', '/test/article', 'A reading surface: long-form type, a results table, a pull quote, a side rail.',
    ['publications', 'brand-principles']]
 ];

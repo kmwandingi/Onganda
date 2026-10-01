@@ -9,8 +9,7 @@ import {
 import {
   ChartLegend, chartTheme, PixelButton, PixelDot, PixelNotice, PixelPanel, PixelStatBand, PixelTable,
   roles, SectionHeader, statusFor, TYPE, accentFor,
-  type PixelColumn, type StatEntry, type StatusName
-} from '@onganda/design-system';
+  type PixelColumn, type StatEntry, type StatusName, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 const STATS: StatEntry[] = [
@@ -44,8 +43,9 @@ const SITES: Site[] = [
 ];
 
 export const Dashboard = () => {
-  const c = roles(false);
-  const t = chartTheme(false);
+  const { isDark } = useDark();
+  const c = roles(isDark);
+  const t = chartTheme(isDark);
 
   const columns: PixelColumn<Site>[] = [
     { key: 'region', header: 'Region', render: r => r.region },

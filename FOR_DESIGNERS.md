@@ -99,9 +99,11 @@ Every one of these is a measured fact, not an opinion. The ratios are in
 5. **There is no green and no blue.** Success is a check glyph on the settled
    tone, not a new hue. Do not add one.
 
-6. **Nothing is rounded and nothing has a shadow.** `geometry/radius` is `0px`
-   and `geometry/shadow` is `none`. Corner decoration is the stepped
-   `PixelCornerMarks` mark. Depth comes from the basket-weave texture.
+6. **Nothing is rounded and nothing is blurred.** `geometry/radius` is `0px`.
+   Corner decoration is the stepped `PixelCornerMarks` mark. Depth, when a
+   design wants it, is a hard pixel shadow with zero blur — `shadow-step`
+   (4px), `shadow-plate` (8px), `shadow-band` (a sticky bar's foot) — the way
+   pixel art draws depth. A soft, blurred shadow is never on-system.
 
 ---
 

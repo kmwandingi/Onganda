@@ -203,6 +203,47 @@ It was never a missing component. It was decoration spread evenly:
   section an accent and each peer its `accentFor(i)`.
 - **A dead control that shouts.** Disabled takes the disabled roles.
 
+## Creative latitude: what is fixed, what is yours
+
+The system fixes the material, not the composition. Two pages built from it
+should be recognisably Onganda and should not look alike. When every page
+reaches for the same safe layout, the brand reads as a template.
+
+**Fixed — never vary:** the colour roles and what each colour means; the two
+faces and the type scale; zero radius; zero blur; the controls; contrast; the
+4px grid; texture only on grounds and inverse panels.
+
+**Yours — set these dials, deliberately, per page:**
+
+| Dial | Settings |
+|---|---|
+| Lead accent | which `accentFor(n)` opens the page — the hero's dot, the first feature, the CTA's neighbourhood |
+| Hero | split (headline + a `ICON_SIZE.display` pixel illustration) · centred statement · inverse panel · editorial column |
+| Grid rhythm | even grid · bento (one wide feature, smaller peers) · alternating rows · a numbered sequence · editorial offset (`PixelEditorialSection`) |
+| Depth | flat (the site default) · raised plates (`depth="raised"`) · stepped lift on hover (`depth="lift"`, `PixelButton lift`) |
+| Tone | all surface · one tinted feature (`tone="tint"`) |
+| Scale contrast | how far the hero headline sits above the body (`DISPLAY.hero` vs `TYPE.display`), how large the lead illustration is |
+| Texture | which one ground carries the weave |
+| Inverse placement | the black band opening, in the middle, or closing the page |
+| Motion signature | entrance and stagger (default) · plus the stepped lift |
+
+**Rules for using them:**
+
+1. **One signature move per page** — the thing a visitor remembers: a giant
+   pixel illustration, a bento with one raised feature, an inverse statement.
+   Not three of them fighting.
+2. **Turn a dial up in one section, not every section.** A tinted, raised,
+   lifting card is a feature; a page of them is noise.
+3. **Pages in the same product differ by their dials.** If your new page could
+   be mistaken for the last one, change the hero and the grid rhythm first.
+4. **Product screens keep the dials low** — flat, even, quiet, with at most a
+   lift on the primary action. Editorial pages turn them up.
+
+`reference/expressive-range.png` is the same content set three ways (even grid,
+bento with a raised tinted feature, inverse statement) — all on-system. Pixel
+shadows replaced the soft drop shadows a page would otherwise reach for: they
+are allowed, a blur never is.
+
 ## Style with tokens, not the palette
 
 `@onganda/design-system/tokens.css` (imported by `style.css`) holds every
@@ -373,8 +414,9 @@ In framer-motion, spread the `MOTION` presets instead of writing timings:
   something rather than shrinking it.
 - **Density changes spacing, never type.** A popup or side panel wraps in
   `<DensityProvider value="compact">`; the labels stay the same size.
-- **Sharp geometry.** No rounded corners, no shadows. Depth is a hairline, a
-  spine, stepped corner marks, and the weave on grounds.
+- **Sharp geometry.** No rounded corners, never a blurred shadow. Depth is a
+  hairline, a spine, stepped corner marks, the weave on grounds — and, as a
+  creative dial, a hard pixel shadow (`depth`, `lift`, `--onganda-shadow-*`).
 - **Display type scales with `clamp()`** (`DISPLAY.hero`, `DISPLAY.heroPublic`),
   never with viewport width alone. Check the real line breaks at 360, 768 and
   1280px; a hero's tags, ticker and CTA must not collide with the headline.

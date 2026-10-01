@@ -355,6 +355,21 @@
         "$type": "color",
         "$value": "#8F3E21",
         "$description": "light — barkRust"
+      },
+      "shadowBand": {
+        "$type": "color",
+        "$value": "0 8px 0 rgba(30,26,23,0.03)",
+        "$description": "light — 0 8px 0 rgba(30,26,23,0.03)"
+      },
+      "shadowStep": {
+        "$type": "color",
+        "$value": "4px 4px 0 rgba(30,26,23,0.18)",
+        "$description": "light — 4px 4px 0 rgba(30,26,23,0.18)"
+      },
+      "shadowPlate": {
+        "$type": "color",
+        "$value": "8px 8px 0 rgba(30,26,23,0.08)",
+        "$description": "light — 8px 8px 0 rgba(30,26,23,0.08)"
       }
     },
     "dark": {
@@ -598,6 +613,21 @@
         "$type": "color",
         "$value": "#D9791F",
         "$description": "dark — ochreOrange"
+      },
+      "shadowBand": {
+        "$type": "color",
+        "$value": "0 8px 0 rgba(232,225,207,0.04)",
+        "$description": "dark — 0 8px 0 rgba(232,225,207,0.04)"
+      },
+      "shadowStep": {
+        "$type": "color",
+        "$value": "4px 4px 0 rgba(232,225,207,0.14)",
+        "$description": "dark — 4px 4px 0 rgba(232,225,207,0.14)"
+      },
+      "shadowPlate": {
+        "$type": "color",
+        "$value": "8px 8px 0 rgba(232,225,207,0.06)",
+        "$description": "dark — 8px 8px 0 rgba(232,225,207,0.06)"
       }
     }
   },
@@ -990,7 +1020,7 @@
     "shadow": {
       "$type": "shadow",
       "$value": "none",
-      "$description": "No shadows. Depth comes from the weave texture and stepped marks."
+      "$description": "No blurred shadow. Depth is the hard pixel shadows in the role set: shadowStep, shadowPlate, shadowBand."
     }
   },
   "motion": {

@@ -105,7 +105,8 @@ ${Object.entries(t.RULE).map(([k, v]) => `  --onganda-rule-${kebab(k)}-height: $
   /* ── Motion: quiet, mechanical, stepped micro-motion ───────── */
 ${Object.entries(t.MOTION_TOKENS).map(([k, v]) => `  --onganda-motion-${kebab(k)}: ${v};`).join('\n')}
 
-  /* ── Geometry: no radius, no elevation ──────────────────────── */
+  /* ── Geometry: no radius, no blur. Depth is the hard pixel shadow
+     roles above: --onganda-shadow-band / -step / -plate. ───────── */
   --onganda-radius: ${t.GEOMETRY.radius}px;
   --onganda-shadow: ${t.GEOMETRY.shadow};
   --onganda-border-hairline: ${t.GEOMETRY.borderWidths[0]}px;
@@ -151,6 +152,9 @@ ${Object.entries(t.TYPE).map(([step, v]) => `  --text-${kebab(step)}: ${v.size}p
 
   --radius-*: initial;
   --shadow-*: initial;
+  --shadow-band: var(--onganda-shadow-band);
+  --shadow-step: var(--onganda-shadow-step);
+  --shadow-plate: var(--onganda-shadow-plate);
 }
 `;
 

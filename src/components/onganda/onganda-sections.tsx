@@ -3,6 +3,7 @@
 // Imports only from onganda-tokens and onganda-primitives.
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { AUTOMATED } from './onganda-motion';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
 import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
@@ -10,7 +11,7 @@ import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
-import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelInversePanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -1551,7 +1552,7 @@ export const PixelHeatmap = ({
   return <section className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Research Signals" headline="Activity across systems." accent={COLOR.mahanguGold} />
       <div className="flex flex-col items-stretch gap-12 lg:flex-row lg:items-start">
-        <motion.div initial={{
+        <motion.div initial={AUTOMATED ? false : {
         opacity: 0
       }} whileInView={{
         opacity: 1
@@ -1579,7 +1580,7 @@ export const PixelHeatmap = ({
                       <span>{yLabel}</span>
                       {SYSTEM_COLOR[yLabel as SystemName] && <PixelDot color={SYSTEM_COLOR[yLabel as SystemName]} size={5} ring="rgba(232,225,207,0.2)" />}
                     </div>
-                  {data.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={{
+                  {data.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={AUTOMATED ? false : {
                 opacity: 0,
                 scale: 0.5
               }} whileInView={{
@@ -1782,7 +1783,7 @@ export const FieldApplications = () => <section className="max-w-7xl mx-auto px-
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {SECTOR_APPS.map((app, idx) => <FieldAppCard key={app.tag} app={app} idx={idx} />)}
     </div>
-    <motion.div initial={{
+    <motion.div initial={AUTOMATED ? false : {
     opacity: 0
   }} whileInView={{
     opacity: 1
@@ -1821,7 +1822,7 @@ export const PixelFlowchart = () => {
             </div>
             <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Pixel Flowchart — Naming Architecture</span>
           </div>
-          <motion.div initial={{
+          <motion.div initial={AUTOMATED ? false : {
           opacity: 0,
           y: 12
         }} whileInView={{
@@ -1876,7 +1877,7 @@ export const PixelFlowchart = () => {
             </div>
             {/* Child nodes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-0 mt-0">
-              {childNodes.map((node, idx) => <motion.div key={node.id} initial={{
+              {childNodes.map((node, idx) => <motion.div key={node.id} initial={AUTOMATED ? false : {
               opacity: 0,
               y: 14
             }} whileInView={{
@@ -3045,6 +3046,85 @@ export const ProductSurface = () => {
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Expressive range — one block of content, three sanctioned treatments ───
+// The system fixes the colours, the type, the geometry and the controls. It
+// does not fix the composition. Pages built from it should not all look the
+// same, and this section is the proof: the same three items, three ways, each
+// using only the dials in "Creative latitude" (SKILL.md). Nothing here bends a
+// rule — no new colour, no blur, no radius, no off-scale type.
+const EXPRESSIVE_ITEMS = [
+  { system: 'Okaanda', title: 'Store it', body: 'Corpora, evaluations and models, kept where they are used.' },
+  { system: 'Oshini', title: 'Adapt it', body: 'Fine-tune and distil open models for local languages.' },
+  { system: 'Ombiga', title: 'Run it', body: 'Agents and containers that hold the work in one place.' }
+] as const;
+
+export const ExpressiveRange = () => {
+  const { isDark } = useDark();
+  const c = roles(isDark);
+  const label = (s: string) => <SubLabel isDark={isDark} spaced>{s}</SubLabel>;
+  return (
+    <section id="expressive-range" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
+      <SectionHeader
+        label="Expressive range"
+        headline="Same content. Three pages that do not look alike."
+        accent={accentFor(2)}
+        isDark={isDark}
+      />
+
+      {label('A · Even grid — flat cards, corner marks, the site default')}
+      <div className="grid gap-4 md:grid-cols-3" data-onganda-stagger="">
+        {EXPRESSIVE_ITEMS.map((it, i) => (
+          <PixelPanel key={it.title} isDark={isDark} accent={accentFor(i)} tag={String(i + 1).padStart(2, '0')}
+            icon={systemIconForName(it.system, ICON_SIZE.hero)} eyebrow={it.system} title={it.title} note={it.body} />
+        ))}
+      </div>
+
+      <div className="mt-12">
+        {label('B · Bento — one tinted, raised feature with a display illustration; peers lift on hover')}
+        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+          <PixelPanel isDark={isDark} accent={accentFor(0)} tone="tint" depth="raised" eyebrow="The granary" title={EXPRESSIVE_ITEMS[0].title}>
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <p style={{ margin: 0, maxWidth: 360, fontSize: TYPE.bodyLarge.size, lineHeight: TYPE.bodyLarge.lineHeight, color: c.textBody }}>
+                {EXPRESSIVE_ITEMS[0].body} Everything else in the system starts from what is stored here.
+              </p>
+              <div aria-hidden="true">{systemIconForName('Okaanda', ICON_SIZE.display)}</div>
+            </div>
+          </PixelPanel>
+          <div className="grid content-start gap-4">
+            {EXPRESSIVE_ITEMS.slice(1).map((it, i) => (
+              <PixelPanel key={it.title} isDark={isDark} accent={accentFor(i + 1)} spine depth="lift"
+                tag={String(i + 2).padStart(2, '0')} eyebrow={it.system} title={it.title} note={it.body} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-12">
+        {label('C · Statement — an inverse band carries the lead; the items become a numbered sequence')}
+        <PixelInversePanel
+          tag={<PixelTag hex={accentFor(4)} label="Three steps" isDark />}
+          headline="Store. Adapt. Run."
+        >
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {EXPRESSIVE_ITEMS.map((it, i) => (
+              <div key={it.title} className="flex gap-4">
+                <div aria-hidden="true">{systemIconForName(it.system, ICON_SIZE.hero)}</div>
+                <div>
+                  <p style={{ margin: 0, fontSize: TYPE.title.size, fontWeight: TYPE.title.weight, color: roles(false).textOnInverse }}>
+                    {String(i + 1).padStart(2, '0')} · {it.title}
+                  </p>
+                  <p style={{ margin: '6px 0 0', fontSize: TYPE.body.size, lineHeight: TYPE.body.lineHeight, color: roles(true).textMuted }}>{it.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8"><PixelButton variant="accent" isDark lift>See the systems</PixelButton></div>
+        </PixelInversePanel>
       </div>
     </section>
   );

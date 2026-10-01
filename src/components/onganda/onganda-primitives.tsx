@@ -6,7 +6,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useLayoutEffect } from 'react';
 import { motion, MotionConfig } from 'framer-motion';
-import { MOTION, installReveal } from './onganda-motion';
+import { AUTOMATED, MOTION, installReveal } from './onganda-motion';
 import { TYPE, TEXTURE } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
@@ -113,8 +113,10 @@ export const Px = ({
  *  - inline:  in a button, a tag, a line of text
  *  - control: nav items, toolbars, list rows
  *  - feature: inside a PixelIconTile on a card, a drop zone, an empty state
- *  - hero:    a system card, a page's lead illustration */
-export const ICON_SIZE = { inline: 12, control: 24, feature: 36, hero: 48 } as const;
+ *  - hero:    a system card
+ *  - display: a page's lead illustration — a hero, a landing section, an
+ *             empty state that is the whole screen (96: crisp on both grids) */
+export const ICON_SIZE = { inline: 12, control: 24, feature: 36, hero: 48, display: 96 } as const;
 
 // ─── PixelIconTile — the framed pixel icon that opens a card ────────────────
 // The system card opens with its icon in a tile edged in the system's colour.
@@ -260,7 +262,10 @@ export const PixelTag = ({
     : filled
       ? { background: hex, color: fg }
       : { background: 'transparent', border: `1px solid ${parsable ? hex : 'currentColor'}`, color: c.text };
-  return <div {...rest} data-onganda-tag={neutral ? 'neutral' : 'identity'} className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] ${className}`} style={style}>
+  // Inline by default: a block-level tag stretched to fill any container it
+  // sat in, so a hero's "PILOT · 2026" came out as a long bar. The inverse
+  // panel and the lab card ask for the full-width band explicitly.
+  return <div {...rest} data-onganda-tag={neutral ? 'neutral' : 'identity'} className={`inline-block px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] ${className}`} style={style}>
     {label}
   </div>;
 };
@@ -638,12 +643,19 @@ export const OngandaLogoMark = ({
 //   <SurfaceProvider hex={c.inverse} isDark>
 //     <SystemCard … />          ← its labels now resolve against the black card
 //   </SurfaceProvider>
-export const SurfaceContext = createContext<{ hex: string; isDark: boolean }>({
-  hex: COLOR.dustLight,
-  isDark: false
-});
+// The default stands for "no SurfaceProvider here". It used to be read as a
+// light card unconditionally, so under DarkProvider dark every ink choice was
+// made against dust light: a stat value came out char black on the dark card
+// (1.03:1). With no provider, the surface is the theme's own card.
+const IMPLICIT_SURFACE = { hex: COLOR.dustLight, isDark: false };
+export const SurfaceContext = createContext<{ hex: string; isDark: boolean }>(IMPLICIT_SURFACE);
 
-export const useSurface = () => useContext(SurfaceContext);
+export const useSurface = () => {
+  const declared = useContext(SurfaceContext);
+  const { isDark } = useContext(DarkContext);
+  if (declared !== IMPLICIT_SURFACE) return declared;
+  return isDark ? { hex: COLOR.darkCard, isDark: true } : IMPLICIT_SURFACE;
+};
 
 export const SurfaceProvider = ({
   hex,
@@ -740,6 +752,9 @@ export type PixelButtonProps = {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   href?: string;
   className?: string;
+  /** steps up and left 2px onto a hard 4px pixel shadow on hover — the
+   *  expressive call to action. Use it on one or two buttons a page, not all. */
+  lift?: boolean;
 } & Omit<React.HTMLAttributes<HTMLElement>, MotionConflicting>;
 
 const buttonPalette = (variant: PixelButtonVariant, c: ColorRoles) => {
@@ -762,6 +777,7 @@ export const PixelButton = ({
   disabled = false,
   onClick,
   href,
+  lift = false,
   className = '',
   ...rest
 }: PixelButtonProps) => {
@@ -814,6 +830,7 @@ export const PixelButton = ({
     return (
       <motion.a
         data-onganda-button=""
+        data-onganda-depth={lift ? 'lift' : undefined}
         {...rest}
         {...MOTION.tap}
         href={href}
@@ -829,6 +846,7 @@ export const PixelButton = ({
   return (
     <motion.button
       data-onganda-button=""
+      data-onganda-depth={lift && !disabled ? 'lift' : undefined}
       {...rest}
       {...(disabled ? {} : MOTION.tap)}
       type="button"
@@ -1304,7 +1322,7 @@ export const TerminalCard = ({
     plain: 'rgba(232,225,207,0.78)',
     accent: COLOR.ochreOrange
   };
-  return <motion.div initial={{
+  return <motion.div initial={AUTOMATED ? false : {
     opacity: 0,
     y: 14
   }} whileInView={{
@@ -1480,7 +1498,7 @@ export const FieldAppCard = ({
   idx: number;
 }) => {
   const inkFor = useInkOn();
-  return <motion.article initial={{
+  return <motion.article initial={AUTOMATED ? false : {
   opacity: 0,
   y: 16
 }} whileInView={{
@@ -1567,7 +1585,7 @@ export const PrincipleRow = ({
 }: {
   principle: PrincipleEntry;
   idx: number;
-}) => <motion.div initial={{
+}) => <motion.div initial={AUTOMATED ? false : {
   opacity: 0,
   x: -10
 }} whileInView={{
@@ -1619,7 +1637,7 @@ export const CodeSnippetBlock = ({
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
-  return <motion.div initial={{
+  return <motion.div initial={AUTOMATED ? false : {
     opacity: 0,
     y: 10
   }} whileInView={{

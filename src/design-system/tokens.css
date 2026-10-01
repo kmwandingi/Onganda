@@ -65,6 +65,9 @@
   --onganda-control-on: #D9791F;
   --onganda-control-on-fg: #1E1A17;
   --onganda-control-on-border: #8F3E21;
+  --onganda-shadow-band: 0 8px 0 rgba(30,26,23,0.03);
+  --onganda-shadow-step: 4px 4px 0 rgba(30,26,23,0.18);
+  --onganda-shadow-plate: 8px 8px 0 rgba(30,26,23,0.08);
 
   /* ── Status: the four states, and never the only signal ─────── */
   --onganda-status-active: #D9791F;
@@ -183,7 +186,8 @@
   --onganda-motion-nudge: 2px;
   --onganda-motion-press: 0.97;
 
-  /* ── Geometry: no radius, no elevation ──────────────────────── */
+  /* ── Geometry: no radius, no blur. Depth is the hard pixel shadow
+     roles above: --onganda-shadow-band / -step / -plate. ───────── */
   --onganda-radius: 0px;
   --onganda-shadow: none;
   --onganda-border-hairline: 1px;
@@ -241,6 +245,9 @@
   --onganda-control-on: #D9791F;
   --onganda-control-on-fg: #1E1A17;
   --onganda-control-on-border: #D9791F;
+  --onganda-shadow-band: 0 8px 0 rgba(232,225,207,0.04);
+  --onganda-shadow-step: 4px 4px 0 rgba(232,225,207,0.14);
+  --onganda-shadow-plate: 8px 8px 0 rgba(232,225,207,0.06);
   --onganda-status-active: #D9791F;
   --onganda-status-caution: #DFAE2B;
   --onganda-status-critical: #C84A1B;

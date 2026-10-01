@@ -784,6 +784,8 @@ export const PixelPanel = ({
   icon,
   tag,
   aside,
+  depth = 'flat',
+  tone = 'surface',
   children,
   footer,
   isDark: isDarkProp,
@@ -824,6 +826,14 @@ export const PixelPanel = ({
   /** on the title's line, right-aligned: a status with its label, a count,
    *  a small action. Keeps the title an <h2> and the row aligned. */
   aside?: React.ReactNode;
+  /** how the card sits. `flat` (default) is the site's card. `raised` rests
+   *  on a hard 8px pixel shadow; `lift` is flat until hovered, then steps up
+   *  and left 2px onto a 4px shadow. Zero blur either way. One of the
+   *  creative dials — see "Creative latitude" in SKILL.md. */
+  depth?: 'flat' | 'raised' | 'lift';
+  /** `tint` washes the card in its own accent (8%) — for one featured card
+   *  or a highlighted peer, not for every card. */
+  tone?: 'surface' | 'tint';
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -853,11 +863,16 @@ export const PixelPanel = ({
       // Motion from the defaults: every panel enters, a clickable one lifts.
       // CSS in style.css, off under reduced motion.
       data-onganda-enter=""
-      data-onganda-lift={rest.onClick ? '' : undefined}
+      data-onganda-lift={rest.onClick && depth === 'flat' ? '' : undefined}
+      data-onganda-depth={depth === 'flat' ? undefined : depth}
       {...rest}
       className={`relative overflow-hidden ${className}`}
       style={{
-        background: c.surface,
+        // A tint is the accent laid over the surface: text keeps its contrast
+        // because the wash is 8% and the surface underneath is unchanged.
+        background: tone === 'tint' && /^#[0-9a-f]{6}$/i.test(hue)
+          ? `linear-gradient(${hue}14, ${hue}14), ${c.surface}`
+          : c.surface,
         border: `1px solid ${c.line}`,
         ...(spine ? { borderLeft: `3px solid ${hue}` } : {})
       }}
@@ -1004,7 +1019,8 @@ export const PixelInversePanel = ({
     >
       <WeaveOverlay isDark opacity={TEXTURE.inverse} />
       <div className="relative">
-        {tag}
+        {/* The site's inverse panel opens with its tag as a full-width band. */}
+        {tag && <div className="flex flex-col">{tag}</div>}
         {headline && (
           <h2
             style={{

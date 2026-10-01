@@ -221,7 +221,7 @@ const tokens = {
       radius: dim(0, 'ZERO, EVERYWHERE. Corner decoration is the PixelCornerMarks component, never a radius.'),
       'border-hairline': dim(1, 'The standard border.'),
       'border-rule': dim(3, 'The emphasised left rule on inverse cards and notices.'),
-      shadow: { $type: 'shadow', $value: 'none', $description: 'No shadows. Depth comes from the weave texture and stepped marks.' }
+      shadow: { $type: 'shadow', $value: 'none', $description: 'No blurred shadow. Depth is the hard pixel shadows in the role set: shadowStep, shadowPlate, shadowBand.' }
     }
   ),
 

@@ -49,3 +49,43 @@ test('a dialog renders on the body, outside any card', async ({ page }) => {
   const insidePanel = await dialog.evaluate(el => !!el.closest('[data-onganda-panel]'));
   expect(insidePanel).toBe(false);
 });
+
+// Depth is a creative dial, and the only depth the system allows is a hard
+// pixel shadow. A product once stripped its stepped shadows because the docs
+// said "no shadows"; the rule was always "no blur".
+const blurOf = (shadow: string) => {
+  const lens = shadow.match(/-?[\d.]+px/g) ?? [];
+  return lens.length >= 3 ? parseFloat(lens[2]) : 0;
+};
+
+test('a raised card rests on a hard pixel plate, with no blur', async ({ page }) => {
+  await page.goto('/test/launch');
+  const raised = page.locator('[data-onganda-panel][data-onganda-depth="raised"]').first();
+  const shadow = await raised.evaluate(el => getComputedStyle(el).boxShadow);
+  expect(shadow).toContain('8px 8px 0px');
+  expect(blurOf(shadow)).toBe(0);
+});
+
+test('a lifting card steps up onto a hard shadow on hover', async ({ page }) => {
+  await page.goto('/test/launch');
+  const card = page.locator('[data-onganda-panel][data-onganda-depth="lift"]').first();
+  await card.scrollIntoViewIfNeeded();
+  await card.hover();
+  await page.waitForTimeout(250);
+  const s = await card.evaluate(el => ({ translate: getComputedStyle(el).translate, shadow: getComputedStyle(el).boxShadow }));
+  expect(s.translate).toBe('-2px -2px');
+  expect(s.shadow).toContain('4px 4px 0px');
+  expect(blurOf(s.shadow)).toBe(0);
+});
+
+test('no page in the kit casts a blurred shadow', async ({ page }) => {
+  for (const route of ['/test/launch', '/test/landing', '/test/app', '/test/studio']) {
+    await page.goto(route);
+    await page.locator('[data-test-page]').waitFor();
+    const blurred = await page.evaluate(() => [...document.querySelectorAll('body *')].filter(el => {
+      const lens = getComputedStyle(el).boxShadow.match(/-?[\d.]+px/g) ?? [];
+      return lens.length >= 3 && parseFloat(lens[2]) !== 0;
+    }).length);
+    expect(blurred, route).toBe(0);
+  }
+});

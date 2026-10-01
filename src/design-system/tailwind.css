@@ -62,6 +62,9 @@
   --color-control-on: var(--onganda-control-on);
   --color-control-on-fg: var(--onganda-control-on-fg);
   --color-control-on-border: var(--onganda-control-on-border);
+  --color-shadow-band: var(--onganda-shadow-band);
+  --color-shadow-step: var(--onganda-shadow-step);
+  --color-shadow-plate: var(--onganda-shadow-plate);
   --color-status-active: var(--onganda-status-active);
   --color-status-caution: var(--onganda-status-caution);
   --color-status-critical: var(--onganda-status-critical);
@@ -134,4 +137,7 @@
 
   --radius-*: initial;
   --shadow-*: initial;
+  --shadow-band: var(--onganda-shadow-band);
+  --shadow-step: var(--onganda-shadow-step);
+  --shadow-plate: var(--onganda-shadow-plate);
 }

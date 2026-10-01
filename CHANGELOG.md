@@ -47,7 +47,54 @@ each item against your screens:
     light inside a dark provider without `isDark` will now be dark; pass
     `isDark={false}` where that was intended.
 12. **No `@source` line is needed** for the package; remove it if you added one.
-13. Regenerate any visual snapshots.
+13. **`PixelTag` is inline.** It was block-level and stretched across any
+    plain container. Where you relied on a full-width band, wrap it in a
+    flex column (as `PixelInversePanel` does).
+14. **Ink follows the theme without a `SurfaceProvider`.** `useInkOn`,
+    `StatCard` and `PixelStatBand` used to assume a light card; under a dark
+    `DarkProvider` they now measure against the dark card.
+15. Regenerate any visual snapshots.
+
+### Added — creative latitude
+
+Pages built from the system were starting to look alike, and a product
+redesign lost the stepped shadows that gave its landing page depth — because
+the docs said "no shadows" when the rule was always "no blur". The system now
+fixes the material and leaves the composition to the page:
+
+- **Hard pixel shadows** as roles in both modes: `shadowStep` (4px),
+  `shadowPlate` (8px), `shadowBand` (a sticky bar's foot) —
+  `--onganda-shadow-*`, Tailwind `shadow-step / -plate / -band`. Zero blur;
+  in dark mode a faint light offset, because the canvas is already darkest.
+- **`PixelPanel depth`** — `flat` (default), `raised` (rests on a plate),
+  `lift` (steps up-left 2px onto a hard shadow on hover). **`PixelButton
+  lift`** for the expressive call to action. The step moves with `translate`
+  so it never fights the press or the entrance.
+- **`PixelPanel tone="tint"`** — one featured card washed in its accent.
+- **`ICON_SIZE.display`** (96) for a page's lead pixel illustration.
+- **"Creative latitude"** in SKILL.md: what is fixed, the nine dials each page
+  sets (lead accent, hero, grid rhythm, depth, tone, scale contrast, texture,
+  inverse placement, motion signature), and the rules for using them — one
+  signature move per page, turn a dial up in one section, product screens keep
+  them low.
+- **`/showcase#expressive-range`** and `reference/expressive-range.png`: the
+  same content three ways. **`/test/launch`**: a second landing page with the
+  dials set differently from `/test/landing`, built only from the package.
+
+### Fixed — confidence, verified
+
+- **Entrances never hide content from a screenshot.** Under automation
+  (`navigator.webdriver`) nothing waits to be seen — the CSS reveal and every
+  framer `whileInView` entrance render in their final state — so a full-page
+  screenshot shows the whole page. Any overlap with the viewport now counts,
+  so an element at the bottom of a page that cannot scroll still appears.
+  `<html data-onganda-reveal="off">` opts out.
+- **Dark mode, audited.** The contrast audit now runs on every test page in
+  dark mode. It found stat values at 1.03:1 (the default surface was light
+  regardless of theme) and chart legends defaulting to light; both fixed.
+- **`locked-light-mode`** in `check:tokens`: `roles(false)` in product code
+  fails, because it locks a surface light under a dark theme — the test pages
+  themselves did it.
 
 ### Fixed — what a cold-start agent hit
 
