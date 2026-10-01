@@ -247,6 +247,13 @@ const RULES = [
     }
   },
   {
+    id: 'own-scroll-reveal',
+    why: 'A scroll-triggered entrance written in the product (whileInView, its own fadeUp). It hides content until it is scrolled to — so every full-page screenshot an agent takes shows those sections blank, and the agent "fixes" a page that was fine. Use the package presets, which render in their final state under automation and respect reduced motion: `{...MOTION.fadeUp}`, `{...MOTION.staggerParent}`, or `data-onganda-enter` / `data-onganda-stagger` on any element.',
+    files: /\.(tsx?|jsx?)$/,
+    exclude: /src\/components\/onganda\//,
+    re: /\bwhileInView\s*[:=]/g
+  },
+  {
     id: 'locked-light-mode',
     why: 'roles(false) in product code locks a surface to light mode: under DarkProvider dark its text goes dark-on-dark and disappears. Read the mode — `const { isDark } = useDark(); const c = roles(isDark);` — or use the CSS variables, which follow the theme on their own. (roles(true) for a surface that is always dark, like an inverse band, is fine.)',
     files: /\.tsx$/,

@@ -92,6 +92,11 @@ fixes the material and leaves the composition to the page:
 - **Dark mode, audited.** The contrast audit now runs on every test page in
   dark mode. It found stat values at 1.03:1 (the default surface was light
   regardless of theme) and chart legends defaulting to light; both fixed.
+- **`own-scroll-reveal`** in `check:tokens`: a product's own `whileInView`
+  fails. Installing 2.0 into FirstRung's landing page showed whole sections
+  blank in every full-page screenshot — its hand-copied `fadeUp` hid them —
+  on both the old and the new package. The package presets now render in
+  their final state under automation; products must use them.
 - **`locked-light-mode`** in `check:tokens`: `roles(false)` in product code
   fails, because it locks a surface light under a dark theme — the test pages
   themselves did it.

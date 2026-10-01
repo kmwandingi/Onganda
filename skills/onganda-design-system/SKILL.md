@@ -375,6 +375,11 @@ In framer-motion, spread the `MOTION` presets instead of writing timings:
   dragged over, a `<PixelDot live>` blinks for a running job. Use
   `data-onganda-nudge` and `data-onganda-live` on your own elements; the
   values are `--onganda-motion-*` in `tokens.css` and `MOTION_TOKENS` in code.
+- **Never write your own scroll entrance.** No `whileInView`, no local copy of
+  `fadeUp`. Content that waits to be scrolled to comes out blank in every
+  full-page screenshot, and the next agent "fixes" a page that was fine. The
+  package presets (`MOTION.fadeUp`, `data-onganda-enter`) render in their final
+  state under automation; `npx onganda-check` fails `own-scroll-reveal`.
 - **Respect reduced motion.** Anything that repeats — ticker, sweep, edge
   strips — is guarded by `useMotionOK()`, and the page is complete and
   readable without motion.
