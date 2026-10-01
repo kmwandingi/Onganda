@@ -125,11 +125,25 @@
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: none; }
 }
-:where([data-onganda-enter]) {
+/* With the reveal observer (DarkProvider), an entrance waits until the element
+ * is in view: hidden until then, played on arrival. Without it, the entrance
+ * plays on mount and nothing is ever hidden. */
+:where([data-onganda-enter][data-onganda-in]),
+:where(html:not([data-onganda-motion])) :where([data-onganda-enter]) {
   animation: onganda-enter var(--onganda-motion-enter) var(--onganda-motion-ease) backwards;
 }
-:where([data-onganda-stagger]) > * {
+:where([data-onganda-stagger][data-onganda-in]) > *,
+:where(html:not([data-onganda-motion])) :where([data-onganda-stagger]) > * {
   animation: onganda-enter 0.35s var(--onganda-motion-ease) backwards;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(html[data-onganda-motion]) :where([data-onganda-enter]:not([data-onganda-in])),
+  :where(html[data-onganda-motion]) :where([data-onganda-stagger]:not([data-onganda-in])) > * {
+    opacity: 0;
+  }
+}
+@media print {
+  [data-onganda-enter], [data-onganda-stagger] > * { opacity: 1 !important; animation: none !important; }
 }
 :where([data-onganda-stagger]) > :nth-child(2) { animation-delay: 0.06s; }
 :where([data-onganda-stagger]) > :nth-child(3) { animation-delay: 0.12s; }

@@ -16,10 +16,26 @@ test.describe('with motion', () => {
   test('panels and section headers enter by default', async ({ page }) => {
     await page.goto('/test/app');
     await page.locator('[data-test-page]').waitFor();
+    const panel = page.locator('[data-onganda-panel]').first();
+    await expect(panel).toHaveAttribute('data-onganda-in', '');
     expect((await animationOf(page, '[data-onganda-panel]')).name).toBe('onganda-enter');
-    await page.goto('/test/dashboard');
+  });
+
+  test('an entrance is seen: it starts when the element arrives, not at mount', async ({ page }) => {
+    // Measured before this existed: the first panel's 450ms entrance was at
+    // 442ms by the time the page could paint, and anything below the fold
+    // had finished before it was scrolled to.
+    await page.goto('/test/landing');
     await page.locator('[data-test-page]').waitFor();
-    expect((await animationOf(page, '[data-onganda-enter]')).name).toBe('onganda-enter');
+    const below = page.locator('#contact[data-onganda-enter]');
+    await page.waitForTimeout(800);
+    expect(await below.getAttribute('data-onganda-in'), 'below the fold, it waits').toBeNull();
+    expect(await below.evaluate(el => getComputedStyle(el).opacity)).toBe('0');
+    await below.evaluate(el => el.scrollIntoView());
+    await expect(below).toHaveAttribute('data-onganda-in', '');
+    const at = await below.evaluate(el => Number(el.getAnimations()[0]?.currentTime ?? -1));
+    expect(at, 'the entrance is near its start when it arrives').toBeGreaterThanOrEqual(0);
+    expect(at).toBeLessThan(300);
   });
 
   test('the stat band arrives in turn, not all at once', async ({ page }) => {
@@ -30,9 +46,13 @@ test.describe('with motion', () => {
     expect(new Set(delays).size, `delays: ${delays.join(', ')}`).toBe(4);
   });
 
-  test('entrances settle: nothing is left invisible', async ({ page }) => {
+  test('entrances settle: nothing is left invisible once seen', async ({ page }) => {
     await page.goto('/test/form');
-    await page.waitForTimeout(1200);
+    await page.locator('[data-test-page]').waitFor();
+    await page.evaluate(async () => {
+      for (let y = 0; y <= document.body.scrollHeight; y += 300) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 80)); }
+    });
+    await page.waitForTimeout(1000);
     const faded = await page.evaluate(() =>
       [...document.querySelectorAll('[data-onganda-enter], [data-onganda-stagger] > *')]
         .filter(el => Number(getComputedStyle(el).opacity) < 1).length);

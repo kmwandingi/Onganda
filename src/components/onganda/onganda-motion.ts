@@ -93,3 +93,53 @@ export const SPACE = {
   itemGap: 20,    // gap between sibling items (gap-5)
   microGap: 12    // gap inside compound elements (gap-3)
 } as const;
+
+// ─── Reveal — entrances that actually play ───────────────────────────────────
+// A CSS entrance that starts when an element is inserted is spent before the
+// viewer sees it: measured on a consumer page, a panel's 450ms entrance was at
+// 442ms by the first paint, because the browser was busy mounting the page
+// and the animation clock kept running. Anything below the fold finished long
+// before it was scrolled to. So the entrance starts when the element comes
+// into view instead.
+//
+// installReveal() marks <html data-onganda-motion> and watches every
+// [data-onganda-enter] and [data-onganda-stagger]; each gets
+// data-onganda-in when it enters the viewport, and style.css plays the
+// entrance then. DarkProvider installs it. Without it — no JavaScript, an app
+// that skips DarkProvider, reduced motion, print — nothing is hidden and
+// nothing waits.
+const REVEAL = '[data-onganda-enter],[data-onganda-stagger]';
+let revealUsers = 0;
+let revealTeardown: (() => void) | null = null;
+
+export const installReveal = (): (() => void) => {
+  if (typeof window === 'undefined' || typeof document === 'undefined'
+    || !('IntersectionObserver' in window) || !('MutationObserver' in window)) return () => {};
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return () => {};
+  revealUsers += 1;
+  if (!revealTeardown) {
+    const html = document.documentElement;
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        e.target.setAttribute('data-onganda-in', '');
+        io.unobserve(e.target);
+      }
+    }, { rootMargin: '0px 0px -6% 0px' });
+    const watch = (node: Element) => {
+      if (node.matches(REVEAL) && !node.hasAttribute('data-onganda-in')) io.observe(node);
+      node.querySelectorAll(REVEAL).forEach(el => { if (!el.hasAttribute('data-onganda-in')) io.observe(el); });
+    };
+    watch(document.body);
+    const mo = new MutationObserver(records => {
+      for (const r of records) r.addedNodes.forEach(n => { if (n instanceof Element) watch(n); });
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+    html.setAttribute('data-onganda-motion', '');
+    revealTeardown = () => { io.disconnect(); mo.disconnect(); html.removeAttribute('data-onganda-motion'); };
+  }
+  return () => {
+    revealUsers -= 1;
+    if (revealUsers === 0 && revealTeardown) { revealTeardown(); revealTeardown = null; }
+  };
+};

@@ -54,15 +54,21 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 npm install github:kmwandingi/Onganda
 ```
 
-Pin a commit rather than tracking the branch, and bump it in every
-`package.json` that carries it:
+Track `main` to always get the latest, in every `package.json` that carries
+it (a monorepo usually has several):
 
 ```json
-"@onganda/design-system": "github:kmwandingi/Onganda#<sha>"
+"@onganda/design-system": "github:kmwandingi/Onganda#main"
 ```
 
-A pin is a commit, not a version, so `npm install` alone will not move it —
-edit the pin and reinstall with `--force`. The package builds on install via
+The lockfile freezes a git dependency at the commit it first resolved, so
+`npm install` alone will not update it. Upgrade with
+`npm install @onganda/design-system@github:kmwandingi/Onganda#main --force`,
+then restart the dev server and clear `node_modules/.vite`. The installed
+version names its commit (`2.0.0+<sha>`); compare it with
+`git ls-remote https://github.com/kmwandingi/Onganda HEAD`. To hold a product
+still instead, pin a commit (`#<sha>`) and move the pin deliberately. Read the
+CHANGELOG's migration notes before crossing a major version. The package builds on install via
 its `prepare` script, which is how the compiled layout utilities reach
 `dist/package/style.css`; a stale `node_modules` serves an older build with no
 warning. If an export or a style is missing, delete

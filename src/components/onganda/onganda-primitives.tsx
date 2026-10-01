@@ -4,9 +4,9 @@
 // node card, field app card, annotation panel, and dark-mode context.
 // Import from this file in any Onganda project.
 
-import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useLayoutEffect } from 'react';
 import { motion, MotionConfig } from 'framer-motion';
-import { MOTION } from './onganda-motion';
+import { MOTION, installReveal } from './onganda-motion';
 import { TYPE, TEXTURE } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
@@ -67,6 +67,10 @@ export const DarkProvider = ({
     if (typeof document === 'undefined') return;
     document.documentElement.setAttribute('data-onganda-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
+  // Entrances start when an element comes into view, not when it is
+  // inserted — see installReveal. Layout effect, so the observer is in place
+  // before the first paint and nothing flashes in and out.
+  useLayoutEffect(() => installReveal(), []);
   // framer-motion ignores prefers-reduced-motion unless told otherwise, so
   // every MOTION entrance slid in for viewers who had asked for less. "user"
   // drops the transform and keeps the fade.

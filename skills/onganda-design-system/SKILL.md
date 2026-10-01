@@ -26,6 +26,13 @@ Inspect the relevant public export before writing code. Use the smallest suitabl
 
 ## Consume the package correctly
 
+**Everything this guide refers to ships inside the installed package**, at
+`node_modules/@onganda/design-system/`: this file (`skills/`), `reference/`,
+`screenshots/test-pages/` (the comparison sheets), `src/test-pages/` (the
+source of the consumer pages — read `Studio.tsx` and `AppScreen.tsx` before
+building a tool), `DESIGN_SYSTEM.md`, `DESIGN_GUIDELINES.md` and `CHANGELOG.md`.
+Read them there; they match the code you installed.
+
 The package is not on npm. Consumers install it straight from GitHub, either
 tracking `main` or pinned to a commit:
 
@@ -36,7 +43,7 @@ tracking `main` or pinned to a commit:
 To get the latest: `npm install @onganda/design-system@github:kmwandingi/Onganda#main --force`
 (or `pnpm add … --force`). The lockfile freezes a git dependency at the commit
 it first resolved, so an unchanged `#main` alone does not update. The installed
-version carries the commit — `1.2.0+5dfefce` — and must match the first seven
+version carries the commit — `2.0.0+<sha>` — and must match the first seven
 characters of `git ls-remote https://github.com/kmwandingi/Onganda HEAD`.
 
 **Then restart the dev server and clear `node_modules/.vite`.** A dev server

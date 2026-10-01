@@ -5,6 +5,44 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+## [2.0.0] — 2026-10-01
+
+### Migrating from 1.x
+
+2.0 changes how every product looks without changing a single prop
+signature. Nothing is removed from the package root. Reinstall, then check
+each item against your screens:
+
+1. **The primary button is ochre, not black.** `PixelButton` reads the new
+   roles; nothing to change in code. A screen designed around a black
+   primary will look different — re-screenshot it.
+2. **The in-card accent is mahangu gold**, and danger carries a fired red edge.
+3. **Cards are flat.** `PixelPanel`'s `texture` defaults to `none`, and
+   `PixelNotice`, `PixelDialog` and `PixelEmptyState` drop their weave. Put
+   texture on the page ground. Pass `texture="surface"` only for an identity
+   grid like the five-system cards.
+4. **The dotted rule is retired.** `DitherBar` draws a hairline and ignores
+   `segments` and `height`; `DitherStrip` renders nothing — remove its calls.
+   `npx onganda-check` now fails dotted and dashed edges.
+5. **Pixel icons snap to their grid.** A size that is not a whole multiple of
+   12 changes: 14 and 16 render at 12, 20 at 24, 28 at 24. Use `ICON_SIZE`
+   (12 / 24 / 36 / 48). A nav or toolbar that relied on 16px icons wants
+   `ICON_SIZE.control`.
+6. **The faces ship with the package.** Remove Google Fonts and Fontsource
+   imports of Inter and Space Grotesk. `style.css` is about 230 kB larger.
+7. **Motion comes from the primitives.** With `DarkProvider`, panels, section
+   headers and the stat band enter as they come into view; without it they
+   enter on mount, or call `installReveal()` yourself. Remove any entrance
+   you added to a `PixelPanel` by hand, or it will play twice.
+8. **`PixelDialog` renders on `document.body`.** CSS that reached it through
+   an ancestor selector must target it directly.
+9. **New guard rules**: `texture-as-state`, and dashed edges under
+   `dotted-rule`. Expect `npx onganda-check` to report them.
+10. **The package carries its guidance**: `skills/`, `reference/`,
+    `screenshots/test-pages/` and `src/test-pages/` are in
+    `node_modules/@onganda/design-system/` (about 6 MB).
+11. Regenerate any visual snapshots.
+
 ### Fixed — the faces, the pixel grid, and what makes a screen look finished
 
 A product on the latest build still looked amateur: headings in Arial, pixel
@@ -17,8 +55,11 @@ micro-motion, loose actions. Each had a cause in the package.
   it with Fontsource got `'Space Grotesk Variable'`, a name the stacks did not
   list. Inter and Space Grotesk (OFL) now ship embedded in `fonts.css`, inlined
   by `style.css`; the stacks also accept the Fontsource names. A `url()` to
-  font files was tried first and failed, because Tailwind's Vite plugin does
-  not rewrite URLs through nested imports — the showcase itself was in Arial.
+  font files was tried first and worked or failed depending on the consumer's
+  bundler: `@tailwindcss/vite` 4.0.9 leaves `url()`s in a nested import
+  unrewritten (404 — the showcase rendered in Arial), 4.3.3 rewrites them.
+  A package cannot choose its consumer's Tailwind version, so the faces are
+  embedded. The cost is about 230 kB in `style.css`.
   `check:fonts`, a consumer case importing `style.css` from CSS, and a browser
   test that both faces load now guard it.
 - **Pixel icons were off their grid.** Drawn on 12 cells, rendered at a 16px
@@ -160,6 +201,8 @@ the next.
 - **`dotted-rule`** in `check:tokens` rejects `repeating-linear-gradient` and
   dotted borders; `composition.spec.ts` now treats dotted runs as a ceiling of
   zero instead of a required ingredient.
+
+## [1.2.0]
 
 ### Added — semantic tokens as CSS, and the Tailwind theme
 

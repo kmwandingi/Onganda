@@ -1,6 +1,6 @@
 {
   "name": "@onganda/design-system",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "Onganda pixel editorial design system \u2014 tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
   "keywords": [
@@ -76,7 +76,16 @@
     "src/components/onganda/onganda-type.ts",
     "README.md",
     "USAGE.md",
-    "LICENSE"
+    "LICENSE",
+    "skills",
+    "reference",
+    "screenshots/test-pages",
+    "src/test-pages",
+    "DESIGN_SYSTEM.md",
+    "DESIGN_GUIDELINES.md",
+    "FOR_DESIGNERS.md",
+    "AGENTS.md",
+    "CHANGELOG.md"
   ],
   "sideEffects": [
     "dist/package/maps.css",
@@ -95,7 +104,7 @@
     "check:docs": "node scripts/check-docs.mjs",
     "check:tokens:export": "node scripts/build-tokens.mjs --check",
     "build:tokens": "node scripts/build-tokens.mjs",
-    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs && npm run check:tokens:export && npm run check:token-css && npm run check:test-pages && npm run check:fonts",
+    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs && npm run check:tokens:export && npm run check:token-css && npm run check:test-pages && npm run check:fonts && npm run check:agent-docs",
     "test:package": "node tests/package-smoke.mjs",
     "test:consumer": "node tests/consumer-render.mjs",
     "test:browser": "playwright test",
@@ -110,7 +119,9 @@
     "test-pages": "node scripts/capture-test-pages.mjs",
     "check:test-pages": "node scripts/check-design-tokens.mjs --paths src/test-pages",
     "build:fonts": "node scripts/build-font-css.mjs",
-    "check:fonts": "node scripts/build-font-css.mjs --check"
+    "check:fonts": "node scripts/build-font-css.mjs --check",
+    "build:agent-docs": "node scripts/build-agent-docs.mjs",
+    "check:agent-docs": "node scripts/build-agent-docs.mjs --check"
   },
   "peerDependencies": {
     "framer-motion": ">=10.0.0",

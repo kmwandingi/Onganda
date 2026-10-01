@@ -481,7 +481,7 @@ import {
 } from '@onganda/design-system';
 ```
 
-Import larger features through `@onganda/design-system/charts`, `/editors`, `/ai`, `/maps`, or `/sites`. The package root retains the complete version 1.x surface for compatibility. Removing a root export requires a major release and a migration note.
+Import larger features through `@onganda/design-system/charts`, `/editors`, `/ai`, `/maps`, or `/sites`. The package root retains the complete 1.x surface; 2.0 changed how it looks, not what it exports (see the CHANGELOG's migration notes). Removing a root export requires a major release and a migration note.
 
 The implementation modules are:
 

@@ -72,16 +72,31 @@ export const Studio = () => {
           </p>
 
           <div className="grid items-start gap-4 lg:grid-cols-[1.25fr_1fr]">
-            <PixelPanel accent={accentFor(0)} tag="01" eyebrow="Upload" title="A video or audio file">
-              <PixelDropZone
-                title={files.length ? `${files.length} file ready` : 'Drop a file here'}
-                hint="mp4 · mov · webm · mp3 · wav — up to 200 MB"
-                accept="video/*,audio/*"
-                onFiles={setFiles}
-              >
-                <PixelButton variant="ghost">Try an example</PixelButton>
-              </PixelDropZone>
+            {/* Two columns of similar height: the upload and the steer on the
+                left, the link and transcript on the right. A short card next
+                to a tall stack leaves a hole. */}
+            <div className="grid content-start gap-4">
+              <PixelPanel accent={accentFor(0)} tag="01" eyebrow="Upload" title="A video or audio file">
+                <PixelDropZone
+                  title={files.length ? `${files.length} file ready` : 'Drop a file here'}
+                  hint="mp4 · mov · webm · mp3 · wav — up to 200 MB"
+                  accept="video/*,audio/*"
+                  onFiles={setFiles}
+                >
+                  <PixelButton variant="ghost">Try an example</PixelButton>
+                </PixelDropZone>
+              </PixelPanel>
+            <PixelPanel emphasis="quiet" eyebrow="Direction" title="Steer the search (optional)">
+              <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+                <PixelField label="What to look for" htmlFor="st-dir">
+                  <PixelInput id="st-dir" placeholder="the awkward reactions" />
+                </PixelField>
+                <span className="inline-flex items-center gap-2" style={{ fontSize: TYPE.meta.size, color: c.textMuted, paddingBottom: 12 }}>
+                  <PixelDot color={accentFor(0)} size={7} live /> Transcriber ready
+                </span>
+              </div>
             </PixelPanel>
+            </div>
 
             <div className="grid content-start gap-4">
               <PixelPanel accent={accentFor(1)} tag="02" icon={<IconLink size={ICON_SIZE.feature} color={accentFor(1)} />}
@@ -103,16 +118,6 @@ export const Studio = () => {
             </div>
           </div>
 
-          <PixelPanel emphasis="quiet" className="mt-4" eyebrow="Direction" title="Steer the search (optional)">
-            <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-              <PixelField label="What to look for" htmlFor="st-dir">
-                <PixelInput id="st-dir" placeholder="the awkward reactions" />
-              </PixelField>
-              <span className="inline-flex items-center gap-2" style={{ fontSize: TYPE.meta.size, color: c.textMuted, paddingBottom: 12 }}>
-                <PixelDot color={accentFor(0)} size={7} live /> Transcriber ready
-              </span>
-            </div>
-          </PixelPanel>
         </section>
       </div>
     </TestFrame>

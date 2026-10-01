@@ -12,6 +12,7 @@
 // pairs colour with a second signal so meaning never rests on hue alone.
 
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
 import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, type MotionConflicting } from './onganda-primitives';
@@ -142,7 +143,7 @@ export const PixelDialog = ({
     };
   }, [open, onClose]);
 
-  return (
+  const dialog = (
     <AnimatePresence>
       {open && (
         <motion.div
@@ -187,6 +188,12 @@ export const PixelDialog = ({
       )}
     </AnimatePresence>
   );
+  // Rendered on document.body, not where it is declared. A dialog inside a
+  // PixelPanel would otherwise be clipped to the card while the card enters or
+  // lifts: a transform on an ancestor makes `position: fixed` relative to it,
+  // and the panel's overflow-hidden then cuts it off. Context — dark mode,
+  // density, MotionConfig — still flows through the portal.
+  return typeof document === 'undefined' ? dialog : createPortal(dialog, document.body);
 };
 
 // ─── PixelTable — data list with the editorial rhythm, not generic chrome ────
