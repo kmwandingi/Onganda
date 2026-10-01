@@ -3022,7 +3022,7 @@ export const ProductSurface = () => {
             <div className="grid content-start gap-3">
               {PRODUCT_ROWS.map((r, i) => (
                 <PixelPanel key={r.id} isDark={isDark} spine accent={accentFor(i)} data-testid="product-moment"
-                  eyebrow={`${String(i + 1).padStart(2, '0')} · ${r.at}`} title={r.name}
+                  tag={String(i + 1).padStart(2, '0')} eyebrow={r.at} title={r.name}
                   aside={<PixelMeter value={r.strength} label={r.label} isDark={isDark} />} />
               ))}
               <PixelDropZone isDark={isDark} title="Drop more footage" hint="mp4 · mov · webm — up to 12 files" multiple onFiles={() => {}} />

@@ -88,6 +88,14 @@ docs let it down. All are fixed:
   `DarkProvider`): measured, a panel's 450ms entrance was at 442ms by first
   paint, so it was never seen.
 - `PixelDialog` renders on `document.body`, so no card can clip it.
+- A second cold-start pass, after the fixes above, confirmed 11 of the 15
+  fixed and found the rest: `SectionHeader`, `StatCard`, `PixelIconButton`
+  and `WeaveOverlay` still defaulted to light (all now read the provider); the
+  docs gave three different ordinal rules (now one: `PixelPanel` `tag`, plus
+  `icon` when peers differ in kind); a scrolling tab row gave no sign it
+  continued (it now fades at the cut edge); a title-row `aside` squeezed
+  titles on a phone (it now drops below); and four doc examples were wrong or
+  off-grid, including `systemIconForName` used as a component.
 - The font explanation was wrong: whether a `url()` survives a nested import
   depends on the consumer's `@tailwindcss/vite` version (4.0.9 no, 4.3.3 yes),
   not on the plugin as such. Embedding stands; the cause is corrected.

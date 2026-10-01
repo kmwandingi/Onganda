@@ -26,10 +26,11 @@ Build products that feel unmistakably Onganda without copying the showcase's con
 
 ## Start with the source of truth
 
-Resolve the repository root from this skill, then read:
+Read these from the package root — `node_modules/@onganda/design-system/` in a
+product, the repository root in the Onganda repo:
 
 1. `README.md` for installation and public package paths.
-2. `DESIGN_SYSTEM.md` for the visual language and component API. Read §4 Color Roles and §5 Controls before styling anything — they are the enforceable rules, and `npm run check:tokens` fails the build on violations.
+2. `DESIGN_SYSTEM.md` for the visual language and component API. Read §4 Color Roles and §5 Controls before styling anything — they are the enforceable rules, and `npx onganda-check src/` (`npm run check:tokens` in the repo) fails on violations.
 3. `DESIGN_GUIDELINES.md` for implementation and quality rules.
 
 **Open the showcase before you write anything** — `/showcase` in this repo;
@@ -121,7 +122,7 @@ the positive recipe, the same one `reference/product-surface.png` shows:
 |---|---|---|
 | The primary action | ochre | `<PixelButton>` — never hand-styled |
 | The section / screen | one accent, declared | `<SectionHeader accent={accentFor(n)}>` — rotate by section, so screens differ |
-| **Peer items** — cards, moments, results, ideas in a list | the next accent each | `accentFor(i)` on the spine or corner marks **and** a filled ordinal `<PixelTag hex={accentFor(i)} label="01">` |
+| **Peer items** — cards, moments, results, ideas in a list | the next accent each | `<PixelPanel accent={accentFor(i)} tag="01">` — the accent on the spine or corner marks, and `tag` renders the filled ordinal in it. Add `icon` when peers differ in kind (upload / link / transcript), not when they are all the same thing |
 | State | status hue + a label | `statusFor(name, isDark)` on a `PixelDot` |
 | A rating — strength, fit | one hue, filled squares + a label | `PixelMeter` in the card's `aside` — never a status colour |
 | Icons | their own pixel colours | `systemIconForName`, `Icon*` |
@@ -156,7 +157,8 @@ pixel art where the eye lands:
   — the one primary sits with the title, not as a loose link in a corner.
   Every working screen has exactly one primary.
 - **Peers are peers.** Inputs, sources or results that do the same job are
-  `PixelPanel`s with `accentFor(i)`, an ordinal `tag` and an `icon`.
+  `PixelPanel`s with `accentFor(i)` and an ordinal `tag`; give each an `icon`
+  when they differ in kind. A rating goes in `aside` as a `PixelMeter`.
 - **A field and its action are one control.** `<PixelInputGroup>` around the
   input and its button: one height, one edge.
 - **Unequal columns, aligned to the top.** A grid of panels with different
@@ -270,7 +272,7 @@ before you claim it is done.
 6. **Regenerate visual baselines in the same commit as the change that moved
    them**, so the reason is in the history rather than in a later "update
    snapshots" commit.
-7. **Re-run `npm run reference`** if you changed a primitive's appearance.
+7. **In the Onganda repo, re-run `npm run reference`** if you changed a primitive's appearance.
    Stale reference screenshots are worse than none: the next agent will match
    the old look.
 

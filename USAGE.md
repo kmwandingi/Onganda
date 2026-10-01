@@ -242,10 +242,11 @@ import { IconOkaanda } from '@onganda/design-system';
 
 ### System icon by name
 ```tsx
-import { systemIconForName } from '@onganda/design-system';
+import { systemIconForName, ICON_SIZE } from '@onganda/design-system';
 
-const Icon = systemIconForName('Okaanda');
-<Icon size={32} />
+// Returns an element, not a component. System icons are on a 24-cell grid:
+// ICON_SIZE.control (24) or ICON_SIZE.hero (48).
+{systemIconForName('Okaanda', ICON_SIZE.hero)}
 ```
 
 ### Pixel SVG icon (custom)

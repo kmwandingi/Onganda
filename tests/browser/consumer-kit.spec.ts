@@ -14,6 +14,12 @@ test('patterns follow DarkProvider without an isDark prop', async ({ page }) => 
   const panel = await page.locator('[data-onganda-panel]').first()
     .evaluate(el => getComputedStyle(el).backgroundColor);
   expect(panel, 'the dark card surface').toBe('rgb(28, 23, 19)');
+  // SectionHeader was missed in the first pass: its headline rendered in
+  // light-mode ink on the dark canvas, near invisible.
+  await page.goto('/test/dashboard');
+  await page.locator('h1').waitFor();
+  expect(await page.locator('h1').evaluate(el => getComputedStyle(el).color), 'millet clay on dark')
+    .toBe('rgb(232, 225, 207)');
 });
 
 test('a tab label never wraps inside its button', async ({ page }) => {

@@ -111,7 +111,7 @@ This adds the Onganda CSS custom properties to `:root`:
 ... (full palette, see §3)
 ```
 
-### Step 2 — Add to Tailwind content when extending components
+### Step 2 — Usually none: Tailwind needs no setup for the package
 
 The package stylesheet includes the utility classes used by exported
 components. Consumers need no Tailwind configuration for those components.
@@ -792,7 +792,8 @@ A rating — strength, fit, confidence: filled squares out of `max` (3) in the
 accent ink, with the label always beside them. Not a status: the status
 colours mean *what is happening* (running, warning, failed, done), and reading
 a rating through them says a weak clip has failed. Put it in a card's title
-row with `PixelPanel`'s `aside`.
+row with `PixelPanel`'s `aside`, and leave `hex` unset: a rating is not
+identity, so "Strong" reads the same on every peer whatever its accent.
 
 ### PixelPanel `aside`
 
@@ -1198,7 +1199,7 @@ import {
 <IconOmbiga  size={48} />
 <IconEtiti   size={48} />
 <IconOshitoo size={48} />
-<OngandaLogoMark size={40} />
+<OngandaLogoMark size={36} />   {/* a 12-cell mark: 24, 36 or 48 */}
 ```
 
 All accept a single `size` prop (default `48`).
@@ -1282,7 +1283,7 @@ import {
 Also exported: the five **system icons** `IconOkaanda`, `IconOshini`,
 `IconOmbiga`, `IconEtiti`, `IconOshitoo` (or `systemIconForName(name, size)`),
 drawn on a 24-cell grid — use `ICON_SIZE.control` (24) or `ICON_SIZE.hero`
-(48); and `IconSun` / `IconMoon` for a theme switch. Interface icons are on 12
+(48); and `IconSun` / `IconMoon` for a theme switch. `IconShowcase` and `IconFactoryLab` are showcase sections, not icons. Interface icons are on 12
 cells and are crisp at every `ICON_SIZE` step. `npx onganda-check` fails any
 other literal size (`off-grid-icon`).
 

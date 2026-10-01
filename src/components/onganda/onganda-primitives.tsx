@@ -302,7 +302,7 @@ export const SectionHeader = ({
   accent,
   level = 2,
   actions,
-  isDark = false,
+  isDark: isDarkProp,
   className = '',
   ...rest
 }: {
@@ -320,6 +320,7 @@ export const SectionHeader = ({
   isDark?: boolean;
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const Heading = level === 1 ? 'h1' : 'h2';
   return (
@@ -360,7 +361,7 @@ export const SectionHeader = ({
 // ─── WeaveOverlay — Oshiwambo basket-weave texture overlay ───────────────────
 // Usage: <WeaveOverlay isDark opacity={0.055} />
 export const WeaveOverlay = ({
-  isDark = false,
+  isDark: isDarkProp,
   opacity = TEXTURE.surface,
   ...rest
 }: {
@@ -370,11 +371,14 @@ export const WeaveOverlay = ({
    *  them in the editor. Texture belongs to grounds and inverse panels and
    *  never stacks. */
   opacity?: (typeof TEXTURE)[keyof typeof TEXTURE];
-} & React.HTMLAttributes<HTMLDivElement>) => <div aria-hidden="true" data-onganda-paper-texture {...rest} className="absolute inset-0 pointer-events-none" style={{
-  backgroundImage: isDark ? WEAVE.dark : WEAVE.light,
-  backgroundSize: WEAVE.size,
-  opacity
-}} />;
+} & React.HTMLAttributes<HTMLDivElement>) => {
+  const isDark = useIsDark(isDarkProp);
+  return <div aria-hidden="true" data-onganda-paper-texture {...rest} className="absolute inset-0 pointer-events-none" style={{
+    backgroundImage: isDark ? WEAVE.dark : WEAVE.light,
+    backgroundSize: WEAVE.size,
+    opacity
+  }} />;
+};
 
 // ─── PixelCornerMarks — four pixel corner accents on a box ───────────────────
 // Usage: <PixelCornerMarks hex="#D9791F" />  (wrap a relative-positioned parent)
@@ -843,7 +847,7 @@ export const PixelButton = ({
 /** Borderless icon action for compact toolbars and in-row controls. */
 export const PixelIconButton = ({
   label,
-  isDark = false,
+  isDark: isDarkProp,
   disabled = false,
   children,
   ...props
@@ -852,6 +856,7 @@ export const PixelIconButton = ({
   isDark?: boolean;
   children: React.ReactNode;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const d = useDensity();
   return <motion.button
@@ -1220,11 +1225,12 @@ export const PixelToggle = ({
 // unreadable jumble. Wrap a narrow surface in <DensityProvider value="compact">.
 export const StatCard = ({
   stat,
-  isDark = false
+  isDark: isDarkProp
 }: {
   stat: StatEntry;
   isDark?: boolean;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const inkFor = useInkOn();
   const c = roles(isDark);
   const d = useDensity();

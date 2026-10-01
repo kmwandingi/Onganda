@@ -394,7 +394,9 @@ export const PixelMeter = ({
   max?: number;
   /** the rating in words — always shown; the squares repeat it */
   label: string;
-  /** the fill; defaults to the accent ink */
+  /** leave it unset. The fill is the accent ink on every card, because a
+   *  rating is not identity: "Strong" must look the same on the ochre card and
+   *  the plum one. Override only for a meter that stands alone. */
   hex?: string;
   isDark?: boolean;
   className?: string;
@@ -629,13 +631,31 @@ export const PixelTabs = <T extends string>({
   const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const d = useDensity();
+  // A scrolling row with a hidden scrollbar gave no sign it continued: the
+  // last tab was simply cut at the edge. While more tabs lie off the end, the
+  // row fades out over its last 32px.
+  const row = useRef<HTMLDivElement>(null);
+  const [more, setMore] = useState(false);
+  useEffect(() => {
+    const el = row.current;
+    if (!scrollable || !el) return;
+    const check = () => setMore(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    check();
+    el.addEventListener('scroll', check, { passive: true });
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
+    ro?.observe(el);
+    return () => { el.removeEventListener('scroll', check); ro?.disconnect(); };
+  }, [scrollable, tabs.length]);
+  // A mask reads only alpha, so the colour here is not a colour decision.
+  const fade = more ? 'linear-gradient(to right, #000 calc(100% - 32px), transparent)' : undefined;
   return (
     <div
       {...rest}
+      ref={row}
       role="tablist"
       aria-label={label}
       className={`flex gap-2 ${scrollable ? 'flex-nowrap overflow-x-auto' : 'flex-wrap'} ${className}`}
-      style={scrollable ? { scrollbarWidth: 'none', ...rest.style } : rest.style}
+      style={scrollable ? { scrollbarWidth: 'none', maskImage: fade, WebkitMaskImage: fade, ...rest.style } : rest.style}
     >
       {tabs.map(tab => {
         const active = tab.value === value;
@@ -846,26 +866,34 @@ export const PixelPanel = ({
       {weave > 0 && <WeaveOverlay isDark={isDark} opacity={weave} />}
       {!spine && !quiet && <PixelCornerMarks hex={hue} size={7} />}
       <div className="relative" style={{ padding: pad }}>
-        {(icon || tag) && (
+        {/* With an icon, the card opens like a system card: the tile on the
+            left, the ordinal on the right. Without one, the ordinal shares the
+            eyebrow's line rather than taking a row of its own. */}
+        {icon && (
           <div className="flex items-start justify-between gap-4" style={{ marginBottom: SPACE_SCALE['5'] }}>
-            {icon ? <PixelIconTile hex={hue}>{icon}</PixelIconTile> : <span />}
+            <PixelIconTile hex={hue}>{icon}</PixelIconTile>
             {tag && <PixelTag hex={hue} label={tag} isDark={isDark} />}
           </div>
         )}
-        {eyebrow && (
-          <p
-            className="uppercase"
-            style={{
-              fontSize: TYPE.eyebrow.size,
-              fontWeight: TYPE.eyebrow.weight,
-              letterSpacing: TYPE.eyebrow.tracking,
-              lineHeight: TYPE.eyebrow.lineHeight,
-              color: c.textMuted,
-              margin: 0
-            }}
-          >
-            {eyebrow}
-          </p>
+        {(eyebrow || (tag && !icon)) && (
+          <div className="flex items-center justify-between gap-4">
+            {eyebrow ? (
+              <p
+                className="uppercase"
+                style={{
+                  fontSize: TYPE.eyebrow.size,
+                  fontWeight: TYPE.eyebrow.weight,
+                  letterSpacing: TYPE.eyebrow.tracking,
+                  lineHeight: TYPE.eyebrow.lineHeight,
+                  color: c.textMuted,
+                  margin: 0
+                }}
+              >
+                {eyebrow}
+              </p>
+            ) : <span />}
+            {tag && !icon && <PixelTag hex={hue} label={tag} isDark={isDark} />}
+          </div>
         )}
         {title && !aside && (
           <h2
@@ -883,9 +911,12 @@ export const PixelPanel = ({
           </h2>
         )}
         {title && aside && (
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+            {/* The title keeps at least 12rem; on a narrow card the aside drops
+                below it instead of squeezing it to two words a line. */}
             <h2
               style={{
+                flex: '1 1 12rem',
                 fontSize: TYPE.title.size,
                 fontWeight: TYPE.title.weight,
                 lineHeight: TYPE.title.lineHeight,
