@@ -81,7 +81,7 @@ export const DISPLAY = {
 // marks, not the letterforms, so the reading face stays neutral and legible.
 export const FONT = {
   /** the reading face: body, controls, tables, long-form. Stays neutral. */
-  family: "'Inter', Arial, Helvetica, sans-serif",
+  family: "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
   /** the display face: headings and the letterspaced caps.
    *
    *  Two roles, not two arbitrary fonts. The system shipped with one family
@@ -91,7 +91,7 @@ export const FONT = {
    *  surfaces. Space Grotesk's squared terminals echo the pixel geometry, so
    *  the headline carries the brand where the marks are thin, and reading
    *  text stays comfortable because it is still Inter. */
-  display: "'Space Grotesk', 'Inter', Arial, Helvetica, sans-serif",
+  display: "'Space Grotesk', 'Space Grotesk Variable', 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
   weights: [400, 500, 600, 700, 800] as const,
   /** Used only inside the document editor's reading surfaces. */
   serif: "Georgia, 'Times New Roman', serif"

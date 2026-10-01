@@ -137,8 +137,8 @@
   --onganda-type-display-weight: 600;
   --onganda-type-display-leading: 1.25;
   --onganda-type-display-tracking: 0em;
-  --onganda-font-body: 'Inter', Arial, Helvetica, sans-serif;
-  --onganda-font-heading: 'Space Grotesk', 'Inter', Arial, Helvetica, sans-serif;
+  --onganda-font-body: 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif;
+  --onganda-font-heading: 'Space Grotesk', 'Space Grotesk Variable', 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif;
 
   /* ── Space: the 4px grid ────────────────────────────────────── */
   --onganda-space-0: 0px;
@@ -171,6 +171,17 @@
   --onganda-rule-edge-opacity: 0.55;
   --onganda-rule-inverse-height: 3px;
   --onganda-rule-inverse-opacity: 0.65;
+
+  /* ── Motion: quiet, mechanical, stepped micro-motion ───────── */
+  --onganda-motion-fast: 120ms;
+  --onganda-motion-base: 200ms;
+  --onganda-motion-enter: 450ms;
+  --onganda-motion-stagger: 60ms;
+  --onganda-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  --onganda-motion-step: steps(2, end);
+  --onganda-motion-lift: 4px;
+  --onganda-motion-nudge: 2px;
+  --onganda-motion-press: 0.97;
 
   /* ── Geometry: no radius, no elevation ──────────────────────── */
   --onganda-radius: 0px;

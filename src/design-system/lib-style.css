@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+/* The faces ship with the package — see fonts.css. */
+@import './fonts.css';
 /* Every role, type step, space, texture and rule as a CSS variable. */
 @import './tokens.css';
 /*
@@ -21,11 +22,11 @@
 :root {
   /* Type faces. Two roles: the display face carries the brand on headings and
      letterspaced caps, the reading face stays neutral for body and controls.
-     Load both — the package does not fetch webfonts for you:
-       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-     Both fall back to Arial, so a consumer that skips this still renders. */
-  --onganda-font: 'Inter', Arial, Helvetica, sans-serif;
-  --onganda-font-display: 'Space Grotesk', 'Inter', Arial, Helvetica, sans-serif;
+     Both ship with the package (fonts.css, inlined above). The Variable
+     names are Fontsource's, so a product that also loads Fontsource still
+     resolves to the same face instead of falling back. */
+  --onganda-font: 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif;
+  --onganda-font-display: 'Space Grotesk', 'Space Grotesk Variable', 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif;
 
   /* Typography scale */
   --type-hero:        clamp(3.2rem, 10vw, 9rem);
@@ -125,10 +126,10 @@
   to { opacity: 1; transform: none; }
 }
 :where([data-onganda-enter]) {
-  animation: onganda-enter 0.45s cubic-bezier(0.2, 0, 0, 1) backwards;
+  animation: onganda-enter var(--onganda-motion-enter) var(--onganda-motion-ease) backwards;
 }
 :where([data-onganda-stagger]) > * {
-  animation: onganda-enter 0.35s cubic-bezier(0.2, 0, 0, 1) backwards;
+  animation: onganda-enter 0.35s var(--onganda-motion-ease) backwards;
 }
 :where([data-onganda-stagger]) > :nth-child(2) { animation-delay: 0.06s; }
 :where([data-onganda-stagger]) > :nth-child(3) { animation-delay: 0.12s; }
@@ -138,10 +139,10 @@
 :where([data-onganda-stagger]) > :nth-child(n + 7) { animation-delay: 0.36s; }
 :where([data-onganda-lift]) {
   cursor: pointer;
-  transition: transform 0.15s ease-out, border-color 0.2s;
+  transition: transform var(--onganda-motion-fast) var(--onganda-motion-ease), border-color var(--onganda-motion-base);
 }
-:where([data-onganda-lift]):hover { transform: translateY(-4px); }
-:where([data-onganda-press]):active { transform: scale(0.97); }
+:where([data-onganda-lift]):hover { transform: translateY(calc(var(--onganda-motion-lift) * -1)); }
+:where([data-onganda-press]):active { transform: scale(var(--onganda-motion-press)); }
 :where([data-onganda-press]) { transition: transform 0.1s ease-out, background 0.2s, border-color 0.2s, color 0.2s; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -150,3 +151,55 @@
   [data-onganda-lift]:hover,
   [data-onganda-press]:active { transform: none; }
 }
+
+/* ─── Micro-motion — small, stepped, pixel-true ─────────────────────────────
+ * The difference between a screen that is built and one that is alive. Each
+ * moves in whole pixels on a stepped timing — `steps()`, not an ease — so the
+ * motion has the same grain as the pixel art. Set by the primitives:
+ *
+ *   PixelButton           a trailing icon steps 2px forward on hover
+ *   PixelPanel onClick    its icon tile's icon steps up 2px on hover
+ *   PixelDropZone         the upload icon bobs while hovered or dragged over
+ *   PixelDot live         a live status mark blinks, in two steps
+ *
+ * and usable directly: data-onganda-nudge on any element whose last icon
+ * should step forward on hover, data-onganda-live on a status mark. */
+:where([data-onganda-button], [data-onganda-nudge]) > svg:last-child {
+  transition: transform var(--onganda-motion-fast) var(--onganda-motion-step);
+}
+:where([data-onganda-button], [data-onganda-nudge]):hover > svg:last-child {
+  transform: translateX(var(--onganda-motion-nudge));
+}
+:where([data-onganda-lift]) :where([data-onganda-tile]) svg {
+  transition: transform var(--onganda-motion-fast) var(--onganda-motion-step);
+}
+:where([data-onganda-lift]):hover :where([data-onganda-tile]) svg {
+  transform: translateY(calc(var(--onganda-motion-nudge) * -1));
+}
+@keyframes onganda-bob {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-2px); }
+}
+:where([data-onganda-dropzone]:hover, [data-onganda-dropzone="over"]) :where([data-onganda-bob]) {
+  animation: onganda-bob 0.8s steps(1, end) infinite;
+}
+@keyframes onganda-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+:where([data-onganda-live]) {
+  animation: onganda-blink 1.6s steps(1, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-onganda-button] > svg:last-child,
+  [data-onganda-nudge] > svg:last-child,
+  [data-onganda-tile] svg { transform: none !important; }
+  [data-onganda-bob],
+  [data-onganda-live] { animation: none; }
+}
+
+/* ─── PixelInputGroup ─────────────────────────────────────────────────────── */
+:where([data-onganda-input-group]) > :where(input, select, textarea) { flex: 1 1 auto; min-width: 0; }
+:where([data-onganda-input-group]) > :where(button, a) { flex: none; }
+:where([data-onganda-input-group]) > :not(:first-child) { margin-left: -1px; }

@@ -43,6 +43,10 @@ const hexMap = (src, name) => Object.fromEntries(
 
 const COLOR = hexMap(colorsSrc, 'COLOR');
 const EDITOR_SURFACE = hexMap(colorsSrc, 'EDITOR_SURFACE');
+const MOTION_TOKENS = Object.fromEntries(
+  [...literalBlock(motionSrc, 'MOTION_TOKENS').matchAll(/^\s{2}(\w+):\s*'([^']*)'/gm)].map(m => [m[1], m[2]])
+);
+if (Object.keys(MOTION_TOKENS).length < 8) throw new Error('build-tokens: MOTION_TOKENS did not parse');
 
 const roleBlock = name => {
   const body = literalBlock(rolesSrc, `${name}: ColorRoles`, '\n};');
@@ -108,7 +112,6 @@ for (const m of literalBlock(typeSrc, 'DENSITY').matchAll(/^\s{2}(\w+):\s*\{([\s
       .filter(([k]) => k !== 'size')
   );
 }
-const durations = [...motionSrc.matchAll(/duration:\s*([\d.]+)/g)].map(m => parseFloat(m[1]));
 
 // ── Build the W3C token document ────────────────────────────────────────────
 const g = (description, tokens) => ({ $description: description, ...tokens });
@@ -223,15 +226,15 @@ const tokens = {
   ),
 
   motion: g(
-    'Quiet and mechanical. Tween, never spring. Cards lift, they do not scale.',
-    {
-      'duration-tap': { $type: 'duration', $value: '150ms' },
-      'duration-entrance': { $type: 'duration', $value: `${Math.round(Math.max(...durations.filter(d => d < 1)) * 1000)}ms` },
-      'duration-ticker': { $type: 'duration', $value: '28000ms' },
-      easing: { $type: 'cubicBezier', $value: [0.16, 1, 0.3, 1], $description: 'The hero entrance curve.' },
-      'hover-lift': dim(-2, 'Cards translate up by 2px on hover. They never scale.'),
-      'tap-scale': { $type: 'number', $value: 0.97, $description: 'Buttons compress on tap.' }
-    }
+    'Quiet and mechanical. Short ease-out entrances, micro-motion in whole-pixel steps, never a spring. ' +
+    'Cards lift, they do not scale. The same values drive MOTION, style.css and --onganda-motion-*.',
+    Object.fromEntries(Object.entries(MOTION_TOKENS).map(([k, v]) => [k,
+      /ms$/.test(v) ? { $type: 'duration', $value: v }
+        : /px$/.test(v) ? dim(parseFloat(v))
+        : /^cubic-bezier/.test(v) ? { $type: 'cubicBezier', $value: v.match(/[\d.]+/g).map(Number) }
+        : /^steps/.test(v) ? { $type: 'other', $value: v, $description: 'Stepped timing for micro-motion.' }
+        : { $type: 'number', $value: Number(v) }
+    ]))
   ),
 
   forbidden: {

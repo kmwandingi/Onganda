@@ -679,12 +679,12 @@
     "$description": "The complete, closed type scale. One family. A size not listed here is not an Onganda size.",
     "fontFamily": {
       "$type": "fontFamily",
-      "$value": "'Inter', Arial, Helvetica, sans-serif"
+      "$value": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif"
     },
     "tag": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "9px",
         "fontWeight": 700,
         "lineHeight": 1.5,
@@ -695,7 +695,7 @@
     "micro": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "10px",
         "fontWeight": 700,
         "lineHeight": 1.5,
@@ -706,7 +706,7 @@
     "label": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "11px",
         "fontWeight": 700,
         "lineHeight": 1.5,
@@ -717,7 +717,7 @@
     "eyebrow": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "12px",
         "fontWeight": 700,
         "lineHeight": 1.33,
@@ -728,7 +728,7 @@
     "code": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "12px",
         "fontWeight": 400,
         "lineHeight": 2,
@@ -739,7 +739,7 @@
     "ui": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "14px",
         "fontWeight": 600,
         "lineHeight": 1.43,
@@ -750,7 +750,7 @@
     "meta": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "14px",
         "fontWeight": 500,
         "lineHeight": 1.43,
@@ -761,7 +761,7 @@
     "body": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "14px",
         "fontWeight": 400,
         "lineHeight": 1.6,
@@ -772,7 +772,7 @@
     "bodyLarge": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "16px",
         "fontWeight": 400,
         "lineHeight": 1.6,
@@ -783,7 +783,7 @@
     "lead": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "18px",
         "fontWeight": 400,
         "lineHeight": 1.6,
@@ -794,7 +794,7 @@
     "title": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "18px",
         "fontWeight": 600,
         "lineHeight": 1.25,
@@ -805,7 +805,7 @@
     "headline": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "24px",
         "fontWeight": 600,
         "lineHeight": 1.33,
@@ -816,7 +816,7 @@
     "pageTitle": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "'Inter', Arial, Helvetica, sans-serif",
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
         "fontSize": "30px",
         "fontWeight": 500,
         "lineHeight": 1.25,
@@ -994,38 +994,48 @@
     }
   },
   "motion": {
-    "$description": "Quiet and mechanical. Tween, never spring. Cards lift, they do not scale.",
-    "duration-tap": {
+    "$description": "Quiet and mechanical. Short ease-out entrances, micro-motion in whole-pixel steps, never a spring. Cards lift, they do not scale. The same values drive MOTION, style.css and --onganda-motion-*.",
+    "fast": {
       "$type": "duration",
-      "$value": "150ms"
+      "$value": "120ms"
     },
-    "duration-entrance": {
+    "base": {
       "$type": "duration",
-      "$value": "500ms"
+      "$value": "200ms"
     },
-    "duration-ticker": {
+    "enter": {
       "$type": "duration",
-      "$value": "28000ms"
+      "$value": "450ms"
     },
-    "easing": {
+    "stagger": {
+      "$type": "duration",
+      "$value": "60ms"
+    },
+    "ease": {
       "$type": "cubicBezier",
       "$value": [
-        0.16,
-        1,
-        0.3,
+        0.2,
+        0,
+        0,
         1
-      ],
-      "$description": "The hero entrance curve."
+      ]
     },
-    "hover-lift": {
+    "step": {
+      "$type": "other",
+      "$value": "steps(2, end)",
+      "$description": "Stepped timing for micro-motion."
+    },
+    "lift": {
       "$type": "dimension",
-      "$value": "-2px",
-      "$description": "Cards translate up by 2px on hover. They never scale."
+      "$value": "4px"
     },
-    "tap-scale": {
+    "nudge": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "press": {
       "$type": "number",
-      "$value": 0.97,
-      "$description": "Buttons compress on tap."
+      "$value": 0.97
     }
   },
   "forbidden": {

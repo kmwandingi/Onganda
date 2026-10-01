@@ -20,6 +20,31 @@ import { useReducedMotion } from 'framer-motion';
  */
 export const useMotionOK = () => !useReducedMotion();
 
+/** The motion vocabulary as values — the same numbers MOTION and style.css
+ *  use, exported so CSS (--onganda-motion-*), the token JSON and Figma read
+ *  one source. Quiet and mechanical: short ease-out entrances, stepped
+ *  micro-motion, no spring. */
+export const MOTION_TOKENS = {
+  /** micro-motion and press */
+  fast: '120ms',
+  /** colour, border and background changes */
+  base: '200ms',
+  /** a surface entering */
+  enter: '450ms',
+  /** between staggered siblings */
+  stagger: '60ms',
+  /** every entrance and lift */
+  ease: 'cubic-bezier(0.2, 0, 0, 1)',
+  /** micro-motion moves in whole pixels, like the art */
+  step: 'steps(2, end)',
+  /** a clickable card rises this far on hover */
+  lift: '4px',
+  /** an icon steps this far on hover */
+  nudge: '2px',
+  /** a pressed control scales to this */
+  press: '0.97'
+} as const;
+
 export const MOTION = {
   // Section / card entrance: <motion.div {...MOTION.entrance} />
   entrance: {

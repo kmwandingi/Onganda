@@ -105,6 +105,39 @@ Colour lands on the WORK, not on the chrome. A list of ideas where every card
 has the same plum spine is as wrong as a row of rainbow metadata tags: the
 first gives peers one identity, the second gives metadata an identity.
 
+### Pixel art on a product screen
+
+Pixels are the brand. A product screen whose only pixel marks are 12px glyphs
+beside its labels reads as unbranded, however correct its colours are. Put
+pixel art where the eye lands:
+
+| Where | What | How |
+|---|---|---|
+| Each feature card or peer | an icon in a tile, in the card's accent | `<PixelPanel icon={<IconLink size={ICON_SIZE.feature} color={accentFor(i)} />} tag="02">` |
+| The product's mark | its system icon | `systemIconForName('Etiti', ICON_SIZE.control)` |
+| Navigation and toolbars | interface icons at control size | `ICON_SIZE.control` (24px), accent ink when active |
+| Buttons and inline text | a small trailing icon | `ICON_SIZE.inline` (12px) — it steps forward on hover |
+| Drop zones, empty states | a feature-size illustration | built into `PixelDropZone`; pass `icon` to `PixelEmptyState` |
+
+**Only on the grid.** Icons are drawn on 12 cells, system icons on 24. Use
+`ICON_SIZE` (12, 24, 36, 48). Any other size snaps to the nearest multiple; a
+14px or 16px icon is a 12px icon.
+
+### A product screen's skeleton
+
+- **The header owns the action.** `<SectionHeader level={1} label headline actions={<PixelButton>…</PixelButton>}>`
+  — the one primary sits with the title, not as a loose link in a corner.
+  Every working screen has exactly one primary.
+- **Peers are peers.** Inputs, sources or results that do the same job are
+  `PixelPanel`s with `accentFor(i)`, an ordinal `tag` and an `icon`.
+- **A field and its action are one control.** `<PixelInputGroup>` around the
+  input and its button: one height, one edge.
+- **Unequal columns, aligned to the top.** A grid of panels with different
+  heights takes `items-start`; never stretch a short card into a tall empty one.
+- **Labels say something new.** A field label never repeats its card's eyebrow.
+  Sentence case for labels and buttons ("Try an example", not "example video").
+- `/test/studio` is this skeleton, built only from the package.
+
 ### Texture: grounds, never cards, never state
 
 `PixelPanel`, `PixelNotice`, `PixelDialog` and `PixelEmptyState` are flat —
@@ -279,6 +312,12 @@ In framer-motion, spread the `MOTION` presets instead of writing timings:
 - **Loading moves, and stops.** `PixelSkeleton` and `PixelProgress` show work
   progressing; an error replaces them with a `PixelNotice status="critical"`,
   not a skeleton that sweeps forever.
+- **Micro-motion is stepped.** It moves in whole pixels on `steps()` timing,
+  the grain of the pixel art: a button's trailing icon steps 2px forward on
+  hover, a clickable card's tile icon steps up, the drop-zone icon bobs while
+  dragged over, a `<PixelDot live>` blinks for a running job. Use
+  `data-onganda-nudge` and `data-onganda-live` on your own elements; the
+  values are `--onganda-motion-*` in `tokens.css` and `MOTION_TOKENS` in code.
 - **Respect reduced motion.** Anything that repeats — ticker, sweep, edge
   strips — is guarded by `useMotionOK()`, and the page is complete and
   readable without motion.
@@ -288,8 +327,10 @@ In framer-motion, spread the `MOTION` presets instead of writing timings:
 
 ## Type, space and layout
 
-- **Two faces, both clean.** Inter for body and interface; Space Grotesk for
-  headings (`h1`–`h4` pick it up from `style.css`). Never a pixel font for text.
+- **Two faces, both clean, both shipped.** Inter for body and interface; Space
+  Grotesk for headings (`h1`–`h4` pick it up from `style.css`). The package
+  embeds both — do not add a Google Fonts or Fontsource import. If headings
+  render in Arial, `style.css` is not loaded. Never a pixel font for text.
 - **The type scale is closed.** Use `TYPE` steps (`eyebrow`, `label`, `meta`,
   `body`, `title`, `headline`, `pageTitle`, `display`) or the matching CSS
   variables. `check:tokens` fails any other font size. No `tracking-tight`.

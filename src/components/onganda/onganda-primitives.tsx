@@ -78,6 +78,13 @@ export const DarkProvider = ({
 
 // ─── Px — pixel SVG primitive ─────────────────────────────────────────────────
 // Usage: <Px size={48} viewBox="0 0 24 24">…rects…</Px>
+//
+// Pixel art is only pixel art at a whole multiple of its grid. The interface
+// icons are drawn on 12 cells; rendered at the old 16px default, each cell
+// was 1.33 screen pixels, so edges smeared and rows came out uneven — the
+// marks read as blurry specks rather than as the system's pixel language.
+// `size` snaps to the nearest whole multiple of the grid (16 → 12, 20 → 24,
+// 28 → 24) and the rects render crisp. Use ICON_SIZE so you never guess.
 export const Px = ({
   children,
   size = 48,
@@ -86,9 +93,57 @@ export const Px = ({
   children: React.ReactNode;
   size?: number;
   viewBox?: string;
-}) => <svg width={size} height={size} viewBox={viewBox} fill="none" stroke="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+}) => {
+  const [, , w, h] = viewBox.split(/\s+/).map(Number);
+  const square = w === h && Number.isInteger(w) && w > 0;
+  const px = square ? Math.max(1, Math.round(size / w)) * w : size;
+  return <svg width={px} height={px} viewBox={viewBox} fill="none" stroke="none" shapeRendering="crispEdges" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     {children}
   </svg>;
+};
+
+/** Icon sizes that stay on the pixel grid. Interface icons are 12-cell, the
+ *  system icons 24-cell; every step here is a whole multiple of both or of 12.
+ *  - inline:  in a button, a tag, a line of text
+ *  - control: nav items, toolbars, list rows
+ *  - feature: inside a PixelIconTile on a card, a drop zone, an empty state
+ *  - hero:    a system card, a page's lead illustration */
+export const ICON_SIZE = { inline: 12, control: 24, feature: 36, hero: 48 } as const;
+
+// ─── PixelIconTile — the framed pixel icon that opens a card ────────────────
+// The system card opens with its icon in a tile edged in the system's colour.
+// That tile is where most of a screen's pixel art lives — products without it
+// put a 12px glyph beside a label and the page reads as unbranded. Give a
+// feature card, a drop zone or an empty state one tile.
+// Usage: <PixelIconTile hex={accentFor(0)}><IconUpload size={ICON_SIZE.feature} color={accentFor(0)} /></PixelIconTile>
+export const PixelIconTile = ({
+  hex,
+  children,
+  className = '',
+  ...rest
+}: {
+  /** the card's accent — the tile takes it as a faint edge and wash */
+  hex: string;
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    {...rest}
+    data-onganda-tile=""
+    className={`inline-flex shrink-0 items-center justify-center ${className}`}
+    // The wash appends alpha to a #rrggbb hex. Anything else (a role in
+    // rgba(), a CSS variable) gets a hairline in that colour and no wash,
+    // rather than an invalid declaration that silently drops the edge.
+    style={{
+      border: `1px solid ${/^#[0-9a-f]{6}$/i.test(hex) ? `${hex}40` : hex}`,
+      background: /^#[0-9a-f]{6}$/i.test(hex) ? `${hex}14` : 'transparent',
+      padding: 12,
+      ...rest.style
+    }}
+  >
+    {children}
+  </div>
+);
 
 // ─── PixelDot — single 2×2 or n×n pixel mark ─────────────────────────────────
 // Usage: <PixelDot color="#D9791F" size={5} />
@@ -100,6 +155,7 @@ export const PixelDot = ({
   opacity = 1,
   ring,
   offset,
+  live = false,
   ...rest
 }: {
   color: string;
@@ -108,7 +164,10 @@ export const PixelDot = ({
   ring?: string;
   /** nudge down to sit on a text baseline when inline with a line of copy */
   offset?: number;
-} & Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'>) => <span aria-hidden="true" {...rest} style={{
+  /** a live, in-progress state: the mark blinks in two steps (off under
+   *  reduced motion). For a running job or an online site, not decoration. */
+  live?: boolean;
+} & Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'>) => <span aria-hidden="true" data-onganda-live={live ? '' : undefined} {...rest} style={{
   display: 'block',
   width: size,
   height: size,
@@ -236,6 +295,7 @@ export const SectionHeader = ({
   headline,
   accent,
   level = 2,
+  actions,
   isDark = false,
   className = '',
   ...rest
@@ -248,6 +308,9 @@ export const SectionHeader = ({
    *  title needs an <h1>; a page built only from section headers otherwise
    *  has no top of its outline. Same look either way. */
   level?: 1 | 2;
+  /** the page or section's actions, aligned to the headline's right — its
+   *  one primary and any ghosts. Not a loose link in a corner. */
+  actions?: React.ReactNode;
   isDark?: boolean;
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) => {
@@ -272,15 +335,18 @@ export const SectionHeader = ({
           {label}
         </p>
       </div>
-      <Heading className="max-w-4xl" style={{
-        fontSize: TYPE.pageTitle.size,
-        fontWeight: TYPE.pageTitle.weight,
-        lineHeight: TYPE.pageTitle.lineHeight,
-        color: c.text,
-        margin: 0
-      }}>
-        {headline}
-      </Heading>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <Heading className="max-w-4xl" style={{
+          fontSize: TYPE.pageTitle.size,
+          fontWeight: TYPE.pageTitle.weight,
+          lineHeight: TYPE.pageTitle.lineHeight,
+          color: c.text,
+          margin: 0
+        }}>
+          {headline}
+        </Heading>
+        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      </div>
     </div>
   );
 };
@@ -737,6 +803,7 @@ export const PixelButton = ({
   if (href && !disabled) {
     return (
       <motion.a
+        data-onganda-button=""
         {...rest}
         {...MOTION.tap}
         href={href}
@@ -751,6 +818,7 @@ export const PixelButton = ({
   }
   return (
     <motion.button
+      data-onganda-button=""
       {...rest}
       {...(disabled ? {} : MOTION.tap)}
       type="button"
@@ -851,6 +919,25 @@ export const PixelInput = ({ isDark, invalid = false, style, ...props }: React.I
     style={{ ...fieldBase(c, invalid, !!props.disabled, d), ['--onganda-focus' as string]: c.focusRing, ...style } as React.CSSProperties}
   />;
 };
+
+// ─── PixelInputGroup — a field and its action, as one control ───────────────
+// A link field with an "Open" button beside it, a search with "Go". Built by
+// hand they come out as two boxes of different heights with a gap between —
+// one of the plainest tells of an unfinished screen. The group shares one
+// edge and one height.
+// Usage: <PixelInputGroup><PixelInput placeholder="https://…" /><PixelButton variant="ghost">Open</PixelButton></PixelInputGroup>
+export const PixelInputGroup = ({
+  children,
+  className = '',
+  ...rest
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) => (
+  <div {...rest} data-onganda-input-group="" className={`flex items-stretch ${className}`}>
+    {children}
+  </div>
+);
 
 export const PixelTextarea = ({ isDark, invalid = false, style, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & FieldFlags) => {
   const c = roles(useIsDark(isDark));

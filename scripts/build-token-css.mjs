@@ -35,6 +35,7 @@ const outfile = path.join(tmp, 'tokens.mjs');
 writeFileSync(entry, `
 export { roles, ACCENT_CYCLE, statusFor, SYSTEM_COLOR } from ${JSON.stringify(path.join(src, 'onganda-roles.ts'))};
 export { TYPE, SPACE_SCALE, TEXTURE, RULE, GEOMETRY, FONT } from ${JSON.stringify(path.join(src, 'onganda-type.ts'))};
+export { MOTION_TOKENS } from ${JSON.stringify(path.join(src, 'onganda-motion.ts'))};
 `);
 await build({ entryPoints: [entry], bundle: true, format: 'esm', platform: 'node', outfile, logLevel: 'silent' });
 const t = await import(pathToFileURL(outfile).href);
@@ -100,6 +101,9 @@ ${Object.entries(t.TEXTURE).map(([k, v]) => `  --onganda-texture-${kebab(k)}: ${
 
   /* ── Rules: solid hairlines; most blocks need none ─────────── */
 ${Object.entries(t.RULE).map(([k, v]) => `  --onganda-rule-${kebab(k)}-height: ${v.height}px;\n  --onganda-rule-${kebab(k)}-opacity: ${v.opacity};`).join('\n')}
+
+  /* ── Motion: quiet, mechanical, stepped micro-motion ───────── */
+${Object.entries(t.MOTION_TOKENS).map(([k, v]) => `  --onganda-motion-${kebab(k)}: ${v};`).join('\n')}
 
   /* ── Geometry: no radius, no elevation ──────────────────────── */
   --onganda-radius: ${t.GEOMETRY.radius}px;

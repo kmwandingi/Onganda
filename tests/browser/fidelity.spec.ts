@@ -133,7 +133,7 @@ test.describe('the design system reproduces the public site', () => {
     // The eyebrow is a <p> and the headline is the <h2>. They used to be the
     // other way round, which put the section's largest text outside the
     // display-face rule and gave every section two competing headings.
-    const header = await page.locator('#systems').locator('xpath=.//div[h2]').first().evaluate(node => {
+    const header = await page.locator('#systems').locator('xpath=.//div[div/p and .//h2]').first().evaluate(node => {
       const label = node.querySelector('p')!;
       const ls = getComputedStyle(label);
       const headline = node.querySelector('h2')!;

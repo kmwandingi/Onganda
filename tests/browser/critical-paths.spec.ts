@@ -4,7 +4,7 @@ import { stubMapTiles } from './support/map-tiles';
 // The consumer test pages (src/test-pages) are built only from the package.
 // They sit under every guard the public routes do, so a primitive that breaks
 // in a product's layout fails here rather than in the product.
-const TEST_PAGES = ['/test/app', '/test/dashboard', '/test/form', '/test/landing', '/test/article'];
+const TEST_PAGES = ['/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/article'];
 
 const capturePageErrors = (page: Page) => {
   const errors: string[] = [];
@@ -70,3 +70,18 @@ test('the public home supports keyboard and mobile navigation', async ({ page })
   await expectNoHorizontalOverflow(page);
   expect(errors).toEqual([]);
 });
+
+// The faces ship with the package. They loaded from a remote @import that
+// CSS drops unless it comes first, then from url()s a bundler may not rewrite;
+// both times every heading fell back to Arial and nothing failed.
+for (const route of ['/', '/showcase', '/test/studio']) {
+  test(`${route} loads both faces from the package`, async ({ page }) => {
+    await page.goto(route);
+    await page.locator('h1, h2').first().waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    const loaded = await page.evaluate(() =>
+      [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/["']/g, '')));
+    expect(loaded).toContain('Inter');
+    expect(loaded).toContain('Space Grotesk');
+  });
+}

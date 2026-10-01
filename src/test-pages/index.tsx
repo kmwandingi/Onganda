@@ -6,10 +6,12 @@ import { Article } from './Article';
 import { Dashboard } from './Dashboard';
 import { FormPage } from './FormPage';
 import { Landing } from './Landing';
+import { Studio } from './Studio';
 import { TestIndex } from './shell';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/test/app': AppScreen,
+  '/test/studio': Studio,
   '/test/dashboard': Dashboard,
   '/test/form': FormPage,
   '/test/landing': Landing,

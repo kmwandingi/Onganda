@@ -99,6 +99,11 @@ try {
     // The semantic tokens as Tailwind utilities. `bg-surface` must resolve to
     // the role and `bg-blue-500` must not exist at all.
     { name: 'tailwind-theme', source: `@import '@onganda/design-system/tailwind.css';`, tailwind: true, expectStyled: true, theme: true },
+    // style.css imported from CSS, after tailwindcss — how most Tailwind apps
+    // do it. A remote @import in style.css is dropped here because it is no
+    // longer first, which is how every heading in a product fell back to
+    // Inter. The faces now ship with the package and must load in this case.
+    { name: 'css-import', source: `@import '@onganda/design-system/style.css';`, tailwind: true, expectStyled: true, cssImport: true },
   ];
 
   browser = await chromium.launch();
@@ -109,7 +114,9 @@ try {
   const root = await buildApp('app', cases[0].source);
   await run('npm', ['install', '--no-package-lock', '--no-audit', '--no-fund', '--prefer-offline', ...deps], { cwd: root, maxBuffer: 1 << 26 });
 
-  for (const { name, source, tailwind, expectStyled, theme } of cases) {
+  for (const { name, source, tailwind, expectStyled, theme, cssImport } of cases) {
+    await writeFile(path.join(root, 'main.jsx'),
+      cssImport ? APP.replace("import '@onganda/design-system/style.css';\n", '') : APP);
     await writeFile(
       path.join(root, 'app.css'),
       tailwind ? `@import 'tailwindcss';\n${source}\n` : '/* package CSS only */\n',
@@ -124,7 +131,7 @@ try {
     await run('npm', ['run', 'build'], { cwd: root, maxBuffer: 1 << 26 });
 
     // ES modules are blocked over file://, so serve the build.
-    const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' };
+    const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
     const server = createServer(async (req, res) => {
       const rel = decodeURIComponent(req.url.split('?')[0]);
       const file = path.join(root, 'dist', rel === '/' ? 'index.html' : rel);
@@ -143,6 +150,7 @@ try {
     await page.goto(origin + '/');
     await page.waitForSelector('#app', { timeout: 15_000 });
     await page.waitForTimeout(400);
+    await page.evaluate(() => document.fonts.ready);
 
     const probe = await page.evaluate(() => {
       const btn = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Primary');
@@ -183,6 +191,8 @@ try {
         cssVarColor: getComputedStyle(document.getElementById('css-var')).color,
         twSurfaceBg: getComputedStyle(document.getElementById('tw-surface')).backgroundColor,
         twBlueBg: getComputedStyle(document.getElementById('tw-blue')).backgroundColor,
+        // Both faces actually loaded from the package, not merely named.
+        fonts: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/["']/g, '')),
       };
     });
     await page.close();
@@ -205,7 +215,15 @@ try {
 
     // The semantic tokens reach every consumer through style.css.
     // Compare numbers, not strings: a consumer's minifier writes 0.66 as .66.
-    const nums = v => (v.match(/[\d.]+/g) || []).map(Number).join(',');
+    // A minifier may write the same colour as rgba(30,26,23,.66) or #1e1a17a8;
+    // compare the channels, with the alpha to two places.
+    const nums = v => {
+      const hex = v.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/i);
+      const n = hex
+        ? [1, 2, 3].map(i => parseInt(hex[i], 16)).concat(hex[4] ? [parseInt(hex[4], 16) / 255] : [])
+        : (v.match(/[\d.]+/g) || []).map(Number);
+      return n.map((x, i) => (i === 3 ? x.toFixed(2) : String(x))).join(',');
+    };
     if (nums(probe.rootMuted) !== '30,26,23,0.66') {
       throw new Error(`${name}: --onganda-text-muted is "${probe.rootMuted}" on :root; tokens.css did not reach the consumer.`);
     }
@@ -222,6 +240,11 @@ try {
     }
 
     // Computed style is the contract: it is what the consumer sees.
+    for (const face of ['Inter', 'Space Grotesk']) {
+      if (!probe.fonts.includes(face)) {
+        throw new Error(`${name}: the ${face} face did not load (loaded: ${probe.fonts.join(', ') || 'none'}). Headings fall back to Arial.`);
+      }
+    }
     const styled = probe.eyebrowTransform === 'uppercase';
     if (styled !== expectStyled) {
       throw new Error(

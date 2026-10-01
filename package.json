@@ -62,7 +62,8 @@
     "./style.css": "./dist/package/style.css",
     "./style": "./dist/package/style.css",
     "./tokens.css": "./dist/package/tokens.css",
-    "./tailwind.css": "./dist/package/tailwind.css"
+    "./tailwind.css": "./dist/package/tailwind.css",
+    "./fonts.css": "./dist/package/fonts.css"
   },
   "files": [
     "dist/package",
@@ -86,7 +87,7 @@
     "typecheck": "tsc -b",
     "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
     "build:showcase": "vite build",
-    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && cp src/design-system/tailwind.css dist/package/tailwind.css && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
+    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && cp src/design-system/tailwind.css dist/package/tailwind.css && cp src/design-system/fonts.css dist/package/fonts.css && rm -rf dist/package/fonts && cp -R src/design-system/fonts dist/package/fonts && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
     "prepare": "node scripts/stamp-version.mjs && npm run build:lib",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-design-tokens.mjs",
@@ -94,7 +95,7 @@
     "check:docs": "node scripts/check-docs.mjs",
     "check:tokens:export": "node scripts/build-tokens.mjs --check",
     "build:tokens": "node scripts/build-tokens.mjs",
-    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs && npm run check:tokens:export && npm run check:token-css && npm run check:test-pages",
+    "check:design": "npm run check:tokens && npm run check:contrast && npm run check:docs && npm run check:tokens:export && npm run check:token-css && npm run check:test-pages && npm run check:fonts",
     "test:package": "node tests/package-smoke.mjs",
     "test:consumer": "node tests/consumer-render.mjs",
     "test:browser": "playwright test",
@@ -107,7 +108,9 @@
     "build:token-css": "node scripts/build-token-css.mjs",
     "check:token-css": "node scripts/build-token-css.mjs --check",
     "test-pages": "node scripts/capture-test-pages.mjs",
-    "check:test-pages": "node scripts/check-design-tokens.mjs --paths src/test-pages"
+    "check:test-pages": "node scripts/check-design-tokens.mjs --paths src/test-pages",
+    "build:fonts": "node scripts/build-font-css.mjs",
+    "check:fonts": "node scripts/build-font-css.mjs --check"
   },
   "peerDependencies": {
     "framer-motion": ">=10.0.0",

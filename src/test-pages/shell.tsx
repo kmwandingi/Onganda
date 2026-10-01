@@ -11,6 +11,7 @@ import { OngandaLogoMark, PixelButton, roles, TYPE } from '@onganda/design-syste
 
 export const TEST_PAGES = [
   { path: '/test/app', label: 'App screen' },
+  { path: '/test/studio', label: 'Studio' },
   { path: '/test/dashboard', label: 'Dashboard' },
   { path: '/test/form', label: 'Form' },
   { path: '/test/landing', label: 'Landing' },

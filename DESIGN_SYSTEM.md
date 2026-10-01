@@ -712,6 +712,51 @@ buttons for very narrow surfaces.
 A recessed well with a solid edge and corner marks — the empty state is a
 designed surface, not a blank panel. No texture: that belongs to grounds.
 
+### PixelIconTile and ICON_SIZE
+
+```tsx
+<PixelIconTile hex={accentFor(1)}>
+  <IconLink size={ICON_SIZE.feature} color={accentFor(1)} />
+</PixelIconTile>
+```
+
+The framed icon that opens the site's system cards, as a primitive: a faint
+edge and wash in the card's accent. `PixelPanel` renders one when given
+`icon`. `ICON_SIZE` is the on-grid scale — `inline` 12, `control` 24,
+`feature` 36, `hero` 48. Every pixel icon snaps its `size` to a whole multiple
+of its grid and renders `crispEdges`; at the old 16px default each 12-cell
+icon drew 1.33px cells and smeared.
+
+### PixelPanel `icon` and `tag`
+
+`<PixelPanel accent={accentFor(1)} tag="02" icon={…} eyebrow="Link" title="…">`
+opens the card with an icon tile on the left and an ordinal tag on the right,
+both in the accent — the system card's opening, for any feature card or peer.
+
+### PixelInputGroup
+
+```tsx
+<PixelInputGroup>
+  <PixelInput placeholder="https://…" />
+  <PixelButton variant="ghost">Open</PixelButton>
+</PixelInputGroup>
+```
+
+A field and its action as one control: shared edge, one height, the input
+taking the space.
+
+### SectionHeader `actions`
+
+`<SectionHeader level={1} label="Create" headline="…" actions={<PixelButton>Find the moments</PixelButton>} />`
+puts the page's primary beside its title, right-aligned and wrapping under it
+on a phone.
+
+### PixelDot `live`
+
+`<PixelDot color={statusFor('active')} live />` blinks in two steps for a
+running or online state; an `active` `PixelNotice` does it on its own. Off
+under reduced motion.
+
 ### PixelDropZone
 
 ```tsx

@@ -5,6 +5,42 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Fixed — the faces, the pixel grid, and what makes a screen look finished
+
+A product on the latest build still looked amateur: headings in Arial, pixel
+icons as blurry specks, no pixel art where the eye lands, little
+micro-motion, loose actions. Each had a cause in the package.
+
+- **The faces never reached products.** `style.css` loaded them with a remote
+  Google Fonts `@import`, which CSS ignores unless it comes first — and every
+  Tailwind app imports `style.css` after `tailwindcss`. A product working around
+  it with Fontsource got `'Space Grotesk Variable'`, a name the stacks did not
+  list. Inter and Space Grotesk (OFL) now ship embedded in `fonts.css`, inlined
+  by `style.css`; the stacks also accept the Fontsource names. A `url()` to
+  font files was tried first and failed, because Tailwind's Vite plugin does
+  not rewrite URLs through nested imports — the showcase itself was in Arial.
+  `check:fonts`, a consumer case importing `style.css` from CSS, and a browser
+  test that both faces load now guard it.
+- **Pixel icons were off their grid.** Drawn on 12 cells, rendered at a 16px
+  default. `Px` now snaps every icon to a whole multiple of its grid and
+  renders `crispEdges`; `ICON_SIZE` (12 / 24 / 36 / 48) is the scale.
+- **No place for pixel art on a product screen.** `PixelIconTile`, and
+  `PixelPanel` `icon` and `tag`, give every feature card the system card's
+  opening. `PixelDropZone` carries a feature-size illustration by default.
+- **Stepped micro-motion**: a button's trailing icon steps forward on hover, a
+  clickable card's tile icon steps up, the drop-zone icon bobs while dragged
+  over, `<PixelDot live>` blinks. `steps()` timing, so motion moves in whole
+  pixels like the art. Off under reduced motion.
+- **Motion tokens reach CSS and JSON.** `MOTION_TOKENS` is the one source for
+  `--onganda-motion-*` in `tokens.css` and the token JSON's motion group, which
+  had drifted from the code (a 2px lift against `MOTION`'s 4px).
+- **`PixelInputGroup`** and **`SectionHeader actions`** for the two layout
+  tells a screen showed: a field and its button as mismatched boxes, and the
+  page action as a loose link in a corner.
+- **`/test/studio`** — a media tool's intake screen done with all of the above,
+  built only from the package. SKILL.md has the recipe ("Pixel art on a product
+  screen", "A product screen's skeleton").
+
 ### Added — motion from the defaults
 
 The guidelines called motion part of the language, but the primitives a

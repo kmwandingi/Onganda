@@ -26,6 +26,8 @@ const out = path.join(root, 'screenshots/test-pages');
 const PAGES = [
   ['app', '/test/app', 'A product screen: quiet chrome, one feature surface, a table, an inspector, a dialog.',
    ['product-surface', 'patterns-light', 'controls-light']],
+  ['studio', '/test/studio', 'A media tool intake screen: header action, peer inputs with icon tiles, a drop zone, an input group.',
+   ['product-surface', 'system-cards', 'controls-light']],
   ['dashboard', '/test/dashboard', 'A monitoring dashboard: stat band, charts drawn with recharts, a status table, notices.',
    ['site-signal-band', 'charts', 'roadmap', 'connection-diagram']],
   ['form', '/test/form', 'A multi-section form: every control in every state, a summary, an inverse panel.',

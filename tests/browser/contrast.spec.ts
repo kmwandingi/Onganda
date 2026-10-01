@@ -78,7 +78,7 @@ const settle = async (page: Page) => {
 
 // The consumer test pages are included: built only from the package, they are
 // what a product's screen actually looks like.
-for (const route of ['/', '/full', '/showcase', '/test/app', '/test/dashboard', '/test/form', '/test/landing', '/test/article']) {
+for (const route of ['/', '/full', '/showcase', '/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/article']) {
   test(`every text node on ${route} meets its contrast floor`, async ({ page }) => {
     await stubMapTiles(page);
     await page.goto(route);

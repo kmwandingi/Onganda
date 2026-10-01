@@ -14,8 +14,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
-import { PixelButton, PixelDot, DitherBar, WeaveOverlay, PixelCornerMarks, Px, useDensity, type MotionConflicting } from './onganda-primitives';
+import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
+import { IconUpload } from './onganda-icons';
 import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
 
 // ─── PixelNotice — inline callout tied to the four status states ─────────────
@@ -57,7 +58,7 @@ export const PixelNotice = ({
       style={{ background: c.surface, borderLeft: `3px solid ${hue}`, border: `1px solid ${c.line}`, borderLeftWidth: 3, borderLeftColor: hue, padding: '16px 20px' }}
     >
       <div className="relative flex items-start gap-3">
-        <PixelDot color={hue} size={8} ring={c.lineStrong} offset={5} />
+        <PixelDot color={hue} size={8} ring={c.lineStrong} offset={5} live={status === 'active'} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold" style={{ color: c.text }}>{title}</p>
           {children && <div className="mt-1.5 text-sm leading-relaxed" style={{ color: c.textBody }}>{children}</div>}
@@ -338,7 +339,15 @@ export const PixelDropZone = ({
     >
       <PixelCornerMarks hex={over ? c.accentInk : c.lineStrong} size={7} />
       <div className="relative mx-auto flex max-w-sm flex-col items-center">
-        {icon && <div className="mb-4" aria-hidden="true">{icon}</div>}
+        {/* A pixel illustration by default. A drop zone that is only a label
+            in a box is the plainest surface on a media product's main screen. */}
+        <div className="mb-4" aria-hidden="true" data-onganda-bob="">
+          {icon ?? (
+            <PixelIconTile hex={c.accentInk}>
+              <IconUpload size={ICON_SIZE.feature} color={c.accentInk} />
+            </PixelIconTile>
+          )}
+        </div>
         <p style={{ fontSize: TYPE.ui.size, fontWeight: TYPE.ui.weight, color: c.text, margin: 0 }}>{title}</p>
         {hint && <p style={{ fontSize: TYPE.meta.size, color: c.textMuted, margin: '6px 0 0' }}>{hint}</p>}
         <input
@@ -598,6 +607,8 @@ export const PixelPanel = ({
   rule,
   texture,
   emphasis = 'feature',
+  icon,
+  tag,
   children,
   footer,
   isDark = false,
@@ -633,6 +644,11 @@ export const PixelPanel = ({
    *  spread evenly it reads as noise. The showcase's own Product Patterns sit
    *  on ONE stage for that reason. */
   emphasis?: 'feature' | 'quiet';
+  /** a pixel icon, shown in a PixelIconTile in the card's accent — the way
+   *  the site's system cards open. Pass an icon at ICON_SIZE.feature. */
+  icon?: React.ReactNode;
+  /** an ordinal or identity tag in the accent, top right: "01", "LIVE" */
+  tag?: string;
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -675,6 +691,12 @@ export const PixelPanel = ({
       {weave > 0 && <WeaveOverlay isDark={isDark} opacity={weave} />}
       {!spine && !quiet && <PixelCornerMarks hex={hue} size={7} />}
       <div className="relative" style={{ padding: pad }}>
+        {(icon || tag) && (
+          <div className="flex items-start justify-between gap-4" style={{ marginBottom: SPACE_SCALE['5'] }}>
+            {icon ? <PixelIconTile hex={hue}>{icon}</PixelIconTile> : <span />}
+            {tag && <PixelTag hex={hue} label={tag} isDark={isDark} />}
+          </div>
+        )}
         {eyebrow && (
           <p
             className="uppercase"
