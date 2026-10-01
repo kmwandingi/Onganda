@@ -1061,11 +1061,11 @@ const TimelineBlock = ({
 
 // ─── System Card Block ────────────────────────────────────────────────────────
 const SYSTEM_ICON_SMALL: Record<string, React.ReactNode> = {
-  Okaanda: <IconOkaanda size={32} />,
-  Oshini: <IconOshini size={32} />,
-  Ombiga: <IconOmbiga size={32} />,
-  Etiti: <IconEtiti size={32} />,
-  Oshitoo: <IconOshitoo size={32} />
+  Okaanda: <IconOkaanda size={24} />,
+  Oshini: <IconOshini size={24} />,
+  Ombiga: <IconOmbiga size={24} />,
+  Etiti: <IconEtiti size={24} />,
+  Oshitoo: <IconOshitoo size={24} />
 };
 const SystemCardBlock = ({
   block,

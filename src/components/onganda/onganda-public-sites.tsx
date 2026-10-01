@@ -87,7 +87,7 @@ const PublicNav = () => {
           className="flex items-center justify-center border p-2 md:hidden"
           style={{ background: 'transparent', borderColor: line, color: COLOR.charBlack, cursor: 'pointer' }}
         >
-          {menuOpen ? <IconClose size={18} /> : <IconMenu size={18} />}
+          {menuOpen ? <IconClose size={24} /> : <IconMenu size={24} />}
         </motion.button>
       </div>
       <AnimatePresence>
@@ -185,11 +185,11 @@ const PublicHero = ({
       <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
         <PixelButton href={primary.href}>
-          {primary.label}<IconArrowRight size={14} />
+          {primary.label}<IconArrowRight size={12} />
         </PixelButton>
         {secondary && (
           <PixelButton href={secondary.href} variant="ghost">
-            {secondary.label}<IconArrowRight size={14} />
+            {secondary.label}<IconArrowRight size={12} />
           </PixelButton>
         )}
       </div>
@@ -215,7 +215,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           <WeaveOverlay opacity={0.035} />
           <div className="relative mb-8 flex items-start justify-between">
             <div className="border p-3" style={{ borderColor: `${sys.borderHex}40`, background: `${sys.borderHex}14` }}>
-              {systemIconForName(sys.name, 50)}
+              {systemIconForName(sys.name, 48)}
             </div>
             <PixelTag hex={sys.borderHex} label={String(index + 1).padStart(2, '0')} />
           </div>
@@ -327,7 +327,7 @@ const ContactBand = ({ compact = false }: { compact?: boolean }) => (
       <PixelTextarea id="contact-note" placeholder="What would you like to discuss?" />
     </PixelField>
     <PixelButton variant="primary" className="w-fit">
-      Contact {BRAND}<IconArrowRight size={14} />
+      Contact {BRAND}<IconArrowRight size={12} />
     </PixelButton>
   </PixelContactPanel>
 );
@@ -389,7 +389,7 @@ const FullPage = () => (
     </PixelEditorialSection>
     <PixelEditorialSection id="people" label="People" headline="A place for builders." accent={COLOR.mopaneBrown}>
       <div className="flex items-start gap-4">
-        <IconUsers size={28} color={COLOR.mopaneBrown} />
+        <IconUsers size={24} color={COLOR.mopaneBrown} />
         <p>{BRAND} brings together people working across systems, models, interfaces, and applications. The lab is designed for technical depth, practical experimentation, and shared making.</p>
       </div>
     </PixelEditorialSection>

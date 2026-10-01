@@ -15,7 +15,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { roles, statusFor, StatusName } from './onganda-tokens';
-import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, type MotionConflicting } from './onganda-primitives';
+import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, useIsDark, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
 import { IconUpload } from './onganda-icons';
 import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
@@ -29,7 +29,7 @@ export const PixelNotice = ({
   status = 'active',
   title,
   children,
-  isDark = false,
+  isDark: isDarkProp,
   onDismiss,
   className = '',
   ...rest
@@ -45,6 +45,7 @@ export const PixelNotice = ({
   // keeps test hooks and ARIA attributes working, as PixelPanel and
   // PixelChoice already do.
 } & Omit<React.HTMLAttributes<HTMLElement>, 'title' | MotionConflicting>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const hue = statusFor(status, isDark);
   return (
@@ -99,7 +100,7 @@ export const PixelDialog = ({
   eyebrow,
   children,
   footer,
-  isDark = false,
+  isDark: isDarkProp,
   width = 520
 }: {
   open: boolean;
@@ -111,6 +112,7 @@ export const PixelDialog = ({
   isDark?: boolean;
   width?: number;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const panel = useRef<HTMLDivElement>(null);
   const restoreTo = useRef<HTMLElement | null>(null);
@@ -210,7 +212,7 @@ export const PixelTable = <Row,>({
   columns,
   rows,
   caption,
-  isDark = false,
+  isDark: isDarkProp,
   rowKey,
   empty
 }: {
@@ -221,6 +223,7 @@ export const PixelTable = <Row,>({
   rowKey: (row: Row, i: number) => string;
   empty?: React.ReactNode;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   if (!rows.length && empty) return <>{empty}</>;
   return (
@@ -282,6 +285,140 @@ export const PixelTable = <Row,>({
   );
 };
 
+// ─── PixelNav — a product's own navigation ──────────────────────────────────
+// Every product hand-rolled its sidebar: anchors with inline styles, icons at
+// whatever size was to hand, the active item marked differently each time.
+// Vertical for a sidebar, horizontal for a phone's top row. The active item
+// takes the surface and an accent-ink edge (left, or bottom when horizontal);
+// icons sit on the grid at ICON_SIZE.control and take the accent when active.
+// Usage:
+//   <PixelNav label="Studio" items={[
+//     { label: 'Create', icon: IconPlay, href: '#/create', active: true },
+//     { label: 'Moments', icon: IconList, href: '#/moments' }]} />
+export type PixelNavItem = {
+  label: string;
+  /** an Onganda icon component — it is sized and coloured for you */
+  icon?: React.ComponentType<{ size?: number; color?: string }>;
+  href?: string;
+  onClick?: () => void;
+  active?: boolean;
+  /** a count or short status after the label */
+  badge?: React.ReactNode;
+};
+
+export const PixelNav = ({
+  label,
+  items,
+  orientation = 'vertical',
+  isDark: isDarkProp,
+  className = ''
+}: {
+  /** what this navigation is, for screen readers: "Studio", "Settings" */
+  label: string;
+  items: PixelNavItem[];
+  orientation?: 'vertical' | 'horizontal';
+  isDark?: boolean;
+  className?: string;
+}) => {
+  const isDark = useIsDark(isDarkProp);
+  const c = roles(isDark);
+  const vertical = orientation === 'vertical';
+  return (
+    <nav aria-label={label} className={className}>
+      <ul
+        className={vertical ? 'grid gap-1' : 'flex gap-1 overflow-x-auto'}
+        style={{ listStyle: 'none', margin: 0, padding: 0, scrollbarWidth: 'none' }}
+      >
+        {items.map(item => {
+          const Icon = item.icon;
+          const edge = `3px solid ${item.active ? c.accentInk : 'transparent'}`;
+          const style: React.CSSProperties = {
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            width: vertical ? '100%' : undefined,
+            padding: vertical ? '10px 12px' : '10px 12px 8px',
+            border: 0,
+            borderLeft: vertical ? edge : 0,
+            borderBottom: vertical ? 0 : edge,
+            background: item.active ? c.surface : 'transparent',
+            color: item.active ? c.text : c.textMuted,
+            fontSize: TYPE.meta.size,
+            fontWeight: item.active ? TYPE.ui.weight : TYPE.meta.weight,
+            fontFamily: 'inherit',
+            textAlign: 'left',
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+            transition: 'background 0.18s, color 0.18s, transform 0.1s',
+            ['--onganda-focus' as string]: c.focusRing
+          } as React.CSSProperties;
+          const body = (
+            <>
+              {Icon && <Icon size={ICON_SIZE.control} color={item.active ? c.accentInk : c.textMuted} />}
+              <span>{item.label}</span>
+              {item.badge != null && <span style={{ marginLeft: 'auto', color: c.textMuted, fontVariantNumeric: 'tabular-nums' }}>{item.badge}</span>}
+            </>
+          );
+          return (
+            <li key={item.label}>
+              {item.href
+                ? <a href={item.href} onClick={item.onClick} aria-current={item.active ? 'page' : undefined} data-onganda-press="" className="onganda-focus" style={style}>{body}</a>
+                : <button type="button" onClick={item.onClick} aria-current={item.active ? 'page' : undefined} data-onganda-press="" className="onganda-focus" style={style}>{body}</button>}
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+};
+
+// ─── PixelMeter — a rating, not a state ─────────────────────────────────────
+// Strength, confidence, fit: "how good", not "what is happening". The status
+// colours mean process state — running, warning, failed, done — so reading a
+// rating through them says a weak clip has *failed* or a strong one is
+// *running*. The meter is n filled squares out of max in one hue, with the
+// label beside it: the roadmap legend's pixel language, readable without
+// colour.
+// Usage: <PixelMeter value={3} label="Strong" />
+export const PixelMeter = ({
+  value,
+  max = 3,
+  label,
+  hex,
+  isDark: isDarkProp,
+  className = '',
+  ...rest
+}: {
+  value: number;
+  max?: number;
+  /** the rating in words — always shown; the squares repeat it */
+  label: string;
+  /** the fill; defaults to the accent ink */
+  hex?: string;
+  isDark?: boolean;
+  className?: string;
+} & Omit<React.HTMLAttributes<HTMLSpanElement>, 'children'>) => {
+  const isDark = useIsDark(isDarkProp);
+  const c = roles(isDark);
+  const fill = hex ?? c.accentInk;
+  const n = Math.max(0, Math.min(max, Math.round(value)));
+  return (
+    <span {...rest} className={`inline-flex items-center gap-2 ${className}`} style={{ fontSize: TYPE.meta.size, color: c.textBody, ...rest.style }}>
+      <span role="img" aria-label={`${label}: ${n} of ${max}`} className="inline-flex gap-0.5">
+        {Array.from({ length: max }, (_, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            style={{ width: 6, height: 6, background: i < n ? fill : 'transparent', border: `1px solid ${i < n ? fill : c.lineStrong}` }}
+          />
+        ))}
+      </span>
+      {label}
+    </span>
+  );
+};
+
 // ─── PixelDropZone — where a product takes files ────────────────────────────
 // Every product that ingests media hand-rolled this, and every one reached for
 // a dashed border and a weave that switched on while dragging — the two
@@ -300,7 +437,7 @@ export const PixelDropZone = ({
   multiple = false,
   disabled = false,
   onFiles,
-  isDark = false,
+  isDark: isDarkProp,
   className = '',
   children,
   ...rest
@@ -318,6 +455,7 @@ export const PixelDropZone = ({
   /** more actions beside "Choose files" — "example batch" */
   children?: React.ReactNode;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'title' | 'onDrop'>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
@@ -385,7 +523,7 @@ export const PixelEmptyState = ({
   body,
   action,
   icon,
-  isDark = false,
+  isDark: isDarkProp,
   ...rest
 }: {
   title: string;
@@ -394,6 +532,7 @@ export const PixelEmptyState = ({
   icon?: React.ReactNode;
   isDark?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   // A solid edge with corner marks, not a dashed one. A dashed border reads
   // as provisional, and an empty state is a real surface: it is what a
@@ -415,7 +554,7 @@ export const PixelEmptyState = ({
 // ─── PixelSkeleton — loading, as a dither sweep rather than a soft shimmer ───
 export const PixelSkeleton = ({
   lines = 3,
-  isDark = false,
+  isDark: isDarkProp,
   className = '',
   ...rest
 }: {
@@ -423,6 +562,7 @@ export const PixelSkeleton = ({
   isDark?: boolean;
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const moving = useMotionOK();
   return (
@@ -468,7 +608,7 @@ export const PixelTabs = <T extends string>({
   tabs,
   value,
   onChange,
-  isDark = false,
+  isDark: isDarkProp,
   label = 'Sections',
   scrollable = false,
   className = '',
@@ -486,6 +626,7 @@ export const PixelTabs = <T extends string>({
   scrollable?: boolean;
   className?: string;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const d = useDensity();
   return (
@@ -511,9 +652,14 @@ export const PixelTabs = <T extends string>({
               ['--onganda-focus' as string]: c.focusRing,
               padding: d.tabPadding,
               borderRadius: 0,
-              fontSize: 11,
-              fontWeight: 700,
+              fontSize: TYPE.label.size,
+              fontWeight: TYPE.label.weight,
               letterSpacing: '0.12em',
+              // A tab label never breaks. Without this, a scrollable row
+              // squeezed its tabs and wrapped "NEEDS / TRIM" inside the button
+              // instead of scrolling.
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
               textTransform: 'uppercase',
               cursor: 'pointer',
               transition: 'background 0.18s, border-color 0.18s, color 0.18s, transform 0.1s',
@@ -533,7 +679,7 @@ export const PixelProgress = ({
   value,
   label,
   status = 'active',
-  isDark = false,
+  isDark: isDarkProp,
   ...rest
 }: {
   /** 0–100 */
@@ -542,6 +688,7 @@ export const PixelProgress = ({
   status?: StatusName;
   isDark?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const clamped = Math.max(0, Math.min(100, value));
   const hue = statusFor(status, isDark);
@@ -596,8 +743,8 @@ export const PixelProgress = ({
 // semibold title, and 14px body.
 //
 // Note what it does NOT do. The site never stacks its marks: the feature card
-// has corner marks and no spine and no dither rule; the system card has a
-// 3px spine and a bottom dither rule and no corner marks. An earlier version
+// has corner marks and no spine; the system card has a 3px spine and no
+// corner marks. An earlier version
 // of this component did all three at once, and cards built from it read as
 // busy and over-ruled next to the site they were supposed to match. Pass
 // `spine` to get the system-card recipe instead — you get one or the other,
@@ -616,9 +763,10 @@ export const PixelPanel = ({
   emphasis = 'feature',
   icon,
   tag,
+  aside,
   children,
   footer,
-  isDark = false,
+  isDark: isDarkProp,
   className = '',
   ...rest
 }: {
@@ -628,14 +776,11 @@ export const PixelPanel = ({
   note?: React.ReactNode;
   /** the card's identifying colour; defaults to the accent ink */
   accent?: string;
-  /** the system-card recipe: a 3px left spine and a bottom dither rule,
-   *  instead of corner marks. Use it when the card stands for a thing that
+  /** the system-card recipe: a 3px left spine instead of corner marks. Use it when the card stands for a thing that
    *  has its own colour — a system, a feature area — not for chrome. */
   spine?: boolean;
-  /** the closing dither rule. Defaults to on with `spine`, off without.
-   *  Separate from `spine` because a product may want the identity edge
-   *  without a foot rule, and hiding it with a descendant selector is the
-   *  hack this system exists to prevent. */
+  /** a closing hairline at the card's foot, in the accent. Off by default,
+   *  with or without `spine` — most cards need none. */
   rule?: boolean;
   /** texture on this card. Default `none`: cards are flat, like the site's
    *  feature cards. Pass `surface` only for a single identity grid on a plain
@@ -656,6 +801,9 @@ export const PixelPanel = ({
   icon?: React.ReactNode;
   /** an ordinal or identity tag in the accent, top right: "01", "LIVE" */
   tag?: string;
+  /** on the title's line, right-aligned: a status with its label, a count,
+   *  a small action. Keeps the title an <h2> and the row aligned. */
+  aside?: React.ReactNode;
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -664,10 +812,10 @@ export const PixelPanel = ({
   // on a component compiles and is then silently dropped. Forwarding the rest
   // keeps test hooks and ARIA attributes working.
 } & Omit<React.HTMLAttributes<HTMLElement>, 'title'>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const d = useDensity();
   const hue = accent ?? c.accentInk;
-  // The foot rule follows the spine unless the caller says otherwise.
   const quiet = emphasis === 'quiet';
   // The foot rule is opt-in. It used to follow the spine by default, which
   // put a rule at the foot of every identity card.
@@ -719,7 +867,7 @@ export const PixelPanel = ({
             {eyebrow}
           </p>
         )}
-        {title && (
+        {title && !aside && (
           <h2
             style={{
               fontSize: TYPE.title.size,
@@ -733,6 +881,24 @@ export const PixelPanel = ({
           >
             {title}
           </h2>
+        )}
+        {title && aside && (
+          <div className="flex items-start justify-between gap-4">
+            <h2
+              style={{
+                fontSize: TYPE.title.size,
+                fontWeight: TYPE.title.weight,
+                lineHeight: TYPE.title.lineHeight,
+                color: c.text,
+                // The site's rhythm: a full step of air under the label, not a
+                // hairline gap. This is most of what makes its cards breathe.
+                margin: eyebrow ? `${SPACE_SCALE['4']}px 0 0` : 0
+              }}
+            >
+              {title}
+            </h2>
+            <div className="shrink-0" style={{ marginTop: eyebrow ? SPACE_SCALE['4'] : 0 }}>{aside}</div>
+          </div>
         )}
         {note && (
           <p
@@ -781,8 +947,7 @@ export const PixelPanel = ({
 //
 // The site's one loud move. Everything else is quiet so that flipping to char
 // black reads as emphasis; use it once per view at most. Transcribed from the
-// "Why Onganda" panel: an accent tag, a 48px headline, dark-muted body, and a
-// dither rule closing the block.
+// "Why Onganda" panel: an accent tag, a 48px headline and dark-muted body.
 export const PixelInversePanel = ({
   tag,
   headline,
@@ -845,7 +1010,7 @@ export const PixelChoice = ({
   onSelect,
   disabled = false,
   state,
-  isDark = false,
+  isDark: isDarkProp,
   name,
   tabIndex,
   showIndicator = true,
@@ -864,6 +1029,7 @@ export const PixelChoice = ({
   /** override the roving tab stop; the list normally handles this */
   tabIndex?: number;
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onSelect' | 'name' | 'disabled' | 'tabIndex' | 'style' | 'className' | 'children'>) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const d = useDensity();
   const edge = state === 'correct' ? statusFor('settled', isDark)
@@ -919,7 +1085,7 @@ export const PixelChoice = ({
 export const PixelChoiceList = ({
   label,
   children,
-  isDark = false,
+  isDark: isDarkProp,
   layout = 'rows'
 }: {
   label: string;
@@ -928,6 +1094,7 @@ export const PixelChoiceList = ({
   /** `grid` packs short options two-up; long text always wants rows */
   layout?: 'rows' | 'grid';
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const d = useDensity();
   const group = useRef<HTMLDivElement>(null);
 

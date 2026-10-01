@@ -24,7 +24,8 @@ import {
   PixelTag,
   PixelCornerMarks,
   WeaveOverlay,
-  SectionHeader
+  SectionHeader,
+  useIsDark
 } from './onganda-primitives';
 
 const label = (c: ReturnType<typeof roles>, tracking = TYPE.eyebrow.tracking) => ({
@@ -120,7 +121,7 @@ export const PixelEditorialSection = ({
   headline,
   accent,
   children,
-  isDark = false
+  isDark: isDarkProp
 }: {
   id?: string;
   label: string;
@@ -129,6 +130,7 @@ export const PixelEditorialSection = ({
   children: React.ReactNode;
   isDark?: boolean;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const rule = accent ?? c.accentInk;
   return (
@@ -163,7 +165,7 @@ export const PixelFocusRow = ({
   title,
   icon,
   children,
-  isDark = false
+  isDark: isDarkProp
 }: {
   /** 0-based position in the list; the row shows index + 1 as its ordinal */
   index: number;
@@ -173,6 +175,7 @@ export const PixelFocusRow = ({
   children?: React.ReactNode;
   isDark?: boolean;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   return (
     <motion.article
@@ -289,7 +292,7 @@ export const PixelContactPanel = ({
   accent,
   aside,
   children,
-  isDark = false
+  isDark: isDarkProp
 }: {
   /** anchor target — the page's own "get in touch" links point here */
   id?: string;
@@ -303,6 +306,7 @@ export const PixelContactPanel = ({
   children: React.ReactNode;
   isDark?: boolean;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const rule = accent ?? c.accentInk;
   return (
@@ -392,7 +396,7 @@ export const PixelEdgeStrips = ({ hexes }: { hexes: readonly string[] }) => {
 export const PixelStatBand = ({
   stats,
   columns,
-  isDark = false,
+  isDark: isDarkProp,
   className = ''
 }: {
   stats: readonly StatEntry[];
@@ -401,6 +405,7 @@ export const PixelStatBand = ({
   isDark?: boolean;
   className?: string;
 }) => {
+  const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const cols = columns ?? stats.length;
   return (

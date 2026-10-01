@@ -51,7 +51,7 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 ### From GitHub
 
 ```bash
-npm install github:kmwandingi/Onganda
+npm install @onganda/design-system@github:kmwandingi/Onganda#main --force
 ```
 
 Track `main` to always get the latest, in every `package.json` that carries
@@ -118,13 +118,17 @@ components. Consumers need no Tailwind configuration for those components.
 Add the library bundle to your content scan only when consumer code extends
 the packaged components with the same utility classes.
 
+You almost certainly do not need this step — `style.css` already carries the
+utilities, and `tests/consumer-render.mjs` proves the components render with
+Tailwind absent or misconfigured. Only when your own code copies classes out
+of the package source:
+
 **Tailwind v4** (in your CSS file):
 ```css
-@source "./node_modules/@onganda/design-system/dist/package";
+@source "../node_modules/@onganda/design-system/dist/package";
 ```
 
-The path is relative to your CSS file; the line above assumes it sits at the
-project root. Tailwind does not resolve this by package name, and a wrong level
+The path is relative to the CSS file that contains it (`src/index.css` → `../node_modules`). Tailwind does not resolve this by package name, and a wrong level
 fails silently — you get correct markup with no utility classes. Verify by
 rendering, not by reading.
 
@@ -431,7 +435,7 @@ import { PixelButton } from '@onganda/design-system';
 Use `PixelIconButton` for a familiar icon action inside a compact toolbar or row. It is borderless at rest and always requires a concise accessible `label`.
 
 ```tsx
-<PixelIconButton label="Move up"><IconChevronUp size={14} /></PixelIconButton>
+<PixelIconButton label="Move up"><IconChevronUp size={12} /></PixelIconButton>
 ```
 
 | Variant | Light | Dark | When |
@@ -708,7 +712,7 @@ buttons for very narrow surfaces.
 
 ```tsx
 <PixelEmptyState
-  icon={<IconOkaanda size={44} />}
+  icon={<IconOkaanda size={48} />}
   title="No datasets yet"
   body="Ingest a corpus to start evaluating models."
   action={<PixelButton variant="accent">Ingest a corpus</PixelButton>}
@@ -762,6 +766,39 @@ on a phone.
 `<PixelDot color={statusFor('active')} live />` blinks in two steps for a
 running or online state; an `active` `PixelNotice` does it on its own. Off
 under reduced motion.
+
+### PixelNav
+
+```tsx
+<PixelNav label="Studio" items={[
+  { label: 'Create', icon: IconPlay, href: '#/create', active: true },
+  { label: 'Moments', icon: IconList, href: '#/moments', badge: 6 },
+]} />
+<PixelNav label="Studio" orientation="horizontal" items={…} />   {/* a phone's top row */}
+```
+
+A product's own navigation. The active item takes the surface and an
+accent-ink edge (left, or bottom when horizontal) and `aria-current="page"`;
+icons are sized to `ICON_SIZE.control` and coloured for you; items press like
+buttons. `href` renders links, `onClick` alone renders buttons.
+
+### PixelMeter
+
+```tsx
+<PixelMeter value={2} label="Needs trim" />
+```
+
+A rating — strength, fit, confidence: filled squares out of `max` (3) in the
+accent ink, with the label always beside them. Not a status: the status
+colours mean *what is happening* (running, warning, failed, done), and reading
+a rating through them says a weak clip has failed. Put it in a card's title
+row with `PixelPanel`'s `aside`.
+
+### PixelPanel `aside`
+
+`<PixelPanel title="The reveal" aside={<PixelMeter value={2} label="Needs trim" />}>`
+puts a status, a count or a small action on the title's line, right-aligned,
+while the title stays the card's `<h2>`.
 
 ### PixelDropZone
 
@@ -889,7 +926,7 @@ got both wrong:
 ### Where a section's colour comes from
 
 A section picks **one accent** and spends it on the dot in its
-`SectionHeader`, on the dither rule beside its prose, and on the marks of the
+`SectionHeader`, on the column beside its prose, and on the marks of the
 cards inside it. Nowhere else. That is why the public site reads as deliberate
 rather than colourful: `Systems` is gold, `Focus` is plum, `People` is brown,
 `Why` is ochre, `Studio` is bark rust. The showcase passed no accent at all,
@@ -1157,7 +1194,7 @@ import {
 } from '@onganda/design-system';
 
 <IconOkaanda size={48} />
-<IconOshini  size={32} />
+<IconOshini  size={24} />
 <IconOmbiga  size={48} />
 <IconEtiti   size={48} />
 <IconOshitoo size={48} />
@@ -1242,12 +1279,20 @@ import {
 } from '@onganda/design-system';
 ```
 
+Also exported: the five **system icons** `IconOkaanda`, `IconOshini`,
+`IconOmbiga`, `IconEtiti`, `IconOshitoo` (or `systemIconForName(name, size)`),
+drawn on a 24-cell grid — use `ICON_SIZE.control` (24) or `ICON_SIZE.hero`
+(48); and `IconSun` / `IconMoon` for a theme switch. Interface icons are on 12
+cells and are crisp at every `ICON_SIZE` step. `npx onganda-check` fails any
+other literal size (`off-grid-icon`).
+
 Usage:
 ```tsx
-import { IconSearch, COLOR } from '@onganda/design-system';
+import { IconSearch, ICON_SIZE, roles } from '@onganda/design-system';
 
-<IconSearch size={20} color={COLOR.ochreOrange} />
-<IconSearch size={16} color={COLOR.charBlack} />
+const c = roles(isDark);
+<IconSearch size={ICON_SIZE.control} color={c.accentInk} />
+<IconSearch size={ICON_SIZE.inline} color={c.text} />
 ```
 
 ---

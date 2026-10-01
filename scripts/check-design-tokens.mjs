@@ -236,6 +236,17 @@ const RULES = [
     re: /repeating-linear-gradient|(?:border(?:Top|Bottom|Left|Right)?|outline):\s*[^\n]*\b(?:dotted|dashed)\b|\bborder-(?:dotted|dashed)\b/g
   },
   {
+    id: 'off-grid-icon',
+    why: 'A pixel icon at a size off its grid. Interface icons are drawn on 12 cells and render crisp at 12, 24, 36 or 48; the five system icons are drawn on 24 cells and render at 24 or 48. Any other size snaps to the nearest step anyway, so the number in the code is not the size on screen. Use ICON_SIZE.',
+    files: /\.tsx$/,
+    re: /<Icon(?:Okaanda|Oshini|Ombiga|Etiti|Oshitoo)\b[^>]*?size=\{\d+\}|<Icon[A-Za-z]+\b[^>]*?size=\{\d+\}|systemIconForName\([^,()]+,\s*\d+\)/g,
+    filter: m => {
+      const n = Number(m.match(/(\d+)\D*$/)[1]);
+      const system = /IconOkaanda|IconOshini|IconOmbiga|IconEtiti|IconOshitoo|systemIconForName/.test(m);
+      return n % (system ? 24 : 12) !== 0;
+    }
+  },
+  {
     id: 'texture-as-state',
     why: 'The weave switched on by a state — selected, active, drag-over. Texture is a ground, not a signal: toggled on a nav item or a selected row it reads as a rendering glitch, and it teaches every surface that texture means "chosen". Show state with the accent edge, `controlOn`, or a surfaceWell background.',
     files: /\.tsx$/,

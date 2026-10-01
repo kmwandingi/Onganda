@@ -54,7 +54,7 @@ export const Landing = () => {
         <SectionHeader label="Why Onganda" headline="Three things, in order." />
         <div className="grid gap-3">
           {FOCUS.map((f, i) => (
-            <PixelFocusRow key={f.title} index={i} accent={accentFor(i)} title={f.title} icon={systemIconForName(SYSTEMS[i].name, 28)}>
+            <PixelFocusRow key={f.title} index={i} accent={accentFor(i)} title={f.title} icon={systemIconForName(SYSTEMS[i].name, 24)}>
               {f.body}
             </PixelFocusRow>
           ))}
@@ -66,7 +66,7 @@ export const Landing = () => {
         languages people speak here and the problems they already have, and builds outward from there.
       </PixelEditorialSection>
 
-      <PixelContactPanel id="contact" eyebrow="Contact" headline="Start a conversation." icon={<IconMail size={18} color={c.accentInk} />}
+      <PixelContactPanel id="contact" eyebrow="Contact" headline="Start a conversation." icon={<IconMail size={24} color={c.accentInk} />}
           aside={<p style={{ fontSize: TYPE.body.size, lineHeight: TYPE.body.lineHeight, color: c.textBody }}>For pilots, partnerships and research access.</p>}>
           <div className="grid gap-4">
             <PixelField label="Email" htmlFor="c-email"><PixelInput id="c-email" placeholder="name@institution.na" /></PixelField>

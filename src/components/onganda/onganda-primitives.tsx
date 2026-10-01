@@ -106,8 +106,10 @@ export const Px = ({
   </svg>;
 };
 
-/** Icon sizes that stay on the pixel grid. Interface icons are 12-cell, the
- *  system icons 24-cell; every step here is a whole multiple of both or of 12.
+/** Icon sizes that stay on the pixel grid. Interface icons (`Icon*`) are
+ *  drawn on 12 cells, so every step here is crisp for them. The five system
+ *  icons (`IconOkaanda`… and `systemIconForName`) are drawn on 24 cells: use
+ *  `control` (24) or `hero` (48) for those — `feature` (36) snaps to 48.
  *  - inline:  in a button, a tag, a line of text
  *  - control: nav items, toolbars, list rows
  *  - feature: inside a PixelIconTile on a card, a drop zone, an empty state
@@ -569,12 +571,12 @@ export const FlowNodeIcon = ({
   id: string;
   hex: string;
 }) => {
-  if (id === 'root' || id === 'granary') return <IconOkaanda size={28} />;
-  if (id === 'mill') return <IconOshini size={28} />;
-  if (id === 'vessel') return <IconOmbiga size={28} />;
-  if (id === 'surface') return <IconEtiti size={28} />;
-  if (id === 'delivery') return <IconOshitoo size={28} />;
-  return <IconOkaanda size={28} />;
+  if (id === 'root' || id === 'granary') return <IconOkaanda size={24} />;
+  if (id === 'mill') return <IconOshini size={24} />;
+  if (id === 'vessel') return <IconOmbiga size={24} />;
+  if (id === 'surface') return <IconEtiti size={24} />;
+  if (id === 'delivery') return <IconOshitoo size={24} />;
+  return <IconOkaanda size={24} />;
 };
 
 // ─── IconSun / IconMoon — dark mode toggle icons ─────────────────────────────
@@ -1374,7 +1376,7 @@ export const SystemCard = ({
           borderColor: `${sys.borderHex}40`,
           background: `${sys.borderHex}14`
         }}>
-          {systemIconForName(sys.name, 50)}
+          {systemIconForName(sys.name, 48)}
         </div>
         <PixelTag hex={sys.borderHex} label={String(idx + 1).padStart(2, '0')} />
       </div>

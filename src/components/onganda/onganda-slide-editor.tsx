@@ -170,11 +170,11 @@ function useSlideHistory(initial: SlideHistorySnapshot) {
 // ─── Chart data ───────────────────────────────────────────────────────────────
 const SWATCHES_5 = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
 const SYSTEM_ICON_MAP: Record<string, React.ReactNode> = {
-  Okaanda: <IconOkaanda size={36} />,
-  Oshini: <IconOshini size={36} />,
-  Ombiga: <IconOmbiga size={36} />,
-  Etiti: <IconEtiti size={36} />,
-  Oshitoo: <IconOshitoo size={36} />
+  Okaanda: <IconOkaanda size={48} />,
+  Oshini: <IconOshini size={48} />,
+  Ombiga: <IconOmbiga size={48} />,
+  Etiti: <IconEtiti size={48} />,
+  Oshitoo: <IconOshitoo size={48} />
 };
 
 // ─── Template slide registry ──────────────────────────────────────────────────
@@ -2546,11 +2546,11 @@ function ComponentPreview({
 }) {
   const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
   const ICON_MAP: Record<string, React.ReactNode> = {
-    'icon-okaanda': <IconOkaanda size={28} />,
-    'icon-oshini': <IconOshini size={28} />,
-    'icon-ombiga': <IconOmbiga size={28} />,
-    'icon-etiti': <IconEtiti size={28} />,
-    'icon-oshitoo': <IconOshitoo size={28} />
+    'icon-okaanda': <IconOkaanda size={24} />,
+    'icon-oshini': <IconOshini size={24} />,
+    'icon-ombiga': <IconOmbiga size={24} />,
+    'icon-etiti': <IconEtiti size={24} />,
+    'icon-oshitoo': <IconOshitoo size={24} />
   };
   if (ICON_MAP[item.id]) return <div style={{
     height: 40,

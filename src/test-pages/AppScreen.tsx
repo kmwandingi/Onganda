@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import {
   IconDatabase, IconFolder, IconLayers, IconSearch, IconSettings, IconUpload,
-  PixelButton, PixelDialog, PixelDot, PixelEmptyState, PixelField, PixelInput,
+  PixelButton, PixelNav, PixelDialog, PixelDot, PixelEmptyState, PixelField, PixelInput,
   PixelNotice, PixelPanel, PixelProgress, PixelSelect, PixelSkeleton, PixelTable,
   PixelTabs, PixelTag, PixelToggle, roles, statusFor, systemIconForName, TYPE,
   type PixelColumn, type StatusName
@@ -50,34 +50,14 @@ export const AppScreen = () => {
   ];
 
   return (
-    <TestFrame current="/test/app" action={<PixelButton>Ingest a corpus <IconUpload size={14} /></PixelButton>}>
+    <TestFrame current="/test/app" action={<PixelButton>Ingest a corpus <IconUpload size={12} /></PixelButton>}>
       <div className="mx-auto grid max-w-7xl gap-0 px-6 py-10 md:grid-cols-[220px_1fr] md:px-12">
         <aside className="hidden md:block" style={{ borderRight: `1px solid ${c.line}`, paddingRight: 24 }}>
           <div className="mb-6 flex items-center gap-3">
-            {systemIconForName('Okaanda', 28)}
+            {systemIconForName('Okaanda', 24)}
             <span style={{ fontSize: TYPE.title.size, fontWeight: TYPE.title.weight }}>Okaanda</span>
           </div>
-          <nav aria-label="Registry" className="grid gap-1">
-            {NAV.map(({ label, icon: Icon }, i) => (
-              <a
-                key={label}
-                href="#"
-                aria-current={i === 0 ? 'page' : undefined}
-                className="flex items-center gap-3 no-underline"
-                style={{
-                  padding: '10px 12px',
-                  fontSize: TYPE.meta.size,
-                  fontWeight: TYPE.meta.weight,
-                  color: i === 0 ? c.text : c.textMuted,
-                  background: i === 0 ? c.surface : 'transparent',
-                  borderLeft: `3px solid ${i === 0 ? c.accentInk : 'transparent'}`
-                }}
-              >
-                <Icon size={16} color={i === 0 ? c.accentInk : c.textMuted} />
-                {label}
-              </a>
-            ))}
-          </nav>
+          <PixelNav label="Registry" items={NAV.map((n, i) => ({ label: n.label, icon: n.icon, href: '#', active: i === 0 }))} />
         </aside>
 
         <section className="min-w-0 md:pl-8">
@@ -92,7 +72,7 @@ export const AppScreen = () => {
               </div>
             </div>
             <div className="flex w-full items-center gap-2 sm:w-72">
-              <IconSearch size={16} color={c.textMuted} />
+              <IconSearch size={12} color={c.textMuted} />
               <PixelInput aria-label="Search datasets" placeholder="Search datasets" />
             </div>
           </div>
@@ -111,7 +91,7 @@ export const AppScreen = () => {
               {tab === 'review' && <PixelSkeleton lines={4} />}
               {tab === 'archived' && (
                 <PixelEmptyState
-                  icon={systemIconForName('Okaanda', 40)}
+                  icon={systemIconForName('Okaanda', 48)}
                   title="Nothing archived"
                   body="Archived corpora keep their records but leave the active index."
                 />

@@ -10,7 +10,7 @@ pixel-art SVG primitives, basket-weave textures, quiet mechanical motion.
 ### From GitHub
 
 ```bash
-npm install github:kmwandingi/Onganda
+npm install @onganda/design-system@github:kmwandingi/Onganda#main --force
 ```
 
 Track `main` to always get the latest, in every `package.json` that carries
@@ -70,14 +70,14 @@ components:
 
 ### 2. Add to your Tailwind content path only when extending components
 
-The package stylesheet includes the utilities used by its exported components.
-Consumers that only use those components need no Tailwind configuration. Add
-the library to your content path when your own components reuse utility classes
-from the packaged component source.
+The package stylesheet includes the utilities used by its exported components,
+so no Tailwind configuration is needed for them — not even an `@source` line.
+Only if your own components copy utility classes out of the package source do
+you need Tailwind to scan it:
 
-**Tailwind v4** (`tailwind.css` or `@tailwindcss/vite` config):
+**Tailwind v4** (path relative to the CSS file that contains it):
 ```css
-@source "../../node_modules/@onganda/design-system/dist/package";
+@source "../node_modules/@onganda/design-system/dist/package";
 ```
 
 **Tailwind v3** (`tailwind.config.js`):

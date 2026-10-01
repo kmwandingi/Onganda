@@ -115,6 +115,23 @@ try {
       ].every(Boolean);
 
       if (!exportsAreUsable) throw new Error('A public package export is unavailable.');
+
+      // The guidance ships with the package. An agent told to read SKILL.md,
+      // open reference/ and run the showcase from a product must find them in
+      // node_modules — a cold-start test found none of them there.
+      const { createRequire } = await import('node:module');
+      const { existsSync } = await import('node:fs');
+      const { dirname, join } = await import('node:path');
+      const pkgJson = createRequire(import.meta.url)('@onganda/design-system/package.json');
+      if (typeof pkgJson.version !== 'string' || pkgJson.version.split('.').length < 3) throw new Error('package.json is not readable through the package name.');
+      const pkgRoot = dirname(createRequire(import.meta.url).resolve('@onganda/design-system/package.json'));
+      for (const rel of [
+        'skills/onganda-design-system/SKILL.md', 'reference/INDEX.md', 'reference/product-surface.png',
+        'screenshots/test-pages/COMPARE.md', 'src/test-pages/Studio.tsx', 'dist/showcase/index.html',
+        'scripts/onganda-showcase.mjs', 'DESIGN_SYSTEM.md', 'CHANGELOG.md', 'dist/package/fonts.css'
+      ]) {
+        if (!existsSync(join(pkgRoot, rel))) throw new Error('The package does not ship ' + rel + '.');
+      }
     `
   );
   await run('node', ['verify.mjs'], { cwd: consumerRoot });

@@ -41,7 +41,56 @@ each item against your screens:
 10. **The package carries its guidance**: `skills/`, `reference/`,
     `screenshots/test-pages/` and `src/test-pages/` are in
     `node_modules/@onganda/design-system/` (about 6 MB).
-11. Regenerate any visual snapshots.
+11. **Patterns follow `DarkProvider`.** `PixelPanel`, `PixelNotice`,
+    `PixelTable`, `PixelTabs`, `PixelDialog` and the site sections now read the
+    mode from the provider instead of defaulting to light. A component that sat
+    light inside a dark provider without `isDark` will now be dark; pass
+    `isDark={false}` where that was intended.
+12. **No `@source` line is needed** for the package; remove it if you added one.
+13. Regenerate any visual snapshots.
+
+### Fixed — what a cold-start agent hit
+
+A fresh agent built two product screens from the package and the prompt
+alone, with no access to this repo. The result was the closest any product
+has come to the showcase, and it reported fifteen places the package or its
+docs let it down. All are fixed:
+
+- **The guidance did not ship.** `skills/`, `reference/`,
+  `screenshots/test-pages/`, `src/test-pages/`, `DESIGN_SYSTEM.md` and the
+  CHANGELOG are now in the package, and **`npx onganda-showcase`** serves the
+  built showcase and test pages from inside a product — "open /showcase" was
+  impossible for a consumer. The package smoke test asserts every file.
+- **The version check threw**: `package.json` was not exported.
+- **Patterns ignored `DarkProvider`** and rendered light unless passed
+  `isDark`. Fifteen components now read the provider.
+- **`PixelTabs scrollable` wrapped its labels** inside squeezed buttons
+  instead of scrolling. Tab labels never break now.
+- **No navigation primitive** — every product hand-rolled its sidebar.
+  `PixelNav`, vertical or horizontal.
+- **No way to show a rating.** Status colours mean process state, so "strong"
+  as `active` said a clip was *running*. `PixelMeter`, and the product
+  reference now uses it.
+- **No slot beside a card's title.** `PixelPanel` `aside`.
+- **Off-grid icon sizes in the system's own examples** — 40 literals in the
+  components and test pages, more in the docs, all normalised to what renders.
+  The five system icons are on a 24-cell grid (24 or 48); `createPixelIcon`
+  icons now snap too. **`off-grid-icon`** in `check:tokens` fails the rest.
+- **Docs that contradicted SKILL.md**: the README's "fully Onganda" list
+  required texture and an inverse band on every surface; its "Build a screen"
+  example hand-rolled a card the guard rejects; install commands differed;
+  the `@source` line was documented as required and is not; repo-only steps
+  (`npm run reference`, `composition.spec.ts`) read as product steps; the
+  `PixelPanel` `rule` comment claimed a default it no longer has.
+- The windsurf, ChatGPT/Codex and Claude-command docs are **generated from
+  SKILL.md** (`check:agent-docs`), not hand-kept copies of an older system.
+- Entrances now start when an element comes into view (`installReveal`, via
+  `DarkProvider`): measured, a panel's 450ms entrance was at 442ms by first
+  paint, so it was never seen.
+- `PixelDialog` renders on `document.body`, so no card can clip it.
+- The font explanation was wrong: whether a `url()` survives a nested import
+  depends on the consumer's `@tailwindcss/vite` version (4.0.9 no, 4.3.3 yes),
+  not on the plugin as such. Embedding stands; the cause is corrected.
 
 ### Fixed — the faces, the pixel grid, and what makes a screen look finished
 

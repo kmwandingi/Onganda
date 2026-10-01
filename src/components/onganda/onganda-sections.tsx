@@ -5,12 +5,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
-import { Px, PixelDot, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
-import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory } from './onganda-icons';
+import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
-import { PixelNotice, PixelDialog, PixelDropZone, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -373,7 +373,7 @@ const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
   text: '<IconSearch'
 }, {
   type: 'prop',
-  text: '  size={16}'
+  text: '  size={12}'
 }, {
   type: 'prop',
   text: "  color='#D9791F'"
@@ -2696,6 +2696,25 @@ export const ProductPatterns = () => {
                 <p className="mt-3 text-xs" style={{ color: c.textMuted }}>Showing <strong style={{ color: c.text }}>{tab}</strong> runs.</p>
               </div>
 
+              <div>
+                <SubLabel isDark={isDark} spaced>Input group · a field and its action as one control</SubLabel>
+                <PixelField label="Model URL" htmlFor="pp-url" isDark={isDark}>
+                  <PixelInputGroup>
+                    <PixelInput id="pp-url" isDark={isDark} placeholder="https://huggingface.co/…" />
+                    <PixelButton variant="ghost" isDark={isDark}>Fetch</PixelButton>
+                  </PixelInputGroup>
+                </PixelField>
+              </div>
+
+              <div>
+                <SubLabel isDark={isDark} spaced>Meter · a rating, not a state</SubLabel>
+                <div className="flex flex-wrap gap-6">
+                  <PixelMeter value={3} label="Strong" isDark={isDark} />
+                  <PixelMeter value={2} label="Needs trim" isDark={isDark} />
+                  <PixelMeter value={1} label="Weak" isDark={isDark} />
+                </div>
+              </div>
+
               <div className="grid gap-5">
                 <SubLabel isDark={isDark} spaced>Progress · a solid fill, never a smooth gradient</SubLabel>
                 <PixelProgress isDark={isDark} label="Corpus ingestion" value={100} status="settled" />
@@ -2817,7 +2836,7 @@ export const ProductPatterns = () => {
               <div>
                 <PixelEmptyState
                   isDark={isDark}
-                  icon={<IconOkaanda size={44} />}
+                  icon={<IconOkaanda size={48} />}
                   title="No datasets yet"
                   body="Ingest a corpus to start evaluating models against Namibian language data."
                   action={<PixelButton variant="accent" isDark={isDark}>Ingest a corpus</PixelButton>}
@@ -2939,9 +2958,9 @@ export const OkaandaHero = OngandaHero;
 // ONE surface carries the feature treatment, metadata is neutral, colour is
 // spent on identity and state, and there is no marketing device on it at all.
 const PRODUCT_ROWS = [
-  { id: 'm1', name: 'Opening hook', at: '0:04–0:14', score: 'active' as StatusName, label: 'Strong' },
-  { id: 'm2', name: 'The reveal', at: '0:31–0:42', score: 'caution' as StatusName, label: 'Needs trim' },
-  { id: 'm3', name: 'Closing line', at: '1:02–1:09', score: 'settled' as StatusName, label: 'Kept' }
+  { id: 'm1', name: 'Opening hook', at: '0:04–0:14', strength: 3, label: 'Strong' },
+  { id: 'm2', name: 'The reveal', at: '0:31–0:42', strength: 2, label: 'Needs trim' },
+  { id: 'm3', name: 'Closing line', at: '1:02–1:09', strength: 1, label: 'Weak' }
 ];
 
 export const ProductSurface = () => {
@@ -2963,33 +2982,22 @@ export const ProductSurface = () => {
       >
         {/* Sidebar — quiet chrome. The active item takes the accent ink on
             its edge. Chrome is the one place colour is scarce. */}
-        <nav aria-label="Product" style={{ borderRight: `1px solid ${c.line}`, padding: 16 }}>
+        <div style={{ borderRight: `1px solid ${c.line}`, padding: 16 }}>
           <div className="flex items-center gap-2" style={{ marginBottom: 20 }}>
-            <OngandaLogoMark size={20} />
-            <span style={{ fontWeight: 600, color: c.text }}>Klippr</span>
+            {systemIconForName('Etiti', ICON_SIZE.control)}
+            <span style={{ fontWeight: TYPE.ui.weight, color: c.text }}>Klippr</span>
           </div>
-          {['Studio', 'Discover', 'Ideas', 'Library'].map(item => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setNav(item)}
-              aria-current={nav === item ? 'page' : undefined}
-              className="onganda-focus block w-full text-left"
-              style={{
-                padding: '8px 12px',
-                marginBottom: 2,
-                border: 'none',
-                borderLeft: `3px solid ${nav === item ? c.accentInk : 'transparent'}`,
-                background: nav === item ? c.surface : 'transparent',
-                color: nav === item ? c.text : c.textMuted,
-                fontWeight: nav === item ? 600 : 400,
-                cursor: 'pointer'
-              }}
-            >
-              {item}
-            </button>
-          ))}
-        </nav>
+          <PixelNav
+            label="Product"
+            isDark={isDark}
+            items={['Studio', 'Discover', 'Ideas', 'Library'].map((item, i) => ({
+              label: item,
+              icon: [IconPlay, IconVideo, IconFile, IconFolder][i],
+              active: nav === item,
+              onClick: () => setNav(item)
+            }))}
+          />
+        </div>
 
         <div style={{ padding: 24 }}>
           {/* Header: title, NEUTRAL metadata, one primary action. */}
@@ -3013,27 +3021,15 @@ export const ProductSurface = () => {
                 label, from statusFor. Metadata above stays neutral. */}
             <div className="grid content-start gap-3">
               {PRODUCT_ROWS.map((r, i) => (
-                <PixelPanel key={r.id} isDark={isDark} spine accent={accentFor(i)} data-testid="product-moment">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <PixelTag hex={accentFor(i)} label={String(i + 1).padStart(2, '0')} isDark={isDark} />
-                        <span style={{ fontSize: TYPE.title.size, fontWeight: TYPE.title.weight, color: c.text }}>{r.name}</span>
-                      </div>
-                      <p style={{ margin: '8px 0 0', fontSize: TYPE.meta.size, color: c.textMuted, fontVariantNumeric: 'tabular-nums' }}>{r.at}</p>
-                    </div>
-                    <span className="inline-flex items-center gap-2" style={{ fontSize: TYPE.meta.size, color: c.textBody }}>
-                      <PixelDot color={statusFor(r.score, isDark)} size={7} ring={c.lineStrong} />
-                      {r.label}
-                    </span>
-                  </div>
-                </PixelPanel>
+                <PixelPanel key={r.id} isDark={isDark} spine accent={accentFor(i)} data-testid="product-moment"
+                  eyebrow={`${String(i + 1).padStart(2, '0')} · ${r.at}`} title={r.name}
+                  aside={<PixelMeter value={r.strength} label={r.label} isDark={isDark} />} />
               ))}
               <PixelDropZone isDark={isDark} title="Drop more footage" hint="mp4 · mov · webm — up to 12 files" multiple onFiles={() => {}} />
             </div>
 
             {/* Inspector: quiet. Working chrome is surface and hairline. */}
-            <div className="grid gap-4">
+            <div className="grid content-start gap-4">
               <PixelPanel isDark={isDark} emphasis="quiet" eyebrow="Export" title="TikTok · 1080×1920">
                 <PixelField label="Caption style" htmlFor="ps-caption" isDark={isDark}>
                   <PixelSelect id="ps-caption" isDark={isDark} defaultValue="burned">

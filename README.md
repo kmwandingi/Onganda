@@ -26,14 +26,19 @@ solely Onganda.
 Install the current package from GitHub:
 
 ```bash
-npm install github:kmwandingi/Onganda
+npm install @onganda/design-system@github:kmwandingi/Onganda#main --force
 ```
 
-Pin a commit and bump it in every `package.json` that carries it. A pin is a
-commit, not a version, so `npm install` alone will not move it: edit the pin
-and reinstall with `--force`. The package builds on install, so a stale
-`node_modules` serves an older build with no warning — delete
-`node_modules/@onganda/design-system` if an export or a style is missing.
+That tracks `main`, always the latest. The lockfile freezes a git dependency,
+so run the same command again to upgrade, then restart the dev server and
+clear `node_modules/.vite`. Check you have the latest: the hash in
+`node -p "require('@onganda/design-system/package.json').version"` must match
+`git ls-remote https://github.com/kmwandingi/Onganda HEAD`. To hold a product
+still, pin a commit (`#<sha>`) instead. Read the CHANGELOG's migration notes
+before crossing a major version.
+
+**Open the showcase from your own project:** `npx onganda-showcase` serves the
+showcase and the consumer test pages at `http://127.0.0.1:4174`.
 
 There is no registry release yet. `npm install @onganda/design-system`
 returns a 404 until the scoped package is published.
@@ -72,22 +77,13 @@ import { DarkProvider } from '@onganda/design-system';
 </DarkProvider>;
 ```
 
-Onganda components use Tailwind utility classes. Tailwind must scan the compiled package:
-
-```css
-/* Tailwind 4. The path is relative to THIS CSS file — the line below assumes
-   it sits at your project root, beside node_modules. Getting the level wrong
-   produces no error, just unstyled components, so check the rendered result. */
-@source "./node_modules/@onganda/design-system/dist/package";
-```
-
-```js
-// Tailwind 3
-content: ['./node_modules/@onganda/design-system/dist/package/**/*.{js,cjs}'];
-```
-
-`tests/consumer-render.mjs` builds a real consumer app with this exact line,
-renders it, and fails if the package's utilities were not generated.
+**No Tailwind setup is needed.** `style.css` carries every utility class the
+components use, so they render the same with Tailwind configured, configured
+wrongly, or absent — `tests/consumer-render.mjs` builds all three and fails if
+any differs. Do not add an `@source` line for the package. If your own code
+uses Tailwind, `@import '@onganda/design-system/tailwind.css'` after
+`tailwindcss` gives you the role utilities (`bg-surface`, `text-text-muted`)
+and removes Tailwind's own palette.
 
 ## Build a screen
 
@@ -96,60 +92,46 @@ is already on-brand and already accessible.
 
 ```tsx
 import {
-  DarkProvider, useDark, roles,
-  SectionHeader, WeaveOverlay, PixelCornerMarks, PixelDot,
-  PixelButton, PixelField, PixelInput, PixelSelect, PixelCheckbox,
-  MOTION, statusFor, TEXTURE, accentFor,
+  DarkProvider, roles, useDark, accentFor, ICON_SIZE, IconMail,
+  SectionHeader, PixelPanel, PixelDot, PixelButton, PixelField, PixelInput,
+  PixelSelect, PixelCheckbox, PixelActions, statusFor, TYPE,
 } from '@onganda/design-system';
-import { motion } from 'framer-motion';
-import '@onganda/design-system/style.css';
+import '@onganda/design-system/style.css';   // tokens, both faces, motion
 
 function RequestAccess() {
   const { isDark } = useDark();
-  const c = roles(isDark);                 // ← every colour comes from here
+  const c = roles(isDark);                 // ← any colour you need comes from here
 
   return (
-    <section style={{ background: c.canvas, padding: 48 }}>
-      <SectionHeader label="Access" headline="Request a pilot." isDark={isDark} />
+    <section className="mx-auto max-w-3xl px-6 py-16">
+      {/* The screen's one primary sits with its title. */}
+      <SectionHeader level={1} label="Access" headline="Request a pilot." accent={accentFor(0)}
+        actions={<PixelButton>Send request</PixelButton>} />
 
-      <motion.div
-        {...MOTION.fadeUp}
-        className="relative overflow-hidden"
-        style={{ background: c.surface, border: `1px solid ${c.line}`, padding: 32 }}
-      >
-        <PixelCornerMarks hex={c.accentInk} size={10} />
-
-        <p style={{ color: c.textBody, marginBottom: 24 }}>
-          Tell us what you would build. We reply within two days.
-        </p>
-
-        <div className="flex items-center gap-2" style={{ marginBottom: 24 }}>
-          <PixelDot color={statusFor('active', isDark)} size={8} ring={c.lineStrong} />
-          <span style={{ color: c.textMuted, fontSize: 12 }}>Applications open</span>
+      {/* A card is a PixelPanel: flat, hairline, corner marks, its icon in a
+          tile — and it enters as it comes into view. */}
+      <PixelPanel accent={accentFor(0)} tag="01" icon={<IconMail size={ICON_SIZE.feature} color={accentFor(0)} />}
+        eyebrow="Pilot programme" title="Tell us what you would build"
+        aside={<span className="inline-flex items-center gap-2" style={{ fontSize: TYPE.meta.size, color: c.textMuted }}>
+          <PixelDot color={statusFor('active', isDark)} size={7} ring={c.lineStrong} live /> Open
+        </span>}>
+        <div className="grid gap-5">
+          <PixelField label="Email" hint="We never share this." htmlFor="email">
+            <PixelInput id="email" type="email" placeholder="name@institution.na" />
+          </PixelField>
+          <PixelField label="Region" htmlFor="region">
+            <PixelSelect id="region"><option>Khomas</option><option>Oshana</option></PixelSelect>
+          </PixelField>
+          <PixelCheckbox label="Send me lab updates" />
         </div>
-
-        <PixelField label="Email" hint="We never share this." htmlFor="email" isDark={isDark}>
-          <PixelInput id="email" type="email" isDark={isDark} placeholder="name@institution.na" />
-        </PixelField>
-
-        <PixelField label="Region" htmlFor="region" isDark={isDark} className="mt-5">
-          <PixelSelect id="region" isDark={isDark}>
-            <option>Khomas</option>
-            <option>Oshana</option>
-          </PixelSelect>
-        </PixelField>
-
-        <PixelCheckbox className="mt-5" isDark={isDark} label="Send me lab updates" />
-
-        <div className="mt-8 flex gap-3">
-          <PixelButton variant="primary" isDark={isDark}>Send request</PixelButton>
-          <PixelButton variant="ghost" isDark={isDark}>Cancel</PixelButton>
-        </div>
-      </motion.div>
+        <PixelActions><PixelButton variant="ghost">Save draft</PixelButton></PixelActions>
+      </PixelPanel>
     </section>
   );
 }
 
+// DarkProvider: dark mode for every component, reduced motion, and the
+// entrances that play as things come into view.
 export default () => <DarkProvider><RequestAccess /></DarkProvider>;
 ```
 
@@ -165,7 +147,7 @@ Three habits carry almost everything:
 | You need | Use | Not |
 |---|---|---|
 | A page background | `c.canvas` | `COLOR.milletClay` |
-| A card or panel | `c.surface` + `c.line` border | a raw hex |
+| A card or panel | `<PixelPanel>` (`emphasis="quiet"` for working chrome) | a `div` with `c.surface` and a border — `check:tokens` fails it |
 | A recessed well or code block | `c.surfaceWell` | a darker hex |
 | The black card / footer / ticker | `c.inverse`, and pass `isDark` to controls on it | `COLOR.charBlack` |
 | Heading or primary text | `c.text` | `COLOR.charBlack` |
@@ -197,6 +179,12 @@ Three habits carry almost everything:
 | Waiting for data | `<PixelSkeleton>` | a spinner |
 | Segmented navigation | `<PixelTabs>` | styled links |
 | A determinate bar | `<PixelProgress>` | `<progress>` |
+| A product's sidebar or top nav | `<PixelNav>` | styled anchors |
+| A rating — strength, fit, confidence | `<PixelMeter value label>` | a status colour (that means *state*) |
+| A field with its button | `<PixelInputGroup>` | two boxes side by side |
+| Taking files | `<PixelDropZone>` | a dashed box |
+| An icon's size | `ICON_SIZE.inline / control / feature / hero` | 14, 16, 20 — off the pixel grid |
+| A card's pixel art | `<PixelPanel icon tag>` | a 12px glyph beside the title |
 
 ## Make it *fully* Onganda
 
@@ -204,21 +192,20 @@ The rules above are prohibitions. You can satisfy every one of them with a few
 bordered cards and a button, pass all the checks, and ship something that does
 not look like Onganda at all. That is the most common failure.
 
-A finished surface also carries:
+A **product screen** — a tool, a dashboard — also carries: the
+`SectionHeader` rhythm with the screen's one primary in its `actions`; peers as
+`PixelPanel`s with `accentFor(i)`, an ordinal `tag` and an `icon`; pixel icons
+on the grid (`ICON_SIZE`); state through `statusFor` with a label and ratings
+through `PixelMeter`; flat cards; and an empty, loading and error state for
+anything that loads. `skills/onganda-design-system/SKILL.md` has the full
+recipe, and `/test/studio` and `/test/app` show it.
 
-- the `SectionHeader` label-above-headline rhythm on every major section
-- at least one surface with `WeaveOverlay` texture
-- pixel marks — `PixelDot`, `PixelTag`, `PixelCornerMarks`
-- pixel iconography
-- an inverse band (the black-card language), with `isDark` on its controls
-- motion from `MOTION`, actually applied
-- an empty, loading and error state for anything that loads
+An **editorial page** — a public page, a landing page — adds the weave on its
+grounds, an inverse band with `isDark` on its controls, and the showcase's
+motion. In this repo `tests/browser/composition.spec.ts` enforces that on the
+public routes.
 
-`npm run test:browser` includes `composition.spec.ts`, which fails a page that
-has the right colours and none of the above. Copy that file into your own
-project — it is the cheapest way to hold yourself to the same bar.
-
-**Open `/showcase` before you build.** It is the inventory, not a demo: every
+**Open the showcase before you build** (`npx onganda-showcase` from a product). It is the inventory, not a demo: every
 control in every state, every product pattern, plus diagrams, heatmaps, charts,
 icons, maps and authoring surfaces. Take what fits instead of inventing an
 equivalent. If the system genuinely lacks something, build it as a primitive

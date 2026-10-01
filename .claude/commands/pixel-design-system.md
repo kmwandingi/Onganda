@@ -30,7 +30,8 @@ Resolve the repository root from this skill, then read:
 2. `DESIGN_SYSTEM.md` for the visual language and component API. Read §4 Color Roles and §5 Controls before styling anything — they are the enforceable rules, and `npm run check:tokens` fails the build on violations.
 3. `DESIGN_GUIDELINES.md` for implementation and quality rules.
 
-**Open `/showcase` before you write anything.** It is the reference
+**Open the showcase before you write anything** — `/showcase` in this repo;
+from a product, run `npx onganda-showcase` and open `http://127.0.0.1:4174/showcase`. It is the reference
 implementation and the inventory: hero, systems grid, Control Standards (every
 control, every state, both modes), Product Patterns (dialog, table, notice,
 empty, loading, tabs, progress), connection diagram, heatmap, roadmap, chart
@@ -101,8 +102,9 @@ cheap imitation — correct parts, wrong register.
 Open the reference first, and again when your surface is built. Put your
 screenshot beside it and name the difference.
 
-**See it done from the package.** `/test/app`, `/test/dashboard`,
-`/test/form`, `/test/landing` and `/test/article` (`src/test-pages`) are built
+**See it done from the package.** `/test/studio`, `/test/app`, `/test/dashboard`,
+`/test/form`, `/test/landing` and `/test/article` (`src/test-pages`; open them
+with `npx onganda-showcase`) are built
 only from `@onganda/design-system`, as a product would build them.
 `screenshots/test-pages/compare-*.png` lays each one beside the reference
 shots it should resemble. Start from the page closest to what you are building.
@@ -119,8 +121,9 @@ the positive recipe, the same one `reference/product-surface.png` shows:
 | The section / screen | one accent, declared | `<SectionHeader accent={accentFor(n)}>` — rotate by section, so screens differ |
 | **Peer items** — cards, moments, results, ideas in a list | the next accent each | `accentFor(i)` on the spine or corner marks **and** a filled ordinal `<PixelTag hex={accentFor(i)} label="01">` |
 | State | status hue + a label | `statusFor(name, isDark)` on a `PixelDot` |
+| A rating — strength, fit | one hue, filled squares + a label | `PixelMeter` in the card's `aside` — never a status colour |
 | Icons | their own pixel colours | `systemIconForName`, `Icon*` |
-| Active nav / tab | accent ink edge, ochre fill for tabs | built into `PixelTabs`; nav takes `accentInk` on its edge |
+| Active nav / tab | accent ink edge, ochre fill for tabs | built into `PixelNav` and `PixelTabs` |
 | Chrome, metadata tags, inspectors, form fields | none | neutral `PixelTag` (no `hex`), `emphasis="quiet"` |
 
 Colour lands on the WORK, not on the chrome. A list of ideas where every card
@@ -225,7 +228,10 @@ find yourself writing one, the prop you need is probably already there:
 |---|---|
 | A tab strip that scrolls instead of wrapping | `<PixelTabs scrollable />` |
 | Buttons that divide a row evenly | `<PixelActions share />` |
-| A card's identity edge without the foot rule | `<PixelPanel spine rule={false} />` |
+| A card's identity edge | `<PixelPanel spine accent={accentFor(i)} />` — no foot rule unless you pass `rule` |
+| A status, count or small action beside a card's title | `<PixelPanel title aside={…} />` |
+| A rating — strength, fit, confidence | `<PixelMeter value={2} label="Needs trim" />` |
+| A product's own navigation | `<PixelNav label items orientation />` |
 | A card on an already-textured ground | `<PixelPanel texture="none" />` |
 | Controls that fit a narrow surface | `<DensityProvider value="compact">` |
 | Dark controls without threading a prop | `<DarkProvider>` — controls read it |
@@ -235,9 +241,10 @@ row". It is on `/showcase` in Control Standards, comfortable and compact side
 by side. Reach for it before you reach for a smaller font: density changes
 spacing, never type.
 
-If none of these fit, the gap is in the system. Add the prop or the primitive,
-put it on `/showcase`, document it, and re-run `npm run reference` — do not
-work around it in the product.
+If none of these fit, the gap is in the system. From a product, report it —
+name the screen and what it needed — rather than working around it. In the
+Onganda repo, add the prop or the primitive, put it on `/showcase`, document
+it, and re-run `npm run reference`.
 
 ## Changing a surface someone else already built
 
@@ -401,7 +408,7 @@ and a button — that passes every automated check and looks nothing like
 Onganda. That is the most common failure, and it is the one to guard against.
 
 A finished **editorial** surface — a public page, a landing page, the
-showcase — carries all of these, and `tests/browser/composition.spec.ts`
+showcase — carries all of these, and in the Onganda repo `tests/browser/composition.spec.ts`
 fails without them. A **product** surface does not: it takes the rhythm,
 marks, icons, motion, controls and space, and follows "Where colour goes on a
 product screen" above. No ticker, no inverse hero, no textured cards.
@@ -432,15 +439,23 @@ licence to invent generic chrome.
 
 ## Verify the result
 
-Run `npm run check:design` first. It runs two guards: `check:tokens` for lexical drift (generic framework colors, off-palette hex and `rgba()`, `oklch`, system colors used as chrome, raw `STATUS` reads, rounded geometry, off-scale type and texture, shadows, dotted or dashed lines, texture as a state) and `check:contrast` for every measured ratio behind §4. Never widen a guard to make it pass. In a consumer project the same gate runs as `npx onganda-check src/`.
+**In a product:** run `npx onganda-check src/` — the same guards as the
+repo: generic framework colours, off-palette hex and `rgba()`, `oklch`,
+system colours as chrome, raw `STATUS` reads, rounded geometry, off-scale type
+and texture, off-grid icons, shadows, dotted or dashed lines, texture as a
+state, hand-rolled cards. Fix everything it reports; never weaken a rule. Then
+your type check, lint and build, and Playwright screenshots of every screen.
+Compare them with `reference/` and with the test pages in
+`npx onganda-showcase`.
 
-Then run the repository's type check, lint, builds, and package consumer test.
-When you change a primitive, run `npm run test-pages` and open the
-`compare-*.png` sheets: the consumer pages are where a primitive meets a real
-layout, and they are under the same overflow, contrast and console guards as
-the public routes.
-Run `npm run test:browser`, which includes the contrast audit over every
-rendered text node and the composition standard above. For visible changes, inspect desktop and mobile renders with Playwright. Exercise keyboard, pointer, responsive, overflow, loading, and error states. Check browser console errors and update focused visual snapshots when the intended design changes.
+**In the Onganda repo:** `npm run check:design` (the token guard, every
+contrast ratio, the docs, the generated CSS, fonts and agent docs, and the
+test pages in consumer mode), then `npm run test:browser`. When you change a
+primitive, run `npm run test-pages` and open the `compare-*.png` sheets, and
+`npm run reference` if its appearance changed.
+
+Exercise keyboard, pointer, responsive, overflow, loading and error states,
+and check the browser console.
 
 Then look, at 390px and 1280px, in light and dark:
 

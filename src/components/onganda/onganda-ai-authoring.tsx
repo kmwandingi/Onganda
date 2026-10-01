@@ -340,7 +340,7 @@ export const AiAuthoringPanel = ({
       justifyContent: open ? 'space-between' : 'center',
       padding: open ? '0 14px' : 0
     }}>
-      {open ? <><span style={{ display: 'flex', alignItems: 'center', gap: 9 }}><OngandaLogoMark size={18} /><span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase' }}>AI Authoring</span></span><PixelDot color={COLOR.ochreOrange} size={5} /></> : <IconTerminal size={18} color={COLOR.milletClay} />}
+      {open ? <><span style={{ display: 'flex', alignItems: 'center', gap: 9 }}><OngandaLogoMark size={18} /><span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase' }}>AI Authoring</span></span><PixelDot color={COLOR.ochreOrange} size={5} /></> : <IconTerminal size={24} color={COLOR.milletClay} />}
     </button>
     <AnimatePresence initial={false}>
       {open && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{
@@ -351,7 +351,7 @@ export const AiAuthoringPanel = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <PixelTag hex={COLOR.ochreOrange} label={mode === 'document' ? 'Generate Document' : 'Generate Deck'} />
           <button onClick={() => setSettingsOpen(prev => !prev)} style={{ border: 0, background: 'transparent', cursor: 'pointer' }} title="Endpoint settings">
-            <IconSettings size={16} color={muted} />
+            <IconSettings size={12} color={muted} />
           </button>
         </div>
         {settingsOpen && <div style={{ marginTop: 12, padding: 12, background: bg, border: `1px solid ${border}` }}>
@@ -394,7 +394,7 @@ export const AiAuthoringPanel = ({
           <button onClick={() => generate(true)} disabled={busy || !brief.trim()} style={{ padding: 10, border: 0, background: COLOR.ochreOrange, color: COLOR.milletClay, cursor: busy || !brief.trim() ? 'not-allowed' : 'pointer', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{busy ? 'Working' : 'Generate'}</button>
         </div>
         <button onClick={() => generate(false)} disabled={busy || !brief.trim()} style={{ width: '100%', marginTop: 8, padding: 9, border: `1px solid ${border}`, background: 'transparent', color: muted, cursor: busy || !brief.trim() ? 'not-allowed' : 'pointer', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          <IconRefresh size={11} color={muted} /> Offline scaffold
+          <IconRefresh size={12} color={muted} /> Offline scaffold
         </button>
         {result && <div style={{ marginTop: 12, padding: 12, border: `1px solid ${COLOR.ochreOrange}50`, background: bg }}>
           <p style={{ margin: 0, color: fg, fontSize: 14, fontWeight: 700 }}>{result.title}</p>

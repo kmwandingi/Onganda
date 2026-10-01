@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import {
   accentFor, ICON_SIZE, IconFile, IconLink, IconPlay, IconSettings, IconUpload, IconVideo,
-  PixelButton, PixelDot, PixelDropZone, PixelField, PixelInput, PixelInputGroup, PixelPanel,
+  PixelButton, PixelNav, PixelDot, PixelDropZone, PixelField, PixelInput, PixelInputGroup, PixelPanel,
   PixelTextarea, roles, SectionHeader, systemIconForName, TYPE
 } from '@onganda/design-system';
 import { TestFrame } from './shell';
@@ -33,28 +33,7 @@ export const Studio = () => {
             {systemIconForName('Etiti', ICON_SIZE.control)}
             <span style={{ fontSize: TYPE.title.size, fontWeight: TYPE.title.weight }}>Klippr</span>
           </div>
-          <nav aria-label="Studio" className="grid gap-1">
-            {NAV.map(({ label, icon: Icon }, i) => (
-              <a
-                key={label}
-                href="#"
-                aria-current={i === 0 ? 'page' : undefined}
-                data-onganda-press=""
-                className="flex items-center gap-3 no-underline"
-                style={{
-                  padding: '10px 12px',
-                  fontSize: TYPE.meta.size,
-                  fontWeight: i === 0 ? TYPE.ui.weight : TYPE.meta.weight,
-                  color: i === 0 ? c.text : c.textMuted,
-                  background: i === 0 ? c.surface : 'transparent',
-                  borderLeft: `3px solid ${i === 0 ? c.accentInk : 'transparent'}`
-                }}
-              >
-                <Icon size={ICON_SIZE.control} color={i === 0 ? c.accentInk : c.textMuted} />
-                {label}
-              </a>
-            ))}
-          </nav>
+          <PixelNav label="Studio" items={NAV.map((n, i) => ({ label: n.label, icon: n.icon, href: '#', active: i === 0 }))} />
         </aside>
 
         <section className="min-w-0 px-6 py-10 md:px-10">

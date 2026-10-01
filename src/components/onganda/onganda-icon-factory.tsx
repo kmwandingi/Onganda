@@ -53,12 +53,16 @@ export const createPixelIcon = (def: PixelIconDef) => {
     opacity,
     className,
     'aria-label': ariaLabel
-  }: IconProps) => <svg width={size} height={size} viewBox={`0 0 ${def.grid} ${def.grid}`} fill="none" stroke="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden={ariaLabel ? undefined : true} aria-label={ariaLabel} role={ariaLabel ? 'img' : undefined} style={color || opacity !== undefined ? {
+  }: IconProps) => {
+  // Snapped to a whole multiple of the grid, like every Px icon.
+  const px = Math.max(1, Math.round(size / def.grid)) * def.grid;
+  return <svg width={px} height={px} shapeRendering="crispEdges" viewBox={`0 0 ${def.grid} ${def.grid}`} fill="none" stroke="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden={ariaLabel ? undefined : true} aria-label={ariaLabel} role={ariaLabel ? 'img' : undefined} style={color || opacity !== undefined ? {
     color,
     opacity
   } : undefined}>
       {def.rects.map((r, i) => <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill ?? 'currentColor'} fillOpacity={r.opacity} />)}
     </svg>;
+  };
   return PixelIcon;
 };
 

@@ -31,6 +31,6 @@ Two sections govern most day-to-day decisions and are enforced by `npm run check
 
 `npm run check:design` runs two guards: `check:tokens` for lexical drift (it parses the palette from source, so it cannot drift from the tokens it guards) and `check:contrast` for the 68 measured ratios behind §4. Nine Playwright tests cover the runtime half. Neither can tell that a correctly-tokenised colour is on the wrong element — judgement is still required.
 
-The `/showcase` Control Standards section renders every control in every state and carries its own light/dark switch. A control that is not there does not exist yet.
+The `/showcase` Control Standards section (`npx onganda-showcase` from a product) renders every control in every state and carries its own light/dark switch. A control that is not there does not exist yet.
 
 Keep the product's business structure intact. Onganda governs the visual language and interaction quality; the showcase is a reference, not a page template.

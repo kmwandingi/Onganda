@@ -17,7 +17,8 @@
     "url": "https://github.com/kmwandingi/Onganda.git"
   },
   "bin": {
-    "onganda-check": "scripts/onganda-check.mjs"
+    "onganda-check": "scripts/onganda-check.mjs",
+    "onganda-showcase": "scripts/onganda-showcase.mjs"
   },
   "main": "dist/package/index.cjs",
   "module": "dist/package/index.js",
@@ -63,7 +64,8 @@
     "./style": "./dist/package/style.css",
     "./tokens.css": "./dist/package/tokens.css",
     "./tailwind.css": "./dist/package/tailwind.css",
-    "./fonts.css": "./dist/package/fonts.css"
+    "./fonts.css": "./dist/package/fonts.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist/package",
@@ -85,7 +87,9 @@
     "DESIGN_GUIDELINES.md",
     "FOR_DESIGNERS.md",
     "AGENTS.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "dist/showcase",
+    "scripts/onganda-showcase.mjs"
   ],
   "sideEffects": [
     "dist/package/maps.css",
@@ -97,7 +101,7 @@
     "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
     "build:showcase": "vite build",
     "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && cp src/design-system/tailwind.css dist/package/tailwind.css && cp src/design-system/fonts.css dist/package/fonts.css && rm -rf dist/package/fonts && cp -R src/design-system/fonts dist/package/fonts && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
-    "prepare": "node scripts/stamp-version.mjs && npm run build:lib",
+    "prepare": "node scripts/stamp-version.mjs && npm run build:lib && npm run build:showcase",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-design-tokens.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
