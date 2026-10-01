@@ -70,25 +70,10 @@ components:
 
 ### 2. Add to your Tailwind content path only when extending components
 
-The package stylesheet includes the utilities used by its exported components,
-so no Tailwind configuration is needed for them — not even an `@source` line.
-Only if your own components copy utility classes out of the package source do
-you need Tailwind to scan it:
-
-**Tailwind v4** (path relative to the CSS file that contains it):
-```css
-@source "../node_modules/@onganda/design-system/dist/package";
-```
-
-**Tailwind v3** (`tailwind.config.js`):
-```js
-module.exports = {
-  content: [
-    // ... your existing paths
-    './node_modules/@onganda/design-system/dist/package/**/*.{js,cjs}',
-  ],
-};
-```
+The package stylesheet includes every utility its components use, so no
+Tailwind configuration is needed — **do not add an `@source` line for the
+package**. Classes you copy into your own components live in your own source,
+which Tailwind already scans.
 
 ### 3. Wrap your app in the dark-mode provider
 

@@ -18,7 +18,7 @@ import { roles, statusFor, StatusName } from './onganda-tokens';
 import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, useIsDark, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
 import { IconUpload } from './onganda-icons';
-import { TYPE, SPACE_SCALE, TEXTURE, RULE } from './onganda-type';
+import { TYPE, SPACE_SCALE, TEXTURE, RULE, DISPLAY } from './onganda-type';
 
 // ─── PixelNotice — inline callout tied to the four status states ─────────────
 // Usage: <PixelNotice status="caution" title="Pilot closes Friday">body</PixelNotice>
@@ -786,6 +786,7 @@ export const PixelPanel = ({
   aside,
   depth = 'flat',
   tone = 'surface',
+  selected,
   children,
   footer,
   isDark: isDarkProp,
@@ -834,6 +835,10 @@ export const PixelPanel = ({
   /** `tint` washes the card in its own accent (8%) — for one featured card
    *  or a highlighted peer, not for every card. */
   tone?: 'surface' | 'tint';
+  /** the chosen one of a set of peers: a 2px edge in the card's accent and
+   *  `aria-pressed`. Not texture, not a fill — the edge is the state. With
+   *  `onClick` the card is a button: focusable, Enter and Space activate it. */
+  selected?: boolean;
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -865,7 +870,20 @@ export const PixelPanel = ({
       data-onganda-enter=""
       data-onganda-lift={rest.onClick && depth === 'flat' ? '' : undefined}
       data-onganda-depth={depth === 'flat' ? undefined : depth}
+      data-onganda-selected={selected ? '' : undefined}
       {...rest}
+      {...(rest.onClick ? {
+        role: 'button',
+        tabIndex: 0,
+        'aria-pressed': selected === undefined ? undefined : selected,
+        // After the spread, and calling the caller's own handler first, so a
+        // product's onKeyDown adds to this rather than silently replacing it.
+        onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+          rest.onKeyDown?.(e);
+          if (e.defaultPrevented || e.target !== e.currentTarget) return;
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (e.currentTarget as HTMLElement).click(); }
+        }
+      } : {})}
       className={`relative overflow-hidden ${className}`}
       style={{
         // A tint is the accent laid over the surface: text keeps its contrast
@@ -873,7 +891,11 @@ export const PixelPanel = ({
         background: tone === 'tint' && /^#[0-9a-f]{6}$/i.test(hue)
           ? `linear-gradient(${hue}14, ${hue}14), ${c.surface}`
           : c.surface,
-        border: `1px solid ${c.line}`,
+        border: `1px solid ${selected ? hue : c.line}`,
+        // The selected edge is a 1px outline inside the border: the card does
+        // not shift when chosen, and a raised card keeps its plate shadow.
+        outline: selected ? `1px solid ${hue}` : undefined,
+        outlineOffset: selected ? -2 : undefined,
         ...(spine ? { borderLeft: `3px solid ${hue}` } : {})
       }}
     >
@@ -997,6 +1019,7 @@ export const PixelPanel = ({
 export const PixelInversePanel = ({
   tag,
   headline,
+  headlineSize = 'display',
   children,
   accent,
   className = '',
@@ -1004,6 +1027,9 @@ export const PixelInversePanel = ({
 }: {
   tag?: React.ReactNode;
   headline?: React.ReactNode;
+  /** `display` (48px, the site's panel) or `hero` — the fluid hero scale, for
+   *  an inverse band that opens a page. */
+  headlineSize?: 'display' | 'hero';
   children?: React.ReactNode;
   accent?: string;
   className?: string;
@@ -1024,7 +1050,7 @@ export const PixelInversePanel = ({
         {headline && (
           <h2
             style={{
-              fontSize: TYPE.display.size,
+              fontSize: headlineSize === 'hero' ? DISPLAY.hero.css : TYPE.display.size,
               fontWeight: TYPE.display.weight,
               lineHeight: TYPE.display.lineHeight,
               color: roles(false).textOnInverse,

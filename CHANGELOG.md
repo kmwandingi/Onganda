@@ -55,6 +55,44 @@ each item against your screens:
     `DarkProvider` they now measure against the dark card.
 15. Regenerate any visual snapshots.
 
+### Fixed — the third cold-start pass
+
+A fresh agent built a Kino landing page and app screen from the package
+alone. The landing page set its own dials — an inverse hero at hero scale, a
+"cut sheet" of pixel cells as its signature move, a staircase of steps, no
+card grid — and looks like neither test landing page while being plainly the
+same system. Every full-page screenshot, taken without reduced motion, was
+complete. It reported nineteen problems; all are fixed:
+
+- **`PixelButton type`** — a form's main button can submit on Enter.
+- **`PixelPanel selected`** — a 2px accent edge and `aria-pressed`; with
+  `onClick` the panel is a keyboard button (Enter, Space).
+- **`accentFor(i, isDark)`** — on a dark card the hues that clear 3:1 as marks
+  come first (ochre 5.7, gold 8.7, mopane light 3.6); bark rust and dye plum
+  (2.4) come fourth and fifth. `--onganda-accent-*` reorder in dark too.
+- **`PixelTicker items`** and **`PixelFooter`** — the ticker and closing band
+  for a product that is not the Onganda lab.
+- **`PixelInversePanel headlineSize="hero"`** for an inverse band that opens a
+  page.
+- **`FONT.mono`** / `--onganda-font-mono` / `font-mono`; the components that
+  hard-coded `monospace` use it.
+- **`PixelCheckbox`** honours `defaultChecked`; **`PixelToggle`** labels read
+  left when they wrap; **`IconSun` / `IconMoon`** take `size` and `color`;
+  `MOTION`'s stagger is 60ms, as the CSS.
+- **Docs**: peer accents versus system identity and "one accent per section"
+  reconciled; texture claims about cards and `PixelChoice` corrected; the
+  weave range given as `TEXTURE` steps; `ICON_SIZE.display` documented; the
+  two lifts distinguished; the `@source` step removed outright (copied classes
+  live in your own source); `SystemCard`'s props corrected; the
+  `PixelIconButton` heading moved out of `PixelButton`'s section; and a plain
+  note that `onganda-check` reads code, not the screen.
+- **The showcase taught banned patterns** — its Icon Bank said "default
+  16px", showed a raw hex and imported from source paths. All snippets now
+  import from `@onganda/design-system` and size with `ICON_SIZE`.
+- **The test pages broke the rules they demonstrate** — a primary in the top
+  bar, `statusFor(…, false)`, literal icon sizes, a search icon beside its
+  field, a hand-rolled header nav. Fixed; the shared header is a `PixelNav`.
+
 ### Added — creative latitude
 
 Pages built from the system were starting to look alike, and a product

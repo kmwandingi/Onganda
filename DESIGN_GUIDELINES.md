@@ -227,7 +227,7 @@ contains.** `tests/browser/composition.spec.ts` enforces it.
 | Ingredient | What it means | Where it comes from |
 |---|---|---|
 | **Editorial rhythm** | A small uppercase tracked label above a headline, on every major section | `SectionHeader` |
-| **Texture** | At least one surface carrying the basket-weave | `WeaveOverlay` at 0.03–0.08 |
+| **Texture** | At least one ground or inverse panel carrying the basket-weave | `WeaveOverlay` at a `TEXTURE` step (0.026 · 0.035 · 0.055) |
 | **Pixel marks** | Dots, tags, or stepped corner accents — the system's punctuation | `PixelDot`, `PixelTag`, `PixelCornerMarks` |
 | **Pixel iconography** | Icons drawn as `<rect>` on an integer grid | `Icon*`, `systemIconForName`, `createPixelIcon` |
 | **An inverse band** | The black-card language somewhere on the page | `c.inverse`, and `isDark` on its controls |
@@ -281,7 +281,7 @@ always one of these:
 | Every surface decorated, nothing stands out | Every card at feature weight | One or two `feature` surfaces; the rest `emphasis="quiet"` |
 | A tool that looks like a landing page | Editorial devices transplanted: ticker, stat band, edge strips | Keep them on public pages |
 | A wall of warnings | `PixelNotice` used as the page body | State the condition once; notices are for exceptions |
-| Every card the same colour in a list of peers | `accent` never passed | `accentFor(i)` — for peers only |
+| Every card the same colour in a list of peers | `accent` never passed | `accentFor(i, isDark)` — for peers only |
 | Muddy, tiring page | Texture on the ground *and* on every card | `TEXTURE`, and never stack it |
 | A dead control shouts | A disabled fill is still a fill | Disabled takes the disabled roles |
 
@@ -292,13 +292,15 @@ Colour in this system says something: which system, which peer, which state.
 Spent anywhere else it becomes noise that a reader tries and fails to decode.
 
 - **Peers in a list** — cards in a feed, blocks in a section — take successive
-  accents with `accentFor(i)`, the site's own order. That is the one place
+  accents with `accentFor(i, isDark)`, the site's own order. That is the one place
   colour is distributed on purpose.
 - **Metadata** — counts, durations, sizes, file types — is neutral. A
   `PixelTag` without `hex` renders outlined in ink.
 - **State** reads through `statusFor()`, and always with a label.
-- **Identity** comes from `SYSTEM_COLOR`. Never rotate an accent across items a
-  reader could mistake for system membership.
+- **Identity** comes from `SYSTEM_COLOR` on Onganda's own pages, where the
+  five hues *are* the five systems: there, do not rotate them across items a
+  reader could mistake for those systems. In any other product the hues are
+  simply the palette's accents, and peers take `accentFor(i, isDark)`.
 
 An earlier version of this section said only "distribute colour", and a
 product applied it to a row of metadata chips: seven tags, five colours, no

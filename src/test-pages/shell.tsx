@@ -7,7 +7,7 @@
 // beside the reference shot it should resemble.
 
 import React from 'react';
-import { OngandaLogoMark, PixelButton, roles, TYPE, useDark } from '@onganda/design-system';
+import { OngandaLogoMark, PixelButton, roles, TYPE, useDark, ICON_SIZE, PixelNav } from '@onganda/design-system';
 
 export const TEST_PAGES = [
   { path: '/test/app', label: 'App screen' },
@@ -29,28 +29,15 @@ export const TestHeader = ({ current, action }: { current: TestPath; action?: Re
     <header style={{ borderBottom: `1px solid ${c.line}`, background: c.canvas }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 md:px-12">
         <a href="/test" className="flex items-center gap-3 no-underline" style={{ color: c.text }}>
-          <OngandaLogoMark size={24} />
+          <OngandaLogoMark size={ICON_SIZE.control} />
           <span style={{ fontSize: TYPE.ui.size, fontWeight: TYPE.ui.weight }}>Onganda</span>
         </a>
-        <nav aria-label="Test pages" className="hidden items-center gap-6 lg:flex">
-          {TEST_PAGES.map(p => (
-            <a
-              key={p.path}
-              href={p.path}
-              aria-current={p.path === current ? 'page' : undefined}
-              className="no-underline"
-              style={{
-                fontSize: TYPE.meta.size,
-                fontWeight: TYPE.meta.weight,
-                color: p.path === current ? c.text : c.textMuted,
-                borderBottom: `2px solid ${p.path === current ? c.accentInk : 'transparent'}`,
-                paddingBottom: 2
-              }}
-            >
-              {p.label}
-            </a>
-          ))}
-        </nav>
+        <PixelNav
+          label="Test pages"
+          orientation="horizontal"
+          className="hidden lg:block"
+          items={TEST_PAGES.map(p => ({ label: p.label, href: p.path, active: p.path === current }))}
+        />
         {action ?? <PixelButton variant="ghost" href="/showcase">Showcase</PixelButton>}
       </div>
     </header>

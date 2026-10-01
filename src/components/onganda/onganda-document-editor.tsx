@@ -4,6 +4,7 @@
 // configurable, deletable. "New Document" = blank canvas, templates pre-filled.
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { FONT } from './onganda-type';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, statusFor, onColor, inkOn, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
@@ -920,7 +921,7 @@ const TerminalBlock = ({
       </div>
       <div style={{
       padding: '16px 20px',
-      fontFamily: 'monospace',
+      fontFamily: FONT.mono,
       fontSize: 11,
       lineHeight: 1.7
     }}>
@@ -2094,7 +2095,7 @@ const SwatchRowBlock = ({
           outline: 'none',
           padding: '4px 6px',
           color: isDark ? COLOR.milletClay : COLOR.charBlack,
-          fontFamily: 'monospace'
+          fontFamily: FONT.mono
         }} placeholder="#hex" />
             <input value={sw.name} onChange={e => {
           const next = swatches.map((s, si) => si === i ? {

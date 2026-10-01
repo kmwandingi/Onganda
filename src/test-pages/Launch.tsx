@@ -6,12 +6,12 @@
 // lift on the call to action; the weave on the closing ground. Put the two
 // side by side: one system, two pages that do not look alike.
 
+import { useState } from 'react';
 import {
   accentFor, DISPLAY, ICON_SIZE, IconArrowRight, PixelButton, PixelInversePanel, PixelPanel,
   PixelTag, roles, SectionHeader, systemIconForName, TEXTURE, TYPE, WeaveOverlay, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
-const LEAD = accentFor(2); // mahangu gold leads this page
 
 const PEERS = [
   { system: 'Oshini', title: 'Adapt', body: 'Fine-tune and distil open models on Oshiwambo, Otjiherero and Khoekhoegowab.' },
@@ -22,6 +22,8 @@ const PEERS = [
 export const Launch = () => {
   const { isDark } = useDark();
   const c = roles(isDark);
+  const LEAD = accentFor(2, isDark); // mahangu gold leads this page
+  const [chosen, setChosen] = useState(0);
   return (
     <TestFrame current="/test/launch" action={<PixelButton lift>Join the pilot <IconArrowRight size={ICON_SIZE.inline} /></PixelButton>}>
       {/* Split hero: the statement on the left, the granary at display size on
@@ -68,8 +70,9 @@ export const Launch = () => {
           </PixelPanel>
           <div className="grid content-start gap-4">
             {PEERS.map((p, i) => (
-              <PixelPanel key={p.title} accent={accentFor(i + 3)} spine depth="lift" tag={String(i + 1).padStart(2, '0')}
-                eyebrow={p.system} title={p.title} note={p.body} />
+              <PixelPanel key={p.title} accent={accentFor(i + 3, isDark)} spine depth="lift" tag={String(i + 1).padStart(2, '0')}
+                eyebrow={p.system} title={p.title} note={p.body}
+                selected={chosen === i} onClick={() => setChosen(i)} data-testid="launch-peer" />
             ))}
           </div>
         </div>

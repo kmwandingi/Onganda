@@ -142,6 +142,7 @@
   --onganda-type-display-tracking: 0em;
   --onganda-font-body: 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif;
   --onganda-font-heading: 'Space Grotesk', 'Space Grotesk Variable', 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif;
+  --onganda-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* ── Space: the 4px grid ────────────────────────────────────── */
   --onganda-space-0: 0px;
@@ -252,4 +253,10 @@
   --onganda-status-caution: #DFAE2B;
   --onganda-status-critical: #C84A1B;
   --onganda-status-settled: #8F6840;
+  /* The accents reorder on dark: the hues that read as marks come first. */
+  --onganda-accent-1: #D9791F;
+  --onganda-accent-2: #DFAE2B;
+  --onganda-accent-3: #8F6840;
+  --onganda-accent-4: #8F3E21;
+  --onganda-accent-5: #6F4A6E;
 }

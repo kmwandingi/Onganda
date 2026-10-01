@@ -51,6 +51,7 @@ createServer(async (req, res) => {
     ['/test/dashboard', 'stat band, charts, status table'],
     ['/test/form', 'every control in every state'],
     ['/test/landing', 'an editorial page'],
+    ['/test/launch', 'a second landing page, the dials set differently'],
     ['/', 'the public site']
   ]) console.log(`  ${base}${route}`.padEnd(46) + what);
 });

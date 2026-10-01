@@ -22,10 +22,10 @@ const SNIPPET_SYSTEM_ARCH: CodeSnippetLine[] = [{
   text: '// System Architecture — render a SystemCard'
 }, {
   type: 'import',
-  text: "import { SystemCard } from './onganda-primitives';"
+  text: "import { SystemCard } from '@onganda/design-system';"
 }, {
   type: 'import',
-  text: "import { SYSTEMS } from './onganda-tokens';"
+  text: "import { SYSTEMS } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -65,10 +65,10 @@ const SNIPPET_DEVELOPER_SURFACE: CodeSnippetLine[] = [{
   text: '// Developer Surface — render a TerminalCard'
 }, {
   type: 'import',
-  text: "import { TerminalCard } from './onganda-primitives';"
+  text: "import { TerminalCard } from '@onganda/design-system';"
 }, {
   type: 'import',
-  text: "import { TERMINAL_BLOCKS } from './onganda-tokens';"
+  text: "import { TERMINAL_BLOCKS } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -114,7 +114,7 @@ const SNIPPET_SYSTEM_CONNECTIONS: CodeSnippetLine[] = [{
   text: '// System Connections — render a connection map'
 }, {
   type: 'import',
-  text: "import { DIAGRAM_NODES, CONNECTION_EDGES } from './onganda-tokens';"
+  text: "import { DIAGRAM_NODES, CONNECTION_EDGES } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -157,10 +157,10 @@ const SNIPPET_MATERIAL_PALETTE: CodeSnippetLine[] = [{
   text: '// Material Palette — render SwatchChips'
 }, {
   type: 'import',
-  text: "import { SwatchChip } from './onganda-primitives';"
+  text: "import { SwatchChip } from '@onganda/design-system';"
 }, {
   type: 'import',
-  text: "import { SWATCHES } from './onganda-tokens';"
+  text: "import { SWATCHES } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -199,7 +199,7 @@ const SNIPPET_MATERIAL_PALETTE: CodeSnippetLine[] = [{
   text: '// COLOR token reference'
 }, {
   type: 'import',
-  text: "import { COLOR } from './onganda-tokens';"
+  text: "import { COLOR } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: "// COLOR.ochreOrange → '#D9791F'"
@@ -215,7 +215,7 @@ const SNIPPET_RESEARCH_SIGNALS: CodeSnippetLine[] = [{
   text: '// Research Signals — heatmap grid'
 }, {
   type: 'import',
-  text: "import { HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from './onganda-tokens';"
+  text: "import { HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -270,7 +270,7 @@ const SNIPPET_ROADMAP: CodeSnippetLine[] = [{
   text: '// Development Roadmap — timeline phase'
 }, {
   type: 'import',
-  text: "import { TIMELINE_PHASES } from './onganda-tokens';"
+  text: "import { TIMELINE_PHASES } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -319,10 +319,10 @@ const SNIPPET_BRAND_PRINCIPLES: CodeSnippetLine[] = [{
   text: '// Brand Principles — render PrincipleRow'
 }, {
   type: 'import',
-  text: "import { PrincipleRow } from './onganda-primitives';"
+  text: "import { PrincipleRow } from '@onganda/design-system';"
 }, {
   type: 'import',
-  text: "import { PRINCIPLES } from './onganda-tokens';"
+  text: "import { PRINCIPLES } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -362,7 +362,7 @@ const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
   text: '// Icon Bank — import and use pixel icons'
 }, {
   type: 'import',
-  text: "import { IconSearch, IconUser, IconCheck } from './onganda-icons';"
+  text: "import { IconSearch, ICON_SIZE, roles } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -374,10 +374,10 @@ const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
   text: '<IconSearch'
 }, {
   type: 'prop',
-  text: '  size={12}'
+  text: '  size={ICON_SIZE.control}   // 12 · 24 · 36 · 48 · 96 — on the grid'
 }, {
   type: 'prop',
-  text: "  color='#D9791F'"
+  text: '  color={roles(isDark).accentInk}'
 }, {
   type: 'tag',
   text: '/>'
@@ -398,17 +398,17 @@ const SNIPPET_ICON_BANK: CodeSnippetLine[] = [{
   text: '// Browse all icons (click any to copy import)'
 }, {
   type: 'import',
-  text: "import { ICON_REGISTRY, ICON_CATEGORIES } from './onganda-icons';"
+  text: "import { ICON_REGISTRY, ICON_CATEGORIES } from '@onganda/design-system';"
 }];
 const SNIPPET_FIELD_APPS: CodeSnippetLine[] = [{
   type: 'comment',
   text: '// Field Applications — render FieldAppCard'
 }, {
   type: 'import',
-  text: "import { FieldAppCard } from './onganda-primitives';"
+  text: "import { FieldAppCard } from '@onganda/design-system';"
 }, {
   type: 'import',
-  text: "import { SECTOR_APPS } from './onganda-tokens';"
+  text: "import { SECTOR_APPS } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -454,10 +454,10 @@ const SNIPPET_BRAND_GUIDE: CodeSnippetLine[] = [{
   text: '// Brand Guide — FlowNodeCard naming hierarchy'
 }, {
   type: 'import',
-  text: "import { FlowNodeCard, FlowNodeIcon } from './onganda-primitives';"
+  text: "import { FlowNodeCard, FlowNodeIcon } from '@onganda/design-system';"
 }, {
   type: 'import',
-  text: "import { FLOW_NODES } from './onganda-tokens';"
+  text: "import { FLOW_NODES } from '@onganda/design-system';"
 }, {
   type: 'plain',
   text: ''
@@ -1944,7 +1944,7 @@ export const IconShowcase = () => {
     value: 'currentColor by default — override with color prop. Depth via fillOpacity layers'
   }, {
     label: 'Scale',
-    value: 'Uniform size prop (default 16px) — crisp at any integer multiple'
+    value: 'Uniform size prop, snapped to the 12-cell grid — use ICON_SIZE (12 · 24 · 36 · 48 · 96)'
   }, {
     label: 'Usage',
     value: 'import { IconName } from "./onganda-icons"; size, color, opacity props'

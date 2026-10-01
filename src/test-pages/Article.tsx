@@ -77,7 +77,7 @@ export const Article = () => {
               <ol className="grid gap-3" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {['The problem', 'What we measured', 'What it does not do'].map((s, i) => (
                   <li key={s} className="flex items-center gap-3" style={{ fontSize: TYPE.meta.size, color: c.textBody }}>
-                    <PixelDot color={accentFor(i)} size={6} />{s}
+                    <PixelDot color={accentFor(i, isDark)} size={6} />{s}
                   </li>
                 ))}
               </ol>

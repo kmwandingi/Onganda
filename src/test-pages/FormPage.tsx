@@ -18,6 +18,7 @@ export const FormPage = () => {
   const [size, setSize] = useState('pilot');
   const [updates, setUpdates] = useState(true);
   const [publish, setPublish] = useState(false);
+  const [sent, setSent] = useState(false);
 
   return (
     <TestFrame current="/test/form">
@@ -25,7 +26,7 @@ export const FormPage = () => {
         <SectionHeader level={1} label="Pilot access" headline="Tell us what you want to run." />
 
         <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-          <form className="grid gap-4" onSubmit={e => e.preventDefault()}>
+          <form className="grid gap-4" onSubmit={e => { e.preventDefault(); setSent(true); }}>
             <PixelPanel eyebrow="Step 1" title="Your organisation">
               <div className="grid gap-4 md:grid-cols-2">
                 <PixelField label="Organisation" htmlFor="org">
@@ -69,12 +70,12 @@ export const FormPage = () => {
             <PixelPanel emphasis="quiet" eyebrow="Step 3" title="Preferences">
               <div className="grid gap-3">
                 <PixelCheckbox label="Send me lab updates" checked={updates} onChange={e => setUpdates(e.target.checked)} />
-                <PixelCheckbox label="I have consent to share the sample data" />
+                <PixelCheckbox label="I have consent to share the sample data" defaultChecked />
                 <PixelToggle label="List this pilot on the public site" checked={publish} onChange={setPublish} />
               </div>
               <PixelActions align="between">
                 <PixelButton variant="ghost">Save draft</PixelButton>
-                <PixelButton>Submit request</PixelButton>
+                <PixelButton type="submit">Submit request</PixelButton>
               </PixelActions>
             </PixelPanel>
           </form>
@@ -89,6 +90,7 @@ export const FormPage = () => {
                 A reviewer reads every request within five working days.
               </p>
             </PixelPanel>
+            {sent && <PixelNotice status="settled" title="Request sent" data-testid="form-sent">A reviewer will reply within five working days.</PixelNotice>}
             <PixelNotice status="caution" title="One field needs attention">
               The work email must be at your organisation's domain.
             </PixelNotice>

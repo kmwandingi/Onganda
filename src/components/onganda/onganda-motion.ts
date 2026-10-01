@@ -70,7 +70,7 @@ export const MOTION = {
   },
   // Parent/child list stagger
   staggerParent: {
-    variants: { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } },
+    variants: { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } },
     initial: 'hidden',
     animate: 'visible'
   },

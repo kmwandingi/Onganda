@@ -6,7 +6,7 @@
 import {
   OngandaFooter, PixelButton, PixelContactPanel, PixelEditorialSection, PixelField, PixelFocusRow,
   PixelInput, PixelLabCard, PixelTextarea, PixelTicker, SectionHeader, SystemCard, SYSTEMS,
-  TEXTURE, TYPE, DISPLAY, WeaveOverlay, accentFor, roles, systemIconForName, IconMail, useDark } from '@onganda/design-system';
+  TEXTURE, TYPE, DISPLAY, WeaveOverlay, accentFor, roles, systemIconForName, IconMail, useDark, ICON_SIZE } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
 const FOCUS = [
@@ -44,7 +44,7 @@ export const Landing = () => {
         <SectionHeader label="System architecture" headline="Five tools. One workshop." />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {SYSTEMS.map((sys, i) => <SystemCard key={sys.name} sys={sys} idx={i} />)}
-          <PixelLabCard tag="Lab" title="The Institute" accent={accentFor(0)} footer={<PixelButton variant="accent" isDark>Read the manifesto</PixelButton>}>
+          <PixelLabCard tag="Lab" title="The Institute" accent={accentFor(0, isDark)} footer={<PixelButton variant="accent" isDark>Read the manifesto</PixelButton>}>
             Applied research, piloting and technology transfer.
           </PixelLabCard>
         </div>
@@ -54,7 +54,7 @@ export const Landing = () => {
         <SectionHeader label="Why Onganda" headline="Three things, in order." />
         <div className="grid gap-3">
           {FOCUS.map((f, i) => (
-            <PixelFocusRow key={f.title} index={i} accent={accentFor(i)} title={f.title} icon={systemIconForName(SYSTEMS[i].name, 24)}>
+            <PixelFocusRow key={f.title} index={i} accent={accentFor(i, isDark)} title={f.title} icon={systemIconForName(SYSTEMS[i].name, 24)}>
               {f.body}
             </PixelFocusRow>
           ))}
@@ -66,7 +66,7 @@ export const Landing = () => {
         languages people speak here and the problems they already have, and builds outward from there.
       </PixelEditorialSection>
 
-      <PixelContactPanel id="contact" eyebrow="Contact" headline="Start a conversation." icon={<IconMail size={24} color={c.accentInk} />}
+      <PixelContactPanel id="contact" eyebrow="Contact" headline="Start a conversation." icon={<IconMail size={ICON_SIZE.control} color={c.accentInk} />}
           aside={<p style={{ fontSize: TYPE.body.size, lineHeight: TYPE.body.lineHeight, color: c.textBody }}>For pilots, partnerships and research access.</p>}>
           <div className="grid gap-4">
             <PixelField label="Email" htmlFor="c-email"><PixelInput id="c-email" placeholder="name@institution.na" /></PixelField>

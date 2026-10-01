@@ -89,3 +89,30 @@ test('no page in the kit casts a blurred shadow', async ({ page }) => {
     expect(blurred, route).toBe(0);
   }
 });
+
+// Found by the third cold-start pass.
+test('a PixelButton type="submit" submits its form on Enter', async ({ page }) => {
+  await page.goto('/test/form');
+  await page.locator('#org').press('Enter');
+  await expect(page.getByTestId('form-sent')).toBeVisible();
+});
+
+test('an uncontrolled PixelCheckbox honours defaultChecked', async ({ page }) => {
+  await page.goto('/test/form');
+  const box = page.getByRole('checkbox', { name: 'I have consent to share the sample data' });
+  await expect(box).toBeChecked();
+  await box.click({ force: true });
+  await expect(box).not.toBeChecked();
+});
+
+test('a selectable PixelPanel is a keyboard button with a pressed state', async ({ page }) => {
+  await page.goto('/test/launch');
+  const peers = page.getByTestId('launch-peer');
+  await expect(peers.nth(0)).toHaveAttribute('aria-pressed', 'true');
+  await peers.nth(1).focus();
+  await page.keyboard.press('Enter');
+  await expect(peers.nth(1)).toHaveAttribute('aria-pressed', 'true');
+  await expect(peers.nth(0)).toHaveAttribute('aria-pressed', 'false');
+  const outline = await peers.nth(1).evaluate(el => getComputedStyle(el).outlineStyle);
+  expect(outline).toBe('solid');
+});

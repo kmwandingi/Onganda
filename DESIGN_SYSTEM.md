@@ -111,36 +111,13 @@ This adds the Onganda CSS custom properties to `:root`:
 ... (full palette, see §3)
 ```
 
-### Step 2 — Usually none: Tailwind needs no setup for the package
+### Step 2 — None: Tailwind needs no setup for the package
 
-The package stylesheet includes the utility classes used by exported
-components. Consumers need no Tailwind configuration for those components.
-Add the library bundle to your content scan only when consumer code extends
-the packaged components with the same utility classes.
-
-You almost certainly do not need this step — `style.css` already carries the
-utilities, and `tests/consumer-render.mjs` proves the components render with
-Tailwind absent or misconfigured. Only when your own code copies classes out
-of the package source:
-
-**Tailwind v4** (in your CSS file):
-```css
-@source "../node_modules/@onganda/design-system/dist/package";
-```
-
-The path is relative to the CSS file that contains it (`src/index.css` → `../node_modules`). Tailwind does not resolve this by package name, and a wrong level
-fails silently — you get correct markup with no utility classes. Verify by
-rendering, not by reading.
-
-**Tailwind v3** (`tailwind.config.js`):
-```js
-module.exports = {
-  content: [
-    './src/**/*.{ts,tsx}',
-    './node_modules/@onganda/design-system/dist/package/**/*.{js,cjs}',
-  ],
-};
-```
+`style.css` carries every utility class the components use, and
+`tests/consumer-render.mjs` proves they render the same with Tailwind
+configured, misconfigured or absent. **Do not add an `@source` line for the
+package.** Classes you copy into your own components live in your own source,
+which Tailwind already scans.
 
 ### Step 3 — Wrap your app in DarkProvider
 
@@ -430,14 +407,6 @@ import { PixelButton } from '@onganda/design-system';
 <PixelButton variant="primary" disabled>Saving…</PixelButton>
 ```
 
-### PixelIconButton
-
-Use `PixelIconButton` for a familiar icon action inside a compact toolbar or row. It is borderless at rest and always requires a concise accessible `label`.
-
-```tsx
-<PixelIconButton label="Move up"><IconChevronUp size={12} /></PixelIconButton>
-```
-
 | Variant | Light | Dark | When |
 |---|---|---|---|
 | `primary` | Ochre, bark rust edge → mopane brown | Ochre → mahangu gold | The one main action in a view |
@@ -467,13 +436,21 @@ On hover, light mode deepens: ochre to mopane, gold to its complement dye
 plum, bark rust to char black. Dark mode lifts toward the light: ochre to gold,
 gold and bark rust to millet clay. Every hover label is measured.
 
-Props: `variant`, `isDark`, `disabled`, `onClick`, `href`, `className`.
+Props: `variant`, `isDark`, `disabled`, `onClick`, `href`, `type` (`submit` for a form's main button, so Enter submits), `lift` (the stepped pixel lift on hover — one or two per page), `className`.
 Passing `href` renders an `<a>` with identical styling. Every button carries the
 `MOTION.tap` compression and an `accentInk` focus ring; none scales on hover.
 
 Rules: one primary per view. `accent` never substitutes for `primary` on a plain
 page. `danger` is the only destructive treatment and never appears twice in one
 dialog.
+
+### PixelIconButton
+
+Use `PixelIconButton` for a familiar icon action inside a compact toolbar or row. It is borderless at rest and always requires a concise accessible `label`.
+
+```tsx
+<PixelIconButton label="Move up"><IconChevronUp size={12} /></PixelIconButton>
+```
 
 
 ### Density — the surface decides, not the control
@@ -692,8 +669,9 @@ everything else.
 </PixelChoiceList>
 ```
 
-A selectable option in the system's language: stepped square mark, weave on the
-selected row, accent-ink edge, density-aware height. Pass `state="correct"` or
+A selectable option in the system's language: stepped square mark, a faint
+`controlOn` wash and an accent-ink edge on the selected row (never texture),
+density-aware height. Pass `state="correct"` or
 `"incorrect"` after grading and the edge takes the settled or critical status
 colour. `PixelChoiceList` is the `radiogroup` wrapper.
 
@@ -733,7 +711,7 @@ designed surface, not a blank panel. No texture: that belongs to grounds.
 The framed icon that opens the site's system cards, as a primitive: a faint
 edge and wash in the card's accent. `PixelPanel` renders one when given
 `icon`. `ICON_SIZE` is the on-grid scale — `inline` 12, `control` 24,
-`feature` 36, `hero` 48. Every pixel icon snaps its `size` to a whole multiple
+`feature` 36, `hero` 48, `display` 96. Every pixel icon snaps its `size` to a whole multiple
 of its grid and renders `crispEdges`; at the old 16px default each 12-cell
 icon drew 1.33px cells and smeared.
 
@@ -800,6 +778,28 @@ identity, so "Strong" reads the same on every peer whatever its accent.
 `<PixelPanel title="The reveal" aside={<PixelMeter value={2} label="Needs trim" />}>`
 puts a status, a count or a small action on the title's line, right-aligned,
 while the title stays the card's `<h2>`.
+
+### PixelFooter and PixelTicker `items`
+
+```tsx
+<PixelTicker items={[{ label: 'The climb', gloss: 'story', hex: accentFor(0) }, …]} />
+<PixelFooter mark={<KinoMark size={ICON_SIZE.control} />} name="Kino"
+  line="For people with more footage than evenings."
+  columns={[{ title: 'Product', links: [{ label: 'How it works', href: '#how' }] }]}
+  fine="© 2026 Kino" />
+```
+
+`OngandaFooter` and the default ticker belong to the lab's own pages: its
+links, its five systems. `items` lets the ticker run any product's own
+entries; `PixelFooter` is the same inverse closing band with a product's own
+mark, line, link columns and fine print.
+
+### PixelPanel `selected`
+
+`<PixelPanel selected={chosen === i} onClick={() => choose(i)}>` marks the
+chosen peer with a 2px edge in its accent and `aria-pressed`. With `onClick`
+the panel is a button: focusable, Enter and Space activate it. A selected
+state is an edge, never a fill and never texture.
 
 ### PixelDropZone
 
@@ -913,8 +913,8 @@ checked it.
 ### A section is built from the page's cards, not its own
 
 Every block on `/showcase` is a `PixelPanel`. Not a `<div>` styled to look
-like one — the component itself, so the block inherits the weave, the four
-accent corner marks, the 12px eyebrow and the density-aware padding without
+like one — the component itself, so the block inherits the four accent
+corner marks, the 12px eyebrow and the density-aware padding without
 re-deriving any of it.
 
 This is the rule that had been broken most quietly. Control Standards and
@@ -939,9 +939,11 @@ got both wrong:
 
 ### Where a section's colour comes from
 
-A section picks **one accent** and spends it on the dot in its
-`SectionHeader`, on the column beside its prose, and on the marks of the
-cards inside it. Nowhere else. That is why the public site reads as deliberate
+A section picks **one accent** for its own marks — the dot in its
+`SectionHeader`, the column beside its prose, the corners of its one feature
+card. Peers inside it (a list of cards that do the same job) are the
+exception: each takes the next `accentFor(i, isDark)`, because their accents say
+"these are different items", not "this is the section's colour". That is why the public site reads as deliberate
 rather than colourful: `Systems` is gold, `Focus` is plum, `People` is brown,
 `Why` is ochre, `Studio` is bark rust. The showcase passed no accent at all,
 so every section defaulted to bark rust; each one now declares its own.
@@ -1153,10 +1155,11 @@ rules. Do not style a button or a field from this section.
 ```tsx
 import { SystemCard, SYSTEMS } from '@onganda/design-system';
 
-<SystemCard system={SYSTEMS[0]} isDark={false} />
+<SystemCard sys={SYSTEMS[0]} idx={0} />
 ```
 
-Props: `system: SystemEntry`, `isDark` (default `false`).
+Props: `sys: SystemEntry`, `idx` (its position, which picks the ordinal tag).
+It reads dark mode from `DarkProvider`.
 
 ---
 
@@ -1806,11 +1809,13 @@ initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
 transition={{ duration: 0.5 }}
 
 // Staggered list
-variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+variants={{ visible: { transition: { staggerChildren: 0.06 } } }}   // 60ms, as the CSS stagger
 // child: { hidden: { opacity:0, y:12 }, visible: { opacity:1, y:0, transition:{duration:0.35} } }
 
-// Card hover — subtle lift only
-whileHover={{ y: -2 }} transition={{ type: 'tween', duration: 0.15 }}
+// Card hover — MOTION.hoverLift: 4px up, tween, never a scale
+whileHover={{ y: -4 }} transition={{ type: 'tween', duration: 0.15 }}
+// The stepped lift (depth="lift", PixelButton lift) is a different move:
+// 2px up-left onto a hard 4px pixel shadow, in whole-pixel steps.
 
 // Button tap
 whileTap={{ scale: 0.97 }}

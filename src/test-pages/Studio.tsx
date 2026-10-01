@@ -41,7 +41,7 @@ export const Studio = () => {
             level={1}
             label="Create"
             headline="Drop media. Get the moments."
-            accent={accentFor(0)}
+            accent={accentFor(0, isDark)}
             actions={<PixelButton disabled={!files.length}>Find the moments <IconPlay size={ICON_SIZE.inline} /></PixelButton>}
           />
 
@@ -55,7 +55,7 @@ export const Studio = () => {
                 left, the link and transcript on the right. A short card next
                 to a tall stack leaves a hole. */}
             <div className="grid content-start gap-4">
-              <PixelPanel accent={accentFor(0)} tag="01" eyebrow="Upload" title="A video or audio file">
+              <PixelPanel accent={accentFor(0, isDark)} tag="01" eyebrow="Upload" title="A video or audio file">
                 <PixelDropZone
                   title={files.length ? `${files.length} file ready` : 'Drop a file here'}
                   hint="mp4 · mov · webm · mp3 · wav — up to 200 MB"
@@ -71,14 +71,14 @@ export const Studio = () => {
                   <PixelInput id="st-dir" placeholder="the awkward reactions" />
                 </PixelField>
                 <span className="inline-flex items-center gap-2" style={{ fontSize: TYPE.meta.size, color: c.textMuted, paddingBottom: 12 }}>
-                  <PixelDot color={accentFor(0)} size={7} live /> Transcriber ready
+                  <PixelDot color={accentFor(0, isDark)} size={7} live /> Transcriber ready
                 </span>
               </div>
             </PixelPanel>
             </div>
 
             <div className="grid content-start gap-4">
-              <PixelPanel accent={accentFor(1)} tag="02" icon={<IconLink size={ICON_SIZE.feature} color={accentFor(1)} />}
+              <PixelPanel accent={accentFor(1, isDark)} tag="02" icon={<IconLink size={ICON_SIZE.feature} color={accentFor(1, isDark)} />}
                 eyebrow="Link" title="YouTube, TikTok or a file URL">
                 <PixelField label="URL" htmlFor="st-link" hint="A public video, or a URL ending in .mp4 or .mp3.">
                   <PixelInputGroup>
@@ -88,7 +88,7 @@ export const Studio = () => {
                 </PixelField>
               </PixelPanel>
 
-              <PixelPanel accent={accentFor(2)} tag="03" icon={<IconFile size={ICON_SIZE.feature} color={accentFor(2)} />}
+              <PixelPanel accent={accentFor(2, isDark)} tag="03" icon={<IconFile size={ICON_SIZE.feature} color={accentFor(2, isDark)} />}
                 eyebrow="Transcript" title="Paste the words">
                 <PixelField label="Text, with timestamps" htmlFor="st-tx" hint="One line per beat. Moments are found in the words.">
                   <PixelTextarea id="st-tx" rows={3} placeholder={'00:00 opening line…\n00:12 the good part…'} />

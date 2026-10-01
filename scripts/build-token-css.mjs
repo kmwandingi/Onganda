@@ -33,7 +33,7 @@ const entry = path.join(tmp, 'entry.mjs');
 const outfile = path.join(tmp, 'tokens.mjs');
 
 writeFileSync(entry, `
-export { roles, ACCENT_CYCLE, statusFor, SYSTEM_COLOR } from ${JSON.stringify(path.join(src, 'onganda-roles.ts'))};
+export { roles, ACCENT_CYCLE, ACCENT_CYCLE_DARK, statusFor, SYSTEM_COLOR } from ${JSON.stringify(path.join(src, 'onganda-roles.ts'))};
 export { TYPE, SPACE_SCALE, TEXTURE, RULE, GEOMETRY, FONT } from ${JSON.stringify(path.join(src, 'onganda-type.ts'))};
 export { MOTION_TOKENS } from ${JSON.stringify(path.join(src, 'onganda-motion.ts'))};
 `);
@@ -92,6 +92,7 @@ ${t.ACCENT_CYCLE.map((c, i) => `  --onganda-accent-${i + 1}: ${c};`).join('\n')}
 ${typeBlock}
   --onganda-font-body: ${t.FONT.family};
   --onganda-font-heading: ${t.FONT.display};
+  --onganda-font-mono: ${t.FONT.mono};
 
   /* ── Space: the 4px grid ────────────────────────────────────── */
 ${Object.entries(t.SPACE_SCALE).map(([k, v]) => `  --onganda-space-${k}: ${px(v)};`).join('\n')}
@@ -118,6 +119,8 @@ ${Object.entries(t.MOTION_TOKENS).map(([k, v]) => `  --onganda-motion-${kebab(k)
 .dark {
 ${roleBlock(dark)}
 ${status(true)}
+  /* The accents reorder on dark: the hues that read as marks come first. */
+${t.ACCENT_CYCLE_DARK.map((c, i) => `  --onganda-accent-${i + 1}: ${c};`).join('\n')}
 }
 `;
 
@@ -147,6 +150,7 @@ ${t.ACCENT_CYCLE.map((_, i) => `  --color-accent-${i + 1}: var(--onganda-accent-
 
   --font-sans: var(--onganda-font-body);
   --font-heading: var(--onganda-font-heading);
+  --font-mono: var(--onganda-font-mono);
 
 ${Object.entries(t.TYPE).map(([step, v]) => `  --text-${kebab(step)}: ${v.size}px;\n  --text-${kebab(step)}--line-height: ${v.lineHeight};\n  --text-${kebab(step)}--letter-spacing: ${v.tracking};\n  --text-${kebab(step)}--font-weight: ${v.weight};`).join('\n')}
 

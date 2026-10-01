@@ -446,5 +446,21 @@ export const ACCENT_CYCLE = [
   COLOR.dyePlum
 ] as const;
 
-export const accentFor = (index: number): string =>
-  ACCENT_CYCLE[((index % ACCENT_CYCLE.length) + ACCENT_CYCLE.length) % ACCENT_CYCLE.length];
+/** On a dark card the cycle reorders so the first three peers get hues that
+ *  clear 3:1 as marks — ochre 5.7, gold 8.7, mopane light 3.6 — and the two
+ *  that do not (bark rust 2.4, dye plum 2.4) come fourth and fifth, where the
+ *  ordinal tag beside them carries the identity. Measured, not guessed. */
+export const ACCENT_CYCLE_DARK = [
+  COLOR.ochreOrange,
+  COLOR.mahanguGold,
+  COLOR.mopaneBrownLight,
+  COLOR.barkRust,
+  COLOR.dyePlum
+] as const;
+
+/** The accent for the i-th peer in a list. Pass the mode: on a dark card the
+ *  cycle puts the hues that read first (see ACCENT_CYCLE_DARK). */
+export const accentFor = (index: number, isDark = false): string => {
+  const cycle = isDark ? ACCENT_CYCLE_DARK : ACCENT_CYCLE;
+  return cycle[((index % cycle.length) + cycle.length) % cycle.length];
+};

@@ -54,7 +54,7 @@ export const Dashboard = () => {
     {
       key: 'state', header: 'State', render: r => (
         <span className="inline-flex items-center gap-2">
-          <PixelDot color={statusFor(r.status, false)} size={7} ring={c.lineStrong} />
+          <PixelDot color={statusFor(r.status, isDark)} size={7} ring={c.lineStrong} />
           {r.state}
         </span>
       )

@@ -103,7 +103,7 @@ Open the reference first, and again when your surface is built. Put your
 screenshot beside it and name the difference.
 
 **See it done from the package.** `/test/studio`, `/test/app`, `/test/dashboard`,
-`/test/form`, `/test/landing` and `/test/article` (`src/test-pages`; open them
+`/test/form`, `/test/landing`, `/test/launch` and `/test/article` (`src/test-pages`; open them
 with `npx onganda-showcase`) are built
 only from `@onganda/design-system`, as a product would build them.
 `screenshots/test-pages/compare-*.png` lays each one beside the reference
@@ -145,7 +145,8 @@ pixel art where the eye lands:
 | Drop zones, empty states | a feature-size illustration | built into `PixelDropZone`; pass `icon` to `PixelEmptyState` |
 
 **Only on the grid.** Icons are drawn on 12 cells, system icons on 24. Use
-`ICON_SIZE` (12, 24, 36, 48). Any other size snaps to the nearest multiple; a
+`ICON_SIZE` (12, 24, 36, 48, and 96 for a page's lead illustration). The five
+system icons are on 24 cells: 24, 48 or 96. Any other size snaps to the nearest multiple; a
 14px or 16px icon is a 12px icon.
 
 ### A product screen's skeleton
@@ -154,7 +155,7 @@ pixel art where the eye lands:
   — the one primary sits with the title, not as a loose link in a corner.
   Every working screen has exactly one primary.
 - **Peers are peers.** Inputs, sources or results that do the same job are
-  `PixelPanel`s with `accentFor(i)` and an ordinal `tag`; give each an `icon`
+  `PixelPanel`s with `accentFor(i, isDark)` and an ordinal `tag`; give each an `icon`
   when they differ in kind. A rating goes in `aside` as a `PixelMeter`.
 - **A field and its action are one control.** `<PixelInputGroup>` around the
   input and its button: one height, one edge.
@@ -181,7 +182,7 @@ It was never a missing component. It was decoration spread evenly:
 - **Colour spent on things that carry no meaning.** A row of seven metadata
   tags in five colours is confetti. Colour in this system means identity (a
   system, a peer in a list) or state (`statusFor`). A metadata tag omits `hex`
-  and renders neutral. `accentFor(i)` is for **peer cards in a list** — never
+  and renders neutral. `accentFor(i, isDark)` is for **peer cards in a list** — never
   for tags, labels, chrome or metadata.
 - **Every surface at feature weight.** Six cards each with weave and corner
   marks reads as noise. One or two surfaces per screen are `feature` — the
@@ -197,7 +198,7 @@ It was never a missing component. It was decoration spread evenly:
   not cards, not nav items, not a selected row.
 - **Colour nowhere.** Every header dot and every panel mark in the default
   accent ink, tags all grey, one button: correct and lifeless. Give each
-  section an accent and each peer its `accentFor(i)`.
+  section an accent and each peer its `accentFor(i, isDark)`.
 - **A dead control that shouts.** Disabled takes the disabled roles.
 
 ## Creative latitude: what is fixed, what is yours
@@ -274,6 +275,12 @@ find yourself writing one, the prop you need is probably already there:
 | A status, count or small action beside a card's title | `<PixelPanel title aside={…} />` |
 | A rating — strength, fit, confidence | `<PixelMeter value={2} label="Needs trim" />` |
 | A product's own navigation | `<PixelNav label items orientation />` |
+| The chosen one of a set of peer cards | `<PixelPanel selected onClick>` — accent edge, `aria-pressed`, keyboard-operable |
+| A form's main button | `<PixelButton type="submit">` |
+| A ticker or footer for a product that is not the lab | `<PixelTicker items={…} />`, `<PixelFooter name mark line columns fine />` |
+| An inverse band that opens a page at hero scale | `<PixelInversePanel headlineSize="hero" />` |
+| Code, terminals, aligned timestamps | `FONT.mono` / `--onganda-font-mono` / `font-mono`, at `TYPE.code` |
+| Peer accents in dark mode | `accentFor(i, isDark)` — the readable hues come first |
 | A card on an already-textured ground | `<PixelPanel texture="none" />` |
 | Controls that fit a narrow surface | `<DensityProvider value="compact">` |
 | Dark controls without threading a prop | `<DarkProvider>` — controls read it |
@@ -372,8 +379,8 @@ In framer-motion, spread the `MOTION` presets instead of writing timings:
 |---|---|
 | `MOTION.entrance` | A section or card appearing on mount |
 | `MOTION.fadeUp` | A section entering on scroll (`whileInView`, once) |
-| `MOTION.staggerParent` / `staggerChild` | A list or grid arriving item by item (80ms) |
-| `MOTION.hoverLift` | A card that is a link or opens something: lifts 4px, tween, no scale |
+| `MOTION.staggerParent` / `staggerChild` | A list or grid arriving item by item (60ms apart) |
+| `MOTION.hoverLift` | A card that is a link or opens something: lifts 4px, tween, no scale. The *stepped* lift (`depth="lift"`, `PixelButton lift`) is the expressive variant: 2px up-left onto a hard 4px shadow |
 | `MOTION.tap` | Every button: compresses to 0.97 on press (built into `PixelButton`) |
 | `MOTION.ticker` | The system ticker's continuous marquee — editorial pages only |
 
@@ -496,6 +503,11 @@ your type check, lint and build, and Playwright screenshots of every screen.
 Compare them with `reference/` and with the test pages in
 `npx onganda-showcase`.
 
+`onganda-check` reads your code, not your screen. It cannot see a system hue
+passed through a variable, a well styled to look like a card, a composition
+that is plain, or a page that looks like the last one. Passing it is the
+floor; the screenshot beside the reference is the check.
+
 **In the Onganda repo:** `npm run check:design` (the token guard, every
 contrast ratio, the docs, the generated CSS, fonts and agent docs, and the
 test pages in consumer mode), then `npm run test:browser`. When you change a
@@ -511,7 +523,7 @@ Then look, at 390px and 1280px, in light and dark:
 - Hero text, tags, ticker and CTAs do not collide; display type breaks well.
 - Motion actually happens — entrance, hover, tap — and stops under reduced motion.
 - Cards are flat; texture only on grounds and inverse panels.
-- Colour sits on the work: the primary is ochre, peers carry `accentFor(i)`, metadata is neutral. A black primary means you are looking at an old build.
+- Colour sits on the work: the primary is ochre, peers carry `accentFor(i, isDark)`, metadata is neutral. A black primary means you are looking at an old build.
 - Every loading surface has its empty, loading and error state.
 
 Do not deploy, publish, or change unrelated product behavior unless the task asks for it.

@@ -94,7 +94,10 @@ export const FONT = {
   display: "'Space Grotesk', 'Space Grotesk Variable', 'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
   weights: [400, 500, 600, 700, 800] as const,
   /** Used only inside the document editor's reading surfaces. */
-  serif: "Georgia, 'Times New Roman', serif"
+  serif: "Georgia, 'Times New Roman', serif",
+  /** code, terminals, file names, timestamps that must align. The platform's
+   *  own monospace — nothing to download — at TYPE.code. */
+  mono: "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace"
 } as const;
 
 // ─── Space ───────────────────────────────────────────────────────────────────

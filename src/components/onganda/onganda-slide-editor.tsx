@@ -6,7 +6,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, statusFor, onColor, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
-import { TEXTURE } from './onganda-type';
+import { TEXTURE, FONT } from './onganda-type';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
 import { AiAuthoringPanel, AiAuthoringResult, AiSlideBlock } from './onganda-ai-authoring';
 import { SLIDE_COMPONENT_PALETTE, SLIDE_PALETTE_CATEGORIES } from './onganda-block-palette';
@@ -2517,7 +2517,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       </div>
       <div style={{
         padding: '10px 12px',
-        fontFamily: 'monospace',
+        fontFamily: FONT.mono,
         fontSize: 9,
         lineHeight: 1.65
       }}>
@@ -2772,7 +2772,7 @@ function ComponentPreview({
         color: terminal.tagHex,
         fontWeight: 700,
         letterSpacing: '0.1em',
-        fontFamily: 'monospace'
+        fontFamily: FONT.mono
       }}>{terminal.title.slice(0, 14)}</span>
     </div>;
   }

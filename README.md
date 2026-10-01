@@ -194,7 +194,7 @@ not look like Onganda at all. That is the most common failure.
 
 A **product screen** — a tool, a dashboard — also carries: the
 `SectionHeader` rhythm with the screen's one primary in its `actions`; peers as
-`PixelPanel`s with `accentFor(i)` and an ordinal `tag` (and an `icon` when they differ in kind); pixel icons
+`PixelPanel`s with `accentFor(i, isDark)` and an ordinal `tag` (and an `icon` when they differ in kind); pixel icons
 on the grid (`ICON_SIZE`); state through `statusFor` with a label and ratings
 through `PixelMeter`; flat cards; and an empty, loading and error state for
 anything that loads. `skills/onganda-design-system/SKILL.md` has the full

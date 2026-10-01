@@ -46,18 +46,34 @@ const label = (c: ReturnType<typeof roles>, tracking = TYPE.eyebrow.tracking) =>
 //
 // Duplicated content plus a -50% translate is what makes the loop seamless;
 // the whole strip is aria-hidden because it repeats names available as text.
+export type PixelTickerItem = {
+  /** the name, in the item's colour */
+  label: string;
+  /** the quiet reading beside it */
+  gloss?: string;
+  /** the item's identity hue (an accentFor(i), a system colour) */
+  hex: string;
+};
+
 export const PixelTicker = ({
   systems = SYSTEMS,
+  items,
   gloss,
   className = ''
 }: {
   systems?: readonly SystemEntry[];
-  /** the quiet English reading beside each name */
+  /** any product's own items. Without it the ticker runs the five Onganda
+   *  systems — which only an Onganda lab page should show. */
+  items?: readonly PixelTickerItem[];
+  /** the quiet English reading beside each name (systems only) */
   gloss?: (sys: SystemEntry) => string;
   className?: string;
 }) => {
   const c = roles(false);
   const moving = useMotionOK();
+  const rows: PixelTickerItem[] = items
+    ? [...items]
+    : systems.map(sys => ({ label: sys.name, gloss: gloss ? gloss(sys) : sys.english, hex: sys.borderHex }));
   return (
     <div
       className={`w-full overflow-hidden border-y ${className}`}
@@ -71,9 +87,9 @@ export const PixelTicker = ({
         transition={{ ...MOTION.ticker.transition }}
         className="flex w-max items-center py-3"
       >
-        {[...systems, ...systems].map((sys, index) => (
-          <div key={`${sys.name}-${index}`} className="flex items-center">
-            <PixelDot color={sys.borderHex} size={6} />
+        {[...rows, ...rows].map((row, index) => (
+          <div key={`${row.label}-${index}`} className="flex items-center">
+            <PixelDot color={row.hex} size={6} />
             <span
               className="ml-3 uppercase"
               style={{
@@ -82,10 +98,10 @@ export const PixelTicker = ({
                 letterSpacing: TYPE.label.tracking,
                 // The system hue has to survive the black ground: inkOn picks
                 // the readable form rather than trusting the raw token.
-                color: inkOn(sys.borderHex, c.inverse)
+                color: inkOn(row.hex, c.inverse)
               }}
             >
-              {sys.name}
+              {row.label}
             </span>
             <span
               className="ml-2 mr-8 uppercase"
@@ -96,7 +112,7 @@ export const PixelTicker = ({
                 color: roles(true).textMuted
               }}
             >
-              {gloss ? gloss(sys) : sys.english}
+              {row.gloss}
             </span>
             <div className="mr-8 h-4 w-px" style={{ background: roles(true).line }} />
           </div>
@@ -432,5 +448,66 @@ export const PixelStatBand = ({
         </div>
       ))}
     </div>
+  );
+};
+
+// ─── PixelFooter — any product's closing band ───────────────────────────────
+// OngandaFooter is the lab's own footer: its links, its name, its copy. A
+// product needs the same object with its own content — the inverse band, a
+// pixel mark, a line, link columns and a fine-print row.
+// Usage:
+//   <PixelFooter mark={<KinoMark size={24} />} name="Kino" line="For people with more footage than evenings."
+//     columns={[{ title: 'Product', links: [{ label: 'How it works', href: '#how' }] }]}
+//     fine="© 2026 Kino" />
+export type PixelFooterColumn = { title: string; links: { label: string; href: string }[] };
+
+export const PixelFooter = ({
+  mark,
+  name,
+  line,
+  columns = [],
+  fine,
+  accent
+}: {
+  /** the product's pixel mark, at ICON_SIZE.control */
+  mark?: React.ReactNode;
+  name: string;
+  line?: string;
+  columns?: PixelFooterColumn[];
+  fine?: React.ReactNode;
+  /** the band's top edge; defaults to the accent ink of the dark set */
+  accent?: string;
+}) => {
+  const light = roles(false);
+  const dark = roles(true);
+  return (
+    <footer className="w-full" style={{ background: light.inverse, color: light.textOnInverse, borderTop: `3px solid ${accent ?? dark.accentInk}` }}>
+      <div className="mx-auto max-w-7xl px-6 py-14 md:px-12">
+        <div className="flex flex-col gap-10 md:flex-row md:justify-between">
+          <div className="max-w-sm">
+            <div className="flex items-center gap-3">
+              {mark}
+              <span style={{ fontSize: TYPE.title.size, fontWeight: TYPE.title.weight }}>{name}</span>
+            </div>
+            {line && <p style={{ margin: '12px 0 0', fontSize: TYPE.body.size, lineHeight: TYPE.body.lineHeight, color: dark.textMuted }}>{line}</p>}
+          </div>
+          {columns.length > 0 && (
+            <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
+              {columns.map(col => (
+                <nav key={col.title} aria-label={col.title}>
+                  <p className="uppercase" style={{ margin: 0, fontSize: TYPE.label.size, fontWeight: TYPE.label.weight, letterSpacing: TYPE.label.tracking, color: dark.textMuted }}>{col.title}</p>
+                  <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0 }} className="grid gap-2">
+                    {col.links.map(l => (
+                      <li key={l.label}><a href={l.href} className="onganda-focus no-underline" style={{ fontSize: TYPE.meta.size, color: light.textOnInverse, ['--onganda-focus' as string]: dark.focusRing } as React.CSSProperties}>{l.label}</a></li>
+                    ))}
+                  </ul>
+                </nav>
+              ))}
+            </div>
+          )}
+        </div>
+        {fine && <div className="mt-12 pt-6" style={{ borderTop: `1px solid ${dark.line}`, fontSize: TYPE.meta.size, color: dark.textMuted }}>{fine}</div>}
+      </div>
+    </footer>
   );
 };

@@ -77,6 +77,7 @@
 
   --font-sans: var(--onganda-font-body);
   --font-heading: var(--onganda-font-heading);
+  --font-mono: var(--onganda-font-mono);
 
   --text-tag: 9px;
   --text-tag--line-height: 1.5;

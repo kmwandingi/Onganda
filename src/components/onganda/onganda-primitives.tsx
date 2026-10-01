@@ -7,7 +7,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useLayoutEffect } from 'react';
 import { motion, MotionConfig } from 'framer-motion';
 import { AUTOMATED, MOTION, installReveal } from './onganda-motion';
-import { TYPE, TEXTURE } from './onganda-type';
+import { TYPE, TEXTURE, FONT } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
@@ -589,7 +589,7 @@ export const FlowNodeIcon = ({
 };
 
 // ─── IconSun / IconMoon — dark mode toggle icons ─────────────────────────────
-export const IconSun = () => <Px size={16} viewBox="0 0 12 12">
+export const IconSun = ({ size = ICON_SIZE.inline, color }: { size?: number; color?: string } = {}) => <span style={{ display: 'inline-flex', color }}><Px size={size} viewBox="0 0 12 12">
     <rect x="5" y="0" width="2" height="2" fill="currentColor" />
     <rect x="5" y="10" width="2" height="2" fill="currentColor" />
     <rect x="0" y="5" width="2" height="2" fill="currentColor" />
@@ -599,8 +599,8 @@ export const IconSun = () => <Px size={16} viewBox="0 0 12 12">
     <rect x="1" y="9" width="2" height="2" fill="currentColor" fillOpacity="0.6" />
     <rect x="9" y="9" width="2" height="2" fill="currentColor" fillOpacity="0.6" />
     <rect x="3" y="3" width="6" height="6" fill="currentColor" />
-  </Px>;
-export const IconMoon = () => <Px size={16} viewBox="0 0 12 12">
+  </Px></span>;
+export const IconMoon = ({ size = ICON_SIZE.inline, color }: { size?: number; color?: string } = {}) => <span style={{ display: 'inline-flex', color }}><Px size={size} viewBox="0 0 12 12">
     <rect x="4" y="0" width="4" height="2" fill="currentColor" />
     <rect x="2" y="2" width="2" height="2" fill="currentColor" />
     <rect x="0" y="4" width="2" height="4" fill="currentColor" />
@@ -611,7 +611,7 @@ export const IconMoon = () => <Px size={16} viewBox="0 0 12 12">
     <rect x="10" y="6" width="2" height="2" fill="currentColor" />
     <rect x="6" y="4" width="4" height="4" fill="currentColor" />
     <rect x="4" y="2" width="4" height="8" fill="currentColor" />
-  </Px>;
+  </Px></span>;
 
 // ─── OngandaLogoMark — brand pixel granary icon ───────────────────────────────
 // Usage: <OngandaLogoMark size={28} />
@@ -755,6 +755,8 @@ export type PixelButtonProps = {
   /** steps up and left 2px onto a hard 4px pixel shadow on hover — the
    *  expressive call to action. Use it on one or two buttons a page, not all. */
   lift?: boolean;
+  /** `submit` for a form's main button, so Enter submits. Default `button`. */
+  type?: 'button' | 'submit' | 'reset';
 } & Omit<React.HTMLAttributes<HTMLElement>, MotionConflicting>;
 
 const buttonPalette = (variant: PixelButtonVariant, c: ColorRoles) => {
@@ -778,6 +780,7 @@ export const PixelButton = ({
   onClick,
   href,
   lift = false,
+  type = 'button',
   className = '',
   ...rest
 }: PixelButtonProps) => {
@@ -849,7 +852,7 @@ export const PixelButton = ({
       data-onganda-depth={lift && !disabled ? 'lift' : undefined}
       {...rest}
       {...(disabled ? {} : MOTION.tap)}
-      type="button"
+      type={type}
       onClick={onClick}
       disabled={disabled}
       style={style}
@@ -1085,13 +1088,17 @@ export const PixelCheckbox = ({
 }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode; isDark?: boolean }) => {
   const c = roles(useIsDark(isDark));
   const d = useDensity();
-  const on = !!props.checked;
+  // Uncontrolled use (`defaultChecked`) keeps its own state; it used to read
+  // `checked` only, so a defaultChecked box always drew unchecked.
+  const [inner, setInner] = useState(!!props.defaultChecked);
+  const on = props.checked !== undefined ? !!props.checked : inner;
   const disabled = !!props.disabled;
   return (
     <label className={className} style={controlLabelStyle(c, disabled, d)}>
       <span style={{ position: 'relative', flexShrink: 0, width: d.controlBox, height: d.controlBox, marginTop: 2 }}>
         <input
           {...props}
+          onChange={e => { if (props.checked === undefined) setInner(e.target.checked); props.onChange?.(e); }}
           type="checkbox"
           className="onganda-choice"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: disabled ? 'not-allowed' : 'pointer', ['--onganda-focus' as string]: c.focusRing } as React.CSSProperties}
@@ -1197,7 +1204,9 @@ export const PixelToggle = ({
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
       className={`onganda-focus ${className}`}
-      style={{ ...controlLabelStyle(c, disabled, d), alignItems: 'center', background: 'none', border: 'none', padding: 0, ['--onganda-focus' as string]: c.focusRing } as React.CSSProperties}
+      // A <button> centres its text by default, so a label that wraps came out
+      // centred under itself. It reads left like every other control label.
+      style={{ ...controlLabelStyle(c, disabled, d), alignItems: 'center', textAlign: 'left', background: 'none', border: 'none', padding: 0, ['--onganda-focus' as string]: c.focusRing } as React.CSSProperties}
     >
       <span
         aria-hidden="true"
@@ -1756,7 +1765,7 @@ export const CodeSnippetBlock = ({
       {/* Code body */}
       <div style={{
       padding: '16px 20px',
-      fontFamily: 'monospace',
+      fontFamily: FONT.mono,
       fontSize: 11,
       lineHeight: 1.75,
       overflowX: 'auto'
