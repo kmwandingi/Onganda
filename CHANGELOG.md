@@ -5,6 +5,37 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — Copy code on the showcase
+
+`/showcase` has a **Copy code** toggle. With it on, every section carries a
+**Copy section** button, hovering outlines the nearest design-system
+component with its name, and a click opens its code with a copy button (and
+"Whole section instead"). Off by default; nothing on the page changes until
+it is pressed.
+
+The code is generated from the live React tree, not written by hand, so it
+cannot drift from what is on screen:
+
+- A **section** is written as its full composition, stopping at each
+  design-system component and expanding the showcase's private helpers.
+- Colours become the system's vocabulary — a role (`c.textMuted`), a peer
+  accent (`accentFor(0)`), a palette colour (`COLOR.x`); ink at an
+  off-ramp alpha becomes the nearest role.
+- Icons are written at the size they render (`ICON_SIZE.control`).
+- framer-motion entrances become the system's presets
+  (`data-onganda-enter`, `-stagger`, `-lift`, `-press`); framer's
+  mid-animation inline styles are dropped, so a paste is never frozen at
+  opacity 0.
+- A card the showcase still hand-builds (surface plus hairline) is written as
+  `<PixelPanel emphasis="quiet">`, so the paste uses the system even where the
+  showcase does not.
+- Handlers come stubbed, row keys get a real key function, and private
+  render callbacks are left out so components use their defaults.
+
+`tests/browser/copy-code.spec.ts` copies **every** section, writes each to a
+file, and fails unless all of them compile under strict TypeScript against
+the package and pass `onganda-check`.
+
 ## [2.0.0] — 2026-10-01
 
 ### Migrating from 1.x

@@ -103,6 +103,17 @@ cheap imitation — correct parts, wrong register.
 Open the reference first, and again when your surface is built. Put your
 screenshot beside it and name the difference.
 
+**Copy from the showcase, don't retype it.** On `/showcase` (and through
+`npx onganda-showcase`), press **Copy code**, bottom right. Every section gets
+a **Copy section** button, and clicking any element copies the nearest
+design-system component. The code is generated from the live page, so it
+matches what you see: a complete component importing from
+`@onganda/design-system`, colours written as roles (`c.textMuted`) and
+accents (`accentFor(0)`), icons at `ICON_SIZE`, motion as the system's
+presets. Every section's copy is tested to compile under strict TypeScript
+and pass `onganda-check`. Handlers and state come stubbed: wire them to your
+data, then adapt the content.
+
 **See it done from the package.** `/test/studio`, `/test/app`, `/test/dashboard`,
 `/test/form`, `/test/landing`, `/test/launch` and `/test/article` (`src/test-pages`; open them
 with `npx onganda-showcase`) are built

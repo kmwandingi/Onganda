@@ -38,7 +38,8 @@ still, pin a commit (`#<sha>`) instead. Read the CHANGELOG's migration notes
 before crossing a major version.
 
 **Open the showcase from your own project:** `npx onganda-showcase` serves the
-showcase and the consumer test pages at `http://127.0.0.1:4174`.
+showcase and the consumer test pages at `http://127.0.0.1:4174`. Press **Copy code**
+on `/showcase` to copy any section or element as working code.
 
 There is no registry release yet. `npm install @onganda/design-system`
 returns a 404 until the scoped package is published.

@@ -4,7 +4,7 @@
 // all atomic primitives in onganda-primitives.tsx,
 // all page sections in onganda-sections.tsx.
 
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { motion } from 'framer-motion';
 import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES } from './onganda-tokens';
 import { PixelLabCard } from './onganda-site';
@@ -16,6 +16,9 @@ import { OngandaMap } from './onganda-maps';
 import { Publications } from './onganda-publications';
 import { DocumentEditor } from './onganda-document-editor';
 import { SlideEditor } from './onganda-slide-editor';
+// Loaded after the hub: it reads the whole design-system namespace, which
+// includes this module, so a static import is a load-order cycle.
+const CopyCodeInspector = lazy(() => import('../../showcase-tools/CopyCodeInspector').then(m => ({ default: m.CopyCodeInspector })));
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export const NamibiaAISystemsHub = () => {
@@ -46,7 +49,7 @@ export const NamibiaAISystemsHub = () => {
     isDark,
     toggle
   }}>
-      <div className="min-h-screen selection:bg-[#D9791F] selection:text-[#E8E1CF]" style={{
+      <div data-onganda-showcase="" className="min-h-screen selection:bg-[#D9791F] selection:text-[#E8E1CF]" style={{
       fontFamily: 'Inter, Arial, sans-serif',
       background: bg,
       color: fg,
@@ -194,6 +197,9 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Footer ── */}
         <OngandaFooter />
+
+        {/* ── Copy code: every section and element, as consumer code ── */}
+        <Suspense fallback={null}><CopyCodeInspector /></Suspense>
       </div>
     </DarkContext.Provider>;
 };
