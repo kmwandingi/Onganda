@@ -3,10 +3,10 @@
 // Imports only from onganda-tokens and onganda-primitives.
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { AUTOMATED } from './onganda-motion';
+import { AUTOMATED, useMotionOK } from './onganda-motion';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
-import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
+import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, useIsDark, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
@@ -1235,6 +1235,7 @@ export const SystemConnectionDiagram = ({
   edges?: ConnectionEdge[];
   tooltips?: Record<string, NodeTooltipData>;
 } = {}) => {
+  const moving = useMotionOK();
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, {
     once: true,
@@ -1315,7 +1316,9 @@ export const SystemConnectionDiagram = ({
                   duration: 0.7,
                   ease: 'easeOut'
                 }} />}
-                    {active && <motion.circle r="0.9" fill={edge.color} fillOpacity={highlighted ? 0.95 : 0.35} animate={{
+                    {/* The travelling dot loops forever (SMIL animateMotion plus an
+                        opacity cycle), so it only runs when motion is allowed. */}
+                    {active && moving && <motion.circle r="0.9" fill={edge.color} fillOpacity={highlighted ? 0.95 : 0.35} animate={{
                   opacity: [0, 1, 1, 0]
                 }} transition={{
                   duration: 2.4,
@@ -2370,23 +2373,31 @@ const STATUS_ROWS: { name: StatusName; means: string }[] = [
 // accent dot and a dither rule under it. That was the wrong move twice over:
 // the site has no such object, and the section did not need a new component,
 // it needed the ones the rest of the page already uses.
-const SubLabel = ({ children, isDark, spaced = false }: {
+/** The small uppercase caption that names a block inside a section — the
+ *  showcase labels every specimen with it ("Buttons · four intents"). Lighter
+ *  than a SectionHeader: no dot, no rule, no headline. `spaced` gives it air
+ *  above when it follows content. */
+export const PixelSubhead = ({ children, isDark, spaced = false }: {
   children: React.ReactNode;
-  isDark: boolean;
+  isDark?: boolean;
   /** a label that follows content rather than opening a block needs air above it */
   spaced?: boolean;
-}) => (
-  <p className="uppercase" style={{
-    fontSize: TYPE.eyebrow.size,
-    fontWeight: TYPE.eyebrow.weight,
-    letterSpacing: TYPE.eyebrow.tracking,
-    lineHeight: TYPE.eyebrow.lineHeight,
-    color: roles(isDark).textMuted,
-    margin: spaced ? '40px 0 16px' : '0 0 16px'
-  }}>
-    {children}
-  </p>
-);
+}) => {
+  const dark = useIsDark(isDark);
+  return (
+    <p className="uppercase" style={{
+      fontSize: TYPE.eyebrow.size,
+      fontWeight: TYPE.eyebrow.weight,
+      letterSpacing: TYPE.eyebrow.tracking,
+      lineHeight: TYPE.eyebrow.lineHeight,
+      color: roles(dark).textMuted,
+      margin: spaced ? '40px 0 16px' : '0 0 16px'
+    }}>
+      {children}
+    </p>
+  );
+};
+const SubLabel = PixelSubhead;
 
 // ─── Control Standards — the enforceable half of the design system ───────────
 // Every interactive element the system sanctions, in every state, next to the

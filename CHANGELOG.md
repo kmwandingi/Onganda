@@ -5,6 +5,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Fixed — everything on the showcase is reproducible from the system
+
+Copying every section showed six where the showcase used something the
+design system did not offer: a private caption, private chart parts, hand-built
+cards, and table cells whose `render` functions could not be read back. The
+copy filled those gaps with placeholders, dropped props and rewrites. Each was
+a gap in the system, and each is closed — with the showcase unchanged: the
+visual baselines pass without being regenerated, and the reference shots come
+out byte-identical.
+
+- **Exported from the showcase's own code, unchanged:** `ChartPanel` (the
+  gallery's chart card), `ChartTooltip`, `ChartPointTooltip` (the scatter's
+  inline tooltip, now a component), `ChartTreemapCell` (the treemap
+  renderer, now a component), and `PixelSubhead` (the specimen caption,
+  which also follows `DarkProvider` now).
+- **Tool sections copy as their component.** The icon bank, icon factory and
+  publications launcher are complete exported components; copying them
+  writes `<IconShowcase />`, `<IconFactoryLab />`, `<Publications />`.
+- **Table cells copy as they rendered.** The rows become a constant and each
+  custom column a list of the JSX its cells produced, so status dots and
+  formatted values come through exactly.
+- **The copy test now fails on any gap**, not only on code that does not
+  compile.
+- **The connection diagram's travelling dots respect reduced motion.** They
+  looped forever (SMIL `animateMotion` plus an endless opacity cycle) for
+  everyone, which is also why its reference shot was never the same twice.
+
 ### Added — Copy code on the showcase
 
 `/showcase` has a **Copy code** toggle. With it on, every section carries a

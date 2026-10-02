@@ -35,6 +35,19 @@ type Fiber = {
   stateNode: unknown;
 };
 
+// ── Gaps ─────────────────────────────────────────────────────────────────────
+// Every place the generator cannot write what the showcase does with the
+// design system alone: a private component, a render callback it has to drop,
+// a hand-built card it has to rewrite. Each is a gap in the SYSTEM, not in the
+// generator — the fix is to give the system the component, not to paper over
+// it here. The copy test fails while any remain.
+export type CopyGap = { kind: 'private-component' | 'dropped-callback' | 'hand-built-card'; name: string };
+const GAPS: CopyGap[] = [];
+const gap = (g: CopyGap) => { if (!GAPS.some(x => x.kind === g.kind && x.name === g.name)) GAPS.push(g); };
+/** The gaps found since the last call, cleared. */
+export const takeGaps = (): CopyGap[] => GAPS.splice(0);
+const nameOf = (type: unknown) => (type as { displayName?: string; name?: string })?.displayName || (type as { name?: string })?.name || 'anonymous';
+
 // ── Who is who ───────────────────────────────────────────────────────────────
 type Origin = { name: string; from: string };
 // Every table here is built on first use, not at load: the showcase hub
@@ -62,6 +75,13 @@ const ensureKnown = () => {
 // Whole showcase sections are exported too, but `<ProductSurface />` is not
 // the code behind a section — its composition is. These are expanded, never
 // written as a tag.
+// Exported from the section modules but written as tags: a component
+// (PixelSubhead), and the tool sections that ARE their component — an icon
+// browser, the icon factory, the publications launcher. The design-system way
+// to reproduce those is the component itself.
+const WRITE_AS_TAG = new Set(['PixelSubhead', 'IconShowcase', 'IconFactoryLab', 'Publications']);
+const TOOL_SECTIONS = new Set(['IconShowcase', 'IconFactoryLab', 'Publications']);
+
 // Built on first use, not at load: these modules import each other, and
 // reading a namespace mid-cycle throws.
 let pageLevel: Set<unknown> | null = null;
@@ -69,7 +89,7 @@ const PAGE_LEVEL = () => {
   if (pageLevel) return pageLevel;
   pageLevel = new Set<unknown>();
   for (const mod of [SECTIONS, PUBLICATIONS, SITES, HUB] as Record<string, unknown>[]) {
-    for (const v of Object.values(mod)) if (typeof v === 'function') pageLevel.add(v);
+    for (const [name, v] of Object.entries(mod)) if (typeof v === 'function' && !WRITE_AS_TAG.has(name)) pageLevel.add(v);
   }
   for (const n of ['ChartGallery', 'DocumentEditor', 'SlideEditor', 'AiAuthoringPanel', 'OngandaPublicSite', 'NamibiaAISystemsHub']) {
     const v = (DS as Record<string, unknown>)[n];
@@ -109,7 +129,8 @@ const PREFER: [RegExp, string[]][] = [
   [/border|outline|stroke/i, ['line', 'lineStrong', 'fieldBorder', 'accentInk', 'controlOnBorder']]
 ];
 
-type Uses = { ds: Set<string>; recharts: Set<string>; motion: boolean; roles: boolean };
+type Uses = { ds: Set<string>; recharts: Set<string>; motion: boolean; roles: boolean; preamble: string[]; reactNode: boolean; tables: number };
+const newUses = (): Uses => ({ ds: new Set(), recharts: new Set(), motion: false, roles: false, preamble: [], reactNode: false, tables: 0 });
 
 /** A colour as code, or null when the value is not a colour we know. */
 const colourExpr = (raw: string, key: string, uses: Uses): string | null => {
@@ -188,6 +209,7 @@ const valueExpr = (v: unknown, key: string, uses: Uses, depth: number): string |
     // itself: omitted, so the component falls back to its own default.
     if (/^on[A-Z]/.test(key) || key === 'onFiles') return '() => {}';
     if (key === 'rowKey') return '(r: Record<string, unknown>, i: number) => String(r.id ?? i)';
+    gap({ kind: 'dropped-callback', name: `${key} (${nameOf(v)})` });
     return null;
   }
   if (isElement(v)) return elementToJsx(v, uses, depth + 1);
@@ -204,6 +226,7 @@ const valueExpr = (v: unknown, key: string, uses: Uses, depth: number): string |
       // A table column's render function cannot be read back; render the
       // field the column is keyed on, which is what most columns show.
       if (k === 'render' && typeof x === 'function' && typeof obj.key === 'string') {
+        gap({ kind: 'dropped-callback', name: `column render (${obj.key})` });
         parts.push(`render: (r: Record<string, unknown>) => String(r[${JSON.stringify(obj.key)}] ?? '')`);
         continue;
       }
@@ -233,7 +256,10 @@ const attr = (key: string, v: unknown, uses: Uses, depth: number): string | null
   }
   // A private showcase element as a prop (a chart's custom tooltip) cannot be
   // written; leave the prop out so the component uses its default.
-  if (isElement(v) && typeof v.type !== 'string' && v.type !== FRAGMENT && !originOf(v.type)) return null;
+  if (isElement(v) && typeof v.type !== 'string' && v.type !== FRAGMENT && !originOf(v.type)) {
+    gap({ kind: 'private-component', name: `${nameOf(v.type)} (as ${key})` });
+    return null;
+  }
   const e = valueExpr(v, key, uses, depth);
   return e === null ? null : `${key}={${e}}`;
 };
@@ -306,9 +332,14 @@ function elementToJsx(el: { type: unknown; props: Record<string, unknown> }, use
       el = { type: el.type, props: { ...el.props, size: { __code: `ICON_SIZE.${SIZE_NAME[snapped]}` } } };
     } else el = { type: el.type, props: { ...el.props, size: snapped } };
   }
+  if (KNOWN.get(el.type)?.name === 'PixelTable' && ROOT) {
+    const tf = fiberWithProps(ROOT.child, el.props);
+    if (tf) return tableToJsx(tf, el.props, uses, depth, { lines: 900 });
+  }
   const tag = tagFor(el.type, uses);
   if (!tag) {
     const name = (el.type as { name?: string })?.name || 'Helper';
+    gap({ kind: 'private-component', name });
     return `{/* showcase helper <${name}> — replace with your own content */}`;
   }
   const attrs = Object.entries(el.props).map(([k, v]) => attr(k, v, uses, depth)).filter((a): a is string => !!a);
@@ -388,12 +419,21 @@ function fiberToJsx(f: Fiber, uses: Uses, depth: number, budget: { lines: number
       return fiberToJsx({ ...host, memoizedProps: hostProps } as Fiber, uses, depth, budget);
     }
   }
+  if (o?.name === 'PixelTable') {
+    const jsx = tableToJsx(f, props, uses, depth, budget);
+    budget.lines -= jsx.split('\n').length;
+    return [jsx];
+  }
   if (o) {
     const jsx = elementToJsx({ type: f.type, props }, uses, depth);
     budget.lines -= jsx.split('\n').length;
     return [jsx];
   }
   if (f.tag === HOST && typeof f.type === 'string' && isHandCard(f.type, props)) {
+    // Name the private component that built the card, for the gap report.
+    let owner = f.return;
+    while (owner && (typeof owner.type === 'string' || !owner.type)) owner = owner.return;
+    gap({ kind: 'hand-built-card', name: owner ? nameOf(owner.type) : 'div' });
     uses.ds.add('PixelPanel');
     const cls = typeof props.className === 'string' && props.className ? [`className=${JSON.stringify(props.className)}`] : [];
     const kids = fiberChildren(f).flatMap(c => fiberToJsx(c, uses, depth + 1, budget));
@@ -415,6 +455,69 @@ function fiberToJsx(f: Fiber, uses: Uses, depth: number, budget: { lines: number
   }
   // Fragments, providers, private helpers: what they render.
   return fiberChildren(f).flatMap(c => fiberToJsx(c, uses, depth, budget));
+}
+
+// ── Tables: cells as they rendered ───────────────────────────────────────────
+// A column's `render` is code and cannot be read back, but what it rendered
+// can. The rows become a constant, and each rendered column a list of the
+// JSX its cells actually produced — so a status dot, a bold name, a meter
+// come through exactly, and the paste still type-checks.
+const hostsOfType = (f: Fiber | null, type: string, out: Fiber[] = []): Fiber[] => {
+  for (let c = f; c; c = c.sibling) {
+    if (c.tag === HOST && c.type === type) out.push(c);
+    else hostsOfType(c.child, type, out);
+  }
+  return out;
+};
+
+// The fiber being serialised, so an element met in props (a table inside a
+// panel's children) can be found by the props object React rendered it with.
+let ROOT: Fiber | null = null;
+const fiberWithProps = (from: Fiber | null, props: unknown): Fiber | null => {
+  for (let c = from; c; c = c.sibling) {
+    if (c.memoizedProps === props) return c;
+    const hit = fiberWithProps(c.child, props);
+    if (hit) return hit;
+  }
+  return null;
+};
+
+function tableToJsx(f: Fiber, props: Record<string, unknown>, uses: Uses, depth: number, budget: { lines: number }): string {
+  uses.ds.add('PixelTable');
+  const n = ++uses.tables;
+  const rows = Array.isArray(props.rows) ? props.rows as Record<string, unknown>[] : [];
+  const columns = Array.isArray(props.columns) ? props.columns as Record<string, unknown>[] : [];
+  const rowsName = `table${n}Rows`;
+  uses.preamble.push(`const ${rowsName} = ${valueExpr(rows, 'rows', uses, 1) ?? '[]'};`);
+  const tbody = hostsOfType(f.child, 'tbody')[0];
+  const trs = tbody ? hostsOfType(tbody.child, 'tr') : [];
+  const cols = columns.map((col, ci) => {
+    const key = String(col.key ?? `col${ci}`);
+    const head: string[] = [`key: ${JSON.stringify(key)}`, `header: ${JSON.stringify(String(col.header ?? ''))}`];
+    if (col.numeric) head.push('numeric: true');
+    if (typeof col.width === 'string') head.push(`width: ${JSON.stringify(col.width)}`);
+    const cells = trs.map(tr => {
+      const td = hostsOfType(tr.child, 'td')[ci];
+      if (!td) return 'null';
+      const own = (td.memoizedProps as Record<string, unknown>)?.children;
+      if (typeof own === 'string' || typeof own === 'number') return JSON.stringify(String(own));
+      const parts = fiberChildren(td).flatMap(c => fiberToJsx(c, uses, 2, budget));
+      if (!parts.length) return 'null';
+      return parts.length === 1 && parts[0].startsWith('<') ? parts[0] : `<>${parts.join('')}</>`;
+    });
+    const cellsName = `table${n}${key.replace(/[^A-Za-z0-9]/g, '').replace(/^./, ch => ch.toUpperCase())}Cells`;
+    uses.reactNode = true;
+    uses.preamble.push(`const ${cellsName}: ReactNode[] = [\n${cells.map(cl => `  ${cl}`).join(',\n')}\n];`);
+    head.push(`render: (r) => ${cellsName}[${rowsName}.indexOf(r)]`);
+    return `{ ${head.join(', ')} }`;
+  });
+  const attrs = [
+    ...(typeof props.caption === 'string' ? [`caption=${JSON.stringify(props.caption)}`] : []),
+    `rows={${rowsName}}`,
+    `rowKey={(_r, i) => String(i)}`,
+    `columns={[\n${cols.map(cl => pad(depth + 2) + cl).join(',\n')}\n${pad(depth + 1)}]}`
+  ];
+  return `<PixelTable\n${attrs.map(a => pad(depth + 1) + a).join('\n')}\n${pad(depth)}/>`;
 }
 
 // ── Entry points ─────────────────────────────────────────────────────────────
@@ -453,8 +556,10 @@ const finish = (name: string, jsx: string, uses: Uses, note: string): string => 
   if (uses.ds.size) imports.push(`import { ${[...uses.ds].sort().join(', ')} } from '@onganda/design-system';`);
   if (uses.recharts.size) imports.push(`import { ${[...uses.recharts].sort().join(', ')} } from 'recharts';`);
   if (uses.motion) imports.push(`import { motion } from 'framer-motion';`);
+  if (uses.reactNode) imports.push(`import type { ReactNode } from 'react';`);
   const body = jsx.split('\n').map(l => pad(2) + l).join('\n');
-  const hooks = uses.roles ? `  const { isDark } = useDark();\n  const c = roles(isDark);\n` : '';
+  const hooks = (uses.roles ? `  const { isDark } = useDark();\n  const c = roles(isDark);\n` : '')
+    + uses.preamble.map(p => p.split('\n').map(l => pad(1) + l).join('\n') + '\n').join('');
   return `// ${note}
 // Generated from the live showcase. Event handlers and state are stubbed:
 // wire them to your own data. Requires @onganda/design-system/style.css.
@@ -474,19 +579,36 @@ const pascal = (s: string) =>
 
 /** Code for one design-system element. */
 export const codeForElement = (fiber: Fiber, name: string): string => {
-  const uses: Uses = { ds: new Set(), recharts: new Set(), motion: false, roles: false };
+  const uses = newUses();
   const props = (fiber.memoizedProps ?? {}) as Record<string, unknown>;
-  const jsx = elementToJsx({ type: fiber.type, props }, uses, 0);
+  ROOT = fiber;
+  const jsx = name === 'PixelTable'
+    ? tableToJsx(fiber, props, uses, 0, { lines: 900 })
+    : elementToJsx({ type: fiber.type, props }, uses, 0);
+  ROOT = null;
   return finish(`${name}Example`, jsx, uses, `<${name}> from /showcase`);
 };
 
 /** Code for everything a showcase section renders. */
 export const codeForSection = (sectionNode: Element, label: string): string => {
-  const uses: Uses = { ds: new Set(), recharts: new Set(), motion: false, roles: false };
+  const uses = newUses();
   const f = fiberOf(sectionNode);
   if (!f) return '// Could not read this section.';
+  // A tool section is its component: write the tag, with the props it got.
+  ensureKnown();
+  let owner: Fiber | null = f.return;
+  while (owner && (typeof owner.type === 'string' || !owner.type)) owner = owner.return;
+  if (owner) {
+    const o = KNOWN.get(owner.type);
+    if (o && TOOL_SECTIONS.has(o.name)) {
+      const jsx = elementToJsx({ type: owner.type, props: (owner.memoizedProps ?? {}) as Record<string, unknown> }, uses, 0);
+      return finish(`${pascal(label)}Section`, jsx, uses, `The "${label}" section of /showcase — a complete design-system component`);
+    }
+  }
   const budget = { lines: 900 };
+  ROOT = f;
   const parts = fiberToJsx(f, uses, 0, budget);
+  ROOT = null;
   const truncated = budget.lines <= 0 ? '\n{/* …truncated: this section is larger than a paste. Copy its elements one by one. */}' : '';
   const jsx = parts.length === 1 ? parts[0] + truncated : `<>\n${parts.map(p => INDENT + p).join('\n')}${truncated}\n</>`;
   return finish(`${pascal(label)}Section`, jsx, uses, `The "${label}" section of /showcase`);

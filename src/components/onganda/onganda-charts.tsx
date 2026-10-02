@@ -29,7 +29,7 @@ const C = {
 } as const;
 
 // ─── Chart types / categories ─────────────────────────────────────────────────
-type ChartCategory = 'Bar' | 'Line' | 'Area' | 'Circular' | 'Relational' | 'Composition';
+export type ChartCategory = 'Bar' | 'Line' | 'Area' | 'Circular' | 'Relational' | 'Composition';
 const CHART_CATEGORIES: ChartCategory[] = ['Bar', 'Line', 'Area', 'Circular', 'Relational', 'Composition'];
 
 // ─── Shared dataset definitions ───────────────────────────────────────────────
@@ -382,7 +382,9 @@ const HORIZONTAL_DATA = [{
 
 // ─── Shared sub-components ────────────────────────────────────────────────────
 
-const ChartTooltip = ({
+/** The gallery's tooltip: dark plate, uppercase label, a square per series.
+ *  Pass as `<Tooltip content={<ChartTooltip />} />`. */
+export const ChartTooltip = ({
   active,
   payload,
   label
@@ -436,6 +438,35 @@ const ChartTooltip = ({
       }}>{item.value}</span>
         </div>)}
     </div>;
+};
+
+/** A point's own tooltip: its label, then its x and y. For a scatter whose
+ *  points carry `{ label, x, y }`. Pass as `<Tooltip content={<ChartPointTooltip />} />`. */
+export const ChartPointTooltip = ({
+  active,
+  payload
+}: {
+  active?: boolean;
+  payload?: Array<{ payload?: { label?: string; x?: number; y?: number } }>;
+}) => {
+  if (!active || !payload) return null;
+        const d = payload[0]?.payload;
+        return <div style={{
+          background: C.tooltipBg,
+          border: `1px solid ${COLOR.ochreOrange}44`,
+          padding: '8px 12px'
+        }}>
+              <p style={{
+            fontSize: 10,
+            fontWeight: 700,
+            color: COLOR.ochreOrange
+          }}>{d?.label}</p>
+              <p style={{
+            fontSize: 9,
+            color: C.tooltipText,
+            opacity: 0.6
+          }}>x: {d?.x} · y: {d?.y}</p>
+            </div>;
 };
 
 // ─── For products: style your own charts like the gallery ────────────────────
@@ -520,7 +551,9 @@ export const ChartLegend = ({
 };
 
 // Card wrapper for each chart
-const ChartCard = ({
+/** The card every chart in the gallery sits in: title, category tag, the
+ *  chart, its legend. Exported so a product's chart looks like the gallery's. */
+export const ChartPanel = ({
   title,
   tag,
   category,
@@ -581,6 +614,8 @@ const ChartCard = ({
     </div>
     <ChartLegend items={legend} />
   </motion.div>;
+
+const ChartCard = ChartPanel;
 
 // ─── Individual chart definitions ─────────────────────────────────────────────
 
@@ -964,29 +999,7 @@ const ScatterPlotPanel = () => <ChartCard title="Research Positioning — Scatte
         fontSize: 9,
         fill: C.tick
       }} axisLine={false} tickLine={false} />
-        <Tooltip content={({
-        active,
-        payload
-      }) => {
-        if (!active || !payload) return null;
-        const d = payload[0]?.payload as typeof SCATTER_DATA[number];
-        return <div style={{
-          background: C.tooltipBg,
-          border: `1px solid ${COLOR.ochreOrange}44`,
-          padding: '8px 12px'
-        }}>
-              <p style={{
-            fontSize: 10,
-            fontWeight: 700,
-            color: COLOR.ochreOrange
-          }}>{d?.label}</p>
-              <p style={{
-            fontSize: 9,
-            color: C.tooltipText,
-            opacity: 0.6
-          }}>x: {d?.x} · y: {d?.y}</p>
-            </div>;
-      }} />
+        <Tooltip content={<ChartPointTooltip />} />
         <Scatter data={SCATTER_DATA} name="Systems">
           {SCATTER_DATA.map((entry, i) => <Cell key={`sc-${entry.label}`} fill={C.p[i % C.p.length]} />)}
         </Scatter>
@@ -1071,7 +1084,7 @@ const FunnelChartPanel = () => <ChartCard title="Pipeline Funnel" tag="C-06" cat
       </FunnelChart>
     </ResponsiveContainer>
   </ChartCard>;
-type TreemapCellProps = {
+export type TreemapCellProps = {
   x?: number;
   y?: number;
   width?: number;
@@ -1080,7 +1093,9 @@ type TreemapCellProps = {
   fill?: string;
 };
 
-const renderTreemapCell = (props: TreemapCellProps) => {
+/** A treemap tile: the cell inset by a pixel, its name when it fits. Pass as
+ *  `<Treemap content={<ChartTreemapCell />} />`. */
+export const ChartTreemapCell = (props: TreemapCellProps) => {
   const {
     x = 0,
     y = 0,
@@ -1101,7 +1116,7 @@ const TreemapPanel = () => <ChartCard title="Research Budget — Treemap" tag="C
   color: d.fill
 }))} fullWidth>
     <ResponsiveContainer width="100%" height={220}>
-      <Treemap data={TREEMAP_DATA} dataKey="size" nameKey="name" content={renderTreemapCell as unknown as React.ReactElement} />
+      <Treemap data={TREEMAP_DATA} dataKey="size" nameKey="name" content={<ChartTreemapCell />} />
     </ResponsiveContainer>
   </ChartCard>;
 

@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom';
 import {
   AUTOMATED, FONT, ICON_SIZE, IconCopy, PixelButton, PixelDialog, PixelTag, roles, TYPE, useDark
 } from '@onganda/design-system';
-import { codeForElement, codeForSection, hostNodesOf, nearestComponent } from './copy-code';
+import { codeForElement, codeForSection, hostNodesOf, nearestComponent, takeGaps, type CopyGap } from './copy-code';
 
 type Picked = { title: string; code: string; sectionCode?: string; sectionLabel?: string };
 
@@ -25,6 +25,13 @@ const findSections = (): HTMLElement[] => {
   if (!root) return [];
   return [...root.querySelectorAll<HTMLElement>(':scope > section, :scope > div[id], :scope > [id]')]
     .filter((el, i, all) => all.indexOf(el) === i && !el.closest('[data-onganda-copy-ui]'));
+};
+
+// Gaps are kept on window for the copy test: every one is a place the design
+// system cannot yet express what the showcase does.
+const report = (section: string, gaps: CopyGap[]) => {
+  const w = window as unknown as { __ongandaCopyGaps?: Record<string, CopyGap[]> };
+  (w.__ongandaCopyGaps ??= {})[section] = gaps;
 };
 
 export const CopyCodeInspector = () => {
@@ -70,7 +77,9 @@ export const CopyCodeInspector = () => {
 
   const openSection = useCallback((el: HTMLElement) => {
     const label = sectionLabel(el);
-    setPicked({ title: `Section · ${label}`, code: codeForSection(el, label) });
+    const code = codeForSection(el, label);
+    report(label, takeGaps());
+    setPicked({ title: `Section · ${label}`, code });
     setCopied(false);
   }, []);
 

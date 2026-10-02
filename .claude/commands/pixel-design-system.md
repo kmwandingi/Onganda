@@ -293,6 +293,8 @@ find yourself writing one, the prop you need is probably already there:
 | An inverse band that opens a page at hero scale | `<PixelInversePanel headlineSize="hero" />` |
 | Code, terminals, aligned timestamps | `FONT.mono` / `--onganda-font-mono` / `font-mono`, at `TYPE.code` |
 | Peer accents in dark mode | `accentFor(i, isDark)` — the readable hues come first |
+| A caption naming a block inside a section | `<PixelSubhead>` |
+| A chart that matches the gallery | `ChartPanel`, `ChartTooltip`, `ChartPointTooltip`, `ChartTreemapCell`, `ChartLegend`, `chartTheme` |
 | A card on an already-textured ground | `<PixelPanel texture="none" />` |
 | Controls that fit a narrow surface | `<DensityProvider value="compact">` |
 | Dark controls without threading a prop | `<DarkProvider>` — controls read it |

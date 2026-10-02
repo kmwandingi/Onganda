@@ -779,6 +779,13 @@ identity, so "Strong" reads the same on every peer whatever its accent.
 puts a status, a count or a small action on the title's line, right-aligned,
 while the title stays the card's `<h2>`.
 
+### PixelSubhead
+
+`<PixelSubhead spaced>Buttons · four intents</PixelSubhead>` — the small
+uppercase caption that names a block inside a section; the showcase labels
+every specimen with it. Lighter than `SectionHeader`: no dot, no rule, no
+headline. `spaced` gives it air above when it follows content.
+
 ### PixelFooter and PixelTicker `items`
 
 ```tsx
@@ -1355,6 +1362,17 @@ import { ChartGallery } from '@onganda/design-system/charts';
 
 A composed showcase of all chart types using Recharts and the Onganda palette:
 bar, line, area, pie, radar, scatter, treemap, funnel, radial bar, and composed charts.
+
+**The gallery's own parts are exported**, so a product's chart can be the
+gallery's chart, not an imitation of it:
+
+| Export | What it is |
+|---|---|
+| `ChartPanel` | The card every gallery chart sits in: `title`, category `tag`, `category`, the chart, its `legend`, `fullWidth` |
+| `ChartTooltip` | The dark tooltip plate — `<Tooltip content={<ChartTooltip />} />` |
+| `ChartPointTooltip` | A scatter point's tooltip (`{ label, x, y }`) — `<Tooltip content={<ChartPointTooltip />} />` |
+| `ChartTreemapCell` | A treemap tile, inset a pixel, named when it fits — `<Treemap content={<ChartTreemapCell />} />` |
+| `ChartLegend`, `chartTheme(isDark)` | The legend, and the grid, axes and tooltip styling for any recharts chart |
 
 **Drawing your own chart.** The gallery is a specimen, not a component. A
 product charting its own data reads `chartTheme(isDark)` for the grid, axes,

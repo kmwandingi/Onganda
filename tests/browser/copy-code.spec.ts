@@ -30,6 +30,13 @@ test('every section on /showcase copies as code that compiles and passes the gua
     await expect(page.getByTestId('copy-code')).toHaveCount(0);
   }
 
+  // Zero gaps: every section must be expressible with the design system alone
+  // — no private helper, no dropped render callback, no hand-built card the
+  // generator had to rewrite. A gap here is missing in the SYSTEM.
+  const gaps = await page.evaluate(() => (window as unknown as { __ongandaCopyGaps?: Record<string, unknown[]> }).__ongandaCopyGaps ?? {});
+  const withGaps = Object.entries(gaps).filter(([, g]) => g.length);
+  expect(withGaps, `sections the design system cannot reproduce: ${JSON.stringify(withGaps)}`).toEqual([]);
+
   const guard = (() => {
     try { execFileSync('node', ['scripts/check-design-tokens.mjs', '--paths', OUT], { encoding: 'utf8' }); return ''; }
     catch (e) { return String((e as { stdout?: string }).stdout ?? e); }
