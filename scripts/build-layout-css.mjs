@@ -28,7 +28,10 @@ const SRC = path.join(root, 'src/components/onganda');
 const OUT = path.join(root, 'src/design-system/lib-layout.css');
 
 // Every class the package's own components carry. Read from source, so a new
-// class in a component appears here on the next build.
+// class in a component appears here on the next build. The whole className
+// expression is read, not only a literal attribute: a class list chosen by a
+// condition (`className={compact ? 'flex' : 'flex px-6 py-8'}`) was skipped,
+// and StatCard lost its padding in every consumer without Tailwind.
 const files = [
   'onganda-primitives.tsx',
   'onganda-patterns.tsx',
@@ -37,13 +40,29 @@ const files = [
   'onganda-charts.tsx'
 ].filter(f => existsSync(path.join(SRC, f)));
 
+/** The source of every className value: a quoted attribute, or a braced
+ *  expression up to its matching brace. */
+function classNameExpressions(text) {
+  const out = [];
+  for (const m of text.matchAll(/className=(["'{])/g)) {
+    const start = m.index + m[0].length - 1;
+    if (m[1] !== '{') { out.push(text.slice(start, text.indexOf(m[1], start + 1) + 1)); continue; }
+    let depth = 0;
+    for (let i = start; i < text.length; i++) {
+      if (text[i] === '{') depth++;
+      else if (text[i] === '}' && --depth === 0) { out.push(text.slice(start, i + 1)); break; }
+    }
+  }
+  return out;
+}
+
 const candidates = new Set();
 for (const f of files) {
   const text = readFileSync(path.join(SRC, f), 'utf8');
-  for (const m of text.matchAll(/className=(?:\{`|["'])([^"'`]*)/g)) {
-    for (const cls of m[1].split(/\s+/)) {
+  for (const expr of classNameExpressions(text)) for (const m of expr.matchAll(/(["'`])((?:\\.|(?!\1)[^\\])*?)\1/g)) {
+    for (const cls of m[2].split(/\s+/)) {
       // Skip template holes and this package's own semantic classes.
-      if (!cls || cls.includes('${') || cls.startsWith('onganda-')) continue;
+      if (!cls || cls.includes('${') || cls.includes('}') || cls.startsWith('onganda-')) continue;
       candidates.add(cls);
     }
   }

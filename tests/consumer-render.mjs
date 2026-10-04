@@ -185,6 +185,7 @@ try {
         eyebrowTag: eyebrow ? eyebrow.tagName + '.' + (eyebrow.className || '') : null,
         utilityEmitted,
         eyebrowTracking: s ? s.letterSpacing : null,
+        statPadding: (() => { const card = document.querySelector('#stat > *'); return card ? getComputedStyle(card).paddingTop : null; })(),
         labelFound: !!label,
         rootMuted: getComputedStyle(document.documentElement).getPropertyValue('--onganda-text-muted').trim(),
         rootSurface: getComputedStyle(document.documentElement).getPropertyValue('--onganda-surface').trim(),
@@ -244,6 +245,11 @@ try {
       if (!probe.fonts.includes(face)) {
         throw new Error(`${name}: the ${face} face did not load (loaded: ${probe.fonts.join(', ') || 'none'}). Headings fall back to Arial.`);
       }
+    }
+    // StatCard picks its classes with a condition; the packaged layout CSS once
+    // skipped them, and the cell lost its padding in every consumer.
+    if (expectStyled && probe.statPadding !== '32px') {
+      throw new Error(`${name}: StatCard padding-top is ${probe.statPadding}, expected 32px (py-8). A conditional className was not packaged.`);
     }
     const styled = probe.eyebrowTransform === 'uppercase';
     if (styled !== expectStyled) {
