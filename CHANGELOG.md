@@ -5,6 +5,99 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — palettes, chosen in one file
+
+The roles were always built from one fixed set of pigments, so a security
+tool and a school site both came out in Kalahari earth. A palette is now the
+set of pigments the roles are built from, and a product chooses one in a
+single file:
+
+```ts
+// src/onganda-palette.ts, imported on the first line of main.tsx
+import { selectPalette } from '@onganda/design-system/palettes';
+selectPalette('coast');
+```
+
+- **Three palettes.** `onganda` (the default, unchanged), `coast` (cool fog and
+  signal amber: Radix Colors slate, teal, amber, iris, red) and `etosha` (salt
+  pan, acacia and sun: Radix sand, grass, yellow, blue, red). The new two use
+  the Okabe-Ito chart series, distinct for every common colour-vision
+  deficiency.
+- **Every palette meets the same contrast claims.** The claims moved into
+  `CONTRAST_CLAIMS` (`onganda-roles.ts`); `check:contrast` measures every
+  palette in both modes (308 measurements), and the browser audit measures the
+  showcase and two test pages in `coast` and `etosha`, light and dark.
+- **Everything follows.** `COLOR`, the roles, statuses, peer accents, system
+  identities, chart series, the weave, the brand-guide swatches, the CSS
+  variables (written to the page for a non-default palette) and the token
+  export. The palette is read once, at load, so module-level values agree too.
+- **CSS-only products** import `@onganda/design-system/palettes/<name>.css`
+  after `style.css`.
+- **Custom palettes:** `definePalette()` with every slot filled; the system
+  audits it on load and warns for each failing claim; `auditPalette()` returns
+  the table.
+- **On the showcase:** palette tabs on the Material Palette section reload the
+  page in that palette (`?palette=coast`).
+
+To make the components follow, 351 hard-coded ink and paper `rgba()` values
+became `inkAlpha()` / `paperAlpha()` and 203 hard-coded hex values became
+`COLOR` references or pigment variables. Under `onganda` every one renders the
+same: the visual baselines pass unregenerated. The five system icons keep their
+own pixel colours, and the editors' paper tones stay warm in every palette.
+
+### Added — `PixelPeers`: the showcase's peer colouring is the default
+
+The showcase passes `accent={accentFor(i)}` on 23 of its 27 panels and an
+ordinal tag on the peers; a product built from defaults passed neither, and
+came out one accent ink with no ordinals. `<PixelPeers>` around a set of
+`PixelPanel`s gives each the next accent and its ordinal, lays them out (up to
+`columns` across, one column on a narrow screen, no Tailwind needed) and
+staggers them in. `lift` turns on the stepped hover lift for the set, `offset`
+continues the rotation. A `SectionHeader` inside a peer takes its accent;
+`usePeer()` gives a product's own element the same. The showcase's even-grid
+example and `/test/launch` use it.
+
+### Added — `blocks/`: every showcase section as a file
+
+The copy test now writes each section's generated code to `blocks/<section>.tsx`
+and fails when the shipped file differs from what the showcase copies today
+(`UPDATE_BLOCKS=1` rewrites them). Each block compiles under strict TypeScript
+and passes `onganda-check`. They ship with the package, so an agent can start
+from `product-surface.tsx` or `controls.tsx` without opening a browser.
+
+### Added — micro-interactions
+
+- `data-onganda-slide`: a row, tab or nav item steps 2px along on hover.
+  `PixelNav` items use it.
+- `data-onganda-underline`: a text link's underline draws in, in four steps, in
+  the link's own colour, so it reads on inverse bands. `PixelFooter` links use it.
+- `MOTION_TOKENS.draw` (`steps(4, end)`, `--onganda-motion-draw`).
+- The docs name the stepped hover lift as the expressive signature of a public
+  page: `<PixelPeers lift>`, `depth="lift"`, `<PixelButton lift>`.
+
+### Changed — the agent guide starts with six steps
+
+`SKILL.md` (and the agent docs generated from it) opens with "Start here":
+choose the palette, load the system, start from a block, put peers in
+`PixelPeers`, give each section an accent, run `onganda-check`. The reasoning
+follows it.
+
+### Fixed
+
+- **Packaged layout CSS kept classes chosen inside a `className` expression.**
+  The scanner read only literal `className="…"` attributes, so `StatCard`'s
+  `py-8` and `md:px-10` were never compiled and the stat band lost its padding
+  in every consumer without Tailwind. `tests/consumer-render.mjs` now asserts
+  the padding.
+- **Sixteen hairlines with an off-ramp ink opacity** in the editors and maps
+  (0.08–0.18) now take their dark-mode pair's ramp step. The `off-ramp-ink`
+  guard missed them: its pattern stopped at the first comma inside the first
+  `rgba()` on a line.
+- **The browser contrast audit reads any colour format.** Tailwind 4 writes
+  `oklab()` for an opacity on a CSS variable; the audit misread it as RGB.
+- React keys built from a colour value collided when two palette slots share a
+  pigment; they are keyed by name or position.
+
 ### Fixed — everything on the showcase is reproducible from the system
 
 Copying every section showed six where the showcase used something the

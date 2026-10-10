@@ -89,6 +89,22 @@ function App() {
 }
 ```
 
+### 4. Choose a palette (optional)
+
+`onganda` is the default. For `coast` or `etosha`, or a palette of your own,
+make one file and import it on the first line of the entry, before anything
+else imports the design system:
+
+```ts
+// src/onganda-palette.ts
+import { selectPalette } from '@onganda/design-system/palettes';
+selectPalette('etosha');
+```
+
+Every component, the CSS variables and both modes follow it. A product that
+styles in plain CSS also imports `@onganda/design-system/palettes/etosha.css`
+after `style.css`.
+
 ---
 
 ## Supported imports
@@ -102,6 +118,7 @@ import { DocumentEditor, SlideEditor } from '@onganda/design-system/editors';
 import { AiAuthoringPanel } from '@onganda/design-system/ai';
 import { OngandaMap } from '@onganda/design-system/maps';
 import { OngandaPublicSite } from '@onganda/design-system/sites';
+import { selectPalette } from '@onganda/design-system/palettes'; // first, in its own file
 ```
 
 The package root retains the complete version 1.x surface for compatibility.
@@ -361,7 +378,7 @@ import '@onganda/design-system/style.css';
 2. **The primary action is ochre, the accent mahangu gold** — never a black primary. **Ochre is a fill**, with char black on it. As ink on a light surface it is 2.4:1 — read `accentInk` (bark rust in light, ochre in dark) for links, focus rings, and ghost hover.
 3. **Fired red is an indicator only** — status marks and invalid borders. Never behind small text, never error-message text.
 4. **System colours mean membership.** Mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo. They reach chrome only through roles.
-5. **The palette has no green and no blue.** Read status through `statusFor(name, isDark)`.
+5. **The Onganda palette has no green and no blue.** Read status through `statusFor(name, isDark)`. A product that needs other hues chooses another palette with `selectPalette()`.
 6. **Colour is never the only carrier of state** — pair it with a marker, a label, or a message.
 7. **Never hand-roll a control** — use `PixelButton`, `PixelInput`, `PixelTextarea`, `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, `PixelToggle`. One primary per view. A control on an inverse surface takes `isDark`.
 8. **No `border-radius` anywhere** — use `PixelCornerMarks` for corner decoration.

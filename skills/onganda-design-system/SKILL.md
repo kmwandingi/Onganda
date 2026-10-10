@@ -7,6 +7,37 @@ description: Build or review React interfaces that must use the Onganda design s
 
 Build products that feel unmistakably Onganda without copying the showcase's content or information architecture.
 
+## Start here
+
+These six steps produce a screen that looks like the showcase. Do them before
+reading the rest of this guide; the rest explains why they work.
+
+1. **Choose the palette in one file.** Create `src/onganda-palette.ts`:
+
+   ```ts
+   import { selectPalette } from '@onganda/design-system/palettes';
+   selectPalette('onganda'); // or 'coast', 'etosha', or your own definePalette({...})
+   ```
+
+   Import it on the first line of `main.tsx`, before anything else. Every
+   component, every CSS token and both modes follow it. See "Palettes" below.
+2. **Load the system.** Import `@onganda/design-system/style.css` and wrap the
+   app in `<DarkProvider>`.
+3. **Start from a block, not a blank file.** `blocks/` in the package holds
+   every `/showcase` section as a working component: `product-surface.tsx`
+   for a tool, `controls.tsx` for forms and settings, `patterns.tsx` for
+   dialogs, tables and empty states, `expressive-range.tsx` for a landing
+   page. Copy the closest one into your project and change its content.
+   `src/test-pages/` holds whole pages built the same way (`FormPage.tsx` for
+   a settings screen, `Studio.tsx` and `AppScreen.tsx` for tools).
+4. **Put peers in `<PixelPeers>`.** Cards, results or moments in a list go
+   inside it. Each gets the next accent and its ordinal tag, and the set is
+   laid out and staggered. Do not pass `accent` or `tag` to them by hand.
+5. **Give each section its own accent.** `<SectionHeader accent={accentFor(n)}>`,
+   with a different `n` for each section on the page.
+6. **Check it.** Run `npx onganda-check src/`, then screenshot the screen and
+   compare it with `reference/` and the block you started from.
+
 ## Start with the source of truth
 
 Read these from the package root — `node_modules/@onganda/design-system/` in a
@@ -116,7 +147,7 @@ the positive recipe, the same one `reference/product-surface.png` shows:
 |---|---|---|
 | The primary action | ochre | `<PixelButton>` — never hand-styled |
 | The section / screen | one accent, declared | `<SectionHeader accent={accentFor(n)}>` — rotate by section, so screens differ |
-| **Peer items** — cards, moments, results, ideas in a list | the next accent each | `<PixelPanel accent={accentFor(i)} tag="01">` — the accent on the spine or corner marks, and `tag` renders the filled ordinal in it. Add `icon` when peers differ in kind (upload / link / transcript), not when they are all the same thing |
+| **Peer items** — cards, moments, results, ideas in a list | the next accent each | `<PixelPeers>` around the `PixelPanel`s: each takes the next accent and its ordinal tag. By hand it is `<PixelPanel accent={accentFor(i)} tag="01">`. Add `icon` when peers differ in kind (upload / link / transcript), not when they are all the same thing |
 | State | status hue + a label | `statusFor(name, isDark)` on a `PixelDot` |
 | A rating — strength, fit | one hue, filled squares + a label | `PixelMeter` in the card's `aside` — never a status colour |
 | Icons | their own pixel colours | `systemIconForName`, `Icon*` |
@@ -152,8 +183,9 @@ system icons are on 24 cells: 24, 48 or 96. Any other size snaps to the nearest 
   — the one primary sits with the title, not as a loose link in a corner.
   Every working screen has exactly one primary.
 - **Peers are peers.** Inputs, sources or results that do the same job are
-  `PixelPanel`s with `accentFor(i, isDark)` and an ordinal `tag`; give each an `icon`
-  when they differ in kind. A rating goes in `aside` as a `PixelMeter`.
+  `PixelPanel`s inside a `PixelPeers`, which gives each its accent and ordinal;
+  give each an `icon` when they differ in kind. A rating goes in `aside` as a
+  `PixelMeter`.
 - **A field and its action are one control.** `<PixelInputGroup>` around the
   input and its button: one height, one edge.
 - **Unequal columns, aligned to the top.** A grid of panels with different
@@ -239,6 +271,40 @@ bento with a raised tinted feature, inverse statement) — all on-system. Pixel
 shadows replaced the soft drop shadows a page would otherwise reach for: they
 are allowed, a blur never is.
 
+## Palettes
+
+A palette is the set of pigments the roles are built from. The roles stay the
+same in every palette, so the rules in this guide do too: the primary action is
+`actionBg`, the accent ink is `accentInk`, peers rotate through the palette's
+five peer accents. Only the pigments change.
+
+| Palette | Mood | For |
+|---|---|---|
+| `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems |
+| `coast` | Cool fog and signal amber: slate, teal, iris | Security, infrastructure, data tools |
+| `etosha` | Salt pan, acacia and sun: sand, grass green, yellow, blue | Education, learning, public services |
+
+`coast` and `etosha` are built from Radix Colors scales, and their chart series
+is the Okabe-Ito set, which stays distinct for every common colour-vision
+deficiency. Every shipped palette passes the same contrast claims, in light and
+dark: `npm run check:contrast` measures them, and the browser audit checks the
+rendered pages.
+
+- **One file chooses it.** `selectPalette()` from
+  `@onganda/design-system/palettes`, imported first (step 1 of "Start here").
+  It must run before the system loads; a later call is ignored and logs an
+  error saying so.
+- **A product that styles in CSS** imports the matching variables after
+  `style.css`: `@import '@onganda/design-system/palettes/coast.css';`.
+  Components still read `selectPalette()`, so choose the same one there.
+- **A custom palette** is `definePalette({...})` with every slot of the
+  `Palette` type filled; the comment on each slot is the contrast it must meet.
+  Copy a shipped palette and change its pigments. On load the system audits it
+  and warns in the console for each claim it fails; `auditPalette()` returns the
+  full table. Fix every failure before shipping.
+- **Never add a hex to a component** to get a colour the palette lacks. Choose
+  another palette or define one.
+
 ## Style with tokens, not the palette
 
 `@onganda/design-system/tokens.css` (imported by `style.css`) holds every
@@ -278,6 +344,9 @@ find yourself writing one, the prop you need is probably already there:
 | An inverse band that opens a page at hero scale | `<PixelInversePanel headlineSize="hero" />` |
 | Code, terminals, aligned timestamps | `FONT.mono` / `--onganda-font-mono` / `font-mono`, at `TYPE.code` |
 | Peer accents in dark mode | `accentFor(i, isDark)` — the readable hues come first |
+| Peers coloured and numbered without passing `accent` and `tag` | `<PixelPeers>` — `columns`, `lift`, `offset` to continue the rotation |
+| Your own element that follows its peer's colour | `usePeer()?.accent` inside a `PixelPeers` |
+| A palette that is not Onganda's | `selectPalette('coast')` in one file — see "Palettes" |
 | A caption naming a block inside a section | `<PixelSubhead>` |
 | A chart that matches the gallery | `ChartPanel`, `ChartTooltip`, `ChartPointTooltip`, `ChartTreemapCell`, `ChartLegend`, `chartTheme` |
 | A card on an already-textured ground | `<PixelPanel texture="none" />` |
@@ -325,7 +394,7 @@ before you claim it is done.
 - Preserve the product's business goals, domain model, and information architecture. Onganda governs presentation and interaction.
 - Reuse existing tokens, primitives, icons, and patterns EXCLUSIVELY.
 - Style from `roles(isDark)`, not from the palette. Being in `COLOR` does not make a token available for any purpose, and every role value is measured against WCAG AA.
-- The primary action is ochre with a char black label and a bark rust edge; the in-card accent is mahangu gold with a mopane edge; danger is bark rust with a fired red edge. Char black is ink and the inverse band, never the primary fill. Ochre orange is a **fill**, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — read `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. System colours mean membership when a component picks them: mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo, and bark rust identifies Oshini; they reach chrome only through roles. The palette has no green and no blue; do not add one. Read status through `statusFor(name, isDark)`.
+- The primary action is ochre with a char black label and a bark rust edge; the in-card accent is mahangu gold with a mopane edge; danger is bark rust with a fired red edge. Char black is ink and the inverse band, never the primary fill. Ochre orange is a **fill**, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — read `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. System colours mean membership when a component picks them: mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo, and bark rust identifies Oshini; they reach chrome only through roles. The Onganda palette has no green and no blue; do not add one to it. A product that needs other hues chooses another palette. Read status through `statusFor(name, isDark)`. These pigments are the Onganda palette's; under `coast` or `etosha` the same roles hold that palette's pigments, and the role is the rule.
 - Colour is never the only carrier of state: an invalid field has a border, a marker, and a message; a status mark has a label and a hairline ring.
 - Never write a raw hex, an `rgba()`, or a generic framework color class in a component.
 - Never hand-roll a control. Use `PixelButton`, `PixelInput`, `PixelTextarea`, `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, and `PixelToggle`. One primary action per view, and no rounded corners anywhere. A control on an inverse surface takes the dark role set — pass `isDark`. A control that is not in the `/showcase` Control Standards section does not exist yet.
@@ -365,12 +434,22 @@ scales on hover.
 
 **The primitives carry it.** `PixelPanel`, `SectionHeader`, `PixelStatBand`,
 `PixelEditorialSection`, `PixelInversePanel`, `PixelEmptyState` and
-`PixelDropZone` enter on their own; the stat band staggers; tabs, choices and
-buttons compress on press; a `PixelPanel` with `onClick` lifts on hover. For
-your own elements, use the same CSS attributes from `style.css`:
-`data-onganda-enter`, `data-onganda-stagger` (on a grid), `data-onganda-lift`
-(a clickable card), `data-onganda-press`. Wrap the app in `DarkProvider`,
-which also makes framer entrances honour reduced motion.
+`PixelDropZone` enter on their own; the stat band and `PixelPeers` stagger;
+tabs, choices and buttons compress on press; a `PixelPanel` with `onClick`
+lifts on hover; a `PixelNav` item steps along on hover; a `PixelFooter` link's
+underline draws in. For your own elements, use the same CSS attributes from
+`style.css`: `data-onganda-enter`, `data-onganda-stagger` (on a grid),
+`data-onganda-lift` (a clickable card), `data-onganda-press`,
+`data-onganda-slide` (a row or tab that steps 2px along on hover) and
+`data-onganda-underline` (a text link whose underline draws in, in four
+steps). Wrap the app in `DarkProvider`, which also makes framer entrances
+honour reduced motion.
+
+**The hover lift is the expressive signature.** A card that steps up onto a
+hard shadow when the pointer reaches it is what makes a public page feel made:
+`<PixelPeers lift>` for a set of feature cards, `depth="lift"` on a single
+card, `<PixelButton lift>` on the page's call to action. Turn it up on
+editorial pages; on a product screen keep it to the primary action.
 
 In framer-motion, spread the `MOTION` presets instead of writing timings:
 
@@ -392,9 +471,11 @@ In framer-motion, spread the `MOTION` presets instead of writing timings:
 - **Micro-motion is stepped.** It moves in whole pixels on `steps()` timing,
   the grain of the pixel art: a button's trailing icon steps 2px forward on
   hover, a clickable card's tile icon steps up, the drop-zone icon bobs while
-  dragged over, a `<PixelDot live>` blinks for a running job. Use
-  `data-onganda-nudge` and `data-onganda-live` on your own elements; the
-  values are `--onganda-motion-*` in `tokens.css` and `MOTION_TOKENS` in code.
+  dragged over, a `<PixelDot live>` blinks for a running job, a nav item steps
+  along, a link's underline draws in four steps. Use `data-onganda-nudge`,
+  `data-onganda-slide`, `data-onganda-underline` and `data-onganda-live` on
+  your own elements; the values are `--onganda-motion-*` in `tokens.css` and
+  `MOTION_TOKENS` in code.
 - **Never write your own scroll entrance.** No `whileInView`, no local copy of
   `fadeUp`. Content that waits to be scrolled to comes out blank in every
   full-page screenshot, and the next agent "fixes" a page that was fine. The
@@ -522,7 +603,7 @@ Then look, at 390px and 1280px, in light and dark:
 - Hero text, tags, ticker and CTAs do not collide; display type breaks well.
 - Motion actually happens — entrance, hover, tap — and stops under reduced motion.
 - Cards are flat; texture only on grounds and inverse panels.
-- Colour sits on the work: the primary is ochre, peers carry `accentFor(i, isDark)`, metadata is neutral. A black primary means you are looking at an old build.
+- Colour sits on the work: the primary is the palette's primary (ochre in Onganda), peers sit in a `PixelPeers` or carry `accentFor(i, isDark)`, metadata is neutral. A black primary means you are looking at an old build.
 - Every loading surface has its empty, loading and error state.
 
 Do not deploy, publish, or change unrelated product behavior unless the task asks for it.

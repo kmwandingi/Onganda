@@ -7,8 +7,9 @@ Onganda is the pixel editorial design language for the Namibia AI Systems Lab. I
 > [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
-> There is no green and no blue, no corner radius, no blurred shadow, and no
-> second typeface. If the system lacks something you need, extend the system — see
+> There is no corner radius, no blurred shadow and no second typeface. The
+> Onganda palette has no green and no blue; a product that needs other hues
+> chooses another shipped palette whole, never a hex at a time. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
 
@@ -43,6 +44,29 @@ on `/showcase` to copy any section or element as working code.
 
 There is no registry release yet. `npm install @onganda/design-system`
 returns a 404 until the scoped package is published.
+
+**Choose a palette in one file.** `onganda` (warm earth, the default),
+`coast` (cool fog and signal amber, for security and data tools) or `etosha`
+(salt pan, acacia and sun, for education and public services). All three pass
+the same contrast claims in light and dark.
+
+```ts
+// src/onganda-palette.ts
+import { selectPalette } from '@onganda/design-system/palettes';
+selectPalette('coast');
+```
+
+Import that file on the first line of your entry (`import './onganda-palette';`),
+before anything else: the palette is read once, when the design system loads.
+To change the palette later, change that one line. A custom palette is
+`definePalette({...})`; `DESIGN_SYSTEM.md` §4 "Palettes" has the slots and the
+contrast each must meet.
+
+**Start from a block.** `node_modules/@onganda/design-system/blocks/` holds
+every showcase section as a component that compiles and passes
+`onganda-check` — `product-surface.tsx`, `controls.tsx`, `patterns.tsx`,
+`expressive-range.tsx` and the rest. Copy the closest one and change its
+content; it is the fastest way to a screen that looks like the showcase.
 
 Import the design tokens once in the project entry:
 
@@ -195,7 +219,7 @@ not look like Onganda at all. That is the most common failure.
 
 A **product screen** — a tool, a dashboard — also carries: the
 `SectionHeader` rhythm with the screen's one primary in its `actions`; peers as
-`PixelPanel`s with `accentFor(i, isDark)` and an ordinal `tag` (and an `icon` when they differ in kind); pixel icons
+`PixelPanel`s inside a `PixelPeers`, which gives each its accent and ordinal (and an `icon` when they differ in kind); pixel icons
 on the grid (`ICON_SIZE`); state through `statusFor` with a label and ratings
 through `PixelMeter`; flat cards; and an empty, loading and error state for
 anything that loads. `skills/onganda-design-system/SKILL.md` has the full
@@ -220,8 +244,8 @@ and add it to the showcase — that is a contribution, not a workaround.
    It is for status marks and invalid borders. Danger buttons fill with bark rust.
 3. **System colours mean membership.** Mahangu gold, mopane brown and dye plum
    identify Ombiga, Etiti and Oshitoo. They are never buttons or borders.
-4. **There is no green and no blue.** Success is a check glyph on a settled
-   tone, not a new hue.
+4. **The Onganda palette has no green and no blue.** Success is a check glyph
+   on a settled tone, not a new hue. Other hues come as a whole palette.
 5. **Nothing is rounded.** `border-radius: 0` everywhere.
 
 You do not have to memorise these. `npx onganda-check src/` fails on all of them.
@@ -239,6 +263,7 @@ The package root keeps the stable foundation and the full version 1.x compatibil
 | `@onganda/design-system/ai`      | AI authoring tools                                              |
 | `@onganda/design-system/maps`    | Branded, accessible Leaflet maps                                |
 | `@onganda/design-system/sites`   | Sections, public pages, and the showcase                        |
+| `@onganda/design-system/palettes` | Choosing the palette — loads nothing else, so it runs first     |
 
 Non-core root exports remain available throughout version 1.x. Any later removal requires a major release and a migration note.
 
@@ -289,7 +314,7 @@ WCAG AA rather than chosen by eye:
   foreground is 4.05:1, so it never sits behind small text.
 - Mahangu gold, mopane brown, and dye plum identify systems and carry chart
   series. They are not interface chrome.
-- The palette has no green and no blue, and none may be added.
+- The Onganda palette has no green and no blue, and none may be added to it. A product that needs other hues chooses `coast` or `etosha`, or defines its own palette.
 
 Never hand-roll a control. `PixelButton`, `PixelInput`, `PixelTextarea`,
 `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, and `PixelToggle`
@@ -305,7 +330,7 @@ build on the same rules:
 
 ```bash
 npx onganda-check src/        # check your own source
-npx onganda-check --contrast  # re-measure after retheming
+npx onganda-check --contrast  # measure every shipped palette; auditPalette() measures your own
 ```
 
 ## Contributing

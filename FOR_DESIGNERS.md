@@ -71,6 +71,19 @@ The `palette` group holds the raw hues. **Do not pick from it.** Pick from the
 Each palette entry carries its own `ALLOWED` / `NEVER` description in the token
 file, so the rule travels with the value.
 
+### Other palettes
+
+The roles are the same in every palette; only the pigments change. Besides the
+default `onganda` (warm earth), the system ships `coast` (cool fog and signal
+amber, for security and data tools) and `etosha` (salt pan, acacia and sun, for
+education and public services). The token file lists every palette's pigments,
+peer accents and chart series under the `palettes` group, and
+`src/design-system/palettes/<name>.css` lists every role already resolved for
+that palette, in both modes. Designing for a product on `coast`? Read the roles
+from `coast.css`, and every rule on this page still holds. All three pass the same contrast checks, in light and dark. A new
+palette is a request to the system, not a choice in a file — see "Asking for
+something new".
+
 ---
 
 ## The six things that trip people up
@@ -96,8 +109,9 @@ Every one of these is a measured fact, not an opinion. The ratios are in
    A component never picks one for a button, a border, a label or a background; they reach chrome only through measured roles (gold is the accent fill). If you name a
    system, put its hue on a mark beside the name — never *as* the name.
 
-5. **There is no green and no blue.** Success is a check glyph on the settled
-   tone, not a new hue. Do not add one.
+5. **The Onganda palette has no green and no blue.** Success is a check glyph
+   on the settled tone, not a new hue. Do not add one; a product that needs
+   other hues uses another shipped palette (`coast`, `etosha`).
 
 6. **Nothing is rounded and nothing is blurred.** `geometry/radius` is `0px`.
    Corner decoration is the stepped `PixelCornerMarks` mark. Depth, when a

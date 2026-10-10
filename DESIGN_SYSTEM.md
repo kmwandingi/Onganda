@@ -8,8 +8,9 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 > [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
-> There is no green and no blue, no corner radius, no blurred shadow, and no
-> second typeface. If the system lacks something you need, extend the system — see
+> There is no corner radius, no blurred shadow and no second typeface. The
+> Onganda palette has no green and no blue; a product that needs other hues
+> chooses another shipped palette whole, never a hex at a time. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
 
@@ -137,7 +138,7 @@ function Root() {
 
 ### Supported package paths
 
-The root keeps stable tokens, primitives, icons, and version 1.x compatibility exports. Use `/charts`, `/editors`, `/ai`, `/maps`, and `/sites` for larger features. `/core` provides the foundation alone.
+The root keeps stable tokens, primitives, icons, and version 1.x compatibility exports. Use `/charts`, `/editors`, `/ai`, `/maps`, and `/sites` for larger features. `/core` provides the foundation alone. `/palettes` chooses the palette and loads nothing else, so it can run before the rest (§4 "Palettes").
 
 Non-core root exports remain available throughout version 1.x. Removing one requires a major release and a migration note.
 
@@ -179,6 +180,12 @@ import { COLOR } from '@onganda/design-system';
 | `darkBg`        | `#120F0D` | Dark BG        | Deepest dark                  |
 | `darkCard`      | `#1C1713` | Dark Card      | Elevated dark surface         |
 | `darkCardAlt`   | `#271F1A` | Dark Card Alt  | Alt elevated dark surface     |
+
+These are the values in the default `onganda` palette. Each key reads one slot
+of the active palette (`ochreOrange` is `primary`, `barkRust` is `primaryInk`,
+`milletClay` is `paper`; the map is at the top of `onganda-colors.ts`), so under
+`coast` or `etosha` it holds that palette's pigment for the same job. See
+"Palettes" in §4.
 
 This table is the inventory. It does not grant permission to use a token
 anywhere. **Read §4 before styling anything** — it says which role each token
@@ -349,8 +356,9 @@ Always call `statusFor(name, isDark)`, not `STATUS[name]`: mopane brown drops to
 label. Some hues fall under 3:1 against their surface — gold on cream is 1.6:1 —
 so a bare dot also needs a hairline: `<PixelDot ring={c.lineStrong} />`.
 
-**The palette is earth-derived. It has no green and no blue, and none may be
-added.** Success reads as a check glyph on a settled tone.
+**The Onganda palette is earth-derived. It has no green and no blue, and none
+may be added to it.** Success reads as a check glyph on a settled tone. A
+product that needs other hues chooses another palette (below).
 
 ### Charts
 
@@ -358,19 +366,70 @@ added.** Success reads as a check glyph on a settled tone.
 import { CHART_SERIES } from '@onganda/design-system';
 ```
 
-Fixed order: ochre orange, bark rust, mahangu gold, mopane brown, dye plum, fired
-red. Take colors from the front. Never reorder or substitute, so series index 2
+Fixed order in the Onganda palette: ochre orange, bark rust, mahangu gold,
+mopane brown, dye plum, fired red. `coast` and `etosha` ship their own six, from
+the Okabe-Ito set, which stays distinct for every common colour-vision
+deficiency. Take colors from the front. Never reorder or substitute, so series index 2
 reads the same in every chart across a product.
 
-### Theming
+### Palettes
 
-`COLOR_CSS_VARS` gives the CSS-variable form of every token
-(`var(--onganda-ochre-orange, #D9791F)`). Override the `--onganda-*` properties in
-a consumer stylesheet to retheme without forking components. Keep `COLOR` for hex
-math such as `` `${hex}60` ``.
+A palette is the set of pigments the roles are built from. Every role above is
+defined by a palette SLOT — `actionBg` is the palette's `primary`, `accentInk`
+its `primaryInk` — so a palette changes every pigment and no rule.
 
-If you retheme, run `npx onganda-check --contrast` — the guard reads the token
-source, so your values are measured, not the shipped ones.
+| Palette | Mood | For |
+|---|---|---|
+| `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems |
+| `coast` | Cool fog and signal amber: Radix slate, teal, amber, iris | Security, infrastructure, data tools |
+| `etosha` | Salt pan, acacia and sun: Radix sand, grass, yellow, blue | Education, learning, public services |
+
+Each palette also carries five peer accents for light grounds and five for dark
+(the `accentFor` rotation and the five system identities) and six chart
+series. Every shipped palette passes the same contrast claims (`CONTRAST_CLAIMS`
+in `onganda-roles.ts`) in both modes: `npm run check:contrast` measures them
+from source, and the browser audit measures the rendered showcase and test
+pages in each palette.
+
+**Choose it in one file, before the system loads.**
+
+```ts
+// src/onganda-palette.ts — imported on the first line of main.tsx
+import { selectPalette } from '@onganda/design-system/palettes';
+selectPalette('coast');
+```
+
+The palette is read once, when the design system loads, so every value built
+from it agrees — including the module-level ones a chart theme or a block
+palette builds. `@onganda/design-system/palettes` loads nothing else, which is
+what lets the selection run first. A `selectPalette()` call after the system
+has loaded is ignored and logs an error. A palette other than `onganda` also
+writes its CSS variables (roles, status, accents and pigments, both modes) to
+the page, so `var(--onganda-*)` and the Tailwind utilities follow it.
+
+**Styling in CSS without React**, import the matching variables after
+`style.css`: `@import '@onganda/design-system/palettes/coast.css';`. Generated
+from the same roles; `src/design-system/palettes/` holds all three.
+
+**A custom palette** fills every slot of the `Palette` type:
+
+```ts
+import { definePalette, PALETTES, selectPalette } from '@onganda/design-system/palettes';
+selectPalette(definePalette({ ...PALETTES.coast, label: 'Harbour', primary: '#0d9b8a' }));
+```
+
+The comment on each slot in `onganda-palettes.ts` is the contrast it must meet.
+On load the system measures a custom palette against `CONTRAST_CLAIMS` and
+warns in the console for each claim it fails; `auditPalette()` returns the full
+table. A failing palette is not shippable.
+
+`COLOR_CSS_VARS` still gives the CSS-variable form of every key
+(`var(--onganda-ochre-orange, #D9791F)`). Overriding those properties by hand
+does not reach components, which read the palette in JavaScript; choose a
+palette instead.
+
+The editors' paper tones (`EDITOR_SURFACE`) are the same warm papers in every
+palette: they are measured against the Onganda ink only.
 
 ---
 
@@ -658,6 +717,37 @@ one label, no inverse band. A solid button in a flat box reads as a heavy blob,
 which is why those panels looked *too black* while carrying **less** black than
 the landing page (3% against 12%). The fix was never less black; it was more of
 everything else.
+
+### PixelPeers
+
+```tsx
+<PixelPeers>
+  {ideas.map(idea => <PixelPanel key={idea.id} eyebrow={idea.kind} title={idea.title} note={idea.summary} />)}
+</PixelPeers>
+```
+
+A set of peers — cards in a feed, results, moments, ideas — coloured and
+numbered the way the showcase does it by hand. Each child takes the next
+`accentFor(i, isDark)` and its ordinal, "01", "02", and a `PixelPanel` or
+`SectionHeader` inside it uses them unless given its own `accent` or `tag`. The
+set is laid out up to `columns` across (default 3), drops to one column on a
+narrow screen without Tailwind, and staggers its entrance.
+
+| Prop | Default | |
+|---|---|---|
+| `columns` | 3 | the most peers in a row |
+| `minWidth` | 240 | below this a peer moves to the next row |
+| `gap` | 16 | the 4px grid |
+| `numbered` | `true` | ordinal tags; `false` for peers that are not a sequence |
+| `lift` | `false` | peers step up onto a hard shadow on hover — the editorial dial |
+| `offset` | 0 | start the accent rotation further along, so a second set does not repeat the first |
+
+Quiet panels inside it stay neutral: they are chrome. For a product's own
+element that should follow its peer's colour, read `usePeer()?.accent`.
+
+It exists because the showcase passes `accent={accentFor(i)}` on 23 of its 27
+panels and a product built from defaults passed it on none, so every card came
+out the same accent ink. The showcase's version is now the default.
 
 ### PixelChoice and PixelChoiceList
 
@@ -1789,7 +1879,7 @@ on this system.
   bark rust. Char black is ink, never the primary fill.
 - Fired red is an indicator: critical status and invalid borders. It never sits
   behind small text and is never error-message text.
-- The palette has no green and no blue. Do not add one for success or info.
+- The Onganda palette has no green and no blue. Do not add one for success or info; a product that needs them chooses another palette.
 - Read status through `statusFor(name, isDark)`, never `STATUS[name]`.
 - `npm run check:design` enforces all of this across every design-system module.
 
@@ -1843,6 +1933,23 @@ animate={{ x: ['0%', '-50%'] }} transition={{ duration: 32, ease: 'linear', repe
 ```
 
 Never use `type: 'spring'` for section entrances. Never use `scale` on card hover.
+
+Without framer-motion, the same motion is a data attribute from `style.css`:
+
+| Attribute | On | Does |
+|---|---|---|
+| `data-onganda-enter` | a section or card | rises 12px and fades in when it comes into view |
+| `data-onganda-stagger` | a grid or list | its children arrive 60ms apart (`PixelPeers` sets it) |
+| `data-onganda-lift` | a clickable card | lifts 4px on hover |
+| `data-onganda-press` | a control | compresses to 0.97 on press |
+| `data-onganda-nudge` | an element whose last icon should move | the icon steps 2px forward on hover |
+| `data-onganda-slide` | a row, tab or nav item | steps 2px along on hover (`PixelNav` sets it) |
+| `data-onganda-underline` | a text link | its underline draws in, in four steps, in the link's own colour (`PixelFooter` sets it) |
+| `data-onganda-live` | a status mark | blinks in two steps |
+
+Every one is off under `prefers-reduced-motion`. The stepped hover lift —
+`<PixelPeers lift>`, `depth="lift"`, `<PixelButton lift>` — is the expressive
+signature of a public page; a product screen keeps it to its primary action.
 
 ### 5. Step-line diagrams
 
@@ -1970,7 +2077,7 @@ produced unstyled components.
 
 ```bash
 npx onganda-check src/        # check your own source against the same rules
-npx onganda-check --contrast  # re-measure after retheming
+npx onganda-check --contrast  # measure every shipped palette; auditPalette() measures your own
 ```
 
 A genuine exception is declared in the file and reviewed like any other code:

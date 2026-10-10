@@ -7,8 +7,9 @@ This document serves as the single source of truth for the design language of **
 > [`tokens/onganda.tokens.json`](./tokens/onganda.tokens.json) — every colour,
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
-> There is no green and no blue, no corner radius, no blurred shadow, and no
-> second typeface. If the system lacks something you need, extend the system — see
+> There is no corner radius, no blurred shadow and no second typeface. The
+> Onganda palette has no green and no blue; a product that needs other hues
+> chooses another shipped palette whole, never a hex at a time. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
 
@@ -104,9 +105,11 @@ The colour rules, all measured and all enforced by `npm run check:design`:
     steps in `ALPHA`, which is mode-aware. Only `textFaint`, `line`, and
     `lineStrong` sit below the contrast floors, and they are reserved for
     disabled text, ordinals, and decorative dividers.
-6.  **The palette has no green and no blue, and none may be added.** The four
-    status colours are `active` (ochre), `caution` (gold), `critical` (fired
-    red), and `settled` (mopane brown). Read them through
+6.  **The Onganda palette has no green and no blue, and none may be added to
+    it.** A product that needs other hues chooses another palette (see
+    "Palettes" below). The four status colours are `active` (ochre), `caution`
+    (gold), `critical` (fired red), and `settled` (mopane brown) in Onganda,
+    and the same four slots in every palette. Read them through
     `statusFor(name, isDark)` — mopane brown drops to 2.25:1 on a dark card.
 7.  **Colour is never the only carrier of state.** An invalid field has a red
     border, a marker, and a message. A status mark has a text label and a
@@ -115,17 +118,33 @@ The colour rules, all measured and all enforced by `npm run check:design`:
     ticker, and the black lab card are locally dark. Pass `isDark` to controls
     sitting on them, or their hover resolves against the wrong background.
 
+### Palettes
+
+A palette is the set of pigments the roles are built from: `onganda` (the
+default, warm earth), `coast` (cool fog and signal amber, for security,
+infrastructure and data tools) and `etosha` (salt pan, acacia and sun, for
+education and public services). The roles, and every rule in this document,
+are the same in all three; only the pigments change. A product chooses one in a
+single file with `selectPalette()` from `@onganda/design-system/palettes`,
+imported before anything else. `DESIGN_SYSTEM.md` §4 has the details.
+
 ### Adding a colour
 
-Almost never the right move. Before proposing one:
+Almost never the right move. A product that wants different hues chooses or
+defines a palette; it never adds a hex to a component. To change the system's
+own pigments:
 
-1.  Name the role it fills that no existing role covers.
+1.  Name the palette slot it fills (`Palette` in `onganda-palettes.ts`), or
+    the role that no slot covers.
 2.  Measure it against both surfaces in both modes: 4.5:1 for text, 3:1 for a
-    boundary or indicator. `npm run check:contrast -- --table` shows the format.
-3.  Add it to `COLOR`, `COLOR_CSS_VARS`, `lib-style.css`, and `COLOR_POLICY`.
-    The guard parses the palette from `onganda-colors.ts`, so there is no
-    separate allowlist to update — and no way for the two to drift.
-4.  Add it to `DESIGN_SYSTEM.md` §4 with its allowed and forbidden uses.
+    boundary or indicator. `npm run check:contrast -- --table` measures every
+    palette and shows the format.
+3.  Change the palette in `onganda-palettes.ts`. `COLOR`, the roles, the CSS
+    variables and the token export are all built from it, and the guard reads
+    the permitted pigments from the same file — no separate allowlist to
+    update, and no way for them to drift.
+4.  Record its allowed and forbidden uses in `DESIGN_SYSTEM.md` §4 and
+    `COLOR_POLICY`.
 
 ---
 
@@ -281,19 +300,20 @@ always one of these:
 | Every surface decorated, nothing stands out | Every card at feature weight | One or two `feature` surfaces; the rest `emphasis="quiet"` |
 | A tool that looks like a landing page | Editorial devices transplanted: ticker, stat band, edge strips | Keep them on public pages |
 | A wall of warnings | `PixelNotice` used as the page body | State the condition once; notices are for exceptions |
-| Every card the same colour in a list of peers | `accent` never passed | `accentFor(i, isDark)` — for peers only |
+| Every card the same colour in a list of peers | `accent` never passed | `<PixelPeers>` around them, or `accentFor(i, isDark)` — for peers only |
 | Muddy, tiring page | Texture on the ground *and* on every card | `TEXTURE`, and never stack it |
 | A dead control shouts | A disabled fill is still a fill | Disabled takes the disabled roles |
 
 ### Colour means identity or state
 
-The palette has nine hues and a page is not better for using more of them.
+A palette has nine pigments and a page is not better for using more of them.
 Colour in this system says something: which system, which peer, which state.
 Spent anywhere else it becomes noise that a reader tries and fails to decode.
 
 - **Peers in a list** — cards in a feed, blocks in a section — take successive
-  accents with `accentFor(i, isDark)`, the site's own order. That is the one place
-  colour is distributed on purpose.
+  accents, the site's own order. Put them in a `PixelPeers` and it is done for
+  you; by hand it is `accentFor(i, isDark)`. That is the one place colour is
+  distributed on purpose.
 - **Metadata** — counts, durations, sizes, file types — is neutral. A
   `PixelTag` without `hex` renders outlined in ink.
 - **State** reads through `statusFor()`, and always with a label.
@@ -422,9 +442,11 @@ All visual flair must be pixelated.
 Motion is part of the design language, not a garnish — and it comes from the
 defaults. `PixelPanel`, `SectionHeader`, `PixelStatBand`,
 `PixelEditorialSection`, `PixelInversePanel`, `PixelEmptyState` and
-`PixelDropZone` enter on their own; the stat band staggers; tabs, choices and
-buttons compress on press; a `PixelPanel` with an `onClick` lifts on hover. A
-product built from the primitives moves without writing any motion. Until
+`PixelDropZone` enter on their own; the stat band and `PixelPeers` stagger;
+tabs, choices and buttons compress on press; a `PixelPanel` with an `onClick`
+lifts on hover; a `PixelNav` item steps along and a `PixelFooter` link's
+underline draws in. A product built from the primitives moves without writing
+any motion. Until
 this was the case, every product screen came out still.
 
 *   **Quiet and mechanical.** Things rise, step and settle: a short ease-out, no spring, no bounce, no glow, no scale on hover. Avoid glossy, floating, or generic SaaS animation.
@@ -436,9 +458,14 @@ this was the case, every product screen came out still.
     | `data-onganda-stagger` | on a grid or list: children arrive in turn, 60ms apart |
     | `data-onganda-lift` | a clickable card lifts 4px on hover |
     | `data-onganda-press` | compresses to 0.97 on press |
+    | `data-onganda-nudge` | the element's last icon steps 2px forward on hover |
+    | `data-onganda-slide` | a row, tab or nav item steps 2px along on hover |
+    | `data-onganda-underline` | a text link's underline draws in, in four steps, in its own colour |
+    | `data-onganda-live` | a status mark blinks in two steps |
 
     In framer-motion, `MOTION.entrance`, `fadeUp`, `staggerParent` / `staggerChild`, `hoverLift`, `tap`, `ticker`.
-*   **Every interactive thing answers.** A clickable card lifts or takes its accent edge; a control shows hover, focus and pressed; a selected item takes `controlOn` or the accent edge — never texture.
+*   **Every interactive thing answers.** A clickable card lifts or takes its accent edge; a control shows hover, focus and pressed; a link draws its underline; a selected item takes `controlOn` or the accent edge — never texture.
+*   **The stepped hover lift is the expressive signature.** A card that steps up and left onto a hard shadow when the pointer reaches it is what makes a public page feel made: `<PixelPeers lift>` for a set of feature cards, `depth="lift"` on one card, `<PixelButton lift>` on the call to action. Turn it up on editorial pages; a product screen keeps it to its primary action.
 *   **Loading moves, and stops.** `PixelSkeleton` sweeps and `PixelProgress` fills while work progresses; an error replaces them with a `PixelNotice status="critical"`. Nothing sweeps forever.
 *   **Reduced motion is honoured everywhere.** The CSS presets switch off under `prefers-reduced-motion`; `DarkProvider` wraps the tree in `MotionConfig reducedMotion="user"`, so framer entrances drop their slide; perpetual animations (ticker, sweep, edge strips) check `useMotionOK()`. The page is complete without motion.
 *   **Public pages keep the showcase's motion**: the moving black system ticker, pixel-column motion, staggered headline entrance, card entrance, hover lift, animated diagram and flow affordances. Do not remove it unless an accessibility or layout issue requires it. A product screen uses entrance, stagger, lift and press — never the ticker.
