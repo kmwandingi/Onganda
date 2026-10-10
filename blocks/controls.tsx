@@ -271,9 +271,11 @@ export function OneRecipePerControlNoFreeChoicesSection() {
               </div>
             </dl>
             <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-              The primary is ochre, never black; the in-card accent is mahangu gold; mopane and plum are their hovers. Each fill carries an edge that clears 3:1 on the surface. Ochre is a
-              <em>fill</em>
-              : as ink on light it is 2.4:1, so the accent ink is bark rust there.
+              <>
+                The primary is ochre, never black; the in-card accent is mahangu gold; mopane and plum are their hovers. Each fill carries an edge that clears 3:1 on the surface. Ochre is a
+                <em>fill</em>
+                : as ink on light it is 2.4:1, so the accent ink is bark rust there.
+              </>
             </p>
           </PixelPanel>
           <PixelPanel eyebrow="Status · four states, no green, no blue" accent={accentFor(1)}>
@@ -308,7 +310,9 @@ export function OneRecipePerControlNoFreeChoicesSection() {
               </div>
             </dl>
             <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-              A status mark always carries a text label and a hairline ring. Gold on cream is 1.6:1, so the ring is what delineates it — colour never carries the meaning alone.
+              <>
+                A status mark always carries a text label and a hairline ring. Gold on cream is 1.6:1, so the ring is what delineates it — colour never carries the meaning alone.
+              </>
             </p>
             <div className="mt-8">
               <PixelSubhead spaced>Density · the surface decides, not the control</PixelSubhead>
@@ -352,7 +356,9 @@ export function OneRecipePerControlNoFreeChoicesSection() {
                 <PixelIconButton label="Move up"><span aria-hidden="true">↑</span></PixelIconButton>
               </div>
               <p className="mt-4 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                One primary action per view. Danger is bark rust, not fired red: fired red's best foreground is 4.05:1, under the floor for a button label.
+                <>
+                  One primary action per view. Danger is bark rust, not fired red: fired red's best foreground is 4.05:1, under the floor for a button label.
+                </>
               </p>
             </div>
           </PixelPanel>
@@ -431,7 +437,9 @@ export function OneRecipePerControlNoFreeChoicesSection() {
                 </div>
               </div>
               <p className="text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                Checked is ochre on all three, so "on" reads the same everywhere. The ochre fill is 2.56:1 against dust light, so the accent-ink edge carries the boundary. No control is rounded and none uses a system colour.
+                <>
+                  Checked is ochre on all three, so "on" reads the same everywhere. The ochre fill is 2.56:1 against dust light, so the accent-ink edge carries the boundary. No control is rounded and none uses a system colour.
+                </>
               </p>
             </div>
           </PixelPanel>

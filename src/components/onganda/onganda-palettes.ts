@@ -4,7 +4,7 @@
 // palette only says what each pigment is. Swap the palette and every component
 // follows, in both modes, with the same measured contrast.
 //
-// Choose one in ONE file, imported before anything else in the app:
+// Choose one in ONE file, imported by the app entry, before the first render:
 //
 //   // src/onganda-palette.ts
 //   import { selectPalette } from '@onganda/design-system/palettes';
@@ -13,9 +13,11 @@
 //   // src/main.tsx — first line
 //   import './onganda-palette';
 //
-// The palette is read once, when the design system loads, so every value the
-// components derive from it agrees. This module imports nothing else from the
-// system; that is what lets the selection run first.
+// Module load order cannot be relied on: a bundler that splits the system into
+// its own chunk evaluates it before the entry's code. So selectPalette()
+// notifies every value the system built from the palette, and each rebuilds in
+// place (onPaletteChange). Anything rendered after the call uses the palette.
+// This module imports nothing else from the system.
 //
 // Every shipped palette passes `npm run check:contrast`: CONTRAST_CLAIMS in
 // onganda-roles.ts, in both modes. A custom palette from definePalette() is
@@ -32,6 +34,10 @@ export interface Palette {
   label: string;
   /** one line: the mood and the products it suits */
   description: string;
+  /** the hue rules this palette adds to the shared ones — what an agent must
+   *  not do with these pigments. The showcase and the docs read it, so the
+   *  rule a reader sees is always the active palette's. */
+  rules: string;
   /** light page ground; the recessed well */
   canvas: string;
   /** lifted light surface: cards, panels, bands */
@@ -81,6 +87,7 @@ export const PALETTES = {
   onganda: {
     label: 'Onganda',
     description: 'Warm earth. The lab palette: ochre, mahangu gold, mopane and dye plum on millet clay.',
+    rules: 'No green and no blue. Success is a check glyph on the settled tone, never a new hue.',
     canvas: '#E8E1CF',
     surface: '#F3E8C3',
     ink: '#1E1A17',
@@ -112,6 +119,7 @@ export const PALETTES = {
   coast: {
     label: 'Coast',
     description: 'Cool fog and signal amber. Slate, teal and iris for security, infrastructure and data tools.',
+    rules: 'Cool, with one warm signal: amber is the secondary action and caution, and nothing else. Success is a check glyph on the settled slate, never a green.',
     canvas: '#e8e8ec',
     surface: '#f9f9fb',
     ink: '#1c2024',
@@ -143,6 +151,7 @@ export const PALETTES = {
   etosha: {
     label: 'Etosha',
     description: 'Salt pan, acacia and sun. Sand, grass green and yellow for education and public services.',
+    rules: 'Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text.',
     canvas: '#f1f0ef',
     surface: '#fdfdfc',
     ink: '#21201c',
@@ -176,21 +185,21 @@ export type PaletteName = keyof typeof PALETTES;
  *  slot comments in `Palette` are the contrast each must meet. */
 export const definePalette = (palette: Palette): Palette => palette;
 
-const store = globalThis as typeof globalThis & { __ongandaPalette?: Palette; __ongandaPaletteRead?: boolean };
+// On globalThis, so a second copy of the package in one app shares the choice.
+const store = globalThis as typeof globalThis & { __ongandaPalette?: Palette; __ongandaPaletteListeners?: (() => void)[] };
 
-/** Choose the palette. Call it before the rest of the system is imported —
- *  see the top of this file. A later call cannot reach values the components
- *  have already built, so it reports the mistake instead of half-applying. */
+/** Choose the palette, before the first render (see the top of this file). */
 export const selectPalette = (palette: PaletteName | Palette): void => {
-  if (store.__ongandaPaletteRead) {
-    console.error('[onganda] selectPalette() ran after the design system loaded, so it was ignored. Import your palette file first, before anything that imports @onganda/design-system.');
-    return;
-  }
   store.__ongandaPalette = typeof palette === 'string' ? PALETTES[palette] : palette;
+  for (const rebuild of store.__ongandaPaletteListeners ?? []) rebuild();
 };
 
-/** The palette the system was built from. Read once, by onganda-colors.ts. */
-export const activePalette = (): Palette => {
-  store.__ongandaPaletteRead = true;
-  return store.__ongandaPalette ?? PALETTES.onganda;
+/** The palette in use. */
+export const activePalette = (): Palette => store.__ongandaPalette ?? PALETTES.onganda;
+
+/** Run `rebuild` whenever the palette changes, so a value the system built
+ *  from it at load follows. Listeners run in the order modules registered
+ *  them, so a module's dependencies rebuild before it does. */
+export const onPaletteChange = (rebuild: () => void): void => {
+  (store.__ongandaPaletteListeners ??= []).push(rebuild);
 };

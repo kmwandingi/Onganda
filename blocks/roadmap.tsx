@@ -14,7 +14,7 @@ export function FivePhasesOneDirectionSection() {
         accent={accentFor(4)}
       />
       <div className="hidden lg:block relative mb-14" aria-hidden="true">
-        <div className="h-px bg-(--onganda-char-black)/12 w-full" />
+        <div className="h-px bg-(--onganda-text)/12 w-full" />
         <div className="absolute top-0 left-0 w-full flex">
           <div
             className="flex-1 flex flex-col items-center"
@@ -105,7 +105,7 @@ export function FivePhasesOneDirectionSection() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
+      <div className="flex flex-col gap-0 divide-y divide-(--onganda-line)">
         <div
           className="flex flex-col lg:flex-row gap-6 lg:gap-10 py-8 group"
           style={{  }}
@@ -135,23 +135,23 @@ export function FivePhasesOneDirectionSection() {
                 complete
               </span>
             </div>
-            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">
+            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-text-muted) mt-1">
               Q1 – Q2 2024
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2.5 mb-1">
-              <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">
+              <h3 className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">
                 Ouheke
               </h3>
-              <span className="text-sm text-(--onganda-char-black)/66 font-normal">Foundation</span>
+              <span className="text-sm text-(--onganda-text-muted) font-normal">Foundation</span>
             </div>
-            <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">
+            <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-5 max-w-xl">
               Establishing sovereign data infrastructure. Corpus ingestion, annotation pipelines, and base model evaluation across Oshiwambo language variants.
             </p>
             <div className="flex items-center gap-3">
               <div
-                className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative"
+                className="flex-1 h-3 bg-(--onganda-text)/8 overflow-hidden relative"
                 role="progressbar"
                 aria-valuenow={100}
                 aria-valuemin={0}
@@ -189,7 +189,7 @@ export function FivePhasesOneDirectionSection() {
             </div>
           </div>
           <div className="lg:w-60 xl:w-72 shrink-0">
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">
               Milestones
             </p>
             <ul className="flex flex-col gap-2">
@@ -255,23 +255,23 @@ export function FivePhasesOneDirectionSection() {
                 active
               </span>
             </div>
-            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">
+            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-text-muted) mt-1">
               Q3 – Q4 2024
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2.5 mb-1">
-              <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">
+              <h3 className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">
                 Oshitwa
               </h3>
-              <span className="text-sm text-(--onganda-char-black)/66 font-normal">Adaptation</span>
+              <span className="text-sm text-(--onganda-text-muted) font-normal">Adaptation</span>
             </div>
-            <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">
+            <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-5 max-w-xl">
               Fine-tuning and distillation cycles. Oshini mill pipelines processing base models into Namibia-aligned variants for evaluation and iteration.
             </p>
             <div className="flex items-center gap-3">
               <div
-                className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative"
+                className="flex-1 h-3 bg-(--onganda-text)/8 overflow-hidden relative"
                 role="progressbar"
                 aria-valuenow={78}
                 aria-valuemin={0}
@@ -315,7 +315,7 @@ export function FivePhasesOneDirectionSection() {
             </div>
           </div>
           <div className="lg:w-60 xl:w-72 shrink-0">
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">
               Milestones
             </p>
             <ul className="flex flex-col gap-2">
@@ -381,23 +381,23 @@ export function FivePhasesOneDirectionSection() {
                 active
               </span>
             </div>
-            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">
+            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-text-muted) mt-1">
               Q1 – Q2 2025
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2.5 mb-1">
-              <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">
+              <h3 className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">
                 Ombaanga
               </h3>
-              <span className="text-sm text-(--onganda-char-black)/66 font-normal">Containment</span>
+              <span className="text-sm text-(--onganda-text-muted) font-normal">Containment</span>
             </div>
-            <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">
+            <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-5 max-w-xl">
               Agent runtimes and model containers. Ombiga vessel system accepting adapted models. Memory systems and multi-agent coordination protocols.
             </p>
             <div className="flex items-center gap-3">
               <div
-                className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative"
+                className="flex-1 h-3 bg-(--onganda-text)/8 overflow-hidden relative"
                 role="progressbar"
                 aria-valuenow={34}
                 aria-valuemin={0}
@@ -441,7 +441,7 @@ export function FivePhasesOneDirectionSection() {
             </div>
           </div>
           <div className="lg:w-60 xl:w-72 shrink-0">
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">
               Milestones
             </p>
             <ul className="flex flex-col gap-2">
@@ -507,23 +507,23 @@ export function FivePhasesOneDirectionSection() {
                 upcoming
               </span>
             </div>
-            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">
+            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-text-muted) mt-1">
               Q3 2025
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2.5 mb-1">
-              <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">
+              <h3 className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">
                 Etiti Yontanda
               </h3>
-              <span className="text-sm text-(--onganda-char-black)/66 font-normal">Surface & Interface</span>
+              <span className="text-sm text-(--onganda-text-muted) font-normal">Surface & Interface</span>
             </div>
-            <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">
+            <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-5 max-w-xl">
               Read surfaces and civic dashboards. Etiti interface layer connecting agents to sector operators, field workers, and government programme monitors.
             </p>
             <div className="flex items-center gap-3">
               <div
-                className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative"
+                className="flex-1 h-3 bg-(--onganda-text)/8 overflow-hidden relative"
                 role="progressbar"
                 aria-valuenow={12}
                 aria-valuemin={0}
@@ -561,7 +561,7 @@ export function FivePhasesOneDirectionSection() {
             </div>
           </div>
           <div className="lg:w-60 xl:w-72 shrink-0">
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">
               Milestones
             </p>
             <ul className="flex flex-col gap-2">
@@ -627,23 +627,23 @@ export function FivePhasesOneDirectionSection() {
                 upcoming
               </span>
             </div>
-            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">
+            <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-text-muted) mt-1">
               Q4 2025 – Q1 2026
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2.5 mb-1">
-              <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">
+              <h3 className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">
                 Oshitoo
               </h3>
-              <span className="text-sm text-(--onganda-char-black)/66 font-normal">Delivery</span>
+              <span className="text-sm text-(--onganda-text-muted) font-normal">Delivery</span>
             </div>
-            <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">
+            <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-5 max-w-xl">
               Sector application launch. Health, agriculture, education, and public administration pilots carrying sovereign intelligence to where it is needed.
             </p>
             <div className="flex items-center gap-3">
               <div
-                className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative"
+                className="flex-1 h-3 bg-(--onganda-text)/8 overflow-hidden relative"
                 role="progressbar"
                 aria-valuenow={0}
                 aria-valuemin={0}
@@ -681,7 +681,7 @@ export function FivePhasesOneDirectionSection() {
             </div>
           </div>
           <div className="lg:w-60 xl:w-72 shrink-0">
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">
               Milestones
             </p>
             <ul className="flex flex-col gap-2">
@@ -735,7 +735,7 @@ export function FivePhasesOneDirectionSection() {
               style={{ background: c.actionBg, border: `1px solid ${c.actionBg}` }}
             />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66">
+          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-text-muted)">
             Complete
           </span>
         </div>
@@ -754,7 +754,7 @@ export function FivePhasesOneDirectionSection() {
               style={{ background: c.inverseBorder, border: `1px solid ${c.accentInk}` }}
             />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66">
+          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-text-muted)">
             In progress
           </span>
         </div>
@@ -762,18 +762,18 @@ export function FivePhasesOneDirectionSection() {
           <div className="flex gap-0.5" aria-hidden="true">
             <div
               className="w-1.5 h-1.5"
-              style={{ background: c.inverseBorder, border: "1px solid #1E1A1744" }}
+              style={{ background: c.inverseBorder, border: `1px solid ${c.text}44` }}
             />
             <div
               className="w-1.5 h-1.5"
-              style={{ background: c.inverseBorder, border: "1px solid #1E1A1744" }}
+              style={{ background: c.inverseBorder, border: `1px solid ${c.text}44` }}
             />
             <div
               className="w-1.5 h-1.5"
-              style={{ background: c.inverseBorder, border: "1px solid #1E1A1744" }}
+              style={{ background: c.inverseBorder, border: `1px solid ${c.text}44` }}
             />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66">
+          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-text-muted)">
             Upcoming
           </span>
         </div>

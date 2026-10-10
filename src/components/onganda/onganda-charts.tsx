@@ -12,9 +12,10 @@ import { CHART_SERIES, onColor, roles } from './onganda-roles';
 import { TYPE } from './onganda-type';
 import { SectionHeader, PixelTag, PixelDot, useIsDark } from './onganda-primitives';
 import { paperAlpha, inkAlpha } from './onganda-roles';
+import { followPalette } from './onganda-colors';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
-const C = {
+const C = followPalette(() => ({
   card: COLOR.dustLight,
   // dustLight — warm lifted surface
   cardAlt: paperAlpha(0.62),
@@ -27,7 +28,7 @@ const C = {
   tooltipText: COLOR.milletClay,
   // Fixed series order — see CHART_SERIES in onganda-roles.ts
   p: CHART_SERIES
-} as const;
+} as const));
 
 // ─── Chart types / categories ─────────────────────────────────────────────────
 export type ChartCategory = 'Bar' | 'Line' | 'Area' | 'Circular' | 'Relational' | 'Composition';

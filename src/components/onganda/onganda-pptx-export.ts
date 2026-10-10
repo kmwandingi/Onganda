@@ -24,7 +24,8 @@ const FONT = 'Inter';
 // pptxgenjs wants hex without '#'
 const hx = (c: string) => c.replace('#', '');
 const PAPER = 'FDFAF2';
-const INK = hx(COLOR.charBlack);
+// Read at export time, so the deck takes the palette in use.
+const ink = () => hx(COLOR.charBlack);
 const MUTED = '6B6259';
 
 interface Box {
@@ -99,7 +100,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
   const fontSize = block.textSize;
 
   if (t === 'text-headline') {
-    slide.addText(text || 'Headline', { ...b, fontFace: FONT, fontSize: fontSize ?? 30, bold: true, color: INK, align: 'center', valign: 'middle' });
+    slide.addText(text || 'Headline', { ...b, fontFace: FONT, fontSize: fontSize ?? 30, bold: true, color: ink(), align: 'center', valign: 'middle' });
     return;
   }
   if (t === 'text-body') {
@@ -134,7 +135,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     slide.addShape('rect', { x: b.x, y: b.y, w: b.w, h: 0.05, fill: { color: accent } });
     slide.addText([
       { text: value, options: { fontFace: FONT, fontSize: 28, bold: true, color: accent, breakLine: true } },
-      { text: label, options: { fontFace: FONT, fontSize: 10, color: INK } }
+      { text: label, options: { fontFace: FONT, fontSize: 10, color: ink() } }
     ], { x: b.x + 0.1, y: b.y + 0.1, w: b.w - 0.2, h: b.h - 0.2, align: 'center', valign: 'middle' });
     return;
   }
@@ -195,7 +196,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     slide.addShape('rect', { x: b.x, y: b.y, w: 0.05, h: b.h, fill: { color: accent } });
     slide.addText([
       { text: `${phase.tag}  ${period}`, options: { fontFace: FONT, fontSize: 9, bold: true, color: accent, breakLine: true } },
-      { text: name, options: { fontFace: FONT, fontSize: 12, bold: true, color: INK, breakLine: true } },
+      { text: name, options: { fontFace: FONT, fontSize: 12, bold: true, color: ink(), breakLine: true } },
       { text: `${progress}%`, options: { fontFace: FONT, fontSize: 9, bold: true, color: accent } }
     ], { x: b.x + 0.15, y: b.y + 0.08, w: b.w - 0.3, h: b.h - 0.3, valign: 'top' });
     slide.addShape('rect', { x: b.x + 0.15, y: b.y + b.h - 0.16, w: (b.w - 0.3) * Math.min(1, progress / 100), h: 0.06, fill: { color: accent } });
@@ -210,7 +211,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     slide.addShape('rect', { x: b.x, y: b.y, w: 0.05, h: b.h, fill: { color: accent } });
     slide.addShape('rect', { x: b.x + 0.12, y: b.y + b.h / 2 - 0.14, w: 0.28, h: 0.28, fill: { color: accent } });
     slide.addText([
-      { text: name, options: { fontFace: FONT, fontSize: 13, bold: true, color: INK, breakLine: true } },
+      { text: name, options: { fontFace: FONT, fontSize: 13, bold: true, color: ink(), breakLine: true } },
       { text: role.toUpperCase(), options: { fontFace: FONT, fontSize: 8, bold: true, color: accent, charSpacing: 1.5 } }
     ], { x: b.x + 0.5, y: b.y, w: b.w - 0.6, h: b.h, valign: 'middle' });
     return;
@@ -220,7 +221,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     const accent = hx(COLOR.ochreOrange);
     slide.addShape('rect', { ...b, fill: { color: PAPER }, line: { color: accent, width: 0.75 } });
     slide.addText([
-      { text: (block.customNodeName ?? node.oshiwambo), options: { fontFace: FONT, fontSize: 12, bold: true, color: INK, breakLine: true } },
+      { text: (block.customNodeName ?? node.oshiwambo), options: { fontFace: FONT, fontSize: 12, bold: true, color: ink(), breakLine: true } },
       { text: (block.customNodeRole ?? node.role ?? '').toUpperCase(), options: { fontFace: FONT, fontSize: 8, bold: true, color: accent, charSpacing: 1.5 } }
     ], { x: b.x + 0.15, y: b.y, w: b.w - 0.3, h: b.h, valign: 'middle' });
     return;

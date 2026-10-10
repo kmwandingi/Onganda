@@ -29,7 +29,7 @@ test('every section on /showcase copies as code that compiles and passes the gua
     await buttons.nth(i).scrollIntoViewIfNeeded();
     await buttons.nth(i).click();
     const code = (await page.getByTestId('copy-code').textContent()) ?? '';
-    expect(code, `section ${i} produced code`).toContain("from '@onganda/design-system'");
+    expect(code, `section ${i} produced code`).toMatch(/from '@onganda\/design-system(\/\w+)?'/);
     // Named after the section, which is what an agent looks for: its id, or
     // the name on the code's first line when the section has none.
     const id = await buttons.nth(i).evaluate(b => b.closest('[data-onganda-copy-ui]')?.parentElement?.id ?? '');

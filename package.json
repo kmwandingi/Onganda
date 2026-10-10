@@ -70,6 +70,8 @@
     "./tokens.css": "./dist/package/tokens.css",
     "./palettes/*.css": "./dist/package/palettes/*.css",
     "./tailwind.css": "./dist/package/tailwind.css",
+    "./tailwind.preset.cjs": "./dist/package/tailwind.preset.cjs",
+    "./tailwind.preset": "./dist/package/tailwind.preset.cjs",
     "./fonts.css": "./dist/package/fonts.css",
     "./package.json": "./package.json"
   },
@@ -102,14 +104,15 @@
   ],
   "sideEffects": [
     "dist/package/maps.css",
-    "dist/package/style.css"
+    "dist/package/style.css",
+    "src/palette-boot.ts"
   ],
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -b",
     "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
     "build:showcase": "vite build",
-    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && rm -rf dist/package/palettes && cp -R src/design-system/palettes dist/package/palettes && cp src/design-system/tailwind.css dist/package/tailwind.css && cp src/design-system/fonts.css dist/package/fonts.css && rm -rf dist/package/fonts && cp -R src/design-system/fonts dist/package/fonts && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
+    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && rm -rf dist/package/palettes && cp -R src/design-system/palettes dist/package/palettes && cp src/design-system/tailwind.css dist/package/tailwind.css && cp src/design-system/tailwind.preset.cjs dist/package/tailwind.preset.cjs && cp src/design-system/fonts.css dist/package/fonts.css && rm -rf dist/package/fonts && cp -R src/design-system/fonts dist/package/fonts && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
     "prepare": "node scripts/stamp-version.mjs && npm run build:lib && npm run build:showcase",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-design-tokens.mjs",

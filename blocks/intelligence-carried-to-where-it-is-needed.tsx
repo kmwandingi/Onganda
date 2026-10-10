@@ -32,16 +32,16 @@ export function IntelligenceCarriedToWhereItIsNeededSection() {
         />
       </div>
       <div
-        className="relative mt-5 bg-(--onganda-char-black) flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden"
+        className="relative mt-5 bg-(--onganda-inverse) flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden"
         style={{  }}
         data-onganda-enter=""
       >
         <WeaveOverlay isDark opacity={0.035} />
         <div className="relative">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-(--onganda-ochre-orange) mb-1">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-(--onganda-action-bg) mb-1">
             Partner with us
           </p>
-          <p className="text-sm text-(--onganda-millet-clay)/55 max-w-md leading-relaxed">
+          <p className="text-sm text-(--onganda-text-on-inverse)/55 max-w-md leading-relaxed">
             We are seeking sector partners in health, agriculture, education, and public administration.
           </p>
         </div>

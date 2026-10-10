@@ -11,7 +11,7 @@ export function PixelatedByDesignOshiwamboByNameSection() {
         headline="Pixelated by design. Oshiwambo by name."
         accent={accentFor(4)}
       />
-      <dl className="divide-y divide-(--onganda-char-black)/10">
+      <dl className="divide-y divide-(--onganda-line)">
         <PrincipleRow
           principle={{ label: "Language", value: "Oshiwambo first. English second." }}
           idx={0}

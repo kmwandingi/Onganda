@@ -14,6 +14,7 @@ import { DocBlockType, DocBlock, InsertPaletteItem, AiAuthoringResult } from './
 import { DOC_INSERT_PALETTE, DOC_PALETTE_CATEGORIES } from './onganda-block-palette';
 import type { DocumentExportPayload } from './onganda-export-api';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { followPalette } from './onganda-colors';
 
 
 const docBlockFromAi = (block: NonNullable<AiAuthoringResult['blocks']>[number], idx: number): DocBlock => ({
@@ -32,7 +33,7 @@ const DOCUMENT_BYLINE = `Prepared by ${AUTHOR_NAME}`;
 const A4_PAGE_HEIGHT_MM = 297;
 const A4_PAGE_HEIGHT_PX = 1122.52;
 const PAGE_BREAK_PREVIEW_TOP_PX = 44;
-const PAPER_BACKGROUNDS = [{
+const PAPER_BACKGROUNDS = followPalette(() => ([{
   id: 'white',
   label: 'White',
   hex: EDITOR_SURFACE.paperWhite
@@ -48,7 +49,7 @@ const PAPER_BACKGROUNDS = [{
   id: 'clay',
   label: 'Clay',
   hex: COLOR.milletClay
-}] as const;
+}] as const));
 type PaperBackgroundId = typeof PAPER_BACKGROUNDS[number]['id'];
 const paperBackgroundHex = (id: PaperBackgroundId) => PAPER_BACKGROUNDS.find(bg => bg.id === id)?.hex ?? PAPER_BACKGROUNDS[1].hex;
 
@@ -140,7 +141,7 @@ const renderWithCitations = (text: string) => text.split(/(\[\d+\])/g).map((part
 });
 
 // ─── Template Blocks ──────────────────────────────────────────────────────────
-const TEMPLATE_BLOCKS: DocBlock[] = [{
+const TEMPLATE_BLOCKS: DocBlock[] = followPalette(() => ([{
   id: 'b-title-heading',
   type: 'heading',
   content: 'A Namibia-Focused AI Capability and Tooling Platform'
@@ -358,7 +359,7 @@ const TEMPLATE_BLOCKS: DocBlock[] = [{
   content: `${DOCUMENT_BYLINE} · ${CURRENT_YEAR}`,
   sigAuthor: AUTHOR_NAME,
   sigYear: String(CURRENT_YEAR)
-}];
+}]));
 
 const MEMO_SECTIONS: Array<{ heading: string; paragraphs: string[] }> = [
   {
@@ -701,7 +702,7 @@ const InlineInput = ({
 };
 
 // ─── Stat Block ───────────────────────────────────────────────────────────────
-const HEX_OPTIONS = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown, COLOR.dyePlum];
+const HEX_OPTIONS = followPalette(() => ([COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown, COLOR.dyePlum]));
 const StatBlock = ({
   block,
   isDark,
@@ -1996,7 +1997,7 @@ const PrinciplesBlock = ({
 };
 
 // ─── Swatch Row Block ─────────────────────────────────────────────────────────
-const SWATCH_DATA = [{
+const SWATCH_DATA = followPalette(() => ([{
   name: 'Millet Clay',
   hex: COLOR.milletClay,
   light: true
@@ -2032,7 +2033,7 @@ const SWATCH_DATA = [{
   name: 'Dye Plum',
   hex: COLOR.dyePlum,
   light: false
-}];
+}]));
 const SwatchRowBlock = ({
   block,
   isDark,
@@ -4259,7 +4260,7 @@ const DocLetterhead = ({
 };
 
 // ─── Template Picker ──────────────────────────────────────────────────────────
-const TEMPLATE_OPTIONS = [{
+const TEMPLATE_OPTIONS = followPalette(() => ([{
   id: 'blank',
   label: 'Blank Document',
   desc: 'Start from scratch with an empty canvas',
@@ -4277,7 +4278,7 @@ const TEMPLATE_OPTIONS = [{
   desc: 'Long-form stakeholder memo with sources section',
   icon: '▤',
   color: COLOR.mopaneBrown
-}];
+}]));
 const TemplatePicker = ({
   isDark,
   onSelect,

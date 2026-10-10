@@ -9,8 +9,9 @@ import { COLOR } from './onganda-colors';
 import { OngandaLogoMark, PixelDot, DitherBar } from './onganda-primitives';
 import type { DocBlock } from './onganda-block-types';
 import { paperAlpha, inkAlpha } from './onganda-roles';
+import { followPalette } from './onganda-colors';
 
-const ACCENT_COLORS = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
+const ACCENT_COLORS = followPalette(() => ([COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum]));
 
 // ─── DocBlockDisplay ─────────────────────────────────────────────────────────
 // Pure read-only rendering of a single DocBlock. Covers text block types

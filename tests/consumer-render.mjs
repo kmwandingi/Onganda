@@ -105,8 +105,9 @@ try {
     // Inter. The faces now ship with the package and must load in this case.
     { name: 'css-import', source: `@import '@onganda/design-system/style.css';`, tailwind: true, expectStyled: true, cssImport: true },
     // A palette chosen in one file, imported first, the way the README says.
-    // Components, the CSS variables and the tokens must all follow it through
-    // a real bundler, which is where an import-order mistake would show.
+    // The design system is split into its own chunk, which the browser runs
+    // before the entry's code: the palette is selected after the system has
+    // loaded, and every component, CSS variable and token must still follow it.
     { name: 'palette', source: '', tailwind: false, expectStyled: true, palette: 'coast' },
   ];
 
@@ -139,10 +140,19 @@ try {
       path.join(root, 'vite.config.js'),
       tailwind
         ? `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport tailwindcss from '@tailwindcss/vite';\nexport default defineConfig({ plugins: [react(), tailwindcss()], base: './' });\n`
-        : `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nexport default defineConfig({ plugins: [react()], base: './' });\n`,
+        : palette
+          // The system in a chunk of its own, as an app with lazy routes gets.
+          ? `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nexport default defineConfig({ plugins: [react()], base: './', build: { rollupOptions: { output: { manualChunks: id => id.includes('@onganda/design-system') && !id.includes('palettes') ? 'onganda' : undefined } } } });\n`
+          : `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nexport default defineConfig({ plugins: [react()], base: './' });\n`,
     );
     await rm(path.join(root, 'dist'), { recursive: true, force: true });
     await run('npm', ['run', 'build'], { cwd: root, maxBuffer: 1 << 26 });
+    if (palette) {
+      const { readdir } = await import('node:fs/promises');
+      if (!(await readdir(path.join(root, 'dist', 'assets'))).some(f => f.startsWith('onganda'))) {
+        throw new Error(`${name}: the design system was not split into its own chunk, so this case proves nothing.`);
+      }
+    }
 
     // ES modules are blocked over file://, so serve the build.
     const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };

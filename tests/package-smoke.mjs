@@ -112,9 +112,20 @@ try {
         DarkProvider,
         import.meta.resolve('@onganda/design-system/maps.css'),
         import.meta.resolve('@onganda/design-system/style.css'),
+        import.meta.resolve('@onganda/design-system/palettes'),
+        import.meta.resolve('@onganda/design-system/palettes/coast.css'),
+        import.meta.resolve('@onganda/design-system/tailwind.preset.cjs'),
       ].every(Boolean);
 
       if (!exportsAreUsable) throw new Error('A public package export is unavailable.');
+
+      // The Tailwind 3 preset maps the roles, so a Tailwind 3 project gets the
+      // same utilities as the Tailwind 4 theme.
+      const { createRequire: requireFrom } = await import('node:module');
+      const preset = requireFrom(import.meta.url)('@onganda/design-system/tailwind.preset.cjs');
+      if (preset.theme?.colors?.surface !== 'var(--onganda-surface)' || preset.theme?.borderRadius?.DEFAULT !== '0') {
+        throw new Error('The Tailwind 3 preset does not map the roles.');
+      }
 
       // The guidance ships with the package. An agent told to read SKILL.md,
       // open reference/ and run the showcase from a product must find them in

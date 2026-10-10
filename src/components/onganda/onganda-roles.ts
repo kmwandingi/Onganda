@@ -27,15 +27,15 @@
 //     field borders, where the 3:1 non-text threshold applies — and the danger
 //     fill is bark rust instead.
 
-import { COLOR, PALETTE as P } from './onganda-colors';
-import { PALETTES } from './onganda-palettes';
+import { COLOR, PALETTE as P, refill } from './onganda-colors';
+import { PALETTES, onPaletteChange } from './onganda-palettes';
 
 // ─── Alpha ramp ───────────────────────────────────────────────────────────────
 // Text and lines are the brand ink at a fixed set of opacities, not new hues.
 // Use these steps only. A step not listed here is drift.
 const rgbOf = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(',');
-const INK_RGB = rgbOf(P.ink);
-const PAPER_RGB = rgbOf(P.paper);
+let INK_RGB = rgbOf(P.ink);
+let PAPER_RGB = rgbOf(P.paper);
 const ink = (a: number) => `rgba(${INK_RGB},${a})`;
 const paper = (a: number) => `rgba(${PAPER_RGB},${a})`;
 
@@ -143,7 +143,7 @@ export interface ColorRoles {
   shadowPlate: string;
 }
 
-export const ROLE_LIGHT: ColorRoles = {
+const lightRoles = (): ColorRoles => ({
   canvas: P.canvas,
   surface: P.surface,
   surfaceWell: P.canvas,
@@ -212,9 +212,10 @@ export const ROLE_LIGHT: ColorRoles = {
   shadowBand: `0 8px 0 ${ink(0.03)}`,
   shadowStep: `4px 4px 0 ${ink(0.18)}`,
   shadowPlate: `8px 8px 0 ${ink(0.08)}`
-};
+});
+export const ROLE_LIGHT: ColorRoles = lightRoles();
 
-export const ROLE_DARK: ColorRoles = {
+const darkRoles = (): ColorRoles => ({
   canvas: P.darkCanvas,
   surface: P.darkSurface,
   surfaceWell: P.darkCanvas,
@@ -274,7 +275,8 @@ export const ROLE_DARK: ColorRoles = {
   shadowBand: `0 8px 0 ${paper(0.04)}`,
   shadowStep: `4px 4px 0 ${paper(0.14)}`,
   shadowPlate: `8px 8px 0 ${paper(0.06)}`
-};
+});
+export const ROLE_DARK: ColorRoles = darkRoles();
 
 /** The role set for the current mode. `const c = roles(isDark)`. */
 export const roles = (isDark: boolean): ColorRoles => (isDark ? ROLE_DARK : ROLE_LIGHT);
@@ -284,13 +286,14 @@ export const roles = (isDark: boolean): ColorRoles => (isDark ? ROLE_DARK : ROLE
 // identity use of bark rust. A colour here means "this belongs to that system"
 // — nothing else.
 // Under another palette the five identities are its five peer accents.
-export const SYSTEM_COLOR = {
+const systemColorOf = () => ({
   Okaanda: P.peers[0],
   Oshini: P.peers[1],
   Ombiga: P.peers[2],
   Etiti: P.peers[3],
   Oshitoo: P.peers[4]
-} as const;
+});
+export const SYSTEM_COLOR: Readonly<ReturnType<typeof systemColorOf>> = systemColorOf();
 
 export type SystemName = keyof typeof SYSTEM_COLOR;
 
@@ -303,12 +306,13 @@ export type SystemName = keyof typeof SYSTEM_COLOR;
 // a text label. Some hues fall under 3:1 against their surface (gold on cream
 // is 1.6:1), so a bare status dot also needs a `line` hairline to delineate it.
 // `PixelDot` draws that hairline when you pass `ring`.
-export const STATUS = {
+const statusOf = () => ({
   critical: P.critical,   // error, destructive, blocking
   caution: P.secondary,   // warning, pending, needs attention
   active: P.primary,      // live, running, in progress
   settled: P.deep         // complete, archived, informational
-} as const;
+});
+export const STATUS: Readonly<ReturnType<typeof statusOf>> = statusOf();
 
 export type StatusName = keyof typeof STATUS;
 
@@ -369,7 +373,8 @@ export const canHostText = (hex: string): boolean => contrast(onColor(hex), hex)
 // ─── Charts ───────────────────────────────────────────────────────────────────
 // Fixed series order. Take colors from the front; never reorder or substitute,
 // so the same series index reads the same across every chart in a product.
-export const CHART_SERIES = P.chart;
+// Copies, refilled on a palette change; the palette's own arrays stay as shipped.
+export const CHART_SERIES: readonly string[] = [...P.chart];
 
 // ─── Machine-readable policy ──────────────────────────────────────────────────
 // What each palette token is allowed to do. Read this before reaching for a
@@ -447,13 +452,13 @@ export const COLOR_POLICY: Record<keyof typeof COLOR, { allowed: string; never: 
 // in a section. Where a hue already means something, meaning wins: a system's
 // colour comes from SYSTEM_COLOR and a state's from statusFor(). Never rotate
 // an accent across items that a reader could mistake for system membership.
-export const ACCENT_CYCLE = P.peers;
+export const ACCENT_CYCLE: readonly string[] = [...P.peers];
 
 /** On a dark card the cycle reorders so the first three peers get hues that
  *  clear 3:1 as marks — ochre 5.7, gold 8.7, mopane light 3.6 — and the two
  *  that do not (bark rust 2.4, dye plum 2.4) come fourth and fifth, where the
  *  ordinal tag beside them carries the identity. Measured, not guessed. */
-export const ACCENT_CYCLE_DARK = P.peersDark;
+export const ACCENT_CYCLE_DARK: readonly string[] = [...P.peersDark];
 
 /** The accent for the i-th peer in a list. Pass the mode: on a dark card the
  *  cycle puts the hues that read first (see ACCENT_CYCLE_DARK). */
@@ -550,7 +555,10 @@ export const paletteCss = (): string => {
 
 // A palette other than Onganda: point the CSS tokens at it, and audit a
 // custom one so a failing pigment is reported where it is chosen.
-if (P !== PALETTES.onganda && typeof document !== 'undefined') {
+const applyToPage = () => {
+  if (typeof document === 'undefined') return;
+  document.querySelector('style[data-onganda-palette]')?.remove();
+  if (P === PALETTES.onganda) return;
   const style = document.createElement('style');
   style.setAttribute('data-onganda-palette', P.label);
   style.textContent = paletteCss();
@@ -562,4 +570,20 @@ if (P !== PALETTES.onganda && typeof document !== 'undefined') {
         failing.map(c => `  ${c.mode}: ${c.label} is ${c.ratio}:1, needs ${c.min}:1`).join('\n'));
     }
   }
-}
+};
+applyToPage();
+
+// A new palette: rebuild every value above in place. onganda-colors.ts
+// registered first, so PALETTE (P here) is already the new one.
+onPaletteChange(() => {
+  INK_RGB = rgbOf(P.ink);
+  PAPER_RGB = rgbOf(P.paper);
+  Object.assign(ROLE_LIGHT, lightRoles());
+  Object.assign(ROLE_DARK, darkRoles());
+  Object.assign(SYSTEM_COLOR, systemColorOf());
+  Object.assign(STATUS, statusOf());
+  refill(CHART_SERIES as string[], [...P.chart]);
+  refill(ACCENT_CYCLE as string[], [...P.peers]);
+  refill(ACCENT_CYCLE_DARK as string[], [...P.peersDark]);
+  applyToPage();
+});

@@ -4,6 +4,7 @@ import { COLOR } from './onganda-colors';
 import { IconMap } from './onganda-icons';
 import { PixelCornerMarks, PixelTag, useDark } from './onganda-primitives';
 import { inkAlpha, paperAlpha } from './onganda-roles';
+import { followPalette } from './onganda-colors';
 
 export type OngandaMapPosition = readonly [latitude: number, longitude: number];
 export type OngandaMapAccent = 'ochre' | 'gold' | 'rust' | 'brown' | 'plum' | 'red';
@@ -56,14 +57,14 @@ export interface OngandaMapProps {
   onAreaSelect?: (area: OngandaMapArea) => void;
 }
 
-const ACCENT_COLOR: Record<OngandaMapAccent, string> = {
+const ACCENT_COLOR: Record<OngandaMapAccent, string> = followPalette(() => ({
   ochre: COLOR.ochreOrange,
   gold: COLOR.mahanguGold,
   rust: COLOR.barkRust,
   brown: COLOR.mopaneBrown,
   plum: COLOR.dyePlum,
   red: COLOR.firedRed,
-};
+}));
 
 const DEFAULT_CENTER: OngandaMapPosition = [-22.1, 17.1];
 const DEFAULT_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -72,7 +73,8 @@ const EMPTY_POINTS: readonly OngandaMapPoint[] = [];
 const EMPTY_ROUTES: readonly OngandaMapRoute[] = [];
 const EMPTY_AREAS: readonly OngandaMapArea[] = [];
 
-const MAP_STYLES = `
+// A function, read at render, so the styles are the palette in use.
+const mapStyles = () => `
   .onganda-map-shell .leaflet-container {
     background: ${COLOR.dustLight};
     color: ${COLOR.charBlack};
@@ -510,7 +512,7 @@ export const OngandaMap = ({
         color: isDark ? COLOR.milletClay : COLOR.charBlack,
       }}
     >
-      <style>{MAP_STYLES}</style>
+      <style>{mapStyles()}</style>
       <PixelCornerMarks hex={COLOR.ochreOrange} size={8} />
 
       <header className="relative grid gap-5 p-6 md:grid-cols-[1fr_auto] md:items-end md:p-8">

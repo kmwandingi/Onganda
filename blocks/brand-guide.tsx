@@ -26,13 +26,13 @@ export function NamingHierarchyOneRootFiveBranchesSection() {
               />
               <div className="h-1.5" style={{ width: 8, background: c.actionBg, opacity: 0.52 }} />
             </div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted)">
               Pixel Flowchart — Naming Architecture
             </span>
           </div>
           <div style={{  }} data-onganda-enter="">
             <div
-              className="relative border-2 bg-(--onganda-char-black) flex items-center gap-5 px-6 py-5 overflow-hidden"
+              className="relative border-2 bg-(--onganda-inverse) flex items-center gap-5 px-6 py-5 overflow-hidden"
               style={{ borderColor: c.actionBg }}
             >
               <WeaveOverlay isDark opacity={0.055} />
@@ -41,12 +41,12 @@ export function NamingHierarchyOneRootFiveBranchesSection() {
                 <FlowNodeIcon id="root" hex={accentFor(0)} />
                 <div>
                   <div className="flex items-baseline gap-2.5">
-                    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-millet-clay) leading-none">
+                    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-text-on-inverse) leading-none">
                       Okaanda
                     </h3>
                     <PixelTag hex={c.inverseBorder} label="ROOT" isDark />
                   </div>
-                  <p className="text-sm text-(--onganda-millet-clay)/55 mt-1">Namibia AI Systems Lab</p>
+                  <p className="text-sm text-(--onganda-text-on-inverse)/55 mt-1">Namibia AI Systems Lab</p>
                   <p
                     className="text-[10px] font-bold uppercase tracking-[0.13em] mt-1.5"
                     style={{ color: accentFor(0) }}

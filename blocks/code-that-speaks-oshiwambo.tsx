@@ -18,11 +18,11 @@ export function CodeThatSpeaksOshiwamboSection() {
         <TerminalCard block={{ title: "Okaanda — Model Query", tag: "01", tagHex: c.actionBg, lines: [{ type: "comment", text: "# Okaanda · granary data platform" }, { type: "comment", text: "# retrieve stored evaluation record" }, { type: "plain", text: "" }, { type: "keyword", text: "from" }, { type: "plain", text: " okaanda.client " }, { type: "keyword", text: "import" }, { type: "plain", text: " GranaryClient" }, { type: "plain", text: "" }, { type: "plain", text: "client = GranaryClient(" }, { type: "plain", text: "    api_key=os.environ[" }, { type: "string", text: "\"ONGANDA_API_KEY\"" }, { type: "plain", text: "]" }, /* …10 more */] }} />
       </div>
       <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex-1 h-px bg-(--onganda-char-black)/8" />
-        <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">
+        <div className="flex-1 h-px bg-(--onganda-text)/8" />
+        <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted)">
           Oshini SDK · Okaanda Client · Ombiga Runtime
         </span>
-        <div className="flex-1 h-px bg-(--onganda-char-black)/8" />
+        <div className="flex-1 h-px bg-(--onganda-text)/8" />
       </div>
       <CodeSnippetBlock
         label="TerminalCard · Developer Surface"

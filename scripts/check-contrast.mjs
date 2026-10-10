@@ -55,8 +55,10 @@ const resolve = (value, bgHex) => {
 // literal; the shadows are template strings and are not contrast claims.
 const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)).join(',');
 const roleBlock = (name, P) => {
-  const start = src.indexOf(`export const ${name}: ColorRoles = {`);
-  const body = src.slice(start, src.indexOf('\n};', start));
+  const fn = { ROLE_LIGHT: 'lightRoles', ROLE_DARK: 'darkRoles' }[name];
+  const start = src.indexOf(`const ${fn} = (): ColorRoles => ({`);
+  if (start === -1) throw new Error(`check-contrast: ${fn} not found in onganda-roles.ts`);
+  const body = src.slice(start, src.indexOf('\n});', start));
   const tone = fn => hexRgb(fn === 'ink' ? P.ink : P.paper);
   const out = {};
   for (const m of body.matchAll(/^\s{2}(\w+):\s*(?:P\.(\w+)|(ink|paper)\(ALPHA\.(\w+)\.(\w+)\)|(ink|paper)\(([\d.]+)\)|'([^']*)')/gm)) {

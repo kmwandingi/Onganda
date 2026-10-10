@@ -122,6 +122,8 @@ for (const palette of ['coast', 'etosha']) {
         await stubMapTiles(page);
         if (dark) await page.addInitScript(() => localStorage.setItem('onganda-dark', '1'));
         await page.goto(`${route}?palette=${palette}`);
+        // The audit means nothing unless the palette actually applied.
+        await expect(page.locator('style[data-onganda-palette]')).toHaveCount(1);
         await settle(page);
         const failures = await page.evaluate(AUDIT_SOURCE);
         expect(failures, `${failures.length} text nodes below their floor on ${route} (${palette}${dark ? ', dark' : ''}):\n  ${failures.slice(0, 15).join('\n  ')}`).toEqual([]);

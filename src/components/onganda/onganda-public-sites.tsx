@@ -25,6 +25,7 @@ import {
   IconTerminal,
   IconUsers
 } from './onganda-icons';
+import { followPalette } from './onganda-colors';
 
 type PublicPage = 'home' | 'full';
 
@@ -42,13 +43,13 @@ const navItems = [
 ];
 
 
-const focusItems = [
+const focusItems = followPalette(() => ([
   { icon: IconDatabase, label: 'Adapt models', body: 'Select, adapt, evaluate, and organize models for local use.', hex: COLOR.ochreOrange },
   { icon: IconTerminal, label: 'Run workflows', body: 'Build repeatable adaptation and deployment paths.', hex: COLOR.barkRust },
   { icon: IconPackage, label: 'Hold systems', body: 'Package agents, memory, and runtimes into portable units.', hex: COLOR.mahanguGold },
   { icon: IconDashboard, label: 'Shape interfaces', body: 'Create surfaces where people can inspect and control systems.', hex: COLOR.mopaneBrown },
   { icon: IconTarget, label: 'Deliver tools', body: 'Move from internal stack to pilots and sector-facing products.', hex: COLOR.dyePlum }
-];
+]));
 
 const fadeUp = {
   initial: AUTOMATED ? false as const : { opacity: 0, y: 16 },

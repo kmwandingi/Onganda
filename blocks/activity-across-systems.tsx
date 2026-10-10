@@ -15,7 +15,7 @@ export function ActivityAcrossSystemsSection() {
       />
       <div className="flex flex-col items-stretch gap-12 lg:flex-row lg:items-start">
         <div
-          className="min-w-0 flex-1 bg-(--onganda-char-black) p-6 md:p-8"
+          className="min-w-0 flex-1 bg-(--onganda-inverse) p-6 md:p-8"
           style={{  }}
           data-onganda-enter=""
         >
@@ -415,7 +415,7 @@ export function ActivityAcrossSystemsSection() {
               </div>
             </div>
             <div className="relative flex items-center gap-3 mt-6">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-millet-clay)/55">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-text-on-inverse)/55">
                 Low
               </span>
               <div className="w-4 h-4" style={{ background: c.inverse }} aria-hidden="true" />
@@ -424,38 +424,38 @@ export function ActivityAcrossSystemsSection() {
               <div className="w-4 h-4" style={{ background: c.accentBg }} aria-hidden="true" />
               <div className="w-4 h-4" style={{ background: c.actionBg }} aria-hidden="true" />
               <div className="w-4 h-4" style={{ background: c.dangerBorder }} aria-hidden="true" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-millet-clay)/55">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-text-on-inverse)/55">
                 High
               </span>
             </div>
           </div>
         </div>
         <div className="lg:w-72 xl:w-80 shrink-0">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-5">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-5">
             How to read
           </p>
-          <div className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
+          <div className="flex flex-col gap-0 divide-y divide-(--onganda-line)">
             <div className="py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust) mb-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-accent-ink) mb-1">
                 Rows
               </p>
-              <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed">
+              <p className="text-sm text-(--onganda-text)/65 leading-relaxed">
                 Each row maps to one of the five named systems, plus a cross-system channel.
               </p>
             </div>
             <div className="py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust) mb-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-accent-ink) mb-1">
                 Columns
               </p>
-              <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed">
+              <p className="text-sm text-(--onganda-text)/65 leading-relaxed">
                 Quarterly time periods across a two-year research horizon.
               </p>
             </div>
             <div className="py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust) mb-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-accent-ink) mb-1">
                 Color
               </p>
-              <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed">
+              <p className="text-sm text-(--onganda-text)/65 leading-relaxed">
                 Intensity corresponds to relative research and development activity. Material palette — no arbitrary hues.
               </p>
             </div>

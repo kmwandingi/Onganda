@@ -4,12 +4,13 @@
 
 import { COLOR } from './onganda-colors';
 import type { InsertPaletteItem, ComponentPaletteItem } from './onganda-block-types';
+import { followPalette } from './onganda-colors';
 
 const CURRENT_YEAR = new Date().getFullYear();
 const AUTHOR_NAME = 'Kenneth Mwandingi';
 
 // ─── Document editor insert palette ──────────────────────────────────────────
-export const DOC_INSERT_PALETTE: InsertPaletteItem[] = [
+export const DOC_INSERT_PALETTE: InsertPaletteItem[] = followPalette(() => ([
   { id: 'insert-heading',    label: 'Section Heading',  desc: 'Named section with a hairline rule',          type: 'heading',      defaultContent: 'New Section',              hex: COLOR.ochreOrange, category: 'Text'   },
   { id: 'insert-body',       label: 'Body Paragraph',   desc: 'Editorial body text in Georgia',          type: 'body',         defaultContent: 'Start writing here…',  hex: COLOR.charBlack,  category: 'Text'   },
   { id: 'insert-pullquote',  label: 'Pull Quote',       desc: 'Highlighted branded quotation',           type: 'pullquote',    defaultContent: 'Build domestic AI capability first.', hex: COLOR.ochreOrange, category: 'Text' },
@@ -31,11 +32,11 @@ export const DOC_INSERT_PALETTE: InsertPaletteItem[] = [
   { id: 'insert-flowchart',  label: 'Flow Node',        desc: 'Pixel flowchart node card',               type: 'flowchart',    defaultContent: 'Granary',                  hex: COLOR.ochreOrange, category: 'System' },
   { id: 'insert-principles', label: 'Principles Table', desc: 'Brand principles definition list',        type: 'principles',   defaultContent: 'Brand Principles',         hex: COLOR.charBlack,  category: 'System' },
   { id: 'insert-swatchrow',  label: 'Swatch Row',       desc: 'Material colour palette strip',           type: 'swatchrow',    defaultContent: 'Material Palette',         hex: COLOR.mahanguGold, category: 'System' },
-];
+]));
 export const DOC_PALETTE_CATEGORIES: string[] = ['Text', 'Data', 'System'];
 
 // ─── Slide editor component palette ──────────────────────────────────────────
-export const SLIDE_COMPONENT_PALETTE: ComponentPaletteItem[] = [
+export const SLIDE_COMPONENT_PALETTE: ComponentPaletteItem[] = followPalette(() => ([
   { id: 'icon-okaanda',    category: 'Icons',    label: 'Okaanda Icon',        desc: 'Granary system icon',              hex: COLOR.ochreOrange },
   { id: 'icon-oshini',     category: 'Icons',    label: 'Oshini Icon',         desc: 'Mill system icon',                 hex: COLOR.barkRust    },
   { id: 'icon-ombiga',     category: 'Icons',    label: 'Ombiga Icon',         desc: 'Vessel system icon',               hex: COLOR.mahanguGold },
@@ -82,5 +83,5 @@ export const SLIDE_COMPONENT_PALETTE: ComponentPaletteItem[] = [
   { id: 'divider-dot',     category: 'Brand',    label: 'Dot Row',             desc: 'Pixel dot accent row',             hex: COLOR.ochreOrange },
   { id: 'terminal-0',      category: 'Brand',    label: 'Terminal: Oshini',    desc: 'Fine-tune pipeline code',          hex: COLOR.barkRust    },
   { id: 'terminal-1',      category: 'Brand',    label: 'Terminal: Okaanda',   desc: 'Granary query code',               hex: COLOR.ochreOrange },
-];
+]));
 export const SLIDE_PALETTE_CATEGORIES: string[] = ['Icons', 'Stats', 'Charts', 'Text', 'Systems', 'Timeline', 'Field', 'Brand'];

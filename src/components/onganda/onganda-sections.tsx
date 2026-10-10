@@ -5,13 +5,14 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { AUTOMATED, useMotionOK } from './onganda-motion';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData, paperAlpha, inkAlpha } from './onganda-tokens';
+import { COLOR, PALETTE, PALETTES, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData, paperAlpha, inkAlpha } from './onganda-tokens';
 import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, useIsDark, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
 import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelPeers, PixelInversePanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { followPalette } from './onganda-colors';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -1203,9 +1204,9 @@ export const OngandaHero = () => {
 };
 
 // ─── ResearchSignals ─────────────────────────────────────────────────────────
-export const ResearchSignals = () => <section id="signals" className="w-full border-y border-(--onganda-char-black)/10 bg-(--onganda-dust-light)">
+export const ResearchSignals = () => <section id="signals" className="w-full border-y border-(--onganda-line) bg-(--onganda-surface)">
     <div className="max-w-7xl mx-auto px-6 md:px-12">
-      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-(--onganda-char-black)/10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-(--onganda-line)">
         {STATS.map(stat => <StatCard key={stat.label} stat={stat} />)}
       </div>
     </div>
@@ -1218,9 +1219,9 @@ export const PixelTerminal = () => <section className="max-w-7xl mx-auto px-6 pb
       {TERMINAL_BLOCKS.map(block => <TerminalCard key={block.title} block={block} />)}
     </div>
     <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-      <div className="flex-1 h-px bg-(--onganda-char-black)/8" />
-      <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
-      <div className="flex-1 h-px bg-(--onganda-char-black)/8" />
+      <div className="flex-1 h-px bg-(--onganda-text)/8" />
+      <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted)">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
+      <div className="flex-1 h-px bg-(--onganda-text)/8" />
     </div>
     <CodeSnippetBlock label="TerminalCard · Developer Surface" lines={SNIPPET_DEVELOPER_SURFACE} accentHex={COLOR.barkRust} />
   </section>;
@@ -1277,9 +1278,9 @@ export const SystemConnectionDiagram = ({
               opacity: 0.12 + i * 0.1
             }} />)}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">Pixel Connection Map — Data Flow</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted)">Pixel Connection Map — Data Flow</span>
           </div>
-          <div className="bg-(--onganda-char-black)" style={{
+          <div className="bg-(--onganda-inverse)" style={{
           position: 'relative',
           width: '100%',
           paddingBottom: '82%'
@@ -1563,7 +1564,7 @@ export const PixelHeatmap = ({
         once: true
       }} transition={{
         duration: 0.6
-      }} className="min-w-0 flex-1 bg-(--onganda-char-black) p-6 md:p-8">
+      }} className="min-w-0 flex-1 bg-(--onganda-inverse) p-6 md:p-8">
           <div className="relative overflow-x-auto">
             <WeaveOverlay isDark opacity={0.055} />
             <div className="relative flex gap-1.5 mb-2 pl-24">
@@ -1600,17 +1601,17 @@ export const PixelHeatmap = ({
                 </div>)}
             </div>
             <div className="relative flex items-center gap-3 mt-6">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-millet-clay)/55">Low</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-text-on-inverse)/55">Low</span>
               {([COLOR.charBlack, COLOR.mopaneBrown, COLOR.barkRust, COLOR.mahanguGold, COLOR.ochreOrange, COLOR.firedRed] as string[]).map((c, i) => <div key={`hl-${i}`} className="w-4 h-4" style={{
               background: c
             }} aria-hidden="true" />)}
-              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-millet-clay)/55">High</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-text-on-inverse)/55">High</span>
             </div>
           </div>
         </motion.div>
         <div className="lg:w-72 xl:w-80 shrink-0">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-5">How to read</p>
-          <div className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-5">How to read</p>
+          <div className="flex flex-col gap-0 divide-y divide-(--onganda-line)">
             {[{
             label: 'Rows',
             body: 'Each row maps to one of the five named systems, plus a cross-system channel.'
@@ -1621,8 +1622,8 @@ export const PixelHeatmap = ({
             label: 'Color',
             body: 'Intensity corresponds to relative research and development activity. Material palette — no arbitrary hues.'
           }].map(item => <div key={item.label} className="py-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust) mb-1">{item.label}</p>
-                <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed">{item.body}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-accent-ink) mb-1">{item.label}</p>
+                <p className="text-sm text-(--onganda-text)/65 leading-relaxed">{item.body}</p>
               </div>)}
           </div>
         </div>
@@ -1655,7 +1656,7 @@ export const RoadmapTimeline = ({
   return <section id="roadmap" ref={sectionRef} className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Development Roadmap" headline="Five phases. One direction." accent={COLOR.dyePlum} />
       <div className="hidden lg:block relative mb-14" aria-hidden="true">
-        <div className="h-px bg-(--onganda-char-black)/12 w-full" />
+        <div className="h-px bg-(--onganda-text)/12 w-full" />
         <div className="absolute top-0 left-0 w-full flex">
           {phases.map(phase => <div key={`spine-tick-${phase.tag}`} className="flex-1 flex flex-col items-center" style={{
           transform: 'translateY(-50%)'
@@ -1675,7 +1676,7 @@ export const RoadmapTimeline = ({
             </div>)}
         </div>
       </div>
-      <div className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
+      <div className="flex flex-col gap-0 divide-y divide-(--onganda-line)">
         {phases.map((phase, idx) => <motion.div key={phase.tag} initial={{
         opacity: 0,
         y: 14
@@ -1704,16 +1705,16 @@ export const RoadmapTimeline = ({
               opacity: phase.status === 'upcoming' ? 0.35 : 1
             }}>{phase.status}</span>
               </div>
-              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">{phase.period}</span>
+              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-text-muted) mt-1">{phase.period}</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2.5 mb-1">
-                <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">{phase.oshiwambo}</h3>
-                <span className="text-sm text-(--onganda-char-black)/66 font-normal">{phase.english}</span>
+                <h3 className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">{phase.oshiwambo}</h3>
+                <span className="text-sm text-(--onganda-text-muted) font-normal">{phase.english}</span>
               </div>
-              <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">{phase.desc}</p>
+              <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-5 max-w-xl">{phase.desc}</p>
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative" role="progressbar" aria-valuenow={phase.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`${phase.oshiwambo} progress: ${phase.progress}%`}>
+                <div className="flex-1 h-3 bg-(--onganda-text)/8 overflow-hidden relative" role="progressbar" aria-valuenow={phase.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`${phase.oshiwambo} progress: ${phase.progress}%`}>
                   <motion.div className="h-full relative overflow-hidden" initial={{
                 width: 0
               }} animate={{
@@ -1748,7 +1749,7 @@ export const RoadmapTimeline = ({
               </div>
             </div>
             <div className="lg:w-60 xl:w-72 shrink-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">Milestones</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">Milestones</p>
               <ul className="flex flex-col gap-2">
                 {phase.milestones.map(ms => <li key={`ms-${phase.tag}-${ms}`} className="flex items-start gap-2">
                     <div aria-hidden="true" className="w-1.5 h-1.5 mt-1 shrink-0" style={{
@@ -1773,7 +1774,7 @@ export const RoadmapTimeline = ({
             border: `1px solid ${item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' ? COLOR.barkRust : `${COLOR.charBlack}44`}`
           }} />)}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66">{item.label}</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-text-muted)">{item.label}</span>
           </div>)}
       </div>
       <CodeSnippetBlock label="TimelinePhase · Development Roadmap" lines={SNIPPET_ROADMAP} accentHex={COLOR.ochreOrange} />
@@ -1794,11 +1795,11 @@ export const FieldApplications = () => <section className="max-w-7xl mx-auto px-
     once: true
   }} transition={{
     duration: 0.5
-  }} className="relative mt-5 bg-(--onganda-char-black) flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden">
+  }} className="relative mt-5 bg-(--onganda-inverse) flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden">
       <WeaveOverlay isDark opacity={0.035} />
       <div className="relative">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-(--onganda-ochre-orange) mb-1">Partner with us</p>
-        <p className="text-sm text-(--onganda-millet-clay)/55 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-(--onganda-action-bg) mb-1">Partner with us</p>
+        <p className="text-sm text-(--onganda-text-on-inverse)/55 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
       </div>
       {/* isDark: this sits on the inverse (black) band — see DESIGN_SYSTEM.md §5 */}
       <PixelButton variant="accent" isDark className="relative shrink-0">Propose a pilot</PixelButton>
@@ -1823,7 +1824,7 @@ export const PixelFlowchart = () => {
               opacity: 0.12 + idx * 0.1
             }} />)}
             </div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">Pixel Flowchart — Naming Architecture</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted)">Pixel Flowchart — Naming Architecture</span>
           </div>
           <motion.div initial={AUTOMATED ? false : {
           opacity: 0,
@@ -1837,7 +1838,7 @@ export const PixelFlowchart = () => {
           duration: 0.5
         }}>
             {/* Root node */}
-            <div className="relative border-2 bg-(--onganda-char-black) flex items-center gap-5 px-6 py-5 overflow-hidden" style={{
+            <div className="relative border-2 bg-(--onganda-inverse) flex items-center gap-5 px-6 py-5 overflow-hidden" style={{
             borderColor: rootNode.hex
           }}>
               <WeaveOverlay isDark opacity={0.055} />
@@ -1846,10 +1847,10 @@ export const PixelFlowchart = () => {
                 <FlowNodeIcon id="root" hex={rootNode.hex} />
                 <div>
                   <div className="flex items-baseline gap-2.5">
-                    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-millet-clay) leading-none">{rootNode.oshiwambo}</h3>
+                    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-text-on-inverse) leading-none">{rootNode.oshiwambo}</h3>
                     <PixelTag hex="transparent" label={rootNode.pixelTag} isDark />
                   </div>
-                  <p className="text-sm text-(--onganda-millet-clay)/55 mt-1">{rootNode.english}</p>
+                  <p className="text-sm text-(--onganda-text-on-inverse)/55 mt-1">{rootNode.english}</p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.13em] mt-1.5" style={{
                   color: inkOn(rootNode.hex, COLOR.charBlack, true)
                 }}>{rootNode.role}</p>
@@ -2143,7 +2144,7 @@ export const IconShowcase = () => {
 // Demonstrates the data-driven icon path from onganda-icon-factory.
 
 const FACTORY_GRID = 12;
-const FACTORY_PALETTE = [COLOR.charBlack, COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown, COLOR.dyePlum];
+const FACTORY_PALETTE = followPalette(() => ([COLOR.charBlack, COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown, COLOR.dyePlum]));
 
 // Seed doodle: the WEAVE diamond motif — outline in ochre, firedRed core
 const FACTORY_SEED: (string | null)[] = (() => {
@@ -2340,7 +2341,13 @@ export const IconFactoryLab = () => {
 // exist yet: add it here and to DESIGN_SYSTEM.md §4–5 before using it in a
 // product. Read this section before styling any button, field, or choice.
 
-const ROLE_ROWS: { role: keyof ColorRoles; use: string }[] = [
+// The Control Standards prose quotes the Onganda palette's measured ratios.
+// Under another palette (?palette=coast) it names that palette's pigments and
+// rules instead, so the page never states something untrue of what it shows.
+const onganda = () => PALETTE === PALETTES.onganda;
+const pigment = (slot: keyof typeof PALETTE.swatches) => PALETTE.swatches[slot][0].toLowerCase();
+
+const ROLE_ROWS: { role: keyof ColorRoles; use: string }[] = followPalette(() => [
   { role: 'canvas', use: 'Page background' },
   { role: 'surface', use: 'Cards, panels, bands' },
   { role: 'surfaceWell', use: 'Wells and code blocks — recedes, never raised' },
@@ -2350,14 +2357,14 @@ const ROLE_ROWS: { role: keyof ColorRoles; use: string }[] = [
   { role: 'textMuted', use: 'Labels, captions, meta' },
   { role: 'textFaint', use: 'Disabled text and ordinals only' },
   { role: 'line', use: 'Hairline borders and dividers' },
-  { role: 'actionBg', use: 'Primary action fill — ochre, never black' },
-  { role: 'accentBg', use: 'In-card accent fill — mahangu gold' },
+  { role: 'actionBg', use: onganda() ? 'Primary action fill — ochre, never black' : `Primary action fill — ${pigment('primary')}` },
+  { role: 'accentBg', use: onganda() ? 'In-card accent fill — mahangu gold' : `In-card accent fill — ${pigment('secondary')}` },
   { role: 'accentInk', use: 'The accent as ink: link, focus ring, ghost hover' },
   { role: 'dangerBg', use: 'Destructive action fill' },
   { role: 'fieldBorder', use: 'Field boundary at rest' },
   { role: 'fieldBorderInvalid', use: 'Field boundary when invalid' },
   { role: 'controlOn', use: 'Checked control fill' }
-];
+]);
 
 const STATUS_ROWS: { name: StatusName; means: string }[] = [
   { name: 'active', means: 'Live, running, in progress' },
@@ -2452,15 +2459,21 @@ export const ControlStandards = () => {
                 ))}
               </dl>
               <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                The primary is ochre, never black; the in-card accent is mahangu gold; mopane and plum are
-                their hovers. Each fill carries an edge that clears 3:1 on the surface. Ochre is a{' '}
-                <em>fill</em>: as ink on light it is 2.4:1, so the accent ink is bark rust there.
+                {onganda() ? <>
+                  The primary is ochre, never black; the in-card accent is mahangu gold; mopane and plum are
+                  their hovers. Each fill carries an edge that clears 3:1 on the surface. Ochre is a{' '}
+                  <em>fill</em>: as ink on light it is 2.4:1, so the accent ink is bark rust there.
+                </> : <>
+                  The primary is {pigment('primary')}; the in-card accent is {pigment('secondary')}; {pigment('deep')} and{' '}
+                  {pigment('rare')} are their hovers. Each fill carries an edge that clears 3:1 on the surface, and
+                  the accent as ink on light is {pigment('primaryInk')}.
+                </>}
               </p>
             
           </PixelPanel>
 
           {/* ── Status and buttons ── */}
-          <PixelPanel isDark={isDark} eyebrow="Status · four states, no green, no blue" accent={COLOR.barkRust}>
+          <PixelPanel isDark={isDark} eyebrow={onganda() ? 'Status · four states, no green, no blue' : 'Status · four states'} accent={COLOR.barkRust}>
 
               <dl className="grid gap-0">
                 {STATUS_ROWS.map(s => (
@@ -2472,8 +2485,13 @@ export const ControlStandards = () => {
                 ))}
               </dl>
               <p className="mt-5 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                A status mark always carries a text label and a hairline ring. Gold on cream is 1.6:1, so
-                the ring is what delineates it — colour never carries the meaning alone.
+                {onganda() ? <>
+                  A status mark always carries a text label and a hairline ring. Gold on cream is 1.6:1, so
+                  the ring is what delineates it — colour never carries the meaning alone.
+                </> : <>
+                  A status mark always carries a text label and a hairline ring, so colour never carries the
+                  meaning alone. {PALETTE.rules}
+                </>}
               </p>
 
               <div className="mt-8">
@@ -2509,8 +2527,13 @@ export const ControlStandards = () => {
                   <PixelIconButton label="Move up" isDark={isDark}><span aria-hidden="true">↑</span></PixelIconButton>
                 </div>
                 <p className="mt-4 text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                  One primary action per view. Danger is bark rust, not fired red: fired red's best
-                  foreground is 4.05:1, under the floor for a button label.
+                  {onganda() ? <>
+                    One primary action per view. Danger is bark rust, not fired red: fired red's best
+                    foreground is 4.05:1, under the floor for a button label.
+                  </> : <>
+                    One primary action per view. Danger has its own fill; {pigment('critical')} marks a critical
+                    edge and never sits behind a label.
+                  </>}
                 </p>
               </div>
             
@@ -2583,9 +2606,14 @@ export const ControlStandards = () => {
               </div>
 
               <p className="text-xs leading-relaxed" style={{ color: c.textMuted }}>
-                Checked is ochre on all three, so "on" reads the same everywhere. The ochre fill is 2.56:1
-                against dust light, so the accent-ink edge carries the boundary. No control is rounded and
-                none uses a system colour.
+                {onganda() ? <>
+                  Checked is ochre on all three, so "on" reads the same everywhere. The ochre fill is 2.56:1
+                  against dust light, so the accent-ink edge carries the boundary. No control is rounded and
+                  none uses a system colour.
+                </> : <>
+                  Checked is {pigment('primary')} on all three, so "on" reads the same everywhere, and the
+                  accent-ink edge carries the boundary. No control is rounded and none uses a system colour.
+                </>}
               </p>
             </div>
           </PixelPanel>

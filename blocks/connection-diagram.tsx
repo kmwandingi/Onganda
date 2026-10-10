@@ -29,12 +29,12 @@ export function HowTheWorkshopTalksToItselfSection() {
                 style={{ width: 8, background: c.accentHoverBg, opacity: 0.52 }}
               />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted)">
               Pixel Connection Map — Data Flow
             </span>
           </div>
           <div
-            className="bg-(--onganda-char-black)"
+            className="bg-(--onganda-inverse)"
             style={{ position: "relative", width: "100%", paddingBottom: "82%" }}
           >
             <WeaveOverlay isDark opacity={0.055} />
@@ -75,7 +75,7 @@ export function HowTheWorkshopTalksToItselfSection() {
                   <div
                     className="w-6 h-6 mx-auto flex items-center justify-center"
                     aria-hidden="true"
-                    style={{ background: "#D9791F22", border: "1px solid #D9791F55" }}
+                    style={{ background: `${accentFor(0)}22`, border: `1px solid ${accentFor(0)}55` }}
                   >
                     <div className="w-2 h-2" style={{ background: c.actionBg }} />
                   </div>
@@ -111,7 +111,7 @@ export function HowTheWorkshopTalksToItselfSection() {
                   <div
                     className="w-6 h-6 mx-auto flex items-center justify-center"
                     aria-hidden="true"
-                    style={{ background: "#8F3E2122", border: "1px solid #8F3E2155" }}
+                    style={{ background: `${accentFor(1)}22`, border: `1px solid ${accentFor(1)}55` }}
                   >
                     <div className="w-2 h-2" style={{ background: c.dangerBg }} />
                   </div>
@@ -147,7 +147,7 @@ export function HowTheWorkshopTalksToItselfSection() {
                   <div
                     className="w-6 h-6 mx-auto flex items-center justify-center"
                     aria-hidden="true"
-                    style={{ background: "#DFAE2B22", border: "1px solid #DFAE2B55" }}
+                    style={{ background: `${accentFor(2)}22`, border: `1px solid ${accentFor(2)}55` }}
                   >
                     <div className="w-2 h-2" style={{ background: c.accentBg }} />
                   </div>
@@ -183,7 +183,7 @@ export function HowTheWorkshopTalksToItselfSection() {
                   <div
                     className="w-6 h-6 mx-auto flex items-center justify-center"
                     aria-hidden="true"
-                    style={{ background: "#6F4A6E22", border: "1px solid #6F4A6E55" }}
+                    style={{ background: `${accentFor(4)}22`, border: `1px solid ${accentFor(4)}55` }}
                   >
                     <div className="w-2 h-2" style={{ background: c.accentHoverBg }} />
                   </div>
@@ -219,7 +219,7 @@ export function HowTheWorkshopTalksToItselfSection() {
                   <div
                     className="w-6 h-6 mx-auto flex items-center justify-center"
                     aria-hidden="true"
-                    style={{ background: "#6A4B2E22", border: "1px solid #6A4B2E55" }}
+                    style={{ background: `${accentFor(3)}22`, border: `1px solid ${accentFor(3)}55` }}
                   >
                     <div className="w-2 h-2" style={{ background: c.actionHoverBg }} />
                   </div>
@@ -255,7 +255,7 @@ export function HowTheWorkshopTalksToItselfSection() {
                   <div
                     className="w-6 h-6 mx-auto flex items-center justify-center"
                     aria-hidden="true"
-                    style={{ background: "#D9791F22", border: "1px solid #D9791F55" }}
+                    style={{ background: `${accentFor(0)}22`, border: `1px solid ${accentFor(0)}55` }}
                   >
                     <div className="w-2 h-2" style={{ background: c.actionBg }} />
                   </div>

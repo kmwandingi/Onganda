@@ -9,6 +9,7 @@ import { motion, MotionConfig } from 'framer-motion';
 import { AUTOMATED, MOTION, installReveal } from './onganda-motion';
 import { TYPE, TEXTURE, FONT } from './onganda-type';
 import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS, paperAlpha } from './onganda-tokens';
+import { followPalette } from './onganda-colors';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
 export const DarkContext = createContext<{
@@ -120,7 +121,7 @@ export const Px = ({
  *  `control` (24) or `hero` (48) for those — `feature` (36) snaps to 48.
  *  - inline:  in a button, a tag, a line of text
  *  - control: nav items, toolbars, list rows
- *  - feature: inside a PixelIconTile on a card, a drop zone, an empty state
+ *  - feature: a card's lead icon (PixelPanel `icon`), a drop zone, an empty state
  *  - hero:    a system card
  *  - display: a page's lead illustration — a hero, a landing section, an
  *             empty state that is the whole screen (96: crisp on both grids) */
@@ -659,7 +660,7 @@ export const OngandaLogoMark = ({
 // light card unconditionally, so under DarkProvider dark every ink choice was
 // made against dust light: a stat value came out char black on the dark card
 // (1.03:1). With no provider, the surface is the theme's own card.
-const IMPLICIT_SURFACE = { hex: COLOR.dustLight, isDark: false };
+const IMPLICIT_SURFACE = followPalette(() => ({ hex: COLOR.dustLight, isDark: false }));
 export const SurfaceContext = createContext<{ hex: string; isDark: boolean }>(IMPLICIT_SURFACE);
 
 export const useSurface = () => {
@@ -1317,12 +1318,12 @@ export const SwatchChip = ({
 }: {
   swatch: SwatchEntry;
 }) => <div className="flex flex-col gap-2">
-    <div className="w-full aspect-square border border-(--onganda-char-black)/10" style={{
+    <div className="w-full aspect-square border border-(--onganda-line)" style={{
     background: swatch.hex
   }} title={swatch.name} aria-label={swatch.name} />
     <div>
-      <p className="text-[11px] font-semibold text-(--onganda-char-black) leading-tight">{swatch.name}</p>
-      <p className="text-[10px] text-(--onganda-char-black)/66 mt-0.5">{swatch.desc}</p>
+      <p className="text-[11px] font-semibold text-(--onganda-text) leading-tight">{swatch.name}</p>
+      <p className="text-[10px] text-(--onganda-text-muted) mt-0.5">{swatch.desc}</p>
     </div>
   </div>;
 
@@ -1354,7 +1355,7 @@ export const TerminalCard = ({
     margin: '-40px'
   }} transition={{
     duration: 0.5
-  }} className="bg-(--onganda-char-black) overflow-hidden">
+  }} className="bg-(--onganda-inverse) overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b" style={{
       borderColor: `${block.tagHex}33`
     }}>
@@ -1374,7 +1375,7 @@ export const TerminalCard = ({
             opacity: 0.7
           }} />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-millet-clay)/55 ml-2">{block.title}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-on-inverse)/55 ml-2">{block.title}</span>
         </div>
         <PixelTag hex={block.tagHex} label={block.tag} />
       </div>
@@ -1475,7 +1476,7 @@ export const FlowNodeCard = ({
   isHovered: boolean;
 }) => {
   const inkFor = useInkOn();
-  return <div className="relative w-full bg-(--onganda-dust-light) overflow-hidden mb-4" style={{
+  return <div className="relative w-full bg-(--onganda-surface) overflow-hidden mb-4" style={{
   border: `1px solid ${node.hex}`,
   borderLeftWidth: 4,
   borderLeftColor: node.hex,
@@ -1497,8 +1498,8 @@ export const FlowNodeCard = ({
         <PixelTag hex={node.hex} label={node.pixelTag} />
         <FlowNodeIcon id={node.id} hex={node.hex} />
       </div>
-      <p className="text-[16px] font-semibold tracking-tight text-(--onganda-char-black) leading-none">{node.oshiwambo}</p>
-      <p className="text-xs text-(--onganda-char-black)/66 font-medium mb-3">{node.english}</p>
+      <p className="text-[16px] font-semibold tracking-tight text-(--onganda-text) leading-none">{node.oshiwambo}</p>
+      <p className="text-xs text-(--onganda-text-muted) font-medium mb-3">{node.english}</p>
       <div className="flex items-center gap-1.5 min-w-0">
         <PixelDot color={node.hex} size={4} />
         <span className="text-[10px] font-bold uppercase tracking-[0.13em] truncate" style={{
@@ -1532,7 +1533,7 @@ export const FieldAppCard = ({
 }} transition={{
   delay: idx * 0.09,
   duration: 0.48
-}} className="relative bg-(--onganda-dust-light) border border-(--onganda-char-black)/10 p-7 overflow-hidden group">
+}} className="relative bg-(--onganda-surface) border border-(--onganda-line) p-7 overflow-hidden group">
     <div className="flex items-start justify-between mb-6">
       <PixelTag hex={app.hex} label={app.tag} />
       <div className="flex gap-0.5" aria-hidden="true">
@@ -1546,15 +1547,15 @@ export const FieldAppCard = ({
       }} />
       </div>
     </div>
-    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-char-black) leading-none">{app.name}</h3>
-    <p className="text-xs font-medium text-(--onganda-char-black)/66 mb-4">
+    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-text) leading-none">{app.name}</h3>
+    <p className="text-xs font-medium text-(--onganda-text-muted) mb-4">
       <span style={{
       color: inkFor(app.hex)
     }}>{app.oshiwambo}</span>
-      <span className="mx-1.5 text-(--onganda-char-black)/66">·</span>
+      <span className="mx-1.5 text-(--onganda-text-muted)">·</span>
       <span>{app.sector}</span>
     </p>
-    <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-6">{app.desc}</p>
+    <p className="text-sm text-(--onganda-text)/65 leading-relaxed mb-6">{app.desc}</p>
     <div className="flex items-center gap-1.5">
       <PixelDot color={app.hex} size={6} />
       <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{
@@ -1576,24 +1577,24 @@ export const AnnotationPanel = ({
   rules: PixelRule[];
 }) => <div className="lg:w-72 xl:w-80 shrink-0 flex flex-col gap-0">
     <div className="mb-8">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-4">Reading the chart</p>
-      <dl className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-4">Reading the chart</p>
+      <dl className="flex flex-col gap-0 divide-y divide-(--onganda-line)">
         {annotations.map(item => <div key={item.label} className="flex flex-col gap-0.5 py-4">
-            <dt className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust)">{item.label}</dt>
-            <dd className="text-sm text-(--onganda-char-black)/65 leading-relaxed">{item.note}</dd>
+            <dt className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-accent-ink)">{item.label}</dt>
+            <dd className="text-sm text-(--onganda-text)/65 leading-relaxed">{item.note}</dd>
           </div>)}
       </dl>
     </div>
-    <div className="border border-(--onganda-char-black)/12 bg-(--onganda-dust-light) p-5">
+    <div className="border border-(--onganda-text)/12 bg-(--onganda-surface) p-5">
       <div className="flex items-center gap-2 mb-4" aria-hidden="true">
         {GUIDE_PALETTE_SWATCHES.map((c, i) => <div key={`guide-sw-${i}`} className="w-2.5 h-2.5" style={{
         background: c
       }} />)}
       </div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66 mb-3">Pixel rules</p>
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-text-muted) mb-3">Pixel rules</p>
       <ul className="flex flex-col gap-2">
-        {rules.map(item => <li key={item.rule} className="flex items-start gap-2 text-xs text-(--onganda-char-black)/65 leading-snug">
-            <div className="w-1 h-1 mt-1.5 shrink-0 bg-(--onganda-ochre-orange)" aria-hidden="true" />
+        {rules.map(item => <li key={item.rule} className="flex items-start gap-2 text-xs text-(--onganda-text)/65 leading-snug">
+            <div className="w-1 h-1 mt-1.5 shrink-0 bg-(--onganda-accent-1)" aria-hidden="true" />
             <span>{item.rule}</span>
           </li>)}
       </ul>
@@ -1618,8 +1619,8 @@ export const PrincipleRow = ({
 }} transition={{
   delay: idx * 0.07
 }} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-8 py-5">
-    <dt className="text-xs font-bold uppercase tracking-[0.13em] text-(--onganda-bark-rust) w-32 shrink-0">{principle.label}</dt>
-    <dd className="text-(--onganda-char-black)/80 text-base">{principle.value}</dd>
+    <dt className="text-xs font-bold uppercase tracking-[0.13em] text-(--onganda-accent-ink) w-32 shrink-0">{principle.label}</dt>
+    <dd className="text-(--onganda-text)/80 text-base">{principle.value}</dd>
   </motion.div>;
 
 // ─── CodeSnippetBlock — section-bottom code snippet with copy button ──────────
@@ -1797,29 +1798,29 @@ export const CodeSnippetBlock = ({
 const CURRENT_YEAR = new Date().getFullYear();
 
 // ─── OngandaFooter — site-wide footer ────────────────────────────────────────
-export const OngandaFooter = () => <footer className="w-full bg-(--onganda-char-black) text-(--onganda-millet-clay) py-16 px-6 md:px-12 border-t-[3px] border-(--onganda-ochre-orange)">
+export const OngandaFooter = () => <footer className="w-full bg-(--onganda-inverse) text-(--onganda-text-on-inverse) py-16 px-6 md:px-12 border-t-[3px] border-(--onganda-action-bg)">
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start gap-10 md:gap-0">
         <div>
           <div className="flex items-center gap-2.5 mb-3">
             <OngandaLogoMark size={22} />
             <span className="font-semibold tracking-tight text-base">
-              <span className="text-(--onganda-ochre-orange)">Onganda</span>
-              <span className="text-(--onganda-millet-clay)/55 mx-1.5">·</span>
-              <span className="text-(--onganda-millet-clay)/70 font-normal text-sm">Namibia AI Systems Lab</span>
+              <span className="text-(--onganda-action-bg)">Onganda</span>
+              <span className="text-(--onganda-text-on-inverse)/55 mx-1.5">·</span>
+              <span className="text-(--onganda-text-on-inverse)/70 font-normal text-sm">Namibia AI Systems Lab</span>
             </span>
           </div>
-          <p className="text-sm text-(--onganda-millet-clay)/55 max-w-xs leading-relaxed">
+          <p className="text-sm text-(--onganda-text-on-inverse)/55 max-w-xs leading-relaxed">
             A sovereign intelligence workshop. Pixelated by design. Material by palette. Oshiwambo by name. Calm by layout.
           </p>
         </div>
         <nav aria-label="Footer navigation" className="flex flex-col gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-millet-clay)/55 mb-1">Navigate</p>
-          {FOOTER_LINKS.map(link => <a key={link.label} href={link.href} className="text-sm text-(--onganda-millet-clay)/60 hover:text-(--onganda-ochre-orange) transition-colors duration-200">{link.label}</a>)}
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-text-on-inverse)/55 mb-1">Navigate</p>
+          {FOOTER_LINKS.map(link => <a key={link.label} href={link.href} className="text-sm text-(--onganda-text-on-inverse)/60 hover:text-(--onganda-action-bg) transition-colors duration-200">{link.label}</a>)}
         </nav>
       </div>
-      <div className="mt-12 pt-6 border-t border-(--onganda-millet-clay)/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <p className="text-[11px] text-(--onganda-millet-clay)/55">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
+      <div className="mt-12 pt-6 border-t border-(--onganda-text-on-inverse)/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <p className="text-[11px] text-(--onganda-text-on-inverse)/55">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
         <div aria-hidden="true" className="flex gap-0.5">
           {FOOTER_DITHER_SWATCHES.map((c, i) => <div key={`foot-sw-${i}`} className="w-3 h-3" style={{
           background: c,

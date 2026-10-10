@@ -56,8 +56,15 @@ const MOTION_TOKENS = Object.fromEntries(
 );
 if (Object.keys(MOTION_TOKENS).length < 8) throw new Error('build-tokens: MOTION_TOKENS did not parse');
 
+// A value rebuilt per palette is a builder, `const lightRoles = () => ({ … });`.
+const builderBlock = fn => {
+  const start = rolesSrc.indexOf(`const ${fn} = `);
+  if (start === -1) throw new Error(`build-tokens: ${fn} not found`);
+  return rolesSrc.slice(start, rolesSrc.indexOf('\n});', start));
+};
+
 const roleBlock = name => {
-  const body = literalBlock(rolesSrc, `${name}: ColorRoles`, '\n};');
+  const body = builderBlock({ ROLE_LIGHT: 'lightRoles', ROLE_DARK: 'darkRoles' }[name]);
   const out = {};
   for (const m of body.matchAll(/^\s{2}(\w+):\s*(?:P\.(\w+)|(ink|paper)\(ALPHA\.(\w+)\.(\w+)\)|(ink|paper)\(([\d.]+)\)|'([^']*)'|`([^`]*)`)/gm)) {
     const [, key, slot, fn, aKey, aMode, fn2, rawAlpha, literal, template] = m;
@@ -86,10 +93,10 @@ const ROLE_LIGHT = roleBlock('ROLE_LIGHT');
 const ROLE_DARK = roleBlock('ROLE_DARK');
 
 const SYSTEM_COLOR = Object.fromEntries(
-  [...literalBlock(rolesSrc, 'SYSTEM_COLOR').matchAll(/(\w+):\s*P\.peers\[(\d)\]/g)].map(m => [m[1], P.peers[+m[2]]])
+  [...builderBlock('systemColorOf').matchAll(/(\w+):\s*P\.peers\[(\d)\]/g)].map(m => [m[1], P.peers[+m[2]]])
 );
 const STATUS = Object.fromEntries(
-  [...literalBlock(rolesSrc, 'STATUS').matchAll(/(\w+):\s*P\.(\w+)/g)].map(m => [m[1], P[m[2]]])
+  [...builderBlock('statusOf').matchAll(/(\w+):\s*P\.(\w+)/g)].map(m => [m[1], P[m[2]]])
 );
 const CHART_SERIES = P.chart;
 if (Object.keys(SYSTEM_COLOR).length !== 5 || Object.keys(STATUS).length !== 4) throw new Error('build-tokens: SYSTEM_COLOR or STATUS did not parse');
@@ -158,7 +165,7 @@ const tokens = {
     'Every shipped palette, by slot. The roles above are built from the default (onganda); ' +
     'selectPalette() builds them from another. Each slot has one job — see Palette in onganda-palettes.ts.',
     Object.fromEntries(Object.entries(PALETTES).map(([name, pal]) => [name, Object.fromEntries([
-      ...Object.entries(pal).filter(([, v]) => typeof v === 'string').map(([slot, v]) => [slot, color(v, undefined)]),
+      ...Object.entries(pal).filter(([, v]) => typeof v === 'string' && v.startsWith('#')).map(([slot, v]) => [slot, color(v, undefined)]),
       ...['peers', 'peersDark', 'chart'].flatMap(list => pal[list].map((v, i) => [`${list}-${i + 1}`, color(v, undefined)]))
     ])]))
   ),

@@ -12,7 +12,8 @@ import {
   type PixelColumn, type StatEntry, type StatusName, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
-const STATS: StatEntry[] = [
+// Built at render, so the accents are the palette in use.
+const stats = (): StatEntry[] => [
   { value: '14', label: 'Field sites', sub: 'across 6 regions', hex: accentFor(0) },
   { value: '92%', label: 'Uptime', sub: 'last 30 days', hex: accentFor(1) },
   { value: '3.1k', label: 'Daily queries', sub: 'up 12% on June', hex: accentFor(2) },
@@ -65,7 +66,7 @@ export const Dashboard = () => {
     <TestFrame current="/test/dashboard" action={<PixelButton>Export report</PixelButton>}>
       <div className="mx-auto max-w-7xl px-6 py-12 md:px-12">
         <SectionHeader level={1} label="Field operations" headline="Six weeks across fourteen sites." />
-        <PixelStatBand stats={STATS} />
+        <PixelStatBand stats={stats()} />
 
         <div className="mt-8 grid gap-4 lg:grid-cols-2">
           <PixelPanel eyebrow="Queries by sector" title="Weekly volume">

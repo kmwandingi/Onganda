@@ -165,6 +165,13 @@ const RULES = [
     re: /(?:background|backgroundColor|borderColor|borderTopColor|borderBottomColor|borderLeftColor|borderRightColor)\s*:\s*COLOR\.(mahanguGold|mopaneBrown|mopaneBrownLight|dyePlum|barkRust)\b/g
   },
   {
+    id: 'pigment-variable',
+    why: 'A pigment CSS variable used for styling. `--onganda-ochre-orange` and the other pigments exist for a system\'s identity; a surface, label, line or fill reads its role (`--onganda-surface`, `--onganda-text-muted`, `--onganda-line`, `--onganda-action-bg`), and a peer\'s colour is `--onganda-accent-1`…`-5`. Roles follow the mode and every palette; a pigment carries one palette\'s meaning into another.',
+    files: /\.(tsx?|css)$/,
+    exclude: /lib-style\.css$|tokens\.css$|palettes[\/\\][\w-]+\.css$|onganda-colors\.ts$|onganda-roles\.ts$/,
+    re: /(?:var\(|\()--onganda-(?:millet-clay|dust-light|mahangu-gold|ochre-orange|fired-red|bark-rust|mopane-brown(?:-light)?|char-black|dye-plum|dark-bg|dark-card(?:-alt)?)\b/g
+  },
+  {
     id: 'raw-status-colour',
     why: 'STATUS read directly instead of statusFor(name, isDark). Mopane brown is 2.25:1 on a dark card and needs the lighter tone.',
     re: /STATUS\.(settled|active|caution)\b/g

@@ -58,8 +58,9 @@ const alpha = name => {
 // The docs describe the Onganda palette, so a role's slot is named by the
 // Onganda pigment that fills it.
 const roleValue = (block, key) => {
-  const start = rolesSrc.indexOf(`export const ${block}: ColorRoles = {`);
-  const body = rolesSrc.slice(start, rolesSrc.indexOf('\n};', start));
+  const fn = { ROLE_LIGHT: 'lightRoles', ROLE_DARK: 'darkRoles' }[block];
+  const start = rolesSrc.indexOf(`const ${fn} = (): ColorRoles => ({`);
+  const body = rolesSrc.slice(start, rolesSrc.indexOf('\n});', start));
   const m = body.match(new RegExp(`^\\s{2}${key}:\\s*(?:P\\.(\\w+)|'([^']+)')`, 'm'));
   if (!m) return null;
   if (m[2]) return m[2];
@@ -245,6 +246,14 @@ for (const doc of ['README.md', 'DESIGN_SYSTEM.md', 'DESIGN_GUIDELINES.md', 'AGE
         failures.push(`tokens/onganda.tokens.json: palette.${name} is ${t.palette?.[name]?.$value} but COLOR.${name} is ${hex}`);
       }
     }
+  }
+}
+
+// ── 3d. Each palette's own hue rule is quoted where agents read it ──────────
+for (const [name, palette] of Object.entries(readPalettes(read('src/components/onganda/onganda-palettes.ts')))) {
+  if (!palette.rules) { failures.push(`onganda-palettes.ts: palette "${name}" has no rules`); continue; }
+  for (const doc of ['skills/onganda-design-system/SKILL.md', 'DESIGN_SYSTEM.md']) {
+    if (!DOCS[doc].includes(palette.rules)) fail(doc, `does not quote the ${name} palette's rules verbatim: "${palette.rules}"`);
   }
 }
 

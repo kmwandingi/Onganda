@@ -23,6 +23,7 @@ import * as SECTIONS from '../components/onganda/onganda-sections';
 import * as PUBLICATIONS from '../components/onganda/onganda-publications';
 import * as SITES from '../components/onganda/onganda-public-sites';
 import * as HUB from '../components/onganda/NamibiaAISystemsHub';
+import * as MAPS from '../components/onganda/onganda-maps';
 
 type Fiber = {
   tag: number;
@@ -65,6 +66,8 @@ const ensureKnown = () => {
   if (known) return;
   known = true;
   add(DS as Record<string, unknown>, '@onganda/design-system');
+  // The map ships from its own entry, so it imports from there.
+  add(MAPS as Record<string, unknown>, '@onganda/design-system/maps');
   add(RC as Record<string, unknown>, 'recharts');
   for (const tag of ['div', 'section', 'article', 'span', 'button', 'a', 'p', 'li', 'ul', 'nav', 'header', 'h2', 'h3', 'svg', 'rect', 'path', 'g']) {
     const m = (motion as unknown as Record<string, unknown>)[tag];
@@ -129,8 +132,8 @@ const PREFER: [RegExp, string[]][] = [
   [/border|outline|stroke/i, ['line', 'lineStrong', 'fieldBorder', 'accentInk', 'controlOnBorder']]
 ];
 
-type Uses = { ds: Set<string>; recharts: Set<string>; motion: boolean; roles: boolean; preamble: string[]; reactNode: boolean; tables: number };
-const newUses = (): Uses => ({ ds: new Set(), recharts: new Set(), motion: false, roles: false, preamble: [], reactNode: false, tables: 0 });
+type Uses = { ds: Set<string>; maps: Set<string>; recharts: Set<string>; motion: boolean; roles: boolean; preamble: string[]; reactNode: boolean; tables: number };
+const newUses = (): Uses => ({ ds: new Set(), maps: new Set(), recharts: new Set(), motion: false, roles: false, preamble: [], reactNode: false, tables: 0 });
 
 /** A colour as code, or null when the value is not a colour we know. */
 const colourExpr = (raw: string, key: string, uses: Uses): string | null => {
@@ -167,7 +170,26 @@ const colourExpr = (raw: string, key: string, uses: Uses): string | null => {
   return null;
 };
 
-const COLOUR_IN_STRING = /#[0-9a-f]{6}\b|rgba?\([^)]*\)/gi;
+// A hex may carry a two-digit alpha (`#D9791F22`, a tint): matched as one.
+const COLOUR_IN_STRING = /#[0-9a-f]{6}(?:[0-9a-f]{2})?\b|rgba?\([^)]*\)/gi;
+
+/** A colour inside a string, as a template placeholder. A tint — a pigment
+ *  with an alpha suffix — is an identity mark, so a peer accent reads as
+ *  accentFor(i) and ink as c.text, with the suffix kept: `${accentFor(0)}22`. */
+const colourInString = (m: string, key: string, uses: Uses): string | null => {
+  const tint = m.match(/^(#[0-9a-f]{6})([0-9a-f]{2})$/i);
+  if (!tint) {
+    const e = colourExpr(m, key, uses);
+    return e && `\${${e}}`;
+  }
+  const base = norm(tint[1]);
+  const { accentIndex, roleByValue } = PALETTE();
+  let e: string | null;
+  if (accentIndex.has(base)) { uses.ds.add('accentFor'); e = `accentFor(${accentIndex.get(base)})`; }
+  else if (roleByValue.get(base)?.includes('text')) { uses.roles = true; e = 'c.text'; }
+  else e = colourExpr(tint[1], key, uses);
+  return e && `\${${e}}${tint[2]}`;
+};
 
 /** A string value as code: a plain string, a colour expression, or a template
  *  literal when colours sit inside it (`1px solid ${c.line}`). */
@@ -178,10 +200,10 @@ const stringExpr = (s: string, key: string, uses: Uses): { code: string; isLiter
     COLOUR_IN_STRING.lastIndex = 0;
     let changed = false;
     const body = s.replace(/[`\\$]/g, ch => `\\${ch}`).replace(COLOUR_IN_STRING, m => {
-      const e = colourExpr(m, key, uses);
-      if (!e) return m;
+      const placeholder = colourInString(m, key, uses);
+      if (!placeholder) return m;
       changed = true;
-      return `\${${e}}`;
+      return placeholder;
     });
     COLOUR_IN_STRING.lastIndex = 0;
     if (changed) return { code: `\`${body}\``, isLiteral: false };
@@ -203,7 +225,7 @@ const valueExpr = (v: unknown, key: string, uses: Uses, depth: number): string |
   if (typeof v === 'function') {
     // A component passed as a value (PixelNav's `icon`) is written by name.
     const o = originOf(v);
-    if (o) { if (o.from === '@onganda/design-system') uses.ds.add(o.name); else if (o.from === 'recharts') uses.recharts.add(o.name); return o.name; }
+    if (o) { if (o.from === '@onganda/design-system') uses.ds.add(o.name); else if (o.from === '@onganda/design-system/maps') uses.maps.add(o.name); else if (o.from === 'recharts') uses.recharts.add(o.name); return o.name; }
     // Handlers are stubbed for the product to wire. A row key must return a
     // string. Any other function is a render callback the showcase wrote for
     // itself: omitted, so the component falls back to its own default.
@@ -272,6 +294,7 @@ const tagFor = (type: unknown, uses: Uses): string | null => {
   const o = originOf(type);
   if (!o) return null;
   if (o.from === '@onganda/design-system') uses.ds.add(o.name);
+  else if (o.from === '@onganda/design-system/maps') uses.maps.add(o.name);
   else if (o.from === 'recharts') uses.recharts.add(o.name);
   else if (o.from === 'framer-motion') uses.motion = true;
   return o.name;
@@ -532,7 +555,7 @@ export const nearestComponent = (node: Element | null): { fiber: Fiber; name: st
   for (let f = fiberOf(node); f; f = f.return) {
     if (typeof f.type === 'string') continue;
     const o = originOf(f.type);
-    if (o && o.from === '@onganda/design-system') return { fiber: f, name: o.name };
+    if (o && o.from.startsWith('@onganda/design-system')) return { fiber: f, name: o.name };
   }
   return null;
 };
@@ -554,6 +577,7 @@ const finish = (name: string, jsx: string, uses: Uses, note: string): string => 
   if (uses.roles) { uses.ds.add('roles'); uses.ds.add('useDark'); }
   const imports: string[] = [];
   if (uses.ds.size) imports.push(`import { ${[...uses.ds].sort().join(', ')} } from '@onganda/design-system';`);
+  if (uses.maps.size) imports.push(`import { ${[...uses.maps].sort().join(', ')} } from '@onganda/design-system/maps';`);
   if (uses.recharts.size) imports.push(`import { ${[...uses.recharts].sort().join(', ')} } from 'recharts';`);
   if (uses.motion) imports.push(`import { motion } from 'framer-motion';`);
   if (uses.reactNode) imports.push(`import type { ReactNode } from 'react';`);

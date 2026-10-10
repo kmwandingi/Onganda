@@ -21,8 +21,8 @@ import { SlideEditor } from './onganda-slide-editor';
 // includes this module, so a static import is a load-order cycle.
 const CopyCodeInspector = lazy(() => import('../../showcase-tools/CopyCodeInspector').then(m => ({ default: m.CopyCodeInspector })));
 
-// The palette this page was built with — chosen by ?palette= (palette-boot.ts).
-const ACTIVE_PALETTE = (Object.keys(PALETTES) as PaletteName[]).find(name => PALETTES[name] === PALETTE) ?? 'onganda';
+// The palette in use — chosen by ?palette= (palette-boot.ts). Read at render.
+const activePaletteName = () => (Object.keys(PALETTES) as PaletteName[]).find(name => PALETTES[name] === PALETTE) ?? 'onganda';
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export const NamibiaAISystemsHub = () => {
@@ -53,7 +53,7 @@ export const NamibiaAISystemsHub = () => {
     isDark,
     toggle
   }}>
-      <div data-onganda-showcase="" className="min-h-screen selection:bg-(--onganda-ochre-orange) selection:text-(--onganda-millet-clay)" style={{
+      <div data-onganda-showcase="" className="min-h-screen selection:bg-(--onganda-action-bg) selection:text-(--onganda-action-fg)" style={{
       fontFamily: 'Inter, Arial, sans-serif',
       background: bg,
       color: fg,
@@ -99,10 +99,10 @@ export const NamibiaAISystemsHub = () => {
         {/* ── Material Palette ── */}
         <section id="palette" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
           <SectionHeader label="Material Palette" headline={PALETTE === PALETTES.onganda ? 'Millet, clay, bark, smoke, ochre.' : PALETTE.description.split('. ')[0] + '.'} accent={COLOR.ochreOrange} isDark={isDark}
-            actions={<PixelTabs label="Palette" isDark={isDark} value={ACTIVE_PALETTE}
+            actions={<PixelTabs label="Palette" isDark={isDark} value={activePaletteName()}
               tabs={(Object.keys(PALETTES) as PaletteName[]).map(name => ({ value: name, label: PALETTES[name].label }))}
               onChange={name => {
-                // A palette is chosen before the system loads, so a change reloads.
+                // Reload in the new palette: what is already rendered keeps the colours it was drawn with.
                 const url = new URL(location.href);
                 if (name === 'onganda') url.searchParams.delete('palette'); else url.searchParams.set('palette', name);
                 location.assign(url);
@@ -144,7 +144,7 @@ export const NamibiaAISystemsHub = () => {
         {/* ── Brand Principles ── */}
         <section id="language" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
           <SectionHeader label="Brand Principles" headline="Pixelated by design. Oshiwambo by name." accent={COLOR.dyePlum} isDark={isDark} />
-          <dl className="divide-y divide-(--onganda-char-black)/10">
+          <dl className="divide-y divide-(--onganda-line)">
             {PRINCIPLES.map((p, i) => <PrincipleRow key={p.label} principle={p} idx={i} />)}
           </dl>
         </section>
@@ -157,40 +157,40 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Naming ladder ── */}
         <section className="max-w-7xl mx-auto px-6 pb-32 md:px-12">
-          <div className="bg-(--onganda-dust-light) border border-(--onganda-char-black)/10 p-8 md:p-12">
+          <div className="bg-(--onganda-surface) border border-(--onganda-line) p-8 md:p-12">
             <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-0">
               <div className="md:w-1/3 shrink-0">
-                <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">Naming Hierarchy</h2>
-                <p className="text-2xl font-medium tracking-tight text-(--onganda-char-black) leading-snug">
+                <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-text-muted) mb-3">Naming Hierarchy</h2>
+                <p className="text-2xl font-medium tracking-tight text-(--onganda-text) leading-snug">
                   One parent.<br />Five tools.<br />One direction.
                 </p>
-                <p className="mt-4 text-sm text-(--onganda-char-black)/66 leading-relaxed max-w-xs">
+                <p className="mt-4 text-sm text-(--onganda-text-muted) leading-relaxed max-w-xs">
                   Names pending final validation with fluent Oshikwanyama / Oshindonga speakers and community-informed partners before lock.
                 </p>
               </div>
               <div className="flex-1">
                 <div className="flex flex-col gap-0">
-                  <div className="flex items-center gap-4 py-4 border-b border-(--onganda-char-black)/10">
-                    <div className="w-2 h-8 bg-(--onganda-ochre-orange) shrink-0" aria-hidden="true" />
+                  <div className="flex items-center gap-4 py-4 border-b border-(--onganda-line)">
+                    <div className="w-2 h-8 bg-(--onganda-accent-1) shrink-0" aria-hidden="true" />
                     <div>
-                      <p className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">Onganda</p>
-                      <p className="text-xs text-(--onganda-char-black)/66 mt-0.5">Parent brand · Namibia Applied AI Lab</p>
+                      <p className="text-lg font-semibold text-(--onganda-text) tracking-tight leading-none">Onganda</p>
+                      <p className="text-xs text-(--onganda-text-muted) mt-0.5">Parent brand · Namibia Applied AI Lab</p>
                     </div>
                   </div>
-                  {SYSTEMS.map((sys, i) => <div key={`nl-${sys.name}`} className="flex items-center gap-4 py-3.5 border-b border-(--onganda-char-black)/8 pl-6">
+                  {SYSTEMS.map((sys, i) => <div key={`nl-${sys.name}`} className="flex items-center gap-4 py-3.5 border-b border-(--onganda-text)/8 pl-6">
                       <div className="w-1.5 h-6 shrink-0" style={{
                     background: sys.borderHex,
                     opacity: 0.7
                   }} aria-hidden="true" />
                       <div className="flex-1 flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
-                        <p className="text-base font-semibold text-(--onganda-char-black) tracking-tight leading-none">{sys.name}</p>
-                        <p className="text-xs text-(--onganda-char-black)/66 mt-0.5 sm:mt-0">
-                          <span className="text-(--onganda-char-black)/66">{sys.english}</span>
+                        <p className="text-base font-semibold text-(--onganda-text) tracking-tight leading-none">{sys.name}</p>
+                        <p className="text-xs text-(--onganda-text-muted) mt-0.5 sm:mt-0">
+                          <span className="text-(--onganda-text-muted)">{sys.english}</span>
                           <span className="mx-1.5">·</span>
                           <span>{sys.role}</span>
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-(--onganda-char-black)/66">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-(--onganda-text-muted)">{String(i + 1).padStart(2, '0')}</span>
                     </div>)}
                 </div>
               </div>

@@ -14,6 +14,7 @@ import type { ComponentPaletteItem, SlideEntry, DroppedBlock } from './onganda-b
 import type { DeckExportPayload } from './onganda-export-api';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
 import { SlideInspector } from './onganda-slide-inspector';
+import { followPalette } from './onganda-colors';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 // SlideEntry and DroppedBlock are imported from onganda-block-types.
@@ -168,7 +169,7 @@ function useSlideHistory(initial: SlideHistorySnapshot) {
 
 
 // ─── Chart data ───────────────────────────────────────────────────────────────
-const SWATCHES_5 = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
+const SWATCHES_5 = followPalette(() => ([COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum]));
 const SYSTEM_ICON_MAP: Record<string, React.ReactNode> = {
   Okaanda: <IconOkaanda size={48} />,
   Oshini: <IconOshini size={48} />,
@@ -261,7 +262,7 @@ const TEMPLATE_SLIDES: SlideEntry[] = [{
 // Approximate rendered widths: icon~60, stat-card~130, chart~240, sys-card~240,
 // timeline~200, flow-node~240, field-app~200, text-headline wraps naturally,
 // text-body maxWidth 320, text-quote ~300, text-label ~auto, dither 200.
-const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
+const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = followPalette(() => ({
   'slide-01': [{
     id: 's01-h',
     type: 'text-headline',
@@ -1435,7 +1436,7 @@ const TEMPLATE_SLIDE_BLOCKS: Record<string, DroppedBlock[]> = {
     selected: false,
     editingText: false
   }]
-};
+}));
 
 // ─── Inline canvas text editor ────────────────────────────────────────────────
 const CanvasTextEdit = ({

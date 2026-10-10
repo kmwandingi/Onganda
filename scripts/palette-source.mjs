@@ -4,7 +4,7 @@
 // node_modules. This is the one parser for the two files that define colour:
 //
 //   onganda-palettes.ts  PALETTES — each palette's pigments, peers and chart
-//   onganda-colors.ts    COLOR — which palette slot each Onganda key reads
+//   onganda-colors.ts    COLOR_SLOT — which palette slot each COLOR key reads
 //
 // Used by check-contrast, check-design-tokens, check-docs and build-tokens.
 
@@ -24,6 +24,7 @@ export const readPalettes = palettesSrc => {
     const [, name, text] = m;
     const p = {};
     for (const s of text.matchAll(/^ {4}(\w+):\s*'(#[0-9A-Fa-f]{6})'/gm)) p[s[1]] = s[2];
+    for (const s of text.matchAll(/^ {4}(label|description|rules):\s*'((?:[^'\\]|\\.)*)'/gm)) p[s[1]] = s[2].replace(/\\'/g, "'");
     for (const s of text.matchAll(/^ {4}(peers|peersDark|chart):\s*\[([^\]]*)\]/gm)) {
       p[s[1]] = [...s[2].matchAll(/'(#[0-9A-Fa-f]{6})'/g)].map(h => h[1]);
     }
@@ -37,11 +38,11 @@ export const readPalettes = palettesSrc => {
 
 /** COLOR key → palette slot, e.g. { milletClay: 'paper', ochreOrange: 'primary' }. */
 export const readColorMap = colorsSrc => {
-  const body = block(colorsSrc, 'export const COLOR = {', 'onganda-colors.ts');
+  const body = block(colorsSrc, 'export const COLOR_SLOT = {', 'onganda-colors.ts');
   const map = Object.fromEntries(
-    [...body.slice(0, body.indexOf('} as const;')).matchAll(/(\w+):\s*PALETTE\.(\w+)/g)].map(m => [m[1], m[2]])
+    [...body.slice(0, body.indexOf('} as const;')).matchAll(/(\w+):\s*'(\w+)'/g)].map(m => [m[1], m[2]])
   );
-  if (Object.keys(map).length < 13) throw new Error('palette-source: could not read the COLOR slot map');
+  if (Object.keys(map).length < 13) throw new Error('palette-source: could not read COLOR_SLOT');
   return map;
 };
 
