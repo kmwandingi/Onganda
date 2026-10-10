@@ -73,7 +73,10 @@ components:
 The package stylesheet includes every utility its components use, so no
 Tailwind configuration is needed — **do not add an `@source` line for the
 package**. Classes you copy into your own components live in your own source,
-which Tailwind already scans.
+which Tailwind already scans. For your own utilities: Tailwind 4 imports
+`@onganda/design-system/tailwind.css`; Tailwind 3 adds
+`presets: [require('@onganda/design-system/tailwind.preset.cjs')]` to
+`tailwind.config.cjs`.
 
 ### 3. Wrap your app in the dark-mode provider
 
@@ -92,8 +95,8 @@ function App() {
 ### 4. Choose a palette (optional)
 
 `onganda` is the default. For `coast` or `etosha`, or a palette of your own,
-make one file and import it on the first line of the entry, before anything
-else imports the design system:
+make one file and import it on the first line of the entry, so it runs
+before the first render:
 
 ```ts
 // src/onganda-palette.ts

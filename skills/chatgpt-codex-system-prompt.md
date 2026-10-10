@@ -36,15 +36,18 @@ reading the rest of this guide; the rest explains why they work.
    selectPalette('onganda'); // or 'coast', 'etosha', or your own definePalette({...})
    ```
 
-   Import it on the first line of `main.tsx`, before anything else. Every
-   component, every CSS token and both modes follow it. See "Palettes" below.
+   Import it on the first line of `main.tsx`, so it runs before the first
+   render. Every component, every CSS token and both modes follow it. See
+   "Palettes" below.
 2. **Load the system.** Import `@onganda/design-system/style.css` and wrap the
    app in `<DarkProvider>`.
 3. **Start from a block, not a blank file.** `blocks/` in the package holds
    every `/showcase` section as a working component: `product-surface.tsx`
    for a tool, `controls.tsx` for forms and settings, `patterns.tsx` for
    dialogs, tables and empty states, `expressive-range.tsx` for a landing
-   page. Copy the closest one into your project and change its content.
+   page. Copy the closest one into your project and change its content. Blocks
+   read roles and peer accents only, never pigments, so they follow your
+   palette and both modes unchanged.
    `src/test-pages/` holds whole pages built the same way (`FormPage.tsx` for
    a settings screen, `Studio.tsx` and `AppScreen.tsx` for tools).
 4. **Put peers in `<PixelPeers>`.** Cards, results or moments in a list go
@@ -183,11 +186,41 @@ pixel art where the eye lands:
 
 | Where | What | How |
 |---|---|---|
-| Each feature card or peer | an icon in a tile, in the card's accent | `<PixelPanel icon={<IconLink size={ICON_SIZE.feature} color={accentFor(i)} />} tag="02">` |
+| Peers that differ in kind (upload / link / transcript) | the card's lead icon, in its accent | `<PixelPanel icon={<IconLink size={ICON_SIZE.feature} />}>` inside a `PixelPeers`. Peers of one kind take no icon; an icon elsewhere sits bare, never boxed |
 | The product's mark | its system icon | `systemIconForName('Etiti', ICON_SIZE.control)` |
 | Navigation and toolbars | interface icons at control size | `ICON_SIZE.control` (24px), accent ink when active |
 | Buttons and inline text | a small trailing icon | `ICON_SIZE.inline` (12px) — it steps forward on hover |
 | Drop zones, empty states | a feature-size illustration | built into `PixelDropZone`; pass `icon` to `PixelEmptyState` |
+
+**Draw your own icons when the bank lacks one.** A product's own mark and the
+symbols specific to its domain are yours to draw, in its palette:
+
+```tsx
+import { createPixelIcon, validatePixelIconDef, COLOR } from '@onganda/design-system';
+
+// One colour, on 12 cells: no `fill`, so it takes `color` like every Icon*.
+const IconHarbour = createPixelIcon({ grid: 12, rects: [{ x: 2, y: 8, w: 8, h: 2 }, { x: 5, y: 2, w: 2, h: 6 }] });
+<IconHarbour size={ICON_SIZE.control} color={c.accentInk} />
+
+// An illustration, on 24 cells: pigments from COLOR, which follows the palette.
+const IconBeacon = createPixelIcon({ grid: 24, rects: [
+  { x: 9, y: 4, w: 6, h: 14, fill: COLOR.ochreOrange },        // body: the palette's primary
+  { x: 9, y: 4, w: 1, h: 14, fill: COLOR.barkRust },           // one shade darker on the edge
+  { x: 7, y: 21, w: 10, h: 1, fill: COLOR.charBlack, opacity: 0.18 } // ground shadow
+] });
+```
+
+- Interface icons: 12 cells, one colour, no `fill` — colour them from a role
+  (`c.textMuted`, `c.accentInk`) or a peer accent.
+- Illustrations and marks: 24 cells, colours from `COLOR` (or `accentFor(i)`),
+  never a hex. `COLOR` keys name the Onganda pigments but hold the active
+  palette's, so the same icon is right under `coast` or `etosha`.
+- Integer coordinates, `<rect>` only, 35 rects at most: `validatePixelIconDef()`
+  returns the problems. The icon factory on `/showcase` draws one by hand and
+  writes the code.
+- The five system icons (`systemIconForName`) are Onganda's five systems and
+  keep their own colours. Use them for those systems only; a product's own
+  mark is its own icon.
 
 **Only on the grid.** Icons are drawn on 12 cells, system icons on 24. Use
 `ICON_SIZE` (12, 24, 36, 48, and 96 for a page's lead illustration). The five
@@ -295,11 +328,17 @@ same in every palette, so the rules in this guide do too: the primary action is
 `actionBg`, the accent ink is `accentInk`, peers rotate through the palette's
 five peer accents. Only the pigments change.
 
-| Palette | Mood | For |
-|---|---|---|
-| `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems |
-| `coast` | Cool fog and signal amber: slate, teal, iris | Security, infrastructure, data tools |
-| `etosha` | Salt pan, acacia and sun: sand, grass green, yellow, blue | Education, learning, public services |
+| Palette | Mood | For | Its own hue rule (`rules`) |
+|---|---|---|---|
+| `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems | No green and no blue. Success is a check glyph on the settled tone, never a new hue. |
+| `coast` | Cool fog and signal amber: slate, teal, iris | Security, infrastructure, data tools | Cool, with one warm signal: amber is the secondary action and caution, and nothing else. Success is a check glyph on the settled slate, never a green. |
+| `etosha` | Salt pan, acacia and sun: sand, grass green, yellow, blue | Education, learning, public services | Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text. |
+
+**Follow the rule of the palette you are in.** Rules that name a pigment —
+"the primary is ochre", "no green and no blue" — describe Onganda. Under another
+palette the same role holds that palette's pigment, and its own rule replaces
+Onganda's. In code it is `PALETTE.rules` (and `PALETTE.label` names the palette),
+so a check or a prompt can read the active one.
 
 `coast` and `etosha` are built from Radix Colors scales, and their chart series
 is the Okabe-Ito set, which stays distinct for every common colour-vision
@@ -308,9 +347,12 @@ dark: `npm run check:contrast` measures them, and the browser audit checks the
 rendered pages.
 
 - **One file chooses it.** `selectPalette()` from
-  `@onganda/design-system/palettes`, imported first (step 1 of "Start here").
-  It must run before the system loads; a later call is ignored and logs an
-  error saying so.
+  `@onganda/design-system/palettes`, imported by the entry (step 1 of "Start
+  here"), before the first render. Every value the system built from the
+  palette rebuilds when it is selected, so module load order does not matter.
+- **Compute colour at render, not at module load.** A constant like
+  `const ACCENTS = [accentFor(0), accentFor(1)]` at the top of a file is built
+  before the palette is chosen. Build it inside the component.
 - **A product that styles in CSS** imports the matching variables after
   `style.css`: `@import '@onganda/design-system/palettes/coast.css';`.
   Components still read `selectPalette()`, so choose the same one there.
@@ -333,10 +375,15 @@ which is what makes a token file work for a tool like Figma.
 - In Tailwind 4: `@import '@onganda/design-system/tailwind.css';` then
   `bg-surface text-text-muted border-line`. Tailwind's own colour palette is
   reset, so `bg-blue-500` does not compile.
+- In Tailwind 3: `presets: [require('@onganda/design-system/tailwind.preset.cjs')]`
+  in `tailwind.config.cjs` gives the same utilities, the type scale (`text-eyebrow`),
+  zero radius and the pixel shadows (`shadow-step`).
+- Every one of these reads the CSS variables, so it follows dark mode and the
+  chosen palette. Never add a colour to a Tailwind config by hand.
 - Dark mode follows `<DarkProvider>`, which marks `<html data-onganda-theme>`.
 
 **Read a role, not a pigment.** `--onganda-mopane-brown` exists for a system's
-identity. A surface, a label, a line or a control reads its role. The pigments
+identity, and `onganda-check` fails `pigment-variable` on styling with one. A surface, a label, a line or a control reads its role. The pigments
 were the only CSS variables the package used to ship, which is exactly how
 "use the design tokens" kept turning into "use every colour".
 
@@ -595,7 +642,8 @@ licence to invent generic chrome.
 repo: generic framework colours, off-palette hex and `rgba()`, `oklch`,
 system colours as chrome, raw `STATUS` reads, rounded geometry, off-scale type
 and texture, off-grid icons, shadows, dotted or dashed lines, texture as a
-state, hand-rolled cards. Fix everything it reports; never weaken a rule. Then
+state, hand-rolled cards, pigment variables where a role belongs. Fix
+everything it reports; never weaken a rule. Then
 your type check, lint and build, and Playwright screenshots of every screen.
 Compare them with `reference/` and with the test pages in
 `npx onganda-showcase`.

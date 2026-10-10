@@ -120,6 +120,13 @@ configured, misconfigured or absent. **Do not add an `@source` line for the
 package.** Classes you copy into your own components live in your own source,
 which Tailwind already scans.
 
+For your own utilities, Tailwind 4 imports `@onganda/design-system/tailwind.css`
+after `tailwindcss`; Tailwind 3 adds
+`presets: [require('@onganda/design-system/tailwind.preset.cjs')]` to its config.
+Both map the roles (`bg-surface`, `text-text-muted`, `border-line`), the type
+scale, zero radius and the pixel shadows, replace Tailwind's own palette, and
+read the CSS variables, so they follow dark mode and the palette.
+
 ### Step 3 — Wrap your app in DarkProvider
 
 All design-system components read dark mode via React context.
@@ -138,7 +145,7 @@ function Root() {
 
 ### Supported package paths
 
-The root keeps stable tokens, primitives, icons, and version 1.x compatibility exports. Use `/charts`, `/editors`, `/ai`, `/maps`, and `/sites` for larger features. `/core` provides the foundation alone. `/palettes` chooses the palette and loads nothing else, so it can run before the rest (§4 "Palettes").
+The root keeps stable tokens, primitives, icons, and version 1.x compatibility exports. Use `/charts`, `/editors`, `/ai`, `/maps`, and `/sites` for larger features. `/core` provides the foundation alone. `/palettes` chooses the palette and loads nothing else (§4 "Palettes").
 
 Non-core root exports remain available throughout version 1.x. Removing one requires a major release and a migration note.
 
@@ -378,11 +385,15 @@ A palette is the set of pigments the roles are built from. Every role above is
 defined by a palette SLOT — `actionBg` is the palette's `primary`, `accentInk`
 its `primaryInk` — so a palette changes every pigment and no rule.
 
-| Palette | Mood | For |
-|---|---|---|
-| `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems |
-| `coast` | Cool fog and signal amber: Radix slate, teal, amber, iris | Security, infrastructure, data tools |
-| `etosha` | Salt pan, acacia and sun: Radix sand, grass, yellow, blue | Education, learning, public services |
+| Palette | Mood | For | Its own hue rule (`rules`) |
+|---|---|---|---|
+| `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems | No green and no blue. Success is a check glyph on the settled tone, never a new hue. |
+| `coast` | Cool fog and signal amber: Radix slate, teal, amber, iris | Security, infrastructure, data tools | Cool, with one warm signal: amber is the secondary action and caution, and nothing else. Success is a check glyph on the settled slate, never a green. |
+| `etosha` | Salt pan, acacia and sun: Radix sand, grass, yellow, blue | Education, learning, public services | Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text. |
+
+Every rule in this document that names a pigment describes the Onganda
+palette. Under another palette the role holds that palette's pigment and the
+palette's own rule (`PALETTE.rules`) replaces Onganda's hue rule.
 
 Each palette also carries five peer accents for light grounds and five for dark
 (the `accentFor` rotation and the five system identities) and six chart
@@ -391,7 +402,7 @@ in `onganda-roles.ts`) in both modes: `npm run check:contrast` measures them
 from source, and the browser audit measures the rendered showcase and test
 pages in each palette.
 
-**Choose it in one file, before the system loads.**
+**Choose it in one file, before the first render.**
 
 ```ts
 // src/onganda-palette.ts — imported on the first line of main.tsx
@@ -399,13 +410,18 @@ import { selectPalette } from '@onganda/design-system/palettes';
 selectPalette('coast');
 ```
 
-The palette is read once, when the design system loads, so every value built
-from it agrees — including the module-level ones a chart theme or a block
-palette builds. `@onganda/design-system/palettes` loads nothing else, which is
-what lets the selection run first. A `selectPalette()` call after the system
-has loaded is ignored and logs an error. A palette other than `onganda` also
-writes its CSS variables (roles, status, accents and pigments, both modes) to
-the page, so `var(--onganda-*)` and the Tailwind utilities follow it.
+Module load order cannot be relied on: a bundler that splits the system into
+its own chunk evaluates it before the entry's code. So `selectPalette()`
+rebuilds, in place, every value the system built from the palette — `COLOR`,
+the roles, statuses, peer accents, chart series, and the module-level values a
+chart theme or a block palette builds (`followPalette` in
+`onganda-colors.ts`). Anything rendered after the call uses the new palette. A
+palette other than `onganda` also writes its CSS variables (roles, status,
+accents and pigments, both modes) to the page, so `var(--onganda-*)` and the
+Tailwind utilities follow it.
+
+In a product, compute colour at render, not in a module-level constant: a
+constant built before `selectPalette()` runs keeps the default palette.
 
 **Styling in CSS without React**, import the matching variables after
 `style.css`: `@import '@onganda/design-system/palettes/coast.css';`. Generated
@@ -1330,7 +1346,25 @@ Accepts any of: `'Okaanda'`, `'Oshini'`, `'Ombiga'`, `'Etiti'`, `'Oshitoo'`.
 
 ### Render a custom pixel icon
 
-Build on the `Px` wrapper. Draw on a 24×24 integer grid using `<rect>` only.
+A product draws its own mark and the symbols its domain needs that the bank
+lacks. Use `createPixelIcon`: rects on an integer grid in, a component out,
+snapped to the grid like every icon.
+
+```tsx
+import { createPixelIcon, validatePixelIconDef, COLOR } from '@onganda/design-system';
+
+// Interface icon: 12 cells, one colour. No `fill`, so it takes `color`.
+const IconHarbour = createPixelIcon({ grid: 12, rects: [{ x: 2, y: 8, w: 8, h: 2 }, { x: 5, y: 2, w: 2, h: 6 }] });
+<IconHarbour size={ICON_SIZE.control} color={c.accentInk} />
+```
+
+An illustration or mark is drawn on 24 cells with colours from `COLOR` or
+`accentFor(i)`, never a hex. The `COLOR` keys name the Onganda pigments but hold
+the active palette's (§4 "Palettes"), so the icon is right in every palette.
+`validatePixelIconDef(name, def)` returns what breaks the rules below. The five
+system icons keep their own colours and stand for Onganda's five systems only.
+
+The same icon written by hand on the `Px` wrapper, 24×24, `<rect>` only:
 
 ```tsx
 import { Px, COLOR } from '@onganda/design-system';

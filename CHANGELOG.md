@@ -5,6 +5,56 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — a Tailwind 3 preset
+
+`@onganda/design-system/tailwind.preset.cjs`, generated beside `tailwind.css`
+from the same source: the roles as colours through their CSS variables, the
+type scale, zero radius and the pixel shadows, with Tailwind's own palette
+replaced. One line in `tailwind.config.cjs`:
+`presets: [require('@onganda/design-system/tailwind.preset.cjs')]`. Compiled
+against Tailwind 3 (`bg-blue-500` does not exist); the package smoke test loads
+it.
+
+### Added — each palette carries its own hue rule
+
+`Palette.rules`: Onganda's "no green and no blue", and what replaces it under
+`coast` and `etosha`. The docs quote each verbatim (`check:docs` fails if they
+drift) and tell an agent that a rule naming a pigment describes Onganda. Under
+another palette, the showcase's Control Standards prose names that palette's
+pigments and shows its rule instead of Onganda's measured ratios; under
+`onganda` it is word for word what it was.
+
+### Changed — blocks and the showcase use semantic colours
+
+The showcase's classes now read roles (`--onganda-surface`,
+`--onganda-text-muted`, `--onganda-line`, `--onganda-text-on-inverse`) and peer
+accents (`--onganda-accent-1`…`-5`), not pigments, so the blocks generated from
+it do too. The copy generator maps a tinted pigment (`#D9791F22`) to
+`${accentFor(0)}22` and ink to `c.text`, and writes the map section as
+`<OngandaMap>` from `@onganda/design-system/maps` instead of its internals.
+A new guard, `pigment-variable`, fails styling with a pigment variable; the
+copy test runs it on every block. Text selection now takes the primary's own
+label colour (`action-fg`) instead of millet clay at 2.4:1.
+
+### Changed — icon direction
+
+`SKILL.md` and `DESIGN_SYSTEM.md` say how a product draws its own icons with
+`createPixelIcon`: 12 cells and one colour from a role for interface icons, 24
+cells with colours from `COLOR` or `accentFor(i)` for marks, so they follow the
+palette; `validatePixelIconDef()` checks them. The guidance no longer puts an
+icon tile on every feature card: a lead icon goes on peers that differ in kind.
+
+### Fixed — a palette selected after the system loaded was lost
+
+The first version read the palette once, at load, and assumed the palette file
+ran first. A bundler that splits the system into its own chunk runs it before
+the entry's code, so the showcase's own build never applied `?palette=`, and an
+app with lazy routes would have kept the default palette. `selectPalette()` now
+rebuilds every value built from the palette in place (`onPaletteChange`,
+`followPalette`), whatever the load order. The consumer test builds the
+palette case with the system in its own chunk, and the palette contrast audits
+first assert that the palette applied.
+
 ### Added — palettes, chosen in one file
 
 The roles were always built from one fixed set of pigments, so a security
@@ -13,7 +63,7 @@ set of pigments the roles are built from, and a product chooses one in a
 single file:
 
 ```ts
-// src/onganda-palette.ts, imported on the first line of main.tsx
+// src/onganda-palette.ts, imported on the first line of main.tsx, before the first render
 import { selectPalette } from '@onganda/design-system/palettes';
 selectPalette('coast');
 ```
@@ -30,7 +80,9 @@ selectPalette('coast');
 - **Everything follows.** `COLOR`, the roles, statuses, peer accents, system
   identities, chart series, the weave, the brand-guide swatches, the CSS
   variables (written to the page for a non-default palette) and the token
-  export. The palette is read once, at load, so module-level values agree too.
+  export. `selectPalette()` rebuilds every value built from the palette in
+  place, module-level ones included, so it works whatever order a bundler
+  loads the modules in.
 - **CSS-only products** import `@onganda/design-system/palettes/<name>.css`
   after `style.css`.
 - **Custom palettes:** `definePalette()` with every slot filled; the system

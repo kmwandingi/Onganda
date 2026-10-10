@@ -123,10 +123,12 @@ The colour rules, all measured and all enforced by `npm run check:design`:
 A palette is the set of pigments the roles are built from: `onganda` (the
 default, warm earth), `coast` (cool fog and signal amber, for security,
 infrastructure and data tools) and `etosha` (salt pan, acacia and sun, for
-education and public services). The roles, and every rule in this document,
-are the same in all three; only the pigments change. A product chooses one in a
+education and public services). The roles are the same in all three; only the
+pigments change. A rule here that names a pigment ("the primary is ochre", "no
+green and no blue") describes Onganda; another palette's own hue rule is its
+`rules` field, and the showcase shows it on the Control Standards section. A product chooses one in a
 single file with `selectPalette()` from `@onganda/design-system/palettes`,
-imported before anything else. `DESIGN_SYSTEM.md` §4 has the details.
+imported by the entry before the first render. `DESIGN_SYSTEM.md` §4 has the details.
 
 ### Adding a colour
 

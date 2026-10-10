@@ -57,8 +57,9 @@ selectPalette('coast');
 ```
 
 Import that file on the first line of your entry (`import './onganda-palette';`),
-before anything else: the palette is read once, when the design system loads.
-To change the palette later, change that one line. A custom palette is
+so it runs before the first render. To change the palette later, change that
+one line. Build colour values inside components, not in module-level
+constants, so they are built from the chosen palette. A custom palette is
 `definePalette({...})`; `DESIGN_SYSTEM.md` §4 "Palettes" has the slots and the
 contrast each must meet.
 
@@ -90,6 +91,18 @@ reset, so `bg-blue-500` does not compile:
 ```css
 @import 'tailwindcss';
 @import '@onganda/design-system/tailwind.css';
+```
+
+On Tailwind 3, the same vocabulary is a preset. One line in your config, and
+the roles, the type scale, zero radius and the pixel shadows are the
+utilities; Tailwind's palette is replaced:
+
+```js
+// tailwind.config.cjs
+module.exports = {
+  presets: [require('@onganda/design-system/tailwind.preset.cjs')],
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+};
 ```
 
 Wrap the app with the built-in theme provider:
@@ -263,7 +276,7 @@ The package root keeps the stable foundation and the full version 1.x compatibil
 | `@onganda/design-system/ai`      | AI authoring tools                                              |
 | `@onganda/design-system/maps`    | Branded, accessible Leaflet maps                                |
 | `@onganda/design-system/sites`   | Sections, public pages, and the showcase                        |
-| `@onganda/design-system/palettes` | Choosing the palette — loads nothing else, so it runs first     |
+| `@onganda/design-system/palettes` | Choosing the palette — loads nothing else                       |
 
 Non-core root exports remain available throughout version 1.x. Any later removal requires a major release and a migration note.
 
