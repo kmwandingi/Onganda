@@ -117,7 +117,9 @@ for (const route of ['/test/app', '/test/studio', '/test/dashboard', '/test/form
 // that promise measured on rendered pages, in both modes.
 for (const palette of ['coast', 'etosha']) {
   for (const route of ['/showcase', '/test/studio', '/test/dashboard']) {
-    for (const dark of [false, true]) {
+    // The showcase has no page-wide dark mode (its toggle is disabled); its
+    // dark surface is the Control Standards switch, audited below.
+    for (const dark of route === '/showcase' ? [false] : [false, true]) {
       test(`every text node on ${route} meets its contrast floor in the ${palette} palette${dark ? ', dark' : ''}`, async ({ page }) => {
         await stubMapTiles(page);
         if (dark) await page.addInitScript(() => localStorage.setItem('onganda-dark', '1'));
@@ -133,29 +135,38 @@ for (const palette of ['coast', 'etosha']) {
 }
 
 // The editors are behind a click, so the route sweep above never reached them.
-// They also paint on the eleven EDITOR_SURFACE grounds, two of which are dark
-// while being used in light mode — that is how ink text at 1.13:1 survived
-// there. Both shells are audited with the same walker.
-for (const [name, open, template] of [
-  ['document editor', /Create document|Documents/i, /Concept Paper/i],
-  ['slide editor', /Build presentation/i, null],
-] as const) {
-  test(`the ${name} meets the contrast floor on every surface`, async ({ page }) => {
-    await page.goto('/showcase');
-    await page.locator('#publications').scrollIntoViewIfNeeded();
-    await page.getByRole('button', { name: open }).first().click();
-    await page.waitForTimeout(1000);
-    if (template && await page.getByText(template).count()) {
-      await page.getByText(template).first().click();
-      await page.waitForTimeout(1800);
-    }
-    const failures = await page.evaluate(AUDIT_SOURCE);
-    expect(failures, `${failures.length} text nodes below their floor in the ${name}:\n  ${failures.slice(0, 12).join('\n  ')}`).toEqual([]);
-  });
+// They also paint on the ten editor grounds of the palette, two of which are
+// dark while being used in light mode — that is how ink text at 1.13:1
+// survived there. Both shells are audited with the same walker, in every
+// palette.
+// Onganda's warm editor grounds; under another palette none may remain.
+const ONGANDA_EDITOR_GROUNDS = ['rgb(253, 250, 242)', 'rgb(240, 232, 212)', 'rgb(224, 216, 198)', 'rgb(213, 206, 187)', 'rgb(42, 36, 32)'];
+for (const palette of ['onganda', 'coast', 'etosha']) {
+  for (const [name, open, template] of [
+    ['document editor', /Create document|Documents/i, /Concept Paper/i],
+    ['slide editor', /Build presentation/i, null],
+  ] as const) {
+    test(`the ${name} meets the contrast floor on every surface${palette === 'onganda' ? '' : ` in the ${palette} palette`}`, async ({ page }) => {
+      await page.goto(palette === 'onganda' ? '/showcase' : `/showcase?palette=${palette}`);
+      await page.locator('#publications').scrollIntoViewIfNeeded();
+      await page.getByRole('button', { name: open }).first().click();
+      await page.waitForTimeout(1000);
+      if (template && await page.getByText(template).count()) {
+        await page.getByText(template).first().click();
+        await page.waitForTimeout(1800);
+      }
+      const failures = await page.evaluate(AUDIT_SOURCE);
+      expect(failures, `${failures.length} text nodes below their floor in the ${name}:\n  ${failures.slice(0, 12).join('\n  ')}`).toEqual([]);
+      if (palette === 'onganda') return;
+      const warm = await page.evaluate(grounds => [...document.querySelectorAll('*')]
+        .filter(el => grounds.includes(getComputedStyle(el).backgroundColor)).length, ONGANDA_EDITOR_GROUNDS);
+      expect(warm, `Onganda editor grounds left in the ${palette} ${name}`).toBe(0);
+    });
+  }
 }
 
-test('the Control Standards section is compliant in dark mode too', async ({ page }) => {
-  await page.goto('/showcase');
+for (const palette of ['onganda', 'coast', 'etosha']) test(`the Control Standards section is compliant in dark mode too${palette === 'onganda' ? '' : ` in the ${palette} palette`}`, async ({ page }) => {
+  await page.goto(palette === 'onganda' ? '/showcase' : `/showcase?palette=${palette}`);
   await page.locator('#controls').scrollIntoViewIfNeeded();
   await page.getByRole('switch').first().click();
   await expect(page.locator('#controls-stage')).toHaveAttribute('data-mode', 'dark');

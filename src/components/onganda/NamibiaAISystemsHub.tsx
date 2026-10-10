@@ -6,7 +6,7 @@
 
 import React, { Suspense, lazy, useState } from 'react';
 import { motion } from 'framer-motion';
-import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES, PALETTE, PALETTES, type PaletteName } from './onganda-tokens';
+import { COLOR, WEAVE, SYSTEMS, SWATCHES, PRINCIPLES, PALETTE, PALETTES, activePalette, type PaletteName } from './onganda-tokens';
 import { PixelTabs } from './onganda-patterns';
 import { PixelLabCard } from './onganda-site';
 import { DarkContext, SectionHeader, WeaveOverlay, SystemCard, StatCard, SwatchChip, PrincipleRow, PixelButton, OngandaFooter } from './onganda-primitives';
@@ -22,7 +22,7 @@ import { SlideEditor } from './onganda-slide-editor';
 const CopyCodeInspector = lazy(() => import('../../showcase-tools/CopyCodeInspector').then(m => ({ default: m.CopyCodeInspector })));
 
 // The palette in use — chosen by ?palette= (palette-boot.ts). Read at render.
-const activePaletteName = () => (Object.keys(PALETTES) as PaletteName[]).find(name => PALETTES[name] === PALETTE) ?? 'onganda';
+const activePaletteName = () => (Object.keys(PALETTES) as PaletteName[]).find(name => PALETTES[name] === activePalette()) ?? 'onganda';
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export const NamibiaAISystemsHub = () => {
@@ -98,7 +98,7 @@ export const NamibiaAISystemsHub = () => {
 
         {/* ── Material Palette ── */}
         <section id="palette" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
-          <SectionHeader label="Material Palette" headline={PALETTE === PALETTES.onganda ? 'Millet, clay, bark, smoke, ochre.' : PALETTE.description.split('. ')[0] + '.'} accent={COLOR.ochreOrange} isDark={isDark}
+          <SectionHeader label="Material Palette" headline={activePalette() === PALETTES.onganda ? 'Millet, clay, bark, smoke, ochre.' : PALETTE.description.split('. ')[0] + '.'} accent={COLOR.ochreOrange} isDark={isDark}
             actions={<PixelTabs label="Palette" isDark={isDark} value={activePaletteName()}
               tabs={(Object.keys(PALETTES) as PaletteName[]).map(name => ({ value: name, label: PALETTES[name].label }))}
               onChange={name => {

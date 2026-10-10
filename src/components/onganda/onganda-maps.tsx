@@ -5,6 +5,7 @@ import { IconMap } from './onganda-icons';
 import { PixelCornerMarks, PixelTag, useDark } from './onganda-primitives';
 import { inkAlpha, paperAlpha } from './onganda-roles';
 import { followPalette } from './onganda-colors';
+import { activePalette, PALETTES } from './onganda-palettes';
 
 export type OngandaMapPosition = readonly [latitude: number, longitude: number];
 export type OngandaMapAccent = 'ochre' | 'gold' | 'rust' | 'brown' | 'plum' | 'red';
@@ -73,8 +74,9 @@ const EMPTY_POINTS: readonly OngandaMapPoint[] = [];
 const EMPTY_ROUTES: readonly OngandaMapRoute[] = [];
 const EMPTY_AREAS: readonly OngandaMapArea[] = [];
 
-// A function, read at render, so the styles are the palette in use.
-const mapStyles = () => `
+// A function, read at render, so the styles are the palette in use. The sepia
+// on the tiles is Onganda's warmth; other palettes take the tiles neutral.
+const mapStyles = (warm = activePalette() === PALETTES.onganda) => `
   .onganda-map-shell .leaflet-container {
     background: ${COLOR.dustLight};
     color: ${COLOR.charBlack};
@@ -85,10 +87,10 @@ const mapStyles = () => `
     color: ${COLOR.milletClay};
   }
   .onganda-map-shell .leaflet-tile-pane {
-    filter: sepia(.28) saturate(.72) contrast(.9) brightness(1.06);
+    filter: ${warm ? 'sepia(.28) saturate(.72)' : 'grayscale(.6)'} contrast(.9) brightness(1.06);
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-tile-pane {
-    filter: grayscale(.35) sepia(.35) saturate(.55) brightness(.58) contrast(1.25);
+    filter: ${warm ? 'grayscale(.35) sepia(.35) saturate(.55)' : 'grayscale(.7)'} brightness(.58) contrast(1.25);
   }
   .onganda-map-shell .leaflet-control-zoom,
   .onganda-map-shell .leaflet-control-attribution,

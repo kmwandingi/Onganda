@@ -713,7 +713,9 @@ export function EveryChartOnePaletteSection() {
         <div className="flex-1 h-px" style={{ background: c.line }} />
         <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: c.textMuted, whiteSpace: "normal", textAlign: "center" }}>
           18
-          chart types · Recharts · Onganda palette
+          chart types · Recharts ·
+          Onganda
+          palette
         </span>
         <div className="flex-1 h-px" style={{ background: c.line }} />
       </div>

@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { AUTOMATED } from './onganda-motion';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, ReferenceLine, RadialBarChart, RadialBar, Treemap, FunnelChart, Funnel, LabelList } from 'recharts';
-import { COLOR } from './onganda-colors';
+import { COLOR, PALETTE } from './onganda-colors';
 import { CHART_SERIES, onColor, roles } from './onganda-roles';
 import { TYPE } from './onganda-type';
 import { SectionHeader, PixelTag, PixelDot, useIsDark } from './onganda-primitives';
@@ -1264,7 +1264,7 @@ export const ChartGallery = () => {
         whiteSpace: 'normal',
         textAlign: 'center'
       }}>
-          {CHART_PANELS.length} chart types · Recharts · Onganda palette
+          {CHART_PANELS.length} chart types · Recharts · {PALETTE.label} palette
         </span>
         <div className="flex-1 h-px" style={{
         background: borderColor

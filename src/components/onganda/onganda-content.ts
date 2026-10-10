@@ -9,7 +9,8 @@ import type {
   TickerItem, HeroWord
 } from './onganda-types';
 import { COLOR } from './onganda-colors';
-import { followPalette } from './onganda-colors';
+import { followPalette, PALETTE } from './onganda-colors';
+import { activePalette, PALETTES } from './onganda-palettes';
 
 // ─── Systems ─────────────────────────────────────────────────────────────────
 // `line` = one-sentence summary used on public site cards
@@ -68,7 +69,7 @@ export const SYSTEMS: SystemEntry[] = followPalette(() => ([{
   borderHex: COLOR.dyePlum
 }]));
 
-export const PRINCIPLES: PrincipleEntry[] = [{
+export const PRINCIPLES: PrincipleEntry[] = followPalette(() => [{
   label: 'Language',
   value: 'Oshiwambo first. English second.'
 }, {
@@ -79,11 +80,11 @@ export const PRINCIPLES: PrincipleEntry[] = [{
   value: 'Non-pixel by default — body, reading, interface.'
 }, {
   label: 'Palette',
-  value: 'Millet, clay, bark, smoke, ochre, dried grass.'
+  value: activePalette() === PALETTES.onganda ? 'Millet, clay, bark, smoke, ochre, dried grass.' : PALETTE.description
 }, {
   label: 'Layout',
   value: 'Calm and editorial. Anthropic-level whitespace discipline.'
-}];
+}]);
 
 export const FLOW_NODES: FlowNodeEntry[] = followPalette(() => ([{
   id: 'root',

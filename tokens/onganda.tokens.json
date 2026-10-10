@@ -191,6 +191,46 @@
       "chart-6": {
         "$type": "color",
         "$value": "#C84A1B"
+      },
+      "editor-paperWhite": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "editor-paperWarm": {
+        "$type": "color",
+        "$value": "#FDFAF2"
+      },
+      "editor-dustCream": {
+        "$type": "color",
+        "$value": "#F0E8D4"
+      },
+      "editor-dustHover": {
+        "$type": "color",
+        "$value": "#EDE0C4"
+      },
+      "editor-dustPanel": {
+        "$type": "color",
+        "$value": "#E0D8C6"
+      },
+      "editor-dustPanelDeep": {
+        "$type": "color",
+        "$value": "#DDD6C3"
+      },
+      "editor-dustWell": {
+        "$type": "color",
+        "$value": "#D8D1BF"
+      },
+      "editor-dustHeader": {
+        "$type": "color",
+        "$value": "#D5CEBB"
+      },
+      "editor-canvasWellDark": {
+        "$type": "color",
+        "$value": "#0E0C0A"
+      },
+      "editor-emberBrown": {
+        "$type": "color",
+        "$value": "#2A2420"
       }
     },
     "coast": {
@@ -317,6 +357,46 @@
       "chart-6": {
         "$type": "color",
         "$value": "#56B4E9"
+      },
+      "editor-paperWhite": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "editor-paperWarm": {
+        "$type": "color",
+        "$value": "#fcfcfd"
+      },
+      "editor-dustCream": {
+        "$type": "color",
+        "$value": "#f0f0f3"
+      },
+      "editor-dustHover": {
+        "$type": "color",
+        "$value": "#e8e8ec"
+      },
+      "editor-dustPanel": {
+        "$type": "color",
+        "$value": "#e0e1e6"
+      },
+      "editor-dustPanelDeep": {
+        "$type": "color",
+        "$value": "#dddde3"
+      },
+      "editor-dustWell": {
+        "$type": "color",
+        "$value": "#d9d9e0"
+      },
+      "editor-dustHeader": {
+        "$type": "color",
+        "$value": "#d7d8de"
+      },
+      "editor-canvasWellDark": {
+        "$type": "color",
+        "$value": "#0b0b0d"
+      },
+      "editor-emberBrown": {
+        "$type": "color",
+        "$value": "#272a2d"
       }
     },
     "etosha": {
@@ -346,7 +426,7 @@
       },
       "secondary": {
         "$type": "color",
-        "$value": "#ffe629"
+        "$value": "#facc15"
       },
       "deep": {
         "$type": "color",
@@ -443,11 +523,51 @@
       "chart-6": {
         "$type": "color",
         "$value": "#56B4E9"
+      },
+      "editor-paperWhite": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "editor-paperWarm": {
+        "$type": "color",
+        "$value": "#fdfdfc"
+      },
+      "editor-dustCream": {
+        "$type": "color",
+        "$value": "#f9f9f8"
+      },
+      "editor-dustHover": {
+        "$type": "color",
+        "$value": "#f1f0ef"
+      },
+      "editor-dustPanel": {
+        "$type": "color",
+        "$value": "#e9e8e6"
+      },
+      "editor-dustPanelDeep": {
+        "$type": "color",
+        "$value": "#e2e1de"
+      },
+      "editor-dustWell": {
+        "$type": "color",
+        "$value": "#dddcd9"
+      },
+      "editor-dustHeader": {
+        "$type": "color",
+        "$value": "#dad9d6"
+      },
+      "editor-canvasWellDark": {
+        "$type": "color",
+        "$value": "#0b0b0a"
+      },
+      "editor-emberBrown": {
+        "$type": "color",
+        "$value": "#2a2a28"
       }
     }
   },
   "palette-editor": {
-    "$description": "Additional grounds used only by the document and slide editors. Not brand identity colours.",
+    "$description": "Additional grounds used only by the document and slide editors, from the default palette's editor slot. Not brand identity colours.",
     "paperWhite": {
       "$type": "color",
       "$value": "#FFFFFF"

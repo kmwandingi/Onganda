@@ -11,8 +11,10 @@
 import type { SwatchEntry, DitherCol } from './onganda-types';
 import { activePalette, onPaletteChange, type Palette } from './onganda-palettes';
 
-/** The palette in use. A live binding: it follows selectPalette(). */
-export let PALETTE: Palette = activePalette();
+/** The palette in use: one object whose fields follow selectPalette(), so a
+ *  reference held anywhere (CommonJS included) stays current. To ask which
+ *  palette it is, compare activePalette() with PALETTES, not this object. */
+export const PALETTE: Palette = { ...activePalette() };
 
 /** Which palette slot each COLOR key reads. */
 export const COLOR_SLOT = {
@@ -79,22 +81,11 @@ const swatchesOf = (p: Palette): SwatchEntry[] => {
 export const SWATCHES: SwatchEntry[] = swatchesOf(PALETTE);
 
 // ─── Editor surface tones ──────────────────────────────────────────────────
-// Paper/panel/canvas tones used by DocumentEditor and SlideEditor. Kept apart
-// from COLOR (the 12 core brand tokens mirrored in lib-style.css CSS vars) —
-// these are editor-only surface variants, not brand identity colors.
-export const EDITOR_SURFACE = {
-  paperWhite: '#FFFFFF',
-  paperWarm: '#FDFAF2',
-  dustCream: '#F0E8D4',
-  dustHover: '#EDE0C4',
-  dustPanel: '#E0D8C6',
-  dustPanelDeep: '#DDD6C3',
-  dustWell: '#D8D1BF',
-  dustHeader: '#D5CEBB',
-  canvasWellDark: '#0E0C0A',
-  emberBrown: '#2A2420',
-  smokeGray: '#888888'
-} as const;
+// Paper/panel/canvas tones used by DocumentEditor and SlideEditor, from the
+// palette's `editor` slot. Kept apart from COLOR: these are editor-only
+// surface variants, not brand identity colors.
+const editorOf = (p: Palette) => ({ ...p.editor, smokeGray: '#888888' });
+export const EDITOR_SURFACE: Readonly<ReturnType<typeof editorOf>> = editorOf(PALETTE);
 
 // The brand guide's swatch rows and the dither columns, in the palette's hues.
 const arraysOf = (c: Record<ColorKey, string>) => {
@@ -136,11 +127,12 @@ export const followPalette = <T extends object>(build: () => T): T => {
 
 // A new palette: rebuild every value above in place.
 onPaletteChange(() => {
-  PALETTE = activePalette();
+  Object.assign(PALETTE, activePalette());
   Object.assign(COLOR, colorOf(PALETTE));
   Object.assign(COLOR_CSS_VARS, cssVarsOf(COLOR));
   Object.assign(WEAVE, weaveOf(COLOR));
   refill(SWATCHES, swatchesOf(PALETTE));
+  Object.assign(EDITOR_SURFACE, editorOf(PALETTE));
   const next = arraysOf(COLOR);
   refill(GUIDE_PALETTE_SWATCHES, next.guide);
   refill(FOOTER_DITHER_SWATCHES, next.footer);

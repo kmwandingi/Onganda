@@ -50,7 +50,7 @@ const P = PALETTES.onganda;
 const COLOR = colorFor(P, COLOR_MAP);
 // A slot is named by the Onganda pigment that fills it, where there is one.
 const slotRef = slot => Object.keys(COLOR_MAP).find(k => COLOR_MAP[k] === slot) ?? slot;
-const EDITOR_SURFACE = hexMap(colorsSrc, 'EDITOR_SURFACE');
+const EDITOR_SURFACE = { ...P.editor, smokeGray: colorsSrc.match(/smokeGray: '(#[0-9A-Fa-f]{6})'/)[1] };
 const MOTION_TOKENS = Object.fromEntries(
   [...literalBlock(motionSrc, 'MOTION_TOKENS').matchAll(/^\s{2}(\w+):\s*'([^']*)'/gm)].map(m => [m[1], m[2]])
 );
@@ -166,12 +166,13 @@ const tokens = {
     'selectPalette() builds them from another. Each slot has one job — see Palette in onganda-palettes.ts.',
     Object.fromEntries(Object.entries(PALETTES).map(([name, pal]) => [name, Object.fromEntries([
       ...Object.entries(pal).filter(([, v]) => typeof v === 'string' && v.startsWith('#')).map(([slot, v]) => [slot, color(v, undefined)]),
-      ...['peers', 'peersDark', 'chart'].flatMap(list => pal[list].map((v, i) => [`${list}-${i + 1}`, color(v, undefined)]))
+      ...['peers', 'peersDark', 'chart'].flatMap(list => pal[list].map((v, i) => [`${list}-${i + 1}`, color(v, undefined)])),
+      ...Object.entries(pal.editor).map(([tone, v]) => [`editor-${tone}`, color(v, undefined)])
     ])]))
   ),
 
   'palette-editor': g(
-    'Additional grounds used only by the document and slide editors. Not brand identity colours.',
+    'Additional grounds used only by the document and slide editors, from the default palette\'s editor slot. Not brand identity colours.',
     Object.fromEntries(Object.entries(EDITOR_SURFACE).map(([k, v]) => [k, color(v)]))
   ),
 

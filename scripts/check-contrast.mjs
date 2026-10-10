@@ -81,14 +81,10 @@ const ALPHA = {};
   }
 }
 
-// The editors paint on eleven additional grounds. They were outside the model
-// until an audit inside the document editor found ink text at 1.13:1 on
-// emberBrown. Every light tone is checked against the text roles; the two dark
-// tones are checked against the dark set.
-const EDITOR_SURFACE = Object.fromEntries(
-  [...colorsSrc.slice(colorsSrc.indexOf('export const EDITOR_SURFACE = {'), colorsSrc.indexOf('} as const;', colorsSrc.indexOf('export const EDITOR_SURFACE = {')))
-    .matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{6})'/g)].map(m => [m[1], m[2]])
-);
+// The editors paint on ten additional grounds, each palette's `editor` slot.
+// They were outside the model until an audit inside the document editor found
+// ink text at 1.13:1 on emberBrown. Every light tone is checked against the
+// text roles; the two dark tones are checked against the dark set.
 
 const AA = 4.5;  // small text
 const UI = 3.0;  // non-text boundary or indicator
@@ -133,31 +129,27 @@ const runMode = (label, R, COLOR) => {
   }
 };
 
-// The editors paint on their own warm paper tones under every palette, so
-// they are measured against the Onganda ink, the palette they were tuned for.
-// Editor grounds. A tone is light or dark by which ink actually reads on it.
-const EDITOR_LIGHT = ['paperWhite', 'paperWarm', 'dustCream', 'dustHover', 'dustPanel', 'dustPanelDeep', 'dustWell', 'dustHeader'];
+// Editor grounds: the two dark tones take the dark roles, the rest the light.
 const EDITOR_DARK = ['canvasWellDark', 'emberBrown'];
 
-function checkEditorSurfaces(LIGHT, DARK) {
-for (const [tone, hex] of Object.entries(EDITOR_SURFACE)) {
+function checkEditorSurfaces(EDITOR, LIGHT, DARK, tag) {
+for (const [tone, hex] of Object.entries(EDITOR)) {
   const isDarkTone = EDITOR_DARK.includes(tone);
-  if (!EDITOR_LIGHT.includes(tone) && !isDarkTone) continue; // smokeGray is a chrome tone, not a ground
   const R = isDarkTone ? DARK : LIGHT;
   const bg = rgb(hex);
   for (const role of ['text', 'textBody', 'textMuted', 'fieldText']) {
     const fg = resolve(R[role], hex);
     if (!fg) continue;
     const r = ratio(fg, bg);
-    rows.push([isDarkTone ? 'editor-dk' : 'editor-lt', `${role} on ${tone}`, r.toFixed(2), AA, r >= AA ? 'ok' : 'FAIL']);
-    if (r < AA) failures.push(`editor surface: ${role} is ${r.toFixed(2)}:1 on ${tone} (${hex}), needs ${AA}:1`);
+    rows.push([`${tag}${isDarkTone ? 'editor-dk' : 'editor-lt'}`, `${role} on ${tone}`, r.toFixed(2), AA, r >= AA ? 'ok' : 'FAIL']);
+    if (r < AA) failures.push(`${tag}editor surface: ${role} is ${r.toFixed(2)}:1 on ${tone} (${hex}), needs ${AA}:1`);
   }
   // The accent as ink has to survive these grounds too.
   const accent = resolve(R.accentInk, hex);
   if (accent) {
     const r = ratio(accent, bg);
-    rows.push([isDarkTone ? 'editor-dk' : 'editor-lt', `accentInk on ${tone}`, r.toFixed(2), AA, r >= AA ? 'ok' : 'FAIL']);
-    if (r < AA) failures.push(`editor surface: accentInk is ${r.toFixed(2)}:1 on ${tone} (${hex}), needs ${AA}:1`);
+    rows.push([`${tag}${isDarkTone ? 'editor-dk' : 'editor-lt'}`, `accentInk on ${tone}`, r.toFixed(2), AA, r >= AA ? 'ok' : 'FAIL']);
+    if (r < AA) failures.push(`${tag}editor surface: accentInk is ${r.toFixed(2)}:1 on ${tone} (${hex}), needs ${AA}:1`);
   }
 }
 }
@@ -169,7 +161,7 @@ for (const [paletteName, P] of Object.entries(PALETTES)) {
   const tag = paletteName === 'onganda' ? '' : `${paletteName} `;
   runMode(`${tag}light`, LIGHT, COLOR);
   runMode(`${tag}dark`, DARK, COLOR);
-  if (paletteName === 'onganda') checkEditorSurfaces(LIGHT, DARK);
+  checkEditorSurfaces(P.editor, LIGHT, DARK, tag);
 }
 
 if (process.argv.includes('--table')) {

@@ -77,9 +77,15 @@ export interface Palette {
   peersDark: readonly [string, string, string, string, string];
   /** six chart series, in fixed order */
   chart: readonly [string, string, string, string, string, string];
+  /** the document and slide editors' paper and panel grounds, lightest
+   *  first; the last two are dark (text roles 4.5:1 on each, in the mode
+   *  that reads on it) */
+  editor: Record<EditorTone, string>;
   /** the nine pigments as the brand guide shows them: [name, what it is] */
   swatches: Record<'canvas' | 'surface' | 'secondary' | 'primary' | 'critical' | 'primaryInk' | 'deep' | 'ink' | 'rare', readonly [string, string]>;
 }
+
+export type EditorTone = 'paperWhite' | 'paperWarm' | 'dustCream' | 'dustHover' | 'dustPanel' | 'dustPanelDeep' | 'dustWell' | 'dustHeader' | 'canvasWellDark' | 'emberBrown';
 
 export const PALETTES = {
   // Kalahari earth: millet, ochre, mahangu, mopane. The lab's own palette and
@@ -106,6 +112,10 @@ export const PALETTES = {
     peers: ['#D9791F', '#8F3E21', '#DFAE2B', '#6A4B2E', '#6F4A6E'],
     peersDark: ['#D9791F', '#DFAE2B', '#8F6840', '#8F3E21', '#6F4A6E'],
     chart: ['#D9791F', '#8F3E21', '#DFAE2B', '#6A4B2E', '#6F4A6E', '#C84A1B'],
+    editor: {
+      paperWhite: '#FFFFFF', paperWarm: '#FDFAF2', dustCream: '#F0E8D4', dustHover: '#EDE0C4', dustPanel: '#E0D8C6',
+      dustPanelDeep: '#DDD6C3', dustWell: '#D8D1BF', dustHeader: '#D5CEBB', canvasWellDark: '#0E0C0A', emberBrown: '#2A2420'
+    },
     swatches: {
       canvas: ['Millet Clay', 'Base background'], surface: ['Dust Light', 'Lifted surface'],
       secondary: ['Mahangu Gold', 'Secondary highlight'], primary: ['Ochre Orange', 'Warm accent'],
@@ -138,6 +148,10 @@ export const PALETTES = {
     peers: ['#008573', '#5753c6', '#ab6400', '#107d98', '#953ea3'],
     peersDark: ['#0bd8b6', '#b1a9ff', '#ffca16', '#4ccce6', '#e796f3'],
     chart: ['#009E73', '#0072B2', '#E69F00', '#D55E00', '#CC79A7', '#56B4E9'],
+    editor: {
+      paperWhite: '#ffffff', paperWarm: '#fcfcfd', dustCream: '#f0f0f3', dustHover: '#e8e8ec', dustPanel: '#e0e1e6',
+      dustPanelDeep: '#dddde3', dustWell: '#d9d9e0', dustHeader: '#d7d8de', canvasWellDark: '#0b0b0d', emberBrown: '#272a2d'
+    },
     swatches: {
       canvas: ['Fog', 'Base background'], surface: ['Salt', 'Lifted surface'],
       secondary: ['Signal Amber', 'Secondary highlight'], primary: ['Atlantic Teal', 'Primary action'],
@@ -146,8 +160,9 @@ export const PALETTES = {
     }
   },
   // Salt pan, acacia and sun. Bright and friendly, for education, learning and
-  // public services. Radix Colors sand, grass, yellow, blue and red; chart
-  // series Okabe-Ito.
+  // public services. Radix Colors sand, grass, blue and red; the sun is
+  // Tailwind's yellow-400, warmer and quieter than Radix yellow beside grass.
+  // Chart series Okabe-Ito.
   etosha: {
     label: 'Etosha',
     description: 'Salt pan, acacia and sun. Sand, grass green and yellow for education and public services.',
@@ -158,7 +173,7 @@ export const PALETTES = {
     paper: '#fdfdfc',
     primary: '#46a758',
     primaryInk: '#203c25',
-    secondary: '#ffe629',
+    secondary: '#facc15',
     deep: '#63635e',
     deepLight: '#b5b3ad',
     rare: '#0d74ce',
@@ -170,6 +185,10 @@ export const PALETTES = {
     peers: ['#2a7e3b', '#0d74ce', '#ab6400', '#d13415', '#6550b9'],
     peersDark: ['#71d083', '#70b8ff', '#ffca16', '#ff977d', '#baa7ff'],
     chart: ['#0072B2', '#009E73', '#E69F00', '#CC79A7', '#D55E00', '#56B4E9'],
+    editor: {
+      paperWhite: '#ffffff', paperWarm: '#fdfdfc', dustCream: '#f9f9f8', dustHover: '#f1f0ef', dustPanel: '#e9e8e6',
+      dustPanelDeep: '#e2e1de', dustWell: '#dddcd9', dustHeader: '#dad9d6', canvasWellDark: '#0b0b0a', emberBrown: '#2a2a28'
+    },
     swatches: {
       canvas: ['Salt Pan', 'Base background'], surface: ['Chalk', 'Lifted surface'],
       secondary: ['Sun', 'Secondary highlight'], primary: ['Acacia', 'Primary action'],

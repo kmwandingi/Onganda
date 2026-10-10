@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { AUTOMATED, useMotionOK } from './onganda-motion';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, PALETTE, PALETTES, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData, paperAlpha, inkAlpha } from './onganda-tokens';
+import { COLOR, PALETTE, PALETTES, activePalette, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData, paperAlpha, inkAlpha, contrast } from './onganda-tokens';
 import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, useIsDark, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
@@ -987,7 +987,8 @@ export const OngandaHero = () => {
               fontWeight: 700,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: item.hex,
+              // Another palette's ink-dark peers vanish on the black band.
+              color: onganda() || contrast(item.hex, COLOR.charBlack) >= 3 ? item.hex : paperAlpha(0.8),
               marginRight: 6
             }}>{item.name}</span>
                 <span style={{
@@ -1154,7 +1155,7 @@ export const OngandaHero = () => {
         maxWidth: 440,
         padding: '0 1.5rem'
       }}>
-          Five systems. One sovereign lab. Intelligence built from millet, clay, bark, and ochre.
+          Five systems. One sovereign lab.{onganda() && ' Intelligence built from millet, clay, bark, and ochre.'}
         </motion.p>
         <motion.div initial={{
         opacity: 0,
@@ -2344,7 +2345,7 @@ export const IconFactoryLab = () => {
 // The Control Standards prose quotes the Onganda palette's measured ratios.
 // Under another palette (?palette=coast) it names that palette's pigments and
 // rules instead, so the page never states something untrue of what it shows.
-const onganda = () => PALETTE === PALETTES.onganda;
+const onganda = () => activePalette() === PALETTES.onganda;
 const pigment = (slot: keyof typeof PALETTE.swatches) => PALETTE.swatches[slot][0].toLowerCase();
 
 const ROLE_ROWS: { role: keyof ColorRoles; use: string }[] = followPalette(() => [

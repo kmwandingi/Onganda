@@ -9,7 +9,7 @@
 //   onganda-type.ts    — TYPE, DISPLAY, FONT, SPACE_SCALE, GEOMETRY, DENSITY
 //   onganda-content.ts — SYSTEMS, TIMELINE_PHASES, and all data arrays
 export * from './onganda-types';
-export { PALETTES, definePalette, type Palette, type PaletteName } from './onganda-palettes';
+export { PALETTES, definePalette, activePalette, type Palette, type PaletteName } from './onganda-palettes';
 export * from './onganda-colors';
 export * from './onganda-roles';
 export * from './onganda-type';

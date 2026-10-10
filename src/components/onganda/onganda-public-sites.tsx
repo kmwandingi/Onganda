@@ -31,10 +31,12 @@ type PublicPage = 'home' | 'full';
 
 const BRAND = 'Onganda';
 const LAB_LABEL = 'Namibia AI Systems Lab';
-const muted = inkAlpha(0.66);
-const quiet = inkAlpha(0.66);
-const line = inkAlpha(0.10);
-const darkLine = paperAlpha(0.10);
+const TONE = followPalette(() => ({
+  muted: inkAlpha(0.66),
+  quiet: inkAlpha(0.66),
+  line: inkAlpha(0.10),
+  darkLine: paperAlpha(0.10)
+}));
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -63,7 +65,7 @@ const PublicNav = () => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b" style={{
       background: paperAlpha(0.92),
-      borderColor: line,
+      borderColor: TONE.line,
       backdropFilter: 'blur(14px)'
     }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
@@ -71,12 +73,12 @@ const PublicNav = () => {
           <OngandaLogoMark size={24} />
           <div>
             <p className="text-sm font-semibold leading-none">{BRAND}</p>
-            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: quiet }}>{LAB_LABEL}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: TONE.quiet }}>{LAB_LABEL}</p>
           </div>
         </a>
         <div className="hidden items-center gap-1 md:flex">
           {navItems.map(item => (
-            <a key={item.href} href={item.href} className="px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] no-underline" style={{ color: quiet }}>
+            <a key={item.href} href={item.href} className="px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] no-underline" style={{ color: TONE.quiet }}>
               {item.label}
             </a>
           ))}
@@ -87,7 +89,7 @@ const PublicNav = () => {
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
           className="flex items-center justify-center border p-2 md:hidden"
-          style={{ background: 'transparent', borderColor: line, color: COLOR.charBlack, cursor: 'pointer' }}
+          style={{ background: 'transparent', borderColor: TONE.line, color: COLOR.charBlack, cursor: 'pointer' }}
         >
           {menuOpen ? <IconClose size={24} /> : <IconMenu size={24} />}
         </motion.button>
@@ -100,7 +102,7 @@ const PublicNav = () => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden border-t md:hidden"
-            style={{ borderColor: line }}
+            style={{ borderColor: TONE.line }}
           >
             <div className="flex flex-col px-6 py-3">
               {navItems.map(item => (
@@ -109,7 +111,7 @@ const PublicNav = () => {
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-3 py-3 text-xs font-bold uppercase tracking-[0.14em] no-underline"
-                  style={{ color: quiet }}
+                  style={{ color: TONE.quiet }}
                 >
                   <PixelDot color={COLOR.ochreOrange} size={4} />
                   {item.label}
@@ -163,7 +165,7 @@ const PublicHero = ({
     <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-16 text-center md:px-12">
       <div className="mb-7 flex flex-wrap items-center justify-center gap-3">
         <PixelTag hex={COLOR.ochreOrange} label={tag} />
-        <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: quiet }}>{LAB_LABEL}</span>
+        <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: TONE.quiet }}>{LAB_LABEL}</span>
       </div>
       <h1 className="flex max-w-6xl flex-col items-center text-center font-bold leading-[0.98]" style={{ color: COLOR.charBlack, fontSize: 'var(--type-hero-public)' }}>
         {[line1, line2, line3].map((line, index) => (
@@ -184,7 +186,7 @@ const PublicHero = ({
     {/* Full-bleed system ticker — matches the showcase hero stripe */}
     <PixelTicker className="relative z-10 mt-6 md:mt-8" />
     <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pb-16 text-center md:px-12">
-      <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: muted }}>{body}</p>
+      <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: TONE.muted }}>{body}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
         <PixelButton href={primary.href}>
           {primary.label}<IconArrowRight size={12} />
@@ -212,7 +214,7 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           {...fadeUp}
           whileHover={{ y: -4 }}
           className="relative flex min-h-[320px] flex-col border p-8"
-          style={{ background: COLOR.dustLight, borderColor: line }}
+          style={{ background: COLOR.dustLight, borderColor: TONE.line }}
         >
           <WeaveOverlay opacity={0.035} />
           <div className="relative mb-8 flex items-start justify-between">
@@ -223,9 +225,9 @@ const SystemsGrid = ({ detailed = false }: { detailed?: boolean }) => (
           </div>
           <div className="relative">
             <h3 className="text-2xl font-semibold">{sys.name}</h3>
-            <p className="mt-1 text-sm font-medium" style={{ color: muted }}>{sys.english}</p>
-            <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em]" style={{ color: quiet }}>{sys.role}</p>
-            <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{detailed ? sys.long : sys.line}</p>
+            <p className="mt-1 text-sm font-medium" style={{ color: TONE.muted }}>{sys.english}</p>
+            <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em]" style={{ color: TONE.quiet }}>{sys.role}</p>
+            <p className="mt-4 text-sm leading-relaxed" style={{ color: TONE.muted }}>{detailed ? sys.long : sys.line}</p>
           </div>
           <div className="absolute left-0 top-0 h-full w-[3px]" style={{ background: sys.borderHex }} aria-hidden="true" />
         </motion.article>
@@ -271,7 +273,7 @@ const SignalBand = () => (
               {...fadeUp}
               whileHover={{ y: -3 }}
               className="relative border p-6"
-              style={{ background: COLOR.dustLight, borderColor: line }}
+              style={{ background: COLOR.dustLight, borderColor: TONE.line }}
             >
               <PixelCornerMarks hex={item.hex} size={7} />
               <div className="mb-8 flex items-center justify-between">
@@ -279,7 +281,7 @@ const SignalBand = () => (
                 <Icon size={22} color={item.hex} />
               </div>
               <h3 className="text-lg font-semibold leading-tight">{item.label}</h3>
-              <p className="mt-4 text-sm leading-relaxed" style={{ color: muted }}>{item.body}</p>
+              <p className="mt-4 text-sm leading-relaxed" style={{ color: TONE.muted }}>{item.body}</p>
             </motion.article>
           );
         })}

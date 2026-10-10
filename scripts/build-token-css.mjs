@@ -183,16 +183,20 @@ const preset = `// Onganda Design System — Tailwind 3 preset
 // Import '@onganda/design-system/style.css' too: the colours are its CSS
 // variables, so they follow dark mode and the palette chosen with
 // selectPalette(). Tailwind's own palette is replaced, so bg-blue-500 does not
-// exist. An opacity modifier (bg-surface/50) does not work on a variable in
-// Tailwind 3; use the role that names the step (line, lineStrong, textMuted).
+// exist. Each colour is a function, Tailwind 3's form for a variable that
+// takes an opacity modifier: bg-surface/50 mixes the role with transparent.
+const role = name => ({ opacityValue }) => opacityValue === undefined
+  ? \`var(--onganda-\${name})\`
+  : \`color-mix(in srgb, var(--onganda-\${name}) calc(\${opacityValue} * 100%), transparent)\`;
+
 module.exports = {
   theme: {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
-${roleNames.map(k => `      '${kebab(k)}': 'var(--onganda-${kebab(k)})',`).join('\n')}
-${['active', 'caution', 'critical', 'settled'].map(st => `      'status-${st}': 'var(--onganda-status-${st})',`).join('\n')}
-${t.ACCENT_CYCLE.map((_, i) => `      'accent-${i + 1}': 'var(--onganda-accent-${i + 1})',`).join('\n')}
+${roleNames.map(k => `      '${kebab(k)}': role('${kebab(k)}'),`).join('\n')}
+${['active', 'caution', 'critical', 'settled'].map(st => `      'status-${st}': role('status-${st}'),`).join('\n')}
+${t.ACCENT_CYCLE.map((_, i) => `      'accent-${i + 1}': role('accent-${i + 1}'),`).join('\n')}
     },
     fontFamily: {
       sans: ['var(--onganda-font-body)'],

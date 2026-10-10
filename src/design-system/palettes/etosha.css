@@ -13,7 +13,7 @@
 :root {
   --onganda-millet-clay: #fdfdfc;
   --onganda-dust-light: #fdfdfc;
-  --onganda-mahangu-gold: #ffe629;
+  --onganda-mahangu-gold: #facc15;
   --onganda-ochre-orange: #46a758;
   --onganda-fired-red: #e54d2e;
   --onganda-bark-rust: #203c25;
@@ -44,7 +44,7 @@
   --onganda-action-hover-bg: #63635e;
   --onganda-action-hover-fg: #fdfdfc;
   --onganda-action-hover-border: #63635e;
-  --onganda-accent-bg: #ffe629;
+  --onganda-accent-bg: #facc15;
   --onganda-accent-fg: #21201c;
   --onganda-accent-border: #63635e;
   --onganda-accent-hover-bg: #0d74ce;
@@ -76,7 +76,7 @@
   --onganda-shadow-step: 4px 4px 0 rgba(33,32,28,0.18);
   --onganda-shadow-plate: 8px 8px 0 rgba(33,32,28,0.08);
   --onganda-status-active: #46a758;
-  --onganda-status-caution: #ffe629;
+  --onganda-status-caution: #facc15;
   --onganda-status-critical: #e54d2e;
   --onganda-status-settled: #63635e;
   --onganda-accent-1: #2a7e3b;
@@ -106,12 +106,12 @@
   --onganda-action-bg: #46a758;
   --onganda-action-fg: #21201c;
   --onganda-action-border: #46a758;
-  --onganda-action-hover-bg: #ffe629;
+  --onganda-action-hover-bg: #facc15;
   --onganda-action-hover-fg: #21201c;
-  --onganda-action-hover-border: #ffe629;
-  --onganda-accent-bg: #ffe629;
+  --onganda-action-hover-border: #facc15;
+  --onganda-accent-bg: #facc15;
   --onganda-accent-fg: #21201c;
-  --onganda-accent-border: #ffe629;
+  --onganda-accent-border: #facc15;
   --onganda-accent-hover-bg: #fdfdfc;
   --onganda-accent-hover-fg: #21201c;
   --onganda-accent-hover-border: #fdfdfc;
@@ -141,7 +141,7 @@
   --onganda-shadow-step: 4px 4px 0 rgba(253,253,252,0.14);
   --onganda-shadow-plate: 8px 8px 0 rgba(253,253,252,0.06);
   --onganda-status-active: #46a758;
-  --onganda-status-caution: #ffe629;
+  --onganda-status-caution: #facc15;
   --onganda-status-critical: #e54d2e;
   --onganda-status-settled: #b5b3ad;
   --onganda-accent-1: #71d083;

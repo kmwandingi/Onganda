@@ -14,7 +14,7 @@ const block = (src, start, file) => {
   return src.slice(at);
 };
 
-/** Every shipped palette: { name: { slot: hex, peers: [], peersDark: [], chart: [] } }. */
+/** Every shipped palette: { name: { slot: hex, peers: [], peersDark: [], chart: [], editor: { tone: hex } } }. */
 export const readPalettes = palettesSrc => {
   const body = block(palettesSrc, 'export const PALETTES = {', 'onganda-palettes.ts');
   const end = body.indexOf('} as const satisfies');
@@ -28,9 +28,11 @@ export const readPalettes = palettesSrc => {
     for (const s of text.matchAll(/^ {4}(peers|peersDark|chart):\s*\[([^\]]*)\]/gm)) {
       p[s[1]] = [...s[2].matchAll(/'(#[0-9A-Fa-f]{6})'/g)].map(h => h[1]);
     }
+    const editor = text.match(/^ {4}editor:\s*\{([^}]*)\}/m);
+    if (editor) p.editor = Object.fromEntries([...editor[1].matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{6})'/g)].map(e => [e[1], e[2]]));
     out[name] = p;
   }
-  if (!out.onganda || Object.keys(out.onganda).length < 18) {
+  if (!out.onganda || Object.keys(out.onganda).length < 18 || Object.keys(out.onganda.editor ?? {}).length !== 10) {
     throw new Error('palette-source: could not read PALETTES.onganda — the parser is out of date');
   }
   return out;

@@ -31,6 +31,8 @@ try {
       path.join(testRoot, filename),
       '@types/react@^19.0.0',
       '@types/react-dom@^19.0.0',
+      'tailwindcss@^3',
+      'postcss@^8',
     ],
     { cwd: consumerRoot }
   );
@@ -119,13 +121,22 @@ try {
 
       if (!exportsAreUsable) throw new Error('A public package export is unavailable.');
 
-      // The Tailwind 3 preset maps the roles, so a Tailwind 3 project gets the
-      // same utilities as the Tailwind 4 theme.
+      // The Tailwind 3 preset, compiled by Tailwind 3: the roles are
+      // utilities, an opacity modifier works on them, and Tailwind's own
+      // palette is gone.
       const { createRequire: requireFrom } = await import('node:module');
-      const preset = requireFrom(import.meta.url)('@onganda/design-system/tailwind.preset.cjs');
-      if (preset.theme?.colors?.surface !== 'var(--onganda-surface)' || preset.theme?.borderRadius?.DEFAULT !== '0') {
-        throw new Error('The Tailwind 3 preset does not map the roles.');
-      }
+      const req = requireFrom(import.meta.url);
+      const { css } = await req('postcss')([req('tailwindcss')({
+        presets: [req('@onganda/design-system/tailwind.preset.cjs')],
+        content: [{ raw: '<div class="bg-surface bg-surface/50 text-text-muted rounded bg-blue-500"></div>' }],
+      })]).process('@tailwind utilities;', { from: undefined });
+      const tw3 = {
+        role: css.includes('.bg-surface {') && css.includes('var(--onganda-surface)'),
+        opacity: css.includes('color-mix(in srgb, var(--onganda-surface) calc(0.5 * 100%), transparent)'),
+        radius: css.includes('border-radius: 0'),
+        noBlue: !css.includes('bg-blue-500'),
+      };
+      if (!Object.values(tw3).every(Boolean)) throw new Error('The Tailwind 3 preset compiled wrong: ' + JSON.stringify(tw3));
 
       // The guidance ships with the package. An agent told to read SKILL.md,
       // open reference/ and run the showcase from a product must find them in
@@ -146,6 +157,38 @@ try {
     `
   );
   await run('node', ['verify.mjs'], { cwd: consumerRoot });
+
+  // A palette chosen after the system loaded, through require(): every value a
+  // CommonJS consumer holds must follow it, PALETTE included.
+  await writeFile(path.join(consumerRoot, 'verify-palette.cjs'), `
+const ds = require('@onganda/design-system');
+const { selectPalette } = require('@onganda/design-system/palettes');
+selectPalette('coast');
+const got = { label: ds.PALETTE.label, color: ds.COLOR.ochreOrange, role: ds.roles(false).actionBg, chart: ds.CHART_SERIES[0], accent: ds.accentFor(0) };
+const want = { label: 'Coast', color: '#12a594', role: '#12a594', chart: '#009E73', accent: '#008573' };
+if (JSON.stringify(got) !== JSON.stringify(want)) throw new Error('CommonJS values did not follow selectPalette(): ' + JSON.stringify(got));
+`);
+  await run('node', ['verify-palette.cjs'], { cwd: consumerRoot });
+
+  // The checks read the palettes from TypeScript source with a parser, so a
+  // consumer's onganda-check needs no compiler. The parser must read exactly
+  // what the compiled module holds, or a check measures the wrong colours.
+  await writeFile(path.join(consumerRoot, 'verify-parser.mjs'), `
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+const require = createRequire(import.meta.url);
+const pkgRoot = dirname(require.resolve('@onganda/design-system/package.json'));
+const { readPalettes } = await import(join(pkgRoot, 'scripts/palette-source.mjs'));
+const parsed = readPalettes(readFileSync(join(pkgRoot, 'src/components/onganda/onganda-palettes.ts'), 'utf8'));
+const { PALETTES } = require('@onganda/design-system/palettes');
+const plain = p => Object.fromEntries(Object.entries(p).filter(([k]) => k !== 'swatches').sort(([a], [b]) => a < b ? -1 : 1));
+const all = set => JSON.stringify(Object.fromEntries(Object.entries(set).map(([n, p]) => [n, plain(p)])));
+if (all(parsed) !== all(PALETTES)) {
+  throw new Error('palette-source reads something other than the compiled PALETTES');
+}
+`);
+  await run('node', ['verify-parser.mjs'], { cwd: consumerRoot });
   await writeFile(
     path.join(consumerRoot, 'verify.ts'),
     `

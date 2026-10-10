@@ -28,7 +28,7 @@
 //     fill is bark rust instead.
 
 import { COLOR, PALETTE as P, refill } from './onganda-colors';
-import { PALETTES, onPaletteChange } from './onganda-palettes';
+import { PALETTES, activePalette, onPaletteChange } from './onganda-palettes';
 
 // ─── Alpha ramp ───────────────────────────────────────────────────────────────
 // Text and lines are the brand ink at a fixed set of opacities, not new hues.
@@ -558,12 +558,12 @@ export const paletteCss = (): string => {
 const applyToPage = () => {
   if (typeof document === 'undefined') return;
   document.querySelector('style[data-onganda-palette]')?.remove();
-  if (P === PALETTES.onganda) return;
+  if (activePalette() === PALETTES.onganda) return;
   const style = document.createElement('style');
   style.setAttribute('data-onganda-palette', P.label);
   style.textContent = paletteCss();
   document.head.appendChild(style);
-  if (!Object.values(PALETTES).includes(P as never)) {
+  if (!Object.values(PALETTES).includes(activePalette() as never)) {
     const failing = auditPalette().filter(c => !c.ok);
     if (failing.length) {
       console.warn(`[onganda] Palette "${P.label}" fails ${failing.length} contrast claims:\n` +
@@ -574,7 +574,7 @@ const applyToPage = () => {
 applyToPage();
 
 // A new palette: rebuild every value above in place. onganda-colors.ts
-// registered first, so PALETTE (P here) is already the new one.
+// registered first, so PALETTE (P here) already holds the new pigments.
 onPaletteChange(() => {
   INK_RGB = rgbOf(P.ink);
   PAPER_RGB = rgbOf(P.paper);

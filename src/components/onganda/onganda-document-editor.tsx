@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { FONT } from './onganda-type';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR, EDITOR_SURFACE, statusFor, onColor, inkOn, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES, paperAlpha, inkAlpha } from './onganda-tokens';
+import { COLOR, EDITOR_SURFACE, PALETTE, PRINCIPLES, SWATCHES, statusFor, onColor, inkOn, contrast, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES, paperAlpha, inkAlpha } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
 import { ChartGallery } from './onganda-charts';
 import { AiAuthoringPanel, regenerateDocBlock } from './onganda-ai-authoring';
@@ -39,16 +39,16 @@ const PAPER_BACKGROUNDS = followPalette(() => ([{
   hex: EDITOR_SURFACE.paperWhite
 }, {
   id: 'warm',
-  label: 'Warm',
+  label: 'Soft',
   hex: EDITOR_SURFACE.paperWarm
 }, {
   id: 'dust',
-  label: 'Dust',
+  label: PALETTE.swatches.surface[0],
   hex: COLOR.dustLight
 }, {
   id: 'clay',
-  label: 'Clay',
-  hex: COLOR.milletClay
+  label: PALETTE.swatches.canvas[0],
+  hex: PALETTE.canvas
 }] as const));
 type PaperBackgroundId = typeof PAPER_BACKGROUNDS[number]['id'];
 const paperBackgroundHex = (id: PaperBackgroundId) => PAPER_BACKGROUNDS.find(bg => bg.id === id)?.hex ?? PAPER_BACKGROUNDS[1].hex;
@@ -812,7 +812,8 @@ const StatBlock = ({
       <span style={{
       fontSize: 30,
       fontWeight: 700,
-      color: hex,
+      // Large text: the hue itself where it clears 3:1 on the paper.
+      color: contrast(hex, isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm) >= 3 ? hex : fg,
       lineHeight: 1
     }}>{block.statValue ?? '0'}</span>
       <span style={{
@@ -1833,22 +1834,6 @@ const BarChartBlock = ({
 };
 
 // ─── Principles Block ─────────────────────────────────────────────────────────
-const BRAND_PRINCIPLES = [{
-  label: 'Language',
-  value: 'Oshiwambo first. English second.'
-}, {
-  label: 'Symbol',
-  value: 'Pixel by default — icon, diagram, texture, mark.'
-}, {
-  label: 'Type',
-  value: 'Non-pixel by default — body, reading, interface.'
-}, {
-  label: 'Palette',
-  value: 'Millet, clay, bark, smoke, ochre, dried grass.'
-}, {
-  label: 'Layout',
-  value: 'Calm and editorial. Anthropic-level whitespace discipline.'
-}];
 const PrinciplesBlock = ({
   block,
   isDark,
@@ -1866,7 +1851,7 @@ const PrinciplesBlock = ({
   const principles = block.principlesData ? JSON.parse(block.principlesData) as Array<{
     label: string;
     value: string;
-  }> : BRAND_PRINCIPLES;
+  }> : PRINCIPLES;
   if (isConfiguring) {
     return <div style={{
       display: 'flex',
@@ -1997,43 +1982,6 @@ const PrinciplesBlock = ({
 };
 
 // ─── Swatch Row Block ─────────────────────────────────────────────────────────
-const SWATCH_DATA = followPalette(() => ([{
-  name: 'Millet Clay',
-  hex: COLOR.milletClay,
-  light: true
-}, {
-  name: 'Dust Light',
-  hex: COLOR.dustLight,
-  light: true
-}, {
-  name: 'Mahangu Gold',
-  hex: COLOR.mahanguGold,
-  light: true
-}, {
-  name: 'Ochre Orange',
-  hex: COLOR.ochreOrange,
-  light: false
-}, {
-  name: 'Fired Red',
-  hex: COLOR.firedRed,
-  light: false
-}, {
-  name: 'Bark Rust',
-  hex: COLOR.barkRust,
-  light: false
-}, {
-  name: 'Mopane Brown',
-  hex: COLOR.mopaneBrown,
-  light: false
-}, {
-  name: 'Char Black',
-  hex: COLOR.charBlack,
-  light: false
-}, {
-  name: 'Dye Plum',
-  hex: COLOR.dyePlum,
-  light: false
-}]));
 const SwatchRowBlock = ({
   block,
   isDark,
@@ -2050,7 +1998,7 @@ const SwatchRowBlock = ({
   const swatches = block.swatchData ? JSON.parse(block.swatchData) as Array<{
     name: string;
     hex: string;
-  }> : SWATCH_DATA.map(s => ({
+  }> : SWATCHES.map(s => ({
     name: s.name,
     hex: s.hex
   }));
@@ -2966,7 +2914,7 @@ function DocBlockView({
             fontWeight: 700,
             letterSpacing: '0.16em',
             textTransform: 'uppercase' as const,
-            color: COLOR.firedRed
+            color: inkOn(COLOR.firedRed, isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm, isDark)
           }}>Note</span>
           </div>
           {isEditing ? <InlineTextArea value={block.content} onChange={v => onEdit({

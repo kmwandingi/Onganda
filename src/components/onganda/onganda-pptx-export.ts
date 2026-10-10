@@ -9,7 +9,7 @@
 // mirroring their intrinsic canvas size.
 
 import PptxGenJSImport from 'pptxgenjs';
-import { COLOR, SYSTEMS, TIMELINE_PHASES, FLOW_NODES, HEATMAP_CELLS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
+import { ALPHA, COLOR, EDITOR_SURFACE, SYSTEMS, TIMELINE_PHASES, FLOW_NODES, HEATMAP_CELLS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
 
 // CJS/ESM interop: bundlers resolve the ESM default; node resolves the CJS
 // module object whose constructor sits on .default.
@@ -23,10 +23,16 @@ const FONT = 'Inter';
 
 // pptxgenjs wants hex without '#'
 const hx = (c: string) => c.replace('#', '');
-const PAPER = 'FDFAF2';
 // Read at export time, so the deck takes the palette in use.
+const paper = () => hx(EDITOR_SURFACE.paperWarm);
 const ink = () => hx(COLOR.charBlack);
-const MUTED = '6B6259';
+// The muted text role, flattened onto the paper: PowerPoint
+// text takes no alpha.
+const muted = () => {
+  const [i, p] = [COLOR.charBlack, EDITOR_SURFACE.paperWarm].map(c => [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16)));
+  const a = ALPHA.muted.light;
+  return i.map((v, k) => Math.round(v * a + p[k] * (1 - a)).toString(16).padStart(2, '0')).join('').toUpperCase();
+};
 
 interface Box {
   x: number;
@@ -104,16 +110,16 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     return;
   }
   if (t === 'text-body') {
-    slide.addText(text || '', { ...b, fontFace: FONT, fontSize: fontSize ?? 12, color: MUTED, align: 'left', valign: 'top', lineSpacingMultiple: 1.35 });
+    slide.addText(text || '', { ...b, fontFace: FONT, fontSize: fontSize ?? 12, color: muted(), align: 'left', valign: 'top', lineSpacingMultiple: 1.35 });
     return;
   }
   if (t === 'text-label') {
-    slide.addText((text || 'LABEL').toUpperCase(), { ...b, fontFace: FONT, fontSize: fontSize ?? 10, bold: true, color: hx(COLOR.ochreOrange), charSpacing: 2, align: 'left', valign: 'middle' });
+    slide.addText((text || 'LABEL').toUpperCase(), { ...b, fontFace: FONT, fontSize: fontSize ?? 10, bold: true, color: hx(COLOR.barkRust), charSpacing: 2, align: 'left', valign: 'middle' });
     return;
   }
   if (t === 'text-quote') {
     slide.addShape('rect', { x: b.x, y: b.y, w: 0.04, h: b.h, fill: { color: hx(COLOR.ochreOrange) } });
-    slide.addText(text || '', { x: b.x + 0.15, y: b.y, w: b.w - 0.15, h: b.h, fontFace: FONT, fontSize: fontSize ?? 13, italic: true, color: hx(COLOR.ochreOrange), valign: 'middle', lineSpacingMultiple: 1.3 });
+    slide.addText(text || '', { x: b.x + 0.15, y: b.y, w: b.w - 0.15, h: b.h, fontFace: FONT, fontSize: fontSize ?? 13, italic: true, color: hx(COLOR.barkRust), valign: 'middle', lineSpacingMultiple: 1.3 });
     return;
   }
   if (t === 'divider-dither' || t === 'divider-dot') {
@@ -131,7 +137,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     const value = block.statValue ?? pv;
     const label = block.statLabel ?? pl;
     const accent = hx(block.statHex ?? COLOR.ochreOrange);
-    slide.addShape('rect', { ...b, fill: { color: PAPER }, line: { color: accent, width: 0.75 } });
+    slide.addShape('rect', { ...b, fill: { color: paper() }, line: { color: accent, width: 0.75 } });
     slide.addShape('rect', { x: b.x, y: b.y, w: b.w, h: 0.05, fill: { color: accent } });
     slide.addText([
       { text: value, options: { fontFace: FONT, fontSize: 28, bold: true, color: accent, breakLine: true } },
@@ -141,7 +147,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
   }
   if (t === 'chart-market') {
     const data = parseJson(block.marketData, SLIDE_MARKET_DATA);
-    slide.addText((block.chartTitle ?? 'Market Growth').toUpperCase(), { x: b.x, y: b.y, w: b.w, h: 0.3, fontFace: FONT, fontSize: 9, bold: true, color: hx(COLOR.ochreOrange), charSpacing: 2 });
+    slide.addText((block.chartTitle ?? 'Market Growth').toUpperCase(), { x: b.x, y: b.y, w: b.w, h: 0.3, fontFace: FONT, fontSize: 9, bold: true, color: hx(COLOR.barkRust), charSpacing: 2 });
     slide.addChart('line', [{ name: block.chartTitle ?? 'Market', labels: data.map(d => d.year), values: data.map(d => d.value) }], {
       x: b.x, y: b.y + 0.3, w: b.w, h: b.h - 0.3,
       chartColors: [hx(COLOR.ochreOrange)], lineSize: 2,
@@ -192,7 +198,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     const name = block.customPhaseName ?? phase.english;
     const period = block.customPeriod ?? phase.period ?? '';
     const progress = block.customProgress ?? phase.progress;
-    slide.addShape('rect', { ...b, fill: { color: PAPER }, line: { color: accent, width: 0.75 } });
+    slide.addShape('rect', { ...b, fill: { color: paper() }, line: { color: accent, width: 0.75 } });
     slide.addShape('rect', { x: b.x, y: b.y, w: 0.05, h: b.h, fill: { color: accent } });
     slide.addText([
       { text: `${phase.tag}  ${period}`, options: { fontFace: FONT, fontSize: 9, bold: true, color: accent, breakLine: true } },
@@ -207,7 +213,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     const accent = hx(sys.borderHex);
     const name = block.customName ?? sys.name;
     const role = block.customRole ?? sys.role ?? '';
-    slide.addShape('rect', { ...b, fill: { color: PAPER }, line: { color: accent, width: 0.75 } });
+    slide.addShape('rect', { ...b, fill: { color: paper() }, line: { color: accent, width: 0.75 } });
     slide.addShape('rect', { x: b.x, y: b.y, w: 0.05, h: b.h, fill: { color: accent } });
     slide.addShape('rect', { x: b.x + 0.12, y: b.y + b.h / 2 - 0.14, w: 0.28, h: 0.28, fill: { color: accent } });
     slide.addText([
@@ -219,7 +225,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
   if (t.startsWith('flow-node')) {
     const node = FLOW_NODES[(block.flowNodeIdx ?? parseInt(t.replace(/\D/g, ''), 10) ?? 0) % FLOW_NODES.length];
     const accent = hx(COLOR.ochreOrange);
-    slide.addShape('rect', { ...b, fill: { color: PAPER }, line: { color: accent, width: 0.75 } });
+    slide.addShape('rect', { ...b, fill: { color: paper() }, line: { color: accent, width: 0.75 } });
     slide.addText([
       { text: (block.customNodeName ?? node.oshiwambo), options: { fontFace: FONT, fontSize: 12, bold: true, color: ink(), breakLine: true } },
       { text: (block.customNodeRole ?? node.role ?? '').toUpperCase(), options: { fontFace: FONT, fontSize: 8, bold: true, color: accent, charSpacing: 1.5 } }
@@ -233,7 +239,7 @@ const addBlock = (pptx: PptxGenJS, slide: PptxSlide, block: DroppedBlock) => {
     return;
   }
   // Unknown block type — emit a labelled placeholder rather than failing.
-  slide.addText(block.label || t, { ...b, fontFace: FONT, fontSize: 10, color: MUTED, align: 'center', valign: 'middle' });
+  slide.addText(block.label || t, { ...b, fontFace: FONT, fontSize: 10, color: muted(), align: 'center', valign: 'middle' });
 };
 
 // Build the deck in memory. Separated from the download wrapper so it can be
@@ -251,20 +257,20 @@ export const buildDeckPptx = (
 
   slides.forEach((entry, idx) => {
     const slide = pptx.addSlide();
-    slide.background = { color: PAPER };
+    slide.background = { color: paper() };
     // Brand chrome: top accent bar + header band, mirroring the canvas
     slide.addShape('rect', { x: 0, y: 0, w: PAGE_W, h: 0.06, fill: { color: hx(COLOR.ochreOrange) } });
     slide.addShape('rect', { x: 0.35, y: 0.2, w: 0.22, h: 0.22, fill: { color: hx(COLOR.ochreOrange) } });
     slide.addText([
-      { text: 'OKAANDA', options: { fontFace: FONT, fontSize: 10, bold: true, color: hx(COLOR.ochreOrange), charSpacing: 2 } },
-      { text: `   ·   ${entry.customTitle ?? entry.title}`, options: { fontFace: FONT, fontSize: 10, color: MUTED } }
+      { text: 'OKAANDA', options: { fontFace: FONT, fontSize: 10, bold: true, color: hx(COLOR.barkRust), charSpacing: 2 } },
+      { text: `   ·   ${entry.customTitle ?? entry.title}`, options: { fontFace: FONT, fontSize: 10, color: muted() } }
     ], { x: 0.68, y: 0.14, w: PAGE_W - 2, h: 0.35, valign: 'middle' });
     slide.addShape('rect', { x: PAGE_W - 0.75, y: 0.16, w: 0.4, h: 0.3, fill: { color: hx(COLOR.ochreOrange) } });
-    slide.addText(entry.tag, { x: PAGE_W - 0.75, y: 0.16, w: 0.4, h: 0.3, fontFace: FONT, fontSize: 10, bold: true, color: PAPER, align: 'center', valign: 'middle' });
+    slide.addText(entry.tag, { x: PAGE_W - 0.75, y: 0.16, w: 0.4, h: 0.3, fontFace: FONT, fontSize: 10, bold: true, color: ink(), align: 'center', valign: 'middle' });
 
     (slideBlocks[entry.id] ?? []).forEach(block => addBlock(pptx, slide, block));
 
-    slide.addText(`${idx + 1} / ${slides.length}`, { x: PAGE_W - 1.1, y: PAGE_H - 0.4, w: 0.9, h: 0.3, fontFace: FONT, fontSize: 8, color: MUTED, align: 'right' });
+    slide.addText(`${idx + 1} / ${slides.length}`, { x: PAGE_W - 1.1, y: PAGE_H - 0.4, w: 0.9, h: 0.3, fontFace: FONT, fontSize: 8, color: muted(), align: 'right' });
   });
   return pptx;
 };

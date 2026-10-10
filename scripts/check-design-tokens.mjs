@@ -53,25 +53,16 @@ const designSystemFiles = () => {
 // someone changes a value in COLOR, a stale copy here keeps accepting the old
 // hex everywhere. Deriving it means the guard can never disagree with the
 // tokens it guards.
-const readHexes = (file, constName) => {
-  const text = readFileSync(file, 'utf8');
-  const start = text.indexOf(`export const ${constName} = {`);
-  if (start === -1) throw new Error(`check-design-tokens: ${constName} not found in ${file}`);
-  const end = text.indexOf('} as const;', start);
-  if (end === -1) throw new Error(`check-design-tokens: ${constName} is not a closed literal in ${file}`);
-  const hexes = [...text.slice(start, end).matchAll(/'(#[0-9a-fA-F]{3,8})'/g)].map(m => m[1].toLowerCase());
-  if (!hexes.length) throw new Error(`check-design-tokens: ${constName} yielded no colours — parser is out of date`);
-  return hexes;
-};
-
-const COLORS_FILE = resolveTokenFile('onganda-colors.ts');
+// The editors' one chrome tone outside the palettes.
+const SMOKE_GRAY = readFileSync(resolveTokenFile('onganda-colors.ts'), 'utf8').match(/smokeGray: '(#[0-9a-fA-F]{6})'/)?.[1];
+if (!SMOKE_GRAY) throw new Error('check-design-tokens: EDITOR_SURFACE.smokeGray not found — parser is out of date');
 // Every shipped palette's pigments are sanctioned: a product may choose any of
 // them with selectPalette().
 const PALETTE_HEXES = Object.values(readPalettes(readFileSync(resolveTokenFile('onganda-palettes.ts'), 'utf8')))
-  .flatMap(p => Object.values(p).flat().filter(v => typeof v === 'string' && v.startsWith('#')).map(h => h.toLowerCase()));
+  .flatMap(p => [...Object.values(p).flat(), ...Object.values(p.editor)].filter(v => typeof v === 'string' && v.startsWith('#')).map(h => h.toLowerCase()));
 const PALETTE = new Set([
   ...PALETTE_HEXES,
-  ...readHexes(COLORS_FILE, 'EDITOR_SURFACE'),
+  SMOKE_GRAY.toLowerCase(),
   // Neutral extremes used for shadows, scrims, and SVG masks.
   '#ffffff', '#fff', '#000000', '#000'
 ]);
