@@ -8,6 +8,7 @@ import type {
   DiagramNode, NodeTooltipData, TimelinePhase, PublicationFormat,
   TickerItem, HeroWord
 } from './onganda-types';
+import { COLOR } from './onganda-colors';
 
 // ─── Systems ─────────────────────────────────────────────────────────────────
 // `line` = one-sentence summary used on public site cards
@@ -21,9 +22,9 @@ export const SYSTEMS: SystemEntry[] = [{
   desc: 'Storage, resilience, readiness, and future capacity. Repositories for evaluation, memory, and large-scale datasets. The foundation that holds before it feeds.',
   line: 'Storage, readiness, and model organization.',
   long: 'Okaanda is the granary: the storage and readiness layer. It holds datasets, evaluation structures, model organization, and the internal order that makes the rest of the stack usable.',
-  accent: 'bg-[#D9791F]/8 border-[#D9791F]/25',
-  iconColor: '#D9791F',
-  borderHex: '#D9791F'
+  accent: 'bg-(--onganda-ochre-orange)/8 border-(--onganda-ochre-orange)/25',
+  iconColor: COLOR.ochreOrange,
+  borderHex: COLOR.ochreOrange
 }, {
   name: 'Oshini',
   english: 'Mill',
@@ -31,9 +32,9 @@ export const SYSTEMS: SystemEntry[] = [{
   desc: 'Raw material to refined output. Fine-tuning, distillation, compression, and evaluation pipelines. The sequence from grain to flour.',
   line: 'Adaptation, transformation, and workflow.',
   long: 'Oshini is where raw material becomes usable capability. It carries the workflows for fine-tuning, distillation, compression, evaluation, and model adaptation.',
-  accent: 'bg-[#8F3E21]/8 border-[#8F3E21]/25',
-  iconColor: '#8F3E21',
-  borderHex: '#8F3E21'
+  accent: 'bg-(--onganda-bark-rust)/8 border-(--onganda-bark-rust)/25',
+  iconColor: COLOR.barkRust,
+  borderHex: COLOR.barkRust
 }, {
   name: 'Ombiga',
   english: 'Vessel',
@@ -41,9 +42,9 @@ export const SYSTEMS: SystemEntry[] = [{
   desc: 'Holding, carrying, and preserving. Runtimes for agents, memory systems, and model containers. Shape that makes liquid usable.',
   line: 'Containers, agents, and held systems.',
   long: 'Ombiga holds systems in a form that can travel. It is the layer for containers, agent runtimes, memory, and portable units of work.',
-  accent: 'bg-[#DFAE2B]/10 border-[#DFAE2B]/30',
-  iconColor: '#DFAE2B',
-  borderHex: '#DFAE2B'
+  accent: 'bg-(--onganda-mahangu-gold)/10 border-(--onganda-mahangu-gold)/30',
+  iconColor: COLOR.mahanguGold,
+  borderHex: COLOR.mahanguGold
 }, {
   name: 'Etiti',
   english: 'Surface',
@@ -51,9 +52,9 @@ export const SYSTEMS: SystemEntry[] = [{
   desc: 'The woven place where things are set down and shared. User interfaces, workspaces, and read surfaces. Where the work meets the hand.',
   line: 'User surfaces, dashboards, and interfaces.',
   long: 'Etiti is the surface where people meet the system. It turns model work into dashboards, review spaces, workbenches, and interfaces that can be understood and controlled.',
-  accent: 'bg-[#6A4B2E]/8 border-[#6A4B2E]/25',
-  iconColor: '#6A4B2E',
-  borderHex: '#6A4B2E'
+  accent: 'bg-(--onganda-mopane-brown)/8 border-(--onganda-mopane-brown)/25',
+  iconColor: COLOR.mopaneBrown,
+  borderHex: COLOR.mopaneBrown
 }, {
   name: 'Oshitoo',
   english: 'Delivery',
@@ -61,9 +62,9 @@ export const SYSTEMS: SystemEntry[] = [{
   desc: 'The large round-bellied vessel used to hold and serve traditional beer. Carried to where the gathering is. Sector applications, field products, and user-facing deployments — the last pour of sovereign intelligence.',
   line: 'Applications, outputs, and delivered tools.',
   long: 'Oshitoo is the delivery layer. It is where the lab turns internal capability into pilots, applications, and sector-facing products prepared for real use.',
-  accent: 'bg-[#6F4A6E]/8 border-[#6F4A6E]/25',
-  iconColor: '#6F4A6E',
-  borderHex: '#6F4A6E'
+  accent: 'bg-(--onganda-dye-plum)/8 border-(--onganda-dye-plum)/25',
+  iconColor: COLOR.dyePlum,
+  borderHex: COLOR.dyePlum
 }];
 
 export const PRINCIPLES: PrincipleEntry[] = [{
@@ -88,7 +89,7 @@ export const FLOW_NODES: FlowNodeEntry[] = [{
   oshiwambo: 'Okaanda',
   english: 'Namibia AI Systems Lab',
   role: 'Parent Institution',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   pixelTag: 'ROOT',
   isRoot: true
 }, {
@@ -96,7 +97,7 @@ export const FLOW_NODES: FlowNodeEntry[] = [{
   oshiwambo: 'Okaanda',
   english: 'Granary',
   role: 'Model & Data Platform',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   pixelTag: '01',
   isRoot: false
 }, {
@@ -104,7 +105,7 @@ export const FLOW_NODES: FlowNodeEntry[] = [{
   oshiwambo: 'Oshini',
   english: 'Mill',
   role: 'Adaptation Workflows',
-  hex: '#8F3E21',
+  hex: COLOR.barkRust,
   pixelTag: '02',
   isRoot: false
 }, {
@@ -112,7 +113,7 @@ export const FLOW_NODES: FlowNodeEntry[] = [{
   oshiwambo: 'Ombiga',
   english: 'Vessel',
   role: 'Agents & Containers',
-  hex: '#DFAE2B',
+  hex: COLOR.mahanguGold,
   pixelTag: '03',
   isRoot: false
 }, {
@@ -120,7 +121,7 @@ export const FLOW_NODES: FlowNodeEntry[] = [{
   oshiwambo: 'Etiti',
   english: 'Surface',
   role: 'Interfaces & Dashboards',
-  hex: '#6A4B2E',
+  hex: COLOR.mopaneBrown,
   pixelTag: '04',
   isRoot: false
 }, {
@@ -128,7 +129,7 @@ export const FLOW_NODES: FlowNodeEntry[] = [{
   oshiwambo: 'Oshitoo',
   english: 'Delivery',
   role: 'Applications & Sector Products',
-  hex: '#6F4A6E',
+  hex: COLOR.dyePlum,
   pixelTag: '05',
   isRoot: false
 }];
@@ -183,22 +184,22 @@ export const STATS: StatEntry[] = [{
   value: '5',
   label: 'Active Systems',
   sub: 'in architecture',
-  hex: '#D9791F'
+  hex: COLOR.ochreOrange
 }, {
   value: '3',
   label: 'Language Models',
   sub: 'adapted for Namibia',
-  hex: '#8F3E21'
+  hex: COLOR.barkRust
 }, {
   value: '12',
   label: 'Sector Pilots',
   sub: 'across 4 industries',
-  hex: '#DFAE2B'
+  hex: COLOR.mahanguGold
 }, {
   value: '1',
   label: 'Sovereign Lab',
   sub: 'Windhoek, Namibia',
-  hex: '#6A4B2E'
+  hex: COLOR.mopaneBrown
 }];
 
 export const TIMELINE_PHASES: TimelinePhase[] = [{
@@ -207,7 +208,7 @@ export const TIMELINE_PHASES: TimelinePhase[] = [{
   english: 'Foundation',
   period: 'Q1 – Q2 2024',
   desc: 'Establishing sovereign data infrastructure. Corpus ingestion, annotation pipelines, and base model evaluation across Oshiwambo language variants.',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   progress: 100,
   status: 'complete',
   milestones: ['Corpus v1 ingested', 'Annotation toolchain live', 'Okaanda granary deployed']
@@ -217,7 +218,7 @@ export const TIMELINE_PHASES: TimelinePhase[] = [{
   english: 'Adaptation',
   period: 'Q3 – Q4 2024',
   desc: 'Fine-tuning and distillation cycles. Oshini mill pipelines processing base models into Namibia-aligned variants for evaluation and iteration.',
-  hex: '#8F3E21',
+  hex: COLOR.barkRust,
   progress: 78,
   status: 'active',
   milestones: ['namibia-base-1b fine-tuned', 'Oshini SDK beta released', 'Eval bench v1 published']
@@ -227,7 +228,7 @@ export const TIMELINE_PHASES: TimelinePhase[] = [{
   english: 'Containment',
   period: 'Q1 – Q2 2025',
   desc: 'Agent runtimes and model containers. Ombiga vessel system accepting adapted models. Memory systems and multi-agent coordination protocols.',
-  hex: '#DFAE2B',
+  hex: COLOR.mahanguGold,
   progress: 34,
   status: 'active',
   milestones: ['Ombiga runtime alpha', 'Agent memory schema v1', 'Container registry open']
@@ -237,7 +238,7 @@ export const TIMELINE_PHASES: TimelinePhase[] = [{
   english: 'Surface & Interface',
   period: 'Q3 2025',
   desc: 'Read surfaces and civic dashboards. Etiti interface layer connecting agents to sector operators, field workers, and government programme monitors.',
-  hex: '#6A4B2E',
+  hex: COLOR.mopaneBrown,
   progress: 12,
   status: 'upcoming',
   milestones: ['Dashboard framework', 'Civic data layer', 'Field operator UX']
@@ -247,7 +248,7 @@ export const TIMELINE_PHASES: TimelinePhase[] = [{
   english: 'Delivery',
   period: 'Q4 2025 – Q1 2026',
   desc: 'Sector application launch. Health, agriculture, education, and public administration pilots carrying sovereign intelligence to where it is needed.',
-  hex: '#6F4A6E',
+  hex: COLOR.dyePlum,
   progress: 0,
   status: 'upcoming',
   milestones: ['OshitooHealth launch', 'OshiniAgro field pilot', 'OkaandaEdu curriculum integration']
@@ -256,7 +257,7 @@ export const TIMELINE_PHASES: TimelinePhase[] = [{
 export const TERMINAL_BLOCKS: TerminalBlock[] = [{
   title: 'Oshini — Fine-Tune Pipeline',
   tag: '02',
-  tagHex: '#8F3E21',
+  tagHex: COLOR.barkRust,
   lines: [{
     type: 'comment',
     text: '# Oshini · adaptation workflow'
@@ -330,7 +331,7 @@ export const TERMINAL_BLOCKS: TerminalBlock[] = [{
 }, {
   title: 'Okaanda — Model Query',
   tag: '01',
-  tagHex: '#D9791F',
+  tagHex: COLOR.ochreOrange,
   lines: [{
     type: 'comment',
     text: '# Okaanda · granary data platform'
@@ -435,28 +436,28 @@ export const SECTOR_APPS: SectorApp[] = [{
   oshiwambo: 'Oshitoo',
   sector: 'Healthcare',
   desc: 'AI triage and clinical decision support for rural clinics. Deployed in Northern Namibia.',
-  hex: '#6F4A6E',
+  hex: COLOR.dyePlum,
   tag: 'H–01'
 }, {
   name: 'OshiniAgro',
   oshiwambo: 'Oshini',
   sector: 'Agriculture',
   desc: 'Crop failure prediction and soil analysis pipelines adapted for Namibian growing regions.',
-  hex: '#8F3E21',
+  hex: COLOR.barkRust,
   tag: 'A–02'
 }, {
   name: 'OkaandaEdu',
   oshiwambo: 'Okaanda',
   sector: 'Education',
   desc: 'Oshiwambo-first learning models. Curriculum-aligned reading and assessment tools.',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   tag: 'E–03'
 }, {
   name: 'EtitiGov',
   oshiwambo: 'Etiti',
   sector: 'Public Sector',
   desc: 'Read surfaces and dashboards for government programme monitoring and civic AI.',
-  hex: '#6A4B2E',
+  hex: COLOR.mopaneBrown,
   tag: 'G–04'
 }];
 
@@ -464,39 +465,39 @@ export const CONNECTION_EDGES: ConnectionEdge[] = [{
   from: 'Okaanda',
   to: 'Oshini',
   label: 'feeds raw data',
-  color: '#D9791F'
+  color: COLOR.ochreOrange
 }, {
   from: 'Oshini',
   to: 'Ombiga',
   label: 'outputs refined model',
-  color: '#8F3E21'
+  color: COLOR.barkRust
 }, {
   from: 'Ombiga',
   to: 'Etiti',
   label: 'exposes agent API',
-  color: '#DFAE2B'
+  color: COLOR.mahanguGold
 }, {
   from: 'Etiti',
   to: 'Oshitoo',
   label: 'renders interface',
-  color: '#6A4B2E'
+  color: COLOR.mopaneBrown
 }, {
   from: 'Okaanda',
   to: 'Ombiga',
   label: 'stores containers',
-  color: '#C84A1B'
+  color: COLOR.firedRed
 }, {
   from: 'Oshini',
   to: 'Etiti',
   label: 'evaluation surface',
-  color: '#8F3E21'
+  color: COLOR.barkRust
 }];
 
 export const DIAGRAM_NODES: DiagramNode[] = [{
   id: 'Okaanda',
   label: 'Okaanda',
   sublabel: 'Granary',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   tag: '01',
   cx: 50,
   cy: 16
@@ -504,7 +505,7 @@ export const DIAGRAM_NODES: DiagramNode[] = [{
   id: 'Oshini',
   label: 'Oshini',
   sublabel: 'Mill',
-  hex: '#8F3E21',
+  hex: COLOR.barkRust,
   tag: '02',
   cx: 78,
   cy: 36
@@ -512,7 +513,7 @@ export const DIAGRAM_NODES: DiagramNode[] = [{
   id: 'Ombiga',
   label: 'Ombiga',
   sublabel: 'Vessel',
-  hex: '#DFAE2B',
+  hex: COLOR.mahanguGold,
   tag: '03',
   cx: 78,
   cy: 66
@@ -520,7 +521,7 @@ export const DIAGRAM_NODES: DiagramNode[] = [{
   id: 'Oshitoo',
   label: 'Oshitoo',
   sublabel: 'Delivery',
-  hex: '#6F4A6E',
+  hex: COLOR.dyePlum,
   tag: '05',
   cx: 50,
   cy: 84
@@ -528,7 +529,7 @@ export const DIAGRAM_NODES: DiagramNode[] = [{
   id: 'Etiti',
   label: 'Etiti',
   sublabel: 'Surface',
-  hex: '#6A4B2E',
+  hex: COLOR.mopaneBrown,
   tag: '04',
   cx: 22,
   cy: 66
@@ -536,7 +537,7 @@ export const DIAGRAM_NODES: DiagramNode[] = [{
   id: 'root',
   label: 'Okaanda',
   sublabel: 'Lab Root',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   tag: 'ROOT',
   cx: 22,
   cy: 36
@@ -580,7 +581,7 @@ export const PUBLICATION_FORMATS: PublicationFormat[] = [{
   oshiwambo: 'Oshitaandwa',
   english: 'Document',
   tag: 'DOC',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   role: 'White Papers, Letters & Reports',
   desc: 'Compose structured documents with branded letterheads, section dividers, and editorial typography. Everything authored here is a living page on the site — export to PDF or Word whenever you are ready.',
   hint: 'White papers · Partner letters · Research reports · Technical briefs',
@@ -591,7 +592,7 @@ export const PUBLICATION_FORMATS: PublicationFormat[] = [{
   oshiwambo: 'Oshilongifano',
   english: 'Presentation',
   tag: 'DECK',
-  hex: '#6F4A6E',
+  hex: COLOR.dyePlum,
   role: 'Decks for Partners, Investors & Pilots',
   desc: 'Build slide decks with Onganda-branded layouts — cover slide, section dividers, content slides, and closing marks. The deck lives on the website as a first-class page and exports to PDF or PPT for offline sharing.',
   hint: 'Investor pitch · Partner overview · Pilot proposal · Systems walkthrough',
@@ -602,50 +603,50 @@ export const PUBLICATION_FORMATS: PublicationFormat[] = [{
 export const TICKER_ITEMS: TickerItem[] = [{
   name: 'Onganda',
   role: 'Namibia AI Systems Lab',
-  hex: '#D9791F'
+  hex: COLOR.ochreOrange
 }, {
   name: 'Oshini',
   role: 'Mill',
-  hex: '#8F3E21'
+  hex: COLOR.barkRust
 }, {
   name: 'Ombiga',
   role: 'Vessel',
-  hex: '#DFAE2B'
+  hex: COLOR.mahanguGold
 }, {
   name: 'Etiti',
   role: 'Surface',
-  hex: '#6A4B2E'
+  hex: COLOR.mopaneBrown
 }, {
   name: 'Oshitoo',
   role: 'Delivery',
-  hex: '#6F4A6E'
+  hex: COLOR.dyePlum
 }, {
   name: 'Okaanda',
   role: 'Namibia AI Systems Lab',
-  hex: '#D9791F'
+  hex: COLOR.ochreOrange
 }, {
   name: 'Oshini',
   role: 'Mill',
-  hex: '#8F3E21'
+  hex: COLOR.barkRust
 }, {
   name: 'Ombiga',
   role: 'Vessel',
-  hex: '#DFAE2B'
+  hex: COLOR.mahanguGold
 }, {
   name: 'Etiti',
   role: 'Surface',
-  hex: '#6A4B2E'
+  hex: COLOR.mopaneBrown
 }, {
   name: 'Oshitoo',
   role: 'Delivery',
-  hex: '#6F4A6E'
+  hex: COLOR.dyePlum
 }];
 
-export const HERO_LINE_1_WORDS: HeroWord[] = [{ text: 'A', color: '#1E1A17' }, { text: 'workshop', color: '#1E1A17' }];
+export const HERO_LINE_1_WORDS: HeroWord[] = [{ text: 'A', color: COLOR.charBlack }, { text: 'workshop', color: COLOR.charBlack }];
 // Bark rust, not ochre: ochre is 2.4:1 on the light canvas even at display
 // size, under the 3:1 large-text floor. See DESIGN_SYSTEM.md §4.
-export const HERO_LINE_2_WORDS: HeroWord[] = [{ text: 'of', color: '#8F3E21' }, { text: 'intelligence.', color: '#8F3E21' }];
-export const HERO_LINE_3_WORDS: HeroWord[] = [{ text: 'Pixelated', color: '#1E1A17' }, { text: 'by', color: '#1E1A17' }, { text: 'design.', color: '#1E1A17' }];
+export const HERO_LINE_2_WORDS: HeroWord[] = [{ text: 'of', color: COLOR.barkRust }, { text: 'intelligence.', color: COLOR.barkRust }];
+export const HERO_LINE_3_WORDS: HeroWord[] = [{ text: 'Pixelated', color: COLOR.charBlack }, { text: 'by', color: COLOR.charBlack }, { text: 'design.', color: COLOR.charBlack }];
 
 // ─── Slide editor chart data ──────────────────────────────────────────────────
 // Used in both the slide canvas renderer and the SlideInspector panel.

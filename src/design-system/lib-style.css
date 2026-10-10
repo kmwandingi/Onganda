@@ -176,8 +176,13 @@
  *   PixelDropZone         the upload icon bobs while hovered or dragged over
  *   PixelDot live         a live status mark blinks, in two steps
  *
+ *   PixelNav              an item steps 2px along on hover
+ *   PixelFooter           a link's underline draws in, in four steps
+ *
  * and usable directly: data-onganda-nudge on any element whose last icon
- * should step forward on hover, data-onganda-live on a status mark. */
+ * should step forward on hover, data-onganda-slide on a row or tab that should
+ * step along, data-onganda-underline on a text link, data-onganda-live on a
+ * status mark. */
 :where([data-onganda-button], [data-onganda-nudge]) > svg:last-child {
   transition: transform var(--onganda-motion-fast) var(--onganda-motion-step);
 }
@@ -190,6 +195,27 @@
 :where([data-onganda-lift]):hover :where([data-onganda-tile]) svg {
   transform: translateY(calc(var(--onganda-motion-nudge) * -1));
 }
+:where([data-onganda-slide]) {
+  transition: transform var(--onganda-motion-fast) var(--onganda-motion-step), background 0.18s, color 0.18s;
+}
+:where([data-onganda-slide]):hover { transform: translateX(var(--onganda-motion-nudge)); }
+/* The underline is the link's own colour, so it reads on any ground,
+ * inverse bands included. */
+:where([data-onganda-underline]) { position: relative; text-decoration: none; }
+:where([data-onganda-underline])::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--onganda-motion-base) var(--onganda-motion-draw);
+}
+:where([data-onganda-underline]):hover::after,
+:where([data-onganda-underline]):focus-visible::after { transform: scaleX(1); }
 @keyframes onganda-bob {
   0%, 100% { transform: none; }
   50% { transform: translateY(-2px); }
@@ -208,7 +234,9 @@
 @media (prefers-reduced-motion: reduce) {
   [data-onganda-button] > svg:last-child,
   [data-onganda-nudge] > svg:last-child,
-  [data-onganda-tile] svg { transform: none !important; }
+  [data-onganda-tile] svg,
+  [data-onganda-slide]:hover { transform: none !important; }
+  [data-onganda-underline]::after { transition: none; }
   [data-onganda-bob],
   [data-onganda-live] { animation: none; }
 }

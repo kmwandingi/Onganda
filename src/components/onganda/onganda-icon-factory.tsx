@@ -12,6 +12,7 @@
 
 import React from 'react';
 import type { IconProps } from './onganda-icons';
+import { COLOR } from './onganda-colors';
 
 export interface PixelRect {
   x: number;
@@ -68,7 +69,7 @@ export const createPixelIcon = (def: PixelIconDef) => {
 
 // Renders a def to a standalone SVG string — for exporting icons to .svg
 // files, docs, or Figma import.
-export const pixelIconToSvgString = (def: PixelIconDef, color = '#1E1A17'): string => {
+export const pixelIconToSvgString = (def: PixelIconDef, color = COLOR.charBlack): string => {
   const rects = def.rects.map(r => `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${r.fill ?? color}"${r.opacity !== undefined ? ` fill-opacity="${r.opacity}"` : ''}/>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${def.grid} ${def.grid}" fill="none">${rects}</svg>`;
 };

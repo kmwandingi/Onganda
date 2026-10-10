@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import {
-  accentFor, DISPLAY, ICON_SIZE, IconArrowRight, PixelButton, PixelInversePanel, PixelPanel,
+  accentFor, DISPLAY, ICON_SIZE, IconArrowRight, PixelButton, PixelInversePanel, PixelPanel, PixelPeers,
   PixelTag, roles, SectionHeader, systemIconForName, TEXTURE, TYPE, WeaveOverlay, useDark } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
@@ -68,13 +68,13 @@ export const Launch = () => {
               ))}
             </dl>
           </PixelPanel>
-          <div className="grid content-start gap-4">
+          {/* PixelPeers gives each peer its accent and ordinal, and the lift. */}
+          <PixelPeers columns={1} lift offset={3} isDark={isDark}>
             {PEERS.map((p, i) => (
-              <PixelPanel key={p.title} accent={accentFor(i + 3, isDark)} spine depth="lift" tag={String(i + 1).padStart(2, '0')}
-                eyebrow={p.system} title={p.title} note={p.body}
+              <PixelPanel key={p.title} spine eyebrow={p.system} title={p.title} note={p.body}
                 selected={chosen === i} onClick={() => setChosen(i)} data-testid="launch-peer" />
             ))}
-          </div>
+          </PixelPeers>
         </div>
       </section>
 

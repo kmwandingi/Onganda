@@ -183,6 +183,7 @@
   --onganda-motion-stagger: 60ms;
   --onganda-motion-ease: cubic-bezier(0.2, 0, 0, 1);
   --onganda-motion-step: steps(2, end);
+  --onganda-motion-draw: steps(4, end);
   --onganda-motion-lift: 4px;
   --onganda-motion-nudge: 2px;
   --onganda-motion-press: 0.97;

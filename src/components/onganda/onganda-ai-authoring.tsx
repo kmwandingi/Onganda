@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR } from './onganda-tokens';
+import { COLOR, paperAlpha, inkAlpha } from './onganda-tokens';
 import { OngandaLogoMark, PixelButton, PixelDot, PixelTag } from './onganda-primitives';
 import { IconCheck, IconRefresh, IconSettings, IconTerminal } from './onganda-icons';
 import type { AiDocBlock, AiSlideBlock, AiSlide, AiAuthoringResult, AiGeneratableDocBlockType } from './onganda-block-types';
@@ -253,7 +253,7 @@ export type { AiGeneratableDocBlockType } from './onganda-block-types';
 const inputStyle = (isDark: boolean): React.CSSProperties => ({
   width: '100%',
   background: isDark ? COLOR.darkBg : COLOR.dustLight,
-  border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.12)'}`,
+  border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
   color: isDark ? COLOR.milletClay : COLOR.charBlack,
   padding: '9px 10px',
   fontSize: 11,
@@ -282,9 +282,9 @@ export const AiAuthoringPanel = ({
   const [error, setError] = useState<string | null>(null);
   const gaps = useMemo(() => requiredGaps(brief, mode), [brief, mode]);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const bg = isDark ? COLOR.darkCard : COLOR.dustLight;
-  const border = isDark ? 'rgba(232,225,207,0.12)' : 'rgba(30,26,23,0.12)';
+  const border = isDark ? paperAlpha(0.12) : inkAlpha(0.12);
 
   const updateConfig = (updates: Partial<EndpointConfig>) => {
     const next = { ...config, ...updates };

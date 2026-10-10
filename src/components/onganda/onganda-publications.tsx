@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { AUTOMATED } from './onganda-motion';
 import { motion } from 'framer-motion';
-import { COLOR, inkOn, PUBLICATION_FORMATS, PublicationFormat } from './onganda-tokens';
+import { COLOR, inkOn, PUBLICATION_FORMATS, PublicationFormat, inkAlpha, paperAlpha } from './onganda-tokens';
 import { TEXTURE } from './onganda-type';
 import { Px, PixelDot, PixelTag, PixelCornerMarks, WeaveOverlay, SectionHeader, useDark } from './onganda-primitives';
 
@@ -238,10 +238,10 @@ const PublicationCard = ({
     isDark
   } = useDark();
   const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
-  const borderColor = hovered ? fmt.hex : isDark ? `${fmt.hex}28` : 'rgba(30,26,23,0.10)';
+  const borderColor = hovered ? fmt.hex : isDark ? `${fmt.hex}28` : inkAlpha(0.10);
   const titleColor = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const descColor = isDark ? 'rgba(232,225,207,0.60)' : 'rgba(30,26,23,0.65)';
+  const subColor = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const descColor = isDark ? paperAlpha(0.60) : inkAlpha(0.65);
   const hintColor = inkOn(fmt.hex, isDark ? COLOR.darkCard : COLOR.dustLight, isDark);
   return <motion.article initial={AUTOMATED ? false : {
     opacity: 0,
@@ -470,7 +470,7 @@ const PublicationCard = ({
       {/* Hint line at the bottom edge */}
       <div style={{
       padding: '9px 40px',
-      borderTop: `1px solid ${isDark ? `${fmt.hex}18` : 'rgba(30,26,23,0.1)'}`,
+      borderTop: `1px solid ${isDark ? `${fmt.hex}18` : inkAlpha(0.1)}`,
       background: isDark ? `${fmt.hex}08` : `${fmt.hex}07`
     }}>
         <p style={{
@@ -498,8 +498,8 @@ export const Publications = ({
   const {
     isDark
   } = useDark();
-  const borderColor = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
-  const subColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const borderColor = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
+  const subColor = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const headlineColor = isDark ? COLOR.milletClay : COLOR.charBlack;
   return <section id="publications" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       {/* Section header */}
@@ -543,7 +543,7 @@ export const Publications = ({
           </div>
         </div>
         <p className="mt-4 text-sm leading-relaxed max-w-2xl" style={{
-        color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
+        color: isDark ? paperAlpha(0.55) : inkAlpha(0.66)
       }}>
           Two authoring formats — structured documents and slide decks — both living natively on the website with the full Onganda design language, and both exportable to standard formats whenever you need to share offline.
         </p>

@@ -3,7 +3,7 @@
 // The design-system gate, runnable from a consumer project:
 //
 //   npx onganda-check src/            check a consumer's own source
-//   npx onganda-check --contrast      re-measure the role layer's ratios
+//   npx onganda-check --contrast      re-measure the role layer's ratios in every palette
 //
 // Rules that live only in prose get ignored. This ships with the package so a
 // product built on Onganda can fail its own build on the same rules the
@@ -25,7 +25,7 @@ if (args.includes('--help') || args.includes('-h')) {
   console.log(`onganda-check — Onganda design-system gate
 
   onganda-check [paths...]   check the given files or directories (default: src)
-  onganda-check --contrast   re-measure the colour role layer against WCAG AA
+  onganda-check --contrast   re-measure the colour role layer against WCAG AA, in every palette
   onganda-check --all        run both
 
 Rules: tailwind-color, off-palette-hex, off-palette-rgba, modern-color-fn,

@@ -11,11 +11,11 @@
 // vocabulary (dither, weave, stepped marks) rather than generic chrome, and
 // pairs colour with a second signal so meaning never rests on hue alone.
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Children, isValidElement, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { roles, statusFor, StatusName } from './onganda-tokens';
-import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, useIsDark, type MotionConflicting } from './onganda-primitives';
+import { roles, statusFor, StatusName, accentFor, inkAlpha } from './onganda-tokens';
+import { PixelButton, PixelDot, PixelIconTile, PixelTag, DitherBar, WeaveOverlay, PixelCornerMarks, Px, ICON_SIZE, useDensity, useIsDark, PeerContext, type MotionConflicting } from './onganda-primitives';
 import { MOTION, useMotionOK } from './onganda-motion';
 import { IconUpload } from './onganda-icons';
 import { TYPE, SPACE_SCALE, TEXTURE, RULE, DISPLAY } from './onganda-type';
@@ -157,7 +157,7 @@ export const PixelDialog = ({
           style={{
             position: 'fixed', inset: 0, zIndex: 100,
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
-            background: 'rgba(30,26,23,0.62)'
+            background: inkAlpha(0.62)
           }}
         >
           <motion.div
@@ -363,8 +363,8 @@ export const PixelNav = ({
           return (
             <li key={item.label}>
               {item.href
-                ? <a href={item.href} onClick={item.onClick} aria-current={item.active ? 'page' : undefined} data-onganda-press="" className="onganda-focus" style={style}>{body}</a>
-                : <button type="button" onClick={item.onClick} aria-current={item.active ? 'page' : undefined} data-onganda-press="" className="onganda-focus" style={style}>{body}</button>}
+                ? <a href={item.href} onClick={item.onClick} aria-current={item.active ? 'page' : undefined} data-onganda-press="" data-onganda-slide={item.active ? undefined : ''} className="onganda-focus" style={style}>{body}</a>
+                : <button type="button" onClick={item.onClick} aria-current={item.active ? 'page' : undefined} data-onganda-press="" data-onganda-slide={item.active ? undefined : ''} className="onganda-focus" style={style}>{body}</button>}
             </li>
           );
         })}
@@ -744,6 +744,77 @@ export const PixelProgress = ({
   );
 };
 
+// ─── PixelPeers — a set of peers, coloured and numbered for you ─────────────
+// Usage: <PixelPeers>{items.map(it => <PixelPanel key={it.id} title={it.title} />)}</PixelPeers>
+//
+// The showcase gives every peer card the next accent and its ordinal by hand:
+// accentFor(i) and tag="01" on each one, in 23 of its 27 panels. A product
+// built from defaults did neither, so every card came out the same accent ink
+// with no ordinal, and that monochrome page was the most common way a product
+// stopped looking like Onganda. PixelPeers makes the showcase's version the
+// default: each child is a peer, and a PixelPanel or SectionHeader inside it
+// takes that peer's accent and ordinal unless it is given its own.
+//
+// It also lays the peers out — up to `columns` across, one column on a narrow
+// screen, without Tailwind — and staggers their entrance.
+export const PixelPeers = ({
+  children,
+  columns = 3,
+  minWidth = 240,
+  gap = SPACE_SCALE['4'],
+  numbered = true,
+  lift = false,
+  offset = 0,
+  isDark: isDarkProp,
+  style,
+  ...rest
+}: {
+  children: React.ReactNode;
+  /** the most peers in a row; fewer fit on a narrow screen */
+  columns?: number;
+  /** below this width a peer drops to the next row */
+  minWidth?: number;
+  gap?: number;
+  /** give each peer its ordinal tag, "01", "02"… — the showcase default */
+  numbered?: boolean;
+  /** peers step up onto a hard shadow on hover (depth="lift"): the editorial
+   *  dial a landing page turns up. Product screens leave it off. */
+  lift?: boolean;
+  /** start the accent rotation further along, so a second set on the page
+   *  does not repeat the first set's colours */
+  offset?: number;
+  isDark?: boolean;
+} & React.HTMLAttributes<HTMLDivElement>) => {
+  const isDark = useIsDark(isDarkProp);
+  const items = Children.toArray(children).filter(isValidElement);
+  return (
+    <div
+      data-onganda-stagger=""
+      {...rest}
+      style={{
+        display: 'grid',
+        gap,
+        // Up to `columns` across, never narrower than `minWidth`.
+        gridTemplateColumns: `repeat(auto-fill, minmax(max(min(100%, ${minWidth}px), calc((100% - ${(columns - 1) * gap}px) / ${columns})), 1fr))`,
+        // In a taller grid cell the rows stay their own height.
+        alignContent: 'start',
+        ...style
+      }}
+    >
+      {items.map((child, i) => (
+        <PeerContext.Provider key={child.key ?? i} value={{
+          index: i,
+          accent: accentFor(i + offset, isDark),
+          ordinal: numbered ? String(i + 1).padStart(2, '0') : undefined,
+          lift
+        }}>
+          {child}
+        </PeerContext.Provider>
+      ))}
+    </div>
+  );
+};
+
 // ─── PixelPanel — the compact surface container ──────────────────────────────
 // Measured against the landing page, every extension panel sat at the floor on
 // all six composition measures: one weave, three marks, one eyebrow label, no
@@ -782,9 +853,9 @@ export const PixelPanel = ({
   texture,
   emphasis = 'feature',
   icon,
-  tag,
+  tag: tagProp,
   aside,
-  depth = 'flat',
+  depth: depthProp,
   tone = 'surface',
   selected,
   children,
@@ -850,8 +921,13 @@ export const PixelPanel = ({
   const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
   const d = useDensity();
-  const hue = accent ?? c.accentInk;
+  // Inside a PixelPeers, a panel takes its peer's accent, ordinal and lift
+  // unless it is given its own. Quiet panels are chrome and stay neutral.
+  const peer = useContext(PeerContext);
   const quiet = emphasis === 'quiet';
+  const hue = accent ?? (quiet ? undefined : peer?.accent) ?? c.accentInk;
+  const tag = tagProp ?? (quiet ? undefined : peer?.ordinal);
+  const depth = depthProp ?? (peer?.lift && !quiet ? 'lift' : 'flat');
   // The foot rule is opt-in. It used to follow the spine by default, which
   // put a rule at the foot of every identity card.
   const showRule = rule ?? false;

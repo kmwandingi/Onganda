@@ -104,7 +104,16 @@ try {
     // longer first, which is how every heading in a product fell back to
     // Inter. The faces now ship with the package and must load in this case.
     { name: 'css-import', source: `@import '@onganda/design-system/style.css';`, tailwind: true, expectStyled: true, cssImport: true },
+    // A palette chosen in one file, imported first, the way the README says.
+    // Components, the CSS variables and the tokens must all follow it through
+    // a real bundler, which is where an import-order mistake would show.
+    { name: 'palette', source: '', tailwind: false, expectStyled: true, palette: 'coast' },
   ];
+
+  // What each case must render. The palette case reads Coast's pigments.
+  const expected = palette => palette === 'coast'
+    ? { primary: 'rgb(18, 165, 148)', danger: 'rgb(206, 44, 49)', muted: '28,32,36,0.66', mutedColor: 'rgba(28, 32, 36, 0.66)' }
+    : { primary: 'rgb(217, 121, 31)', danger: 'rgb(143, 62, 33)', muted: '30,26,23,0.66', mutedColor: 'rgba(30, 26, 23, 0.66)' };
 
   browser = await chromium.launch();
   const results = {};
@@ -114,9 +123,14 @@ try {
   const root = await buildApp('app', cases[0].source);
   await run('npm', ['install', '--no-package-lock', '--no-audit', '--no-fund', '--prefer-offline', ...deps], { cwd: root, maxBuffer: 1 << 26 });
 
-  for (const { name, source, tailwind, expectStyled, theme, cssImport } of cases) {
+  for (const { name, source, tailwind, expectStyled, theme, cssImport, palette } of cases) {
+    if (palette) {
+      await writeFile(path.join(root, 'onganda-palette.js'),
+        `import { selectPalette } from '@onganda/design-system/palettes';\nselectPalette('${palette}');\n`);
+    }
     await writeFile(path.join(root, 'main.jsx'),
-      cssImport ? APP.replace("import '@onganda/design-system/style.css';\n", '') : APP);
+      (palette ? "import './onganda-palette.js';\n" : '') +
+      (cssImport ? APP.replace("import '@onganda/design-system/style.css';\n", '') : APP));
     await writeFile(
       path.join(root, 'app.css'),
       tailwind ? `@import 'tailwindcss';\n${source}\n` : '/* package CSS only */\n',
@@ -204,11 +218,12 @@ try {
     if (!probe.rendered) throw new Error(`${name}: the package did not render at all.`);
 
     // Inline role styles come from the package and must work either way.
-    if (probe.primaryBg !== 'rgb(217, 121, 31)') {
-      throw new Error(`${name}: PixelButton primary background is ${probe.primaryBg}, expected ochre. The role layer did not survive packaging.`);
+    const want = expected(palette);
+    if (probe.primaryBg !== want.primary) {
+      throw new Error(`${name}: PixelButton primary background is ${probe.primaryBg}, expected ${want.primary}. The role layer did not survive packaging${palette ? ', or the palette was not applied' : ''}.`);
     }
-    if (probe.dangerBg !== 'rgb(143, 62, 33)') {
-      throw new Error(`${name}: PixelButton danger background is ${probe.dangerBg}, expected bark rust.`);
+    if (probe.dangerBg !== want.danger) {
+      throw new Error(`${name}: PixelButton danger background is ${probe.dangerBg}, expected ${want.danger}.`);
     }
     if (parseFloat(probe.primaryRadius) !== 0) {
       throw new Error(`${name}: a control rendered with a ${probe.primaryRadius} corner radius in a consumer app.`);
@@ -225,10 +240,10 @@ try {
         : (v.match(/[\d.]+/g) || []).map(Number);
       return n.map((x, i) => (i === 3 ? x.toFixed(2) : String(x))).join(',');
     };
-    if (nums(probe.rootMuted) !== '30,26,23,0.66') {
+    if (nums(probe.rootMuted) !== want.muted) {
       throw new Error(`${name}: --onganda-text-muted is "${probe.rootMuted}" on :root; tokens.css did not reach the consumer.`);
     }
-    if (probe.cssVarColor !== 'rgba(30, 26, 23, 0.66)') {
+    if (probe.cssVarColor !== want.mutedColor) {
       throw new Error(`${name}: an element styled with var(--onganda-text-muted) computed to ${probe.cssVarColor}.`);
     }
     if (theme) {

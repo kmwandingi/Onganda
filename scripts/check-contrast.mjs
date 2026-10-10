@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // ─── Onganda Design System — contrast guard ──────────────────────────────────
 // The colour policy in DESIGN_SYSTEM.md §4 makes measurable claims. This
-// recomputes every one of them from the built role layer and fails on a
-// regression, so a token edit cannot quietly break a documented ratio.
+// recomputes every one of them from the role recipe, for every palette in
+// onganda-palettes.ts, and fails on a regression, so neither a token edit nor
+// a new palette can quietly break a documented ratio.
 //
 //   npm run check:contrast          fail on any violation
 //   npm run check:contrast -- --table  print the full measured table
@@ -13,6 +14,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { readPalettes, readColorMap, colorFor } from './palette-source.mjs';
 
 // Resolves whether this runs in the repo or from a consumer's node_modules.
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -26,12 +28,8 @@ const tokenFile = name => {
 
 const src = tokenFile('onganda-roles.ts');
 const colorsSrc = tokenFile('onganda-colors.ts');
-
-// Resolve COLOR without importing TypeScript.
-const COLOR = Object.fromEntries(
-  [...colorsSrc.slice(colorsSrc.indexOf('export const COLOR = {'), colorsSrc.indexOf('} as const;'))
-    .matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{6})'/g)].map(m => [m[1], m[2]])
-);
+const PALETTES = readPalettes(tokenFile('onganda-palettes.ts'));
+const COLOR_MAP = readColorMap(colorsSrc);
 
 const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 const lin = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -52,16 +50,20 @@ const resolve = (value, bgHex) => {
   return null;
 };
 
-// Pull one mode's role block out of the source as a literal map.
-const roleBlock = name => {
+// Pull one mode's role recipe out of the source and resolve it for a palette.
+// A role reads a palette slot (P.primary), ink or paper at an ALPHA step, or a
+// literal; the shadows are template strings and are not contrast claims.
+const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)).join(',');
+const roleBlock = (name, P) => {
   const start = src.indexOf(`export const ${name}: ColorRoles = {`);
   const body = src.slice(start, src.indexOf('\n};', start));
+  const tone = fn => hexRgb(fn === 'ink' ? P.ink : P.paper);
   const out = {};
-  for (const m of body.matchAll(/^\s{2}(\w+):\s*(?:COLOR\.(\w+)|(ink|paper)\(ALPHA\.(\w+)\.(\w+)\)|(ink|paper)\(([\d.]+)\)|'([^']*)')/gm)) {
-    const [, key, colorKey, fn, alphaKey, alphaMode, fn2, rawAlpha, literal] = m;
-    if (colorKey) out[key] = COLOR[colorKey];
-    else if (fn) out[key] = `rgba(${fn === 'ink' ? '30,26,23' : '232,225,207'},${ALPHA[alphaKey][alphaMode]})`;
-    else if (fn2) out[key] = `rgba(${fn2 === 'ink' ? '30,26,23' : '232,225,207'},${rawAlpha})`;
+  for (const m of body.matchAll(/^\s{2}(\w+):\s*(?:P\.(\w+)|(ink|paper)\(ALPHA\.(\w+)\.(\w+)\)|(ink|paper)\(([\d.]+)\)|'([^']*)')/gm)) {
+    const [, key, slot, fn, alphaKey, alphaMode, fn2, rawAlpha, literal] = m;
+    if (slot) out[key] = P[slot];
+    else if (fn) out[key] = `rgba(${tone(fn)},${ALPHA[alphaKey][alphaMode]})`;
+    else if (fn2) out[key] = `rgba(${tone(fn2)},${rawAlpha})`;
     else out[key] = literal;
   }
   return out;
@@ -86,58 +88,14 @@ const EDITOR_SURFACE = Object.fromEntries(
     .matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{6})'/g)].map(m => [m[1], m[2]])
 );
 
-const LIGHT = roleBlock('ROLE_LIGHT');
-const DARK = roleBlock('ROLE_DARK');
-
 const AA = 4.5;  // small text
 const UI = 3.0;  // non-text boundary or indicator
 
-// Each check: [label, foreground role, background role, threshold]
-// A background role of a literal hex means "measured against that surface".
-const textChecks = [
-  ['body text on canvas', 'textBody', 'canvas', AA],
-  ['body text on surface', 'textBody', 'surface', AA],
-  ['body text in a well', 'textBody', 'surfaceWell', AA],
-  ['muted text on canvas', 'textMuted', 'canvas', AA],
-  ['muted text on surface', 'textMuted', 'surface', AA],
-  ['primary text on canvas', 'text', 'canvas', AA],
-  ['text on the inverse card', 'textOnInverse', 'inverse', AA],
-  ['field text on surface', 'fieldText', 'surface', AA],
-  ['placeholder on surface', 'fieldPlaceholder', 'surface', AA],
-  ['accent ink on canvas', 'accentInk', 'canvas', AA],
-  ['accent ink on surface', 'accentInk', 'surface', AA],
-  ['primary button label', 'actionFg', 'actionBg', AA],
-  ['primary button label, hover', 'actionHoverFg', 'actionHoverBg', AA],
-  ['accent button label', 'accentFg', 'accentBg', AA],
-  ['accent button label, hover', 'accentHoverFg', 'accentHoverBg', AA],
-  ['danger button label', 'dangerFg', 'dangerBg', AA],
-  ['danger button label, hover', 'dangerHoverFg', 'dangerHoverBg', AA],
-  ['ghost button label on surface', 'ghostFg', 'surface', AA],
-  ['ghost button label, hover', 'ghostHoverFg', 'surface', AA],
-  ['checked control glyph', 'controlOnFg', 'controlOn', AA]
-];
-
-const uiChecks = [
-  ['field border on surface', 'fieldBorder', 'surface', UI],
-  ['field border on canvas', 'fieldBorder', 'canvas', UI],
-  ['field border, hover', 'fieldBorderHover', 'surface', UI],
-  ['field border, focus', 'fieldBorderFocus', 'surface', UI],
-  ['field border, invalid', 'fieldBorderInvalid', 'surface', UI],
-  ['focus ring on surface', 'focusRing', 'surface', UI],
-  ['focus ring on canvas', 'focusRing', 'canvas', UI],
-  ['ghost button border', 'ghostBorder', 'surface', UI],
-  ['primary button edge on surface', 'actionBorder', 'surface', UI],
-  ['primary button edge on canvas', 'actionBorder', 'canvas', UI],
-  ['primary button edge, hover', 'actionHoverBorder', 'surface', UI],
-  ['accent button edge on surface', 'accentBorder', 'surface', UI],
-  ['accent button edge on canvas', 'accentBorder', 'canvas', UI],
-  ['accent button edge, hover', 'accentHoverBorder', 'surface', UI],
-  ['danger button edge on surface', 'dangerBorder', 'surface', UI],
-  ['danger button edge on canvas', 'dangerBorder', 'canvas', UI],
-  ['danger button edge, hover', 'dangerHoverBorder', 'surface', UI],
-  ['checked control edge on surface', 'controlOnBorder', 'surface', UI],
-  ['checked control edge on canvas', 'controlOnBorder', 'canvas', UI]
-];
+// The claims, read from CONTRAST_CLAIMS in onganda-roles.ts so this check and
+// auditPalette() in the browser measure the same list.
+const claims = [...src.slice(src.indexOf('export const CONTRAST_CLAIMS'), src.indexOf('];', src.indexOf('export const CONTRAST_CLAIMS')))
+  .matchAll(/\['([^']+)', '(\w+)', '(\w+)', (AA|UI)\]/g)].map(m => [m[1], m[2], m[3], m[4] === 'AA' ? AA : UI]);
+if (claims.length < 30) throw new Error(`check-contrast: only ${claims.length} claims read from CONTRAST_CLAIMS — the parser is out of date`);
 
 // Documented exemptions. Each needs a reason, and the reason is the contract.
 const EXEMPT = {
@@ -149,8 +107,8 @@ const EXEMPT = {
 const failures = [];
 const rows = [];
 
-const runMode = (label, R) => {
-  for (const [name, fgKey, bgKey, threshold] of [...textChecks, ...uiChecks]) {
+const runMode = (label, R, COLOR) => {
+  for (const [name, fgKey, bgKey, threshold] of claims) {
     const bgHex = R[bgKey];
     if (!bgHex || bgHex === 'transparent') continue;
     const bg = bgHex.startsWith('#') ? rgb(bgHex) : resolve(bgHex, R.canvas);
@@ -166,20 +124,20 @@ const runMode = (label, R) => {
     critical: COLOR.firedRed,
     caution: COLOR.mahanguGold,
     active: COLOR.ochreOrange,
-    settled: label === 'dark' ? COLOR.mopaneBrownLight : COLOR.mopaneBrown
+    settled: label.endsWith('dark') ? COLOR.mopaneBrownLight : COLOR.mopaneBrown
   })) {
     const r = Math.min(ratio(rgb(hex), rgb(R.canvas)), ratio(rgb(hex), rgb(R.surface)));
     rows.push([label, `status ${name}`, r.toFixed(2), UI, r >= UI ? 'ok' : 'ring required']);
   }
 };
 
-runMode('light', LIGHT);
-runMode('dark', DARK);
-
+// The editors paint on their own warm paper tones under every palette, so
+// they are measured against the Onganda ink, the palette they were tuned for.
 // Editor grounds. A tone is light or dark by which ink actually reads on it.
 const EDITOR_LIGHT = ['paperWhite', 'paperWarm', 'dustCream', 'dustHover', 'dustPanel', 'dustPanelDeep', 'dustWell', 'dustHeader'];
 const EDITOR_DARK = ['canvasWellDark', 'emberBrown'];
 
+function checkEditorSurfaces(LIGHT, DARK) {
 for (const [tone, hex] of Object.entries(EDITOR_SURFACE)) {
   const isDarkTone = EDITOR_DARK.includes(tone);
   if (!EDITOR_LIGHT.includes(tone) && !isDarkTone) continue; // smokeGray is a chrome tone, not a ground
@@ -200,6 +158,17 @@ for (const [tone, hex] of Object.entries(EDITOR_SURFACE)) {
     if (r < AA) failures.push(`editor surface: accentInk is ${r.toFixed(2)}:1 on ${tone} (${hex}), needs ${AA}:1`);
   }
 }
+}
+
+for (const [paletteName, P] of Object.entries(PALETTES)) {
+  const COLOR = colorFor(P, COLOR_MAP);
+  const LIGHT = roleBlock('ROLE_LIGHT', P);
+  const DARK = roleBlock('ROLE_DARK', P);
+  const tag = paletteName === 'onganda' ? '' : `${paletteName} `;
+  runMode(`${tag}light`, LIGHT, COLOR);
+  runMode(`${tag}dark`, DARK, COLOR);
+  if (paletteName === 'onganda') checkEditorSurfaces(LIGHT, DARK);
+}
 
 if (process.argv.includes('--table')) {
   const w = [6, 32, 7, 5, 14];
@@ -216,4 +185,4 @@ if (failures.length) {
   console.error('\nFix the role value, or state the exemption and its reason in scripts/check-contrast.mjs.');
   process.exit(1);
 }
-console.log(`Contrast check passed — ${rows.length} measurements, WCAG AA.`);
+console.log(`Contrast check passed — ${rows.length} measurements across ${Object.keys(PALETTES).length} palettes, WCAG AA.`);

@@ -1,3 +1,5 @@
+// First: the palette has to be chosen before anything builds its colours.
+import './palette-boot';
 import { StrictMode } from 'react';
 import { MotionGlobalConfig } from 'framer-motion';
 

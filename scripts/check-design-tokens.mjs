@@ -12,6 +12,7 @@
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { readPalettes } from './palette-source.mjs';
 
 const SRC = 'src/components/onganda';
 
@@ -64,8 +65,12 @@ const readHexes = (file, constName) => {
 };
 
 const COLORS_FILE = resolveTokenFile('onganda-colors.ts');
+// Every shipped palette's pigments are sanctioned: a product may choose any of
+// them with selectPalette().
+const PALETTE_HEXES = Object.values(readPalettes(readFileSync(resolveTokenFile('onganda-palettes.ts'), 'utf8')))
+  .flatMap(p => Object.values(p).flat().filter(v => typeof v === 'string' && v.startsWith('#')).map(h => h.toLowerCase()));
 const PALETTE = new Set([
-  ...readHexes(COLORS_FILE, 'COLOR'),
+  ...PALETTE_HEXES,
   ...readHexes(COLORS_FILE, 'EDITOR_SURFACE'),
   // Neutral extremes used for shadows, scrims, and SVG masks.
   '#ffffff', '#fff', '#000000', '#000'
@@ -211,10 +216,11 @@ const RULES = [
     exclude: /onganda-roles\.ts$|onganda-colors\.ts$/,
     // Scoped to the properties the ramp governs: text and lines. A 4%
     // background wash and a 90% modal scrim are surfaces, not ink, and the
-    // ramp has nothing to say about them.
-    re: /(?:color|borderColor|border(?:Top|Right|Bottom|Left)?Color|outlineColor|border(?:Top|Right|Bottom|Left)?|outline|textDecorationColor)\s*:\s*[^;,\n]*rgba\(\s*(?:30,\s*26,\s*23|232,\s*225,\s*207),\s*[\d.]+\s*\)/g,
+    // ramp has nothing to say about them. Ink is a literal rgba() or the
+    // palette helpers inkAlpha() / paperAlpha().
+    re: /(?:color|borderColor|border(?:Top|Right|Bottom|Left)?Color|outlineColor|border(?:Top|Right|Bottom|Left)?|outline|textDecorationColor)\s*:\s*[^;,\n]*(?:rgba\(\s*(?:30,\s*26,\s*23|232,\s*225,\s*207),\s*[\d.]+\s*\)|(?:inkAlpha|paperAlpha)\(\s*[\d.]+\s*\))/g,
     filter: m => {
-      const a = Number(m.match(/,\s*([\d.]+)\s*\)/)[1]);
+      const a = Number(m.match(/[(,]\s*([\d.]+)\s*\)$/)[1]);
       return !ALPHA_STEPS.has(a);
     }
   },

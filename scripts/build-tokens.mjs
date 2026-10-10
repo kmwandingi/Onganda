@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { readPalettes, readColorMap, colorFor } from './palette-source.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const root = existsSync(path.join(process.cwd(), 'package.json')) ? process.cwd() : path.join(HERE, '..');
@@ -41,7 +42,14 @@ const hexMap = (src, name) => Object.fromEntries(
   [...literalBlock(src, name).matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{3,8})'/g)].map(m => [m[1], m[2]])
 );
 
-const COLOR = hexMap(colorsSrc, 'COLOR');
+const PALETTES = readPalettes(read('onganda-palettes.ts'));
+const COLOR_MAP = readColorMap(colorsSrc);
+// The roles and pigments below are the default palette's; every palette's
+// pigments are listed under "palettes".
+const P = PALETTES.onganda;
+const COLOR = colorFor(P, COLOR_MAP);
+// A slot is named by the Onganda pigment that fills it, where there is one.
+const slotRef = slot => Object.keys(COLOR_MAP).find(k => COLOR_MAP[k] === slot) ?? slot;
 const EDITOR_SURFACE = hexMap(colorsSrc, 'EDITOR_SURFACE');
 const MOTION_TOKENS = Object.fromEntries(
   [...literalBlock(motionSrc, 'MOTION_TOKENS').matchAll(/^\s{2}(\w+):\s*'([^']*)'/gm)].map(m => [m[1], m[2]])
@@ -51,9 +59,13 @@ if (Object.keys(MOTION_TOKENS).length < 8) throw new Error('build-tokens: MOTION
 const roleBlock = name => {
   const body = literalBlock(rolesSrc, `${name}: ColorRoles`, '\n};');
   const out = {};
-  for (const m of body.matchAll(/^\s{2}(\w+):\s*(?:COLOR\.(\w+)|(ink|paper)\(ALPHA\.(\w+)\.(\w+)\)|(ink|paper)\(([\d.]+)\)|'([^']*)')/gm)) {
-    const [, key, colorKey, fn, aKey, aMode, fn2, rawAlpha, literal] = m;
-    if (colorKey) out[key] = { value: COLOR[colorKey], ref: colorKey };
+  for (const m of body.matchAll(/^\s{2}(\w+):\s*(?:P\.(\w+)|(ink|paper)\(ALPHA\.(\w+)\.(\w+)\)|(ink|paper)\(([\d.]+)\)|'([^']*)'|`([^`]*)`)/gm)) {
+    const [, key, slot, fn, aKey, aMode, fn2, rawAlpha, literal, template] = m;
+    if (slot) out[key] = { value: P[slot], ref: slotRef(slot) };
+    else if (template !== undefined) {
+      const value = template.replace(/\$\{(ink|paper)\(([\d.]+)\)\}/g, (_, f, a) => rgba(f, parseFloat(a)).replace(/, /g, ','));
+      out[key] = { value, ref: value };
+    }
     else if (fn) out[key] = { value: rgba(fn, ALPHA[aKey][aMode]), ref: `${fn} ${Math.round(ALPHA[aKey][aMode] * 100)}%` };
     else if (fn2) out[key] = { value: rgba(fn2, parseFloat(rawAlpha)), ref: `${fn2} ${Math.round(parseFloat(rawAlpha) * 100)}%` };
     else out[key] = { value: literal, ref: literal };
@@ -74,12 +86,13 @@ const ROLE_LIGHT = roleBlock('ROLE_LIGHT');
 const ROLE_DARK = roleBlock('ROLE_DARK');
 
 const SYSTEM_COLOR = Object.fromEntries(
-  [...literalBlock(rolesSrc, 'SYSTEM_COLOR').matchAll(/(\w+):\s*COLOR\.(\w+)/g)].map(m => [m[1], COLOR[m[2]]])
+  [...literalBlock(rolesSrc, 'SYSTEM_COLOR').matchAll(/(\w+):\s*P\.peers\[(\d)\]/g)].map(m => [m[1], P.peers[+m[2]]])
 );
 const STATUS = Object.fromEntries(
-  [...literalBlock(rolesSrc, 'STATUS').matchAll(/(\w+):\s*COLOR\.(\w+)/g)].map(m => [m[1], COLOR[m[2]]])
+  [...literalBlock(rolesSrc, 'STATUS').matchAll(/(\w+):\s*P\.(\w+)/g)].map(m => [m[1], P[m[2]]])
 );
-const CHART_SERIES = [...literalBlock(rolesSrc, 'CHART_SERIES', '] as const;').matchAll(/COLOR\.(\w+)/g)].map(m => COLOR[m[1]]);
+const CHART_SERIES = P.chart;
+if (Object.keys(SYSTEM_COLOR).length !== 5 || Object.keys(STATUS).length !== 4) throw new Error('build-tokens: SYSTEM_COLOR or STATUS did not parse');
 
 const TYPE = {};
 for (const m of literalBlock(typeSrc, 'TYPE').matchAll(
@@ -139,6 +152,15 @@ const tokens = {
     Object.fromEntries(Object.entries(COLOR).map(([k, v]) => [
       k, color(v, POLICY[k] ? `ALLOWED: ${POLICY[k].allowed} — NEVER: ${POLICY[k].never}` : undefined)
     ]))
+  ),
+
+  palettes: g(
+    'Every shipped palette, by slot. The roles above are built from the default (onganda); ' +
+    'selectPalette() builds them from another. Each slot has one job — see Palette in onganda-palettes.ts.',
+    Object.fromEntries(Object.entries(PALETTES).map(([name, pal]) => [name, Object.fromEntries([
+      ...Object.entries(pal).filter(([, v]) => typeof v === 'string').map(([slot, v]) => [slot, color(v, undefined)]),
+      ...['peers', 'peersDark', 'chart'].flatMap(list => pal[list].map((v, i) => [`${list}-${i + 1}`, color(v, undefined)]))
+    ])]))
   ),
 
   'palette-editor': g(

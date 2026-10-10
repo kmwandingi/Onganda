@@ -13,7 +13,18 @@ import { stubMapTiles } from './support/map-tiles';
 const AUDIT_SOURCE = () => {
   const lin = (c: number) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
   const lum = (v: number[]) => 0.2126 * lin(v[0]) + 0.7152 * lin(v[1]) + 0.0722 * lin(v[2]);
-  const parse = (s: string) => (s.match(/[\d.]+/g) || []).map(Number);
+  // Any CSS colour as [r, g, b, a]. rgb()/rgba() are read directly; anything
+  // else (Tailwind 4 writes oklab() for an opacity on a CSS variable) is
+  // painted on a 1x1 canvas and read back, so the browser does the conversion.
+  const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+  const parse = (s: string) => {
+    if (/^rgba?\(/.test(s)) return (s.match(/[\d.]+/g) || []).map(Number);
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = s;
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    return [r, g, b, a / 255];
+  };
   const over = (fg: number[], bg: number[], a: number) => fg.map((c, i) => c * a + bg[i] * (1 - a));
   const ratio = (a: number[], b: number[]) => {
     const [x, y] = [lum(a), lum(b)];
@@ -99,6 +110,24 @@ for (const route of ['/test/app', '/test/studio', '/test/dashboard', '/test/form
     const failures = await page.evaluate(AUDIT_SOURCE);
     expect(failures, `${failures.length} text nodes below their floor on ${route} (dark):\n  ${failures.slice(0, 15).join('\n  ')}`).toEqual([]);
   });
+}
+
+// Every palette, not only the default. selectPalette() promises that a product
+// built from the roles keeps its contrast whatever palette it picks; this is
+// that promise measured on rendered pages, in both modes.
+for (const palette of ['coast', 'etosha']) {
+  for (const route of ['/showcase', '/test/studio', '/test/dashboard']) {
+    for (const dark of [false, true]) {
+      test(`every text node on ${route} meets its contrast floor in the ${palette} palette${dark ? ', dark' : ''}`, async ({ page }) => {
+        await stubMapTiles(page);
+        if (dark) await page.addInitScript(() => localStorage.setItem('onganda-dark', '1'));
+        await page.goto(`${route}?palette=${palette}`);
+        await settle(page);
+        const failures = await page.evaluate(AUDIT_SOURCE);
+        expect(failures, `${failures.length} text nodes below their floor on ${route} (${palette}${dark ? ', dark' : ''}):\n  ${failures.slice(0, 15).join('\n  ')}`).toEqual([]);
+      });
+    }
+  }
 }
 
 // The editors are behind a click, so the route sweep above never reached them.

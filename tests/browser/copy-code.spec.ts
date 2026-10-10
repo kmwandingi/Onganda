@@ -1,13 +1,18 @@
 import { expect, test } from '@playwright/test';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
 // "Copy code" on /showcase must hand an agent code that works: it compiles
 // under strict TypeScript against the package, and it passes onganda-check.
 // Every section is copied, written to a file and checked both ways.
+//
+// The same files ship as blocks/<section>.tsx, so an agent can start from a
+// whole showcase section without a browser. They must match what the showcase
+// copies today: a stale block fails here. UPDATE_BLOCKS=1 rewrites them.
 
 const OUT = path.join(process.cwd(), 'tests/copy-code/generated');
+const BLOCKS = path.join(process.cwd(), 'blocks');
 
 test('every section on /showcase copies as code that compiles and passes the guard', async ({ page }) => {
   test.setTimeout(240_000);
@@ -25,7 +30,12 @@ test('every section on /showcase copies as code that compiles and passes the gua
     await buttons.nth(i).click();
     const code = (await page.getByTestId('copy-code').textContent()) ?? '';
     expect(code, `section ${i} produced code`).toContain("from '@onganda/design-system'");
-    writeFileSync(path.join(OUT, `section-${String(i).padStart(2, '0')}.tsx`), code);
+    // Named after the section, which is what an agent looks for: its id, or
+    // the name on the code's first line when the section has none.
+    const id = await buttons.nth(i).evaluate(b => b.closest('[data-onganda-copy-ui]')?.parentElement?.id ?? '');
+    const named = code.match(/^\/\/ The "(.+?)" section/)?.[1] ?? `section ${i}`;
+    const slug = id || named.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    writeFileSync(path.join(OUT, `${slug}.tsx`), code);
     await page.keyboard.press('Escape');
     await expect(page.getByTestId('copy-code')).toHaveCount(0);
   }
@@ -48,6 +58,16 @@ test('every section on /showcase copies as code that compiles and passes the gua
     catch (e) { return String((e as { stdout?: string }).stdout ?? e); }
   })();
   expect(tsc.split('\n').slice(0, 30).join('\n'), 'generated code type-checks').toBe('');
+
+  if (process.env.UPDATE_BLOCKS) {
+    rmSync(BLOCKS, { recursive: true, force: true });
+    cpSync(OUT, BLOCKS, { recursive: true });
+  }
+  const generated = readdirSync(OUT).sort();
+  const shipped = existsSync(BLOCKS) ? readdirSync(BLOCKS).filter(f => f.endsWith('.tsx')).sort() : [];
+  const stale = generated.filter(f => !shipped.includes(f) || readFileSync(path.join(BLOCKS, f), 'utf8') !== readFileSync(path.join(OUT, f), 'utf8'))
+    .concat(shipped.filter(f => !generated.includes(f)));
+  expect(stale, 'blocks/ matches the showcase — run UPDATE_BLOCKS=1 npx playwright test copy-code').toEqual([]);
 });
 
 test('an element copies as itself, with the section one click away', async ({ page }) => {

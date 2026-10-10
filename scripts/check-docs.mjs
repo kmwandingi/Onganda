@@ -15,6 +15,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { readPalettes, readColorMap, colorFor } from './palette-source.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const root = existsSync(path.join(process.cwd(), 'DESIGN_SYSTEM.md')) ? process.cwd() : path.join(HERE, '..');
@@ -37,6 +38,8 @@ const DOCS = {
 const rolesSrc = read('src/components/onganda/onganda-roles.ts');
 const typeSrc = read('src/components/onganda/onganda-type.ts');
 const colorsSrc = read('src/components/onganda/onganda-colors.ts');
+const ONGANDA = readPalettes(read('src/components/onganda/onganda-palettes.ts')).onganda;
+const COLOR = colorFor(ONGANDA, readColorMap(colorsSrc));
 
 const failures = [];
 const fail = (doc, msg) => {
@@ -52,11 +55,15 @@ const alpha = name => {
   return m ? { light: m[1], dark: m[2] } : null;
 };
 
+// The docs describe the Onganda palette, so a role's slot is named by the
+// Onganda pigment that fills it.
 const roleValue = (block, key) => {
   const start = rolesSrc.indexOf(`export const ${block}: ColorRoles = {`);
   const body = rolesSrc.slice(start, rolesSrc.indexOf('\n};', start));
-  const m = body.match(new RegExp(`^\\s{2}${key}:\\s*(?:COLOR\\.(\\w+)|'([^']+)')`, 'm'));
-  return m ? (m[1] ?? m[2]) : null;
+  const m = body.match(new RegExp(`^\\s{2}${key}:\\s*(?:P\\.(\\w+)|'([^']+)')`, 'm'));
+  if (!m) return null;
+  if (m[2]) return m[2];
+  return Object.keys(COLOR).find(k => COLOR[k] === ONGANDA[m[1]]) ?? m[1];
 };
 
 // Claims the prose makes, and where the truth lives.
@@ -233,10 +240,7 @@ for (const doc of ['README.md', 'DESIGN_SYSTEM.md', 'DESIGN_GUIDELINES.md', 'AGE
     failures.push('tokens/onganda.tokens.json is missing — run `npm run build:tokens`');
   } else {
     const t = JSON.parse(readFileSync(tokensPath, 'utf8'));
-    for (const [name, hex] of Object.entries(
-      Object.fromEntries([...colorsSrc.slice(colorsSrc.indexOf('export const COLOR = {'), colorsSrc.indexOf('} as const;'))
-        .matchAll(/(\w+):\s*'(#[0-9A-Fa-f]{6})'/g)].map(m => [m[1], m[2]]))
-    )) {
+    for (const [name, hex] of Object.entries(COLOR)) {
       if (t.palette?.[name]?.$value?.toUpperCase() !== hex.toUpperCase()) {
         failures.push(`tokens/onganda.tokens.json: palette.${name} is ${t.palette?.[name]?.$value} but COLOR.${name} is ${hex}`);
       }

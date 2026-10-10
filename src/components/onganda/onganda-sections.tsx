@@ -5,13 +5,13 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { AUTOMATED, useMotionOK } from './onganda-motion';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData } from './onganda-tokens';
+import { COLOR, EDITOR_SURFACE, roles, accentFor, onColor, inkOn, statusFor, SYSTEM_COLOR, SystemName, ColorRoles, StatusName, SYSTEMS, FLOW_NODES, GUIDE_ANNOTATIONS, PIXEL_RULES, STATS, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, CONNECTION_EDGES, DIAGRAM_NODES, DIAGRAM_NODE_TOOLTIPS, TICKER_ITEMS, DITHER_COLS, HERO_LINE_1_WORDS, HERO_LINE_2_WORDS, HERO_LINE_3_WORDS, HERO_DITHER_COLORS, ConnectionEdge, HeatCell, TimelinePhase, DiagramNode, NodeTooltipData, paperAlpha, inkAlpha } from './onganda-tokens';
 import { Px, PixelDot, systemIconForName, ICON_SIZE, PixelInputGroup, useIsDark, SectionHeader, WeaveOverlay, PixelCornerMarks, PixelTag, PixelArrowDown, PixelButton, PixelIconButton, PixelField, DensityProvider, IconOkaanda, PixelInput, PixelTextarea, PixelSelect, PixelCheckbox, PixelRadio, PixelToggle, StatCard, TerminalCard, SystemCard, FlowNodeCard, FlowNodeIcon, FieldAppCard, AnnotationPanel, PrincipleRow, OngandaFooter, OngandaLogoMark, IconSun, IconMoon, useDark, CodeSnippetBlock, CodeSnippetLine } from './onganda-primitives';
 import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
-import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelInversePanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelPeers, PixelInversePanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
 
@@ -506,10 +506,10 @@ export const OngandaNav = () => {
     toggle
   } = useDark();
   const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
-  const linkColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const subtitleColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.70)';
-  const dotColor = isDark ? 'rgba(232,225,207,0.3)' : 'rgba(30,26,23,0.4)';
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
+  const linkColor = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const subtitleColor = isDark ? paperAlpha(0.55) : inkAlpha(0.70);
+  const dotColor = isDark ? paperAlpha(0.3) : inkAlpha(0.4);
   const NAV_ITEMS = [{
     label: 'Systems',
     href: '#systems'
@@ -616,9 +616,9 @@ export const OngandaNav = () => {
         alignItems: 'center',
         gap: 6,
         padding: '6px 10px',
-        border: `1px solid rgba(30,26,23,0.2)`,
-        background: 'rgba(30,26,23,0.04)',
-        color: 'rgba(30,26,23,0.66)',
+        border: `1px solid ${inkAlpha(0.2)}`,
+        background: inkAlpha(0.04),
+        color: inkAlpha(0.66),
         cursor: 'not-allowed',
         opacity: 0.45,
         transition: 'background 0.25s, border-color 0.25s, color 0.25s'
@@ -732,7 +732,7 @@ export const OngandaHero = () => {
         width: '100%',
         height: '100%'
       }}>
-          <motion.ellipse cx="100" cy="100" rx="88" ry="88" stroke="#D9791F" strokeWidth="0.55" strokeDasharray="4 6" strokeLinecap="square" strokeOpacity="0.18" animate={{
+          <motion.ellipse cx="100" cy="100" rx="88" ry="88" stroke={COLOR.ochreOrange} strokeWidth="0.55" strokeDasharray="4 6" strokeLinecap="square" strokeOpacity="0.18" animate={{
           scale: [1, 1.025, 1],
           opacity: [0.18, 0.28, 0.18]
         }} transition={{
@@ -742,7 +742,7 @@ export const OngandaHero = () => {
         }} style={{
           transformOrigin: '100px 100px'
         }} />
-          <motion.ellipse cx="100" cy="100" rx="64" ry="64" stroke="#C84A1B" strokeWidth="0.5" strokeDasharray="3 5" strokeLinecap="square" strokeOpacity="0.14" animate={{
+          <motion.ellipse cx="100" cy="100" rx="64" ry="64" stroke={COLOR.firedRed} strokeWidth="0.5" strokeDasharray="3 5" strokeLinecap="square" strokeOpacity="0.14" animate={{
           scale: [1, 1.035, 1],
           opacity: [0.14, 0.24, 0.14]
         }} transition={{
@@ -753,7 +753,7 @@ export const OngandaHero = () => {
         }} style={{
           transformOrigin: '100px 100px'
         }} />
-          <motion.ellipse cx="100" cy="100" rx="38" ry="38" stroke="#D9791F" strokeWidth="0.7" strokeDasharray="2 4" strokeLinecap="square" strokeOpacity="0.22" animate={{
+          <motion.ellipse cx="100" cy="100" rx="38" ry="38" stroke={COLOR.ochreOrange} strokeWidth="0.7" strokeDasharray="2 4" strokeLinecap="square" strokeOpacity="0.22" animate={{
           scale: [1, 1.06, 1],
           opacity: [0.22, 0.38, 0.22]
         }} transition={{
@@ -764,7 +764,7 @@ export const OngandaHero = () => {
         }} style={{
           transformOrigin: '100px 100px'
         }} />
-          <motion.rect x="97" y="97" width="6" height="6" fill="#D9791F" fillOpacity="0.35" animate={{
+          <motion.rect x="97" y="97" width="6" height="6" fill={COLOR.ochreOrange} fillOpacity="0.35" animate={{
           opacity: [0.35, 0.6, 0.35],
           scale: [1, 1.15, 1]
         }} transition={{
@@ -790,7 +790,7 @@ export const OngandaHero = () => {
         }] as {
           x: number;
           y: number;
-        }[]).map((pt, i) => <motion.rect key={`stitch-${i}`} x={pt.x} y={pt.y} width="4" height="4" fill="#8F3E21" fillOpacity="0.22" animate={{
+        }[]).map((pt, i) => <motion.rect key={`stitch-${i}`} x={pt.x} y={pt.y} width="4" height="4" fill={COLOR.barkRust} fillOpacity="0.22" animate={{
           opacity: [0.22, 0.40, 0.22]
         }} transition={{
           duration: 6,
@@ -878,7 +878,7 @@ export const OngandaHero = () => {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 8,
-        border: '1px solid rgba(30,26,23,0.1)',
+        border: `1px solid ${inkAlpha(0.1)}`,
         background: 'rgba(243,232,195,0.9)',
         padding: '6px 12px'
       }}>
@@ -888,7 +888,7 @@ export const OngandaHero = () => {
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          color: 'rgba(30,26,23,0.66)'
+          color: inkAlpha(0.66)
         }}>
               {chip.text}
             </span>
@@ -950,8 +950,8 @@ export const OngandaHero = () => {
         <div style={{
         width: '100vw',
         overflow: 'hidden',
-        borderTop: '1px solid rgba(30,26,23,0.1)',
-        borderBottom: '1px solid rgba(30,26,23,0.1)',
+        borderTop: `1px solid ${inkAlpha(0.1)}`,
+        borderBottom: `1px solid ${inkAlpha(0.1)}`,
         background: COLOR.charBlack,
         margin: '0.4em 0'
       }} aria-hidden="true">
@@ -994,13 +994,13 @@ export const OngandaHero = () => {
               fontWeight: 400,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'rgba(232,225,207,0.55)',
+              color: paperAlpha(0.55),
               marginRight: 32
             }}>{item.role}</span>
                 <div style={{
               width: 1,
               height: 14,
-              background: 'rgba(232,225,207,0.1)',
+              background: paperAlpha(0.1),
               marginRight: 32
             }} />
               </div>)}
@@ -1146,7 +1146,7 @@ export const OngandaHero = () => {
         duration: 0.6
       }} style={{
         fontSize: 'var(--type-subhead)',
-        color: 'rgba(30,26,23,0.66)',
+        color: inkAlpha(0.66),
         letterSpacing: '0.01em',
         lineHeight: 1.7,
         textAlign: 'center',
@@ -1203,9 +1203,9 @@ export const OngandaHero = () => {
 };
 
 // ─── ResearchSignals ─────────────────────────────────────────────────────────
-export const ResearchSignals = () => <section className="w-full border-y border-[#1E1A17]/10 bg-[#F3E8C3]">
+export const ResearchSignals = () => <section id="signals" className="w-full border-y border-(--onganda-char-black)/10 bg-(--onganda-dust-light)">
     <div className="max-w-7xl mx-auto px-6 md:px-12">
-      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-[#1E1A17]/10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-(--onganda-char-black)/10">
         {STATS.map(stat => <StatCard key={stat.label} stat={stat} />)}
       </div>
     </div>
@@ -1218,11 +1218,11 @@ export const PixelTerminal = () => <section className="max-w-7xl mx-auto px-6 pb
       {TERMINAL_BLOCKS.map(block => <TerminalCard key={block.title} block={block} />)}
     </div>
     <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-      <div className="flex-1 h-px bg-[#1E1A17]/8" />
-      <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
-      <div className="flex-1 h-px bg-[#1E1A17]/8" />
+      <div className="flex-1 h-px bg-(--onganda-char-black)/8" />
+      <span className="min-w-0 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">Oshini SDK · Okaanda Client · Ombiga Runtime</span>
+      <div className="flex-1 h-px bg-(--onganda-char-black)/8" />
     </div>
-    <CodeSnippetBlock label="TerminalCard · Developer Surface" lines={SNIPPET_DEVELOPER_SURFACE} accentHex="#8F3E21" />
+    <CodeSnippetBlock label="TerminalCard · Developer Surface" lines={SNIPPET_DEVELOPER_SURFACE} accentHex={COLOR.barkRust} />
   </section>;
 
 // ─── SystemConnectionDiagram ─────────────────────────────────────────────────
@@ -1277,9 +1277,9 @@ export const SystemConnectionDiagram = ({
               opacity: 0.12 + i * 0.1
             }} />)}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Pixel Connection Map — Data Flow</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">Pixel Connection Map — Data Flow</span>
           </div>
-          <div className="bg-[#1E1A17]" style={{
+          <div className="bg-(--onganda-char-black)" style={{
           position: 'relative',
           width: '100%',
           paddingBottom: '82%'
@@ -1381,7 +1381,7 @@ export const SystemConnectionDiagram = ({
                     color: isActive || isLinked ? COLOR.milletClay : inkOn(node.hex, COLOR.charBlack, true)
                   }}>{node.tag}</div>
                       <div className="w-6 h-6 mx-auto flex items-center justify-center" aria-hidden="true" style={{
-                    background: isActive || isLinked ? 'rgba(30,26,23,0.4)' : `${node.hex}22`,
+                    background: isActive || isLinked ? inkAlpha(0.4) : `${node.hex}22`,
                     border: `1px solid ${node.hex}55`
                   }}>
                         <div className="w-2 h-2" style={{
@@ -1457,7 +1457,7 @@ export const SystemConnectionDiagram = ({
                       fontWeight: 700,
                       letterSpacing: '0.14em',
                       textTransform: 'uppercase',
-                      color: 'rgba(232,225,207,0.55)'
+                      color: paperAlpha(0.55)
                     }}>NODE</span>
                         </div>
                         <p style={{
@@ -1483,7 +1483,7 @@ export const SystemConnectionDiagram = ({
                       fontWeight: 700,
                       letterSpacing: '0.15em',
                       textTransform: 'uppercase',
-                      color: 'rgba(232,225,207,0.55)',
+                      color: paperAlpha(0.55),
                       marginBottom: 4
                     }}>Connects to</p>
                             <div style={{
@@ -1530,7 +1530,7 @@ export const SystemConnectionDiagram = ({
         </div>
         <AnnotationPanel annotations={GUIDE_ANNOTATIONS} rules={PIXEL_RULES} />
       </div>
-      <CodeSnippetBlock label="DiagramNode · System Connections" lines={SNIPPET_SYSTEM_CONNECTIONS} accentHex="#DFAE2B" />
+      <CodeSnippetBlock label="DiagramNode · System Connections" lines={SNIPPET_SYSTEM_CONNECTIONS} accentHex={COLOR.mahanguGold} />
     </section>;
 };
 
@@ -1563,7 +1563,7 @@ export const PixelHeatmap = ({
         once: true
       }} transition={{
         duration: 0.6
-      }} className="min-w-0 flex-1 bg-[#1E1A17] p-6 md:p-8">
+      }} className="min-w-0 flex-1 bg-(--onganda-char-black) p-6 md:p-8">
           <div className="relative overflow-x-auto">
             <WeaveOverlay isDark opacity={0.055} />
             <div className="relative flex gap-1.5 mb-2 pl-24">
@@ -1578,10 +1578,10 @@ export const PixelHeatmap = ({
                       Without it the label is the only identity and the hue is
                       gone — see tests/browser/identity.spec.ts. */}
                   <div className="w-24 shrink-0 flex items-center justify-end gap-2 pr-3 text-[9px] font-bold uppercase tracking-[0.12em] text-right" style={{
-                color: 'rgba(232,225,207,0.55)'
+                color: paperAlpha(0.55)
               }}>
                       <span>{yLabel}</span>
-                      {SYSTEM_COLOR[yLabel as SystemName] && <PixelDot color={SYSTEM_COLOR[yLabel as SystemName]} size={5} ring="rgba(232,225,207,0.2)" />}
+                      {SYSTEM_COLOR[yLabel as SystemName] && <PixelDot color={SYSTEM_COLOR[yLabel as SystemName]} size={5} ring={paperAlpha(0.2)} />}
                     </div>
                   {data.filter(c => c.row === rowIdx).map(cell => <motion.div key={`hc-${cell.row}-${cell.col}`} initial={AUTOMATED ? false : {
                 opacity: 0,
@@ -1600,17 +1600,17 @@ export const PixelHeatmap = ({
                 </div>)}
             </div>
             <div className="relative flex items-center gap-3 mt-6">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/55">Low</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-millet-clay)/55">Low</span>
               {([COLOR.charBlack, COLOR.mopaneBrown, COLOR.barkRust, COLOR.mahanguGold, COLOR.ochreOrange, COLOR.firedRed] as string[]).map((c, i) => <div key={`hl-${i}`} className="w-4 h-4" style={{
               background: c
             }} aria-hidden="true" />)}
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#E8E1CF]/55">High</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-(--onganda-millet-clay)/55">High</span>
             </div>
           </div>
         </motion.div>
         <div className="lg:w-72 xl:w-80 shrink-0">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-5">How to read</p>
-          <div className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-5">How to read</p>
+          <div className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
             {[{
             label: 'Rows',
             body: 'Each row maps to one of the five named systems, plus a cross-system channel.'
@@ -1621,13 +1621,13 @@ export const PixelHeatmap = ({
             label: 'Color',
             body: 'Intensity corresponds to relative research and development activity. Material palette — no arbitrary hues.'
           }].map(item => <div key={item.label} className="py-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8F3E21] mb-1">{item.label}</p>
-                <p className="text-sm text-[#1E1A17]/65 leading-relaxed">{item.body}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust) mb-1">{item.label}</p>
+                <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed">{item.body}</p>
               </div>)}
           </div>
         </div>
       </div>
-      <CodeSnippetBlock label="HeatCell · Research Signals" lines={SNIPPET_RESEARCH_SIGNALS} accentHex="#C84A1B" />
+      <CodeSnippetBlock label="HeatCell · Research Signals" lines={SNIPPET_RESEARCH_SIGNALS} accentHex={COLOR.firedRed} />
     </section>;
 };
 
@@ -1655,7 +1655,7 @@ export const RoadmapTimeline = ({
   return <section id="roadmap" ref={sectionRef} className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Development Roadmap" headline="Five phases. One direction." accent={COLOR.dyePlum} />
       <div className="hidden lg:block relative mb-14" aria-hidden="true">
-        <div className="h-px bg-[#1E1A17]/12 w-full" />
+        <div className="h-px bg-(--onganda-char-black)/12 w-full" />
         <div className="absolute top-0 left-0 w-full flex">
           {phases.map(phase => <div key={`spine-tick-${phase.tag}`} className="flex-1 flex flex-col items-center" style={{
           transform: 'translateY(-50%)'
@@ -1675,7 +1675,7 @@ export const RoadmapTimeline = ({
             </div>)}
         </div>
       </div>
-      <div className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
+      <div className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
         {phases.map((phase, idx) => <motion.div key={phase.tag} initial={{
         opacity: 0,
         y: 14
@@ -1704,16 +1704,16 @@ export const RoadmapTimeline = ({
               opacity: phase.status === 'upcoming' ? 0.35 : 1
             }}>{phase.status}</span>
               </div>
-              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-[#1E1A17]/66 mt-1">{phase.period}</span>
+              <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.12em] text-(--onganda-char-black)/66 mt-1">{phase.period}</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2.5 mb-1">
-                <h3 className="text-lg font-semibold text-[#1E1A17] tracking-tight leading-none">{phase.oshiwambo}</h3>
-                <span className="text-sm text-[#1E1A17]/66 font-normal">{phase.english}</span>
+                <h3 className="text-lg font-semibold text-(--onganda-char-black) tracking-tight leading-none">{phase.oshiwambo}</h3>
+                <span className="text-sm text-(--onganda-char-black)/66 font-normal">{phase.english}</span>
               </div>
-              <p className="text-sm text-[#1E1A17]/65 leading-relaxed mb-5 max-w-xl">{phase.desc}</p>
+              <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-5 max-w-xl">{phase.desc}</p>
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-3 bg-[#1E1A17]/8 overflow-hidden relative" role="progressbar" aria-valuenow={phase.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`${phase.oshiwambo} progress: ${phase.progress}%`}>
+                <div className="flex-1 h-3 bg-(--onganda-char-black)/8 overflow-hidden relative" role="progressbar" aria-valuenow={phase.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`${phase.oshiwambo} progress: ${phase.progress}%`}>
                   <motion.div className="h-full relative overflow-hidden" initial={{
                 width: 0
               }} animate={{
@@ -1748,7 +1748,7 @@ export const RoadmapTimeline = ({
               </div>
             </div>
             <div className="lg:w-60 xl:w-72 shrink-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-3">Milestones</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-3">Milestones</p>
               <ul className="flex flex-col gap-2">
                 {phase.milestones.map(ms => <li key={`ms-${phase.tag}-${ms}`} className="flex items-start gap-2">
                     <div aria-hidden="true" className="w-1.5 h-1.5 mt-1 shrink-0" style={{
@@ -1770,13 +1770,13 @@ export const RoadmapTimeline = ({
             <div className="flex gap-0.5" aria-hidden="true">
               {[0, 1, 2].map(k => <div key={`leg-${item.status}-${k}`} className="w-1.5 h-1.5" style={{
             background: item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' && k < 2 ? COLOR.barkRust : 'transparent',
-            border: `1px solid ${item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' ? COLOR.barkRust : '#1E1A1744'}`
+            border: `1px solid ${item.status === 'complete' ? COLOR.ochreOrange : item.status === 'active' ? COLOR.barkRust : `${COLOR.charBlack}44`}`
           }} />)}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/66">{item.label}</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66">{item.label}</span>
           </div>)}
       </div>
-      <CodeSnippetBlock label="TimelinePhase · Development Roadmap" lines={SNIPPET_ROADMAP} accentHex="#D9791F" />
+      <CodeSnippetBlock label="TimelinePhase · Development Roadmap" lines={SNIPPET_ROADMAP} accentHex={COLOR.ochreOrange} />
     </section>;
 };
 
@@ -1794,16 +1794,16 @@ export const FieldApplications = () => <section className="max-w-7xl mx-auto px-
     once: true
   }} transition={{
     duration: 0.5
-  }} className="relative mt-5 bg-[#1E1A17] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden">
+  }} className="relative mt-5 bg-(--onganda-char-black) flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-7 py-6 overflow-hidden">
       <WeaveOverlay isDark opacity={0.035} />
       <div className="relative">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#D9791F] mb-1">Partner with us</p>
-        <p className="text-sm text-[#E8E1CF]/55 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-(--onganda-ochre-orange) mb-1">Partner with us</p>
+        <p className="text-sm text-(--onganda-millet-clay)/55 max-w-md leading-relaxed">We are seeking sector partners in health, agriculture, education, and public administration.</p>
       </div>
       {/* isDark: this sits on the inverse (black) band — see DESIGN_SYSTEM.md §5 */}
       <PixelButton variant="accent" isDark className="relative shrink-0">Propose a pilot</PixelButton>
     </motion.div>
-    <CodeSnippetBlock label="FieldAppCard · Field Applications" lines={SNIPPET_FIELD_APPS} accentHex="#6F4A6E" />
+    <CodeSnippetBlock label="FieldAppCard · Field Applications" lines={SNIPPET_FIELD_APPS} accentHex={COLOR.dyePlum} />
   </section>;
 
 // ─── PixelFlowchart ───────────────────────────────────────────────────────────
@@ -1823,7 +1823,7 @@ export const PixelFlowchart = () => {
               opacity: 0.12 + idx * 0.1
             }} />)}
             </div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66">Pixel Flowchart — Naming Architecture</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66">Pixel Flowchart — Naming Architecture</span>
           </div>
           <motion.div initial={AUTOMATED ? false : {
           opacity: 0,
@@ -1837,7 +1837,7 @@ export const PixelFlowchart = () => {
           duration: 0.5
         }}>
             {/* Root node */}
-            <div className="relative border-2 bg-[#1E1A17] flex items-center gap-5 px-6 py-5 overflow-hidden" style={{
+            <div className="relative border-2 bg-(--onganda-char-black) flex items-center gap-5 px-6 py-5 overflow-hidden" style={{
             borderColor: rootNode.hex
           }}>
               <WeaveOverlay isDark opacity={0.055} />
@@ -1846,10 +1846,10 @@ export const PixelFlowchart = () => {
                 <FlowNodeIcon id="root" hex={rootNode.hex} />
                 <div>
                   <div className="flex items-baseline gap-2.5">
-                    <h3 className="text-lg font-semibold tracking-tight text-[#E8E1CF] leading-none">{rootNode.oshiwambo}</h3>
+                    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-millet-clay) leading-none">{rootNode.oshiwambo}</h3>
                     <PixelTag hex="transparent" label={rootNode.pixelTag} isDark />
                   </div>
-                  <p className="text-sm text-[#E8E1CF]/55 mt-1">{rootNode.english}</p>
+                  <p className="text-sm text-(--onganda-millet-clay)/55 mt-1">{rootNode.english}</p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.13em] mt-1.5" style={{
                   color: inkOn(rootNode.hex, COLOR.charBlack, true)
                 }}>{rootNode.role}</p>
@@ -1910,7 +1910,7 @@ export const PixelFlowchart = () => {
         </div>
         <AnnotationPanel annotations={GUIDE_ANNOTATIONS} rules={PIXEL_RULES} />
       </div>
-      <CodeSnippetBlock label="FlowNode · Pixel Flowchart" lines={SNIPPET_BRAND_GUIDE} accentHex="#8F3E21" />
+      <CodeSnippetBlock label="FlowNode · Pixel Flowchart" lines={SNIPPET_BRAND_GUIDE} accentHex={COLOR.barkRust} />
     </section>;
 };
 
@@ -1923,10 +1923,10 @@ export const IconShowcase = () => {
     isDark
   } = useDark();
   const cardBg = isDark ? COLOR.darkCard : COLOR.dustLight;
-  const borderColor = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
-  const labelColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const borderColor = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
+  const labelColor = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const headlineColor = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const bodyColor = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const bodyColor = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const CATEGORY_TABS: Array<IconCategory | 'All'> = ['All', ...ICON_CATEGORIES];
   const filtered = activeCategory === 'All' ? ICON_REGISTRY : ICON_REGISTRY.filter(i => i.category === activeCategory);
   const handleCopy = (name: string, id: string) => {
@@ -2094,11 +2094,11 @@ export const IconShowcase = () => {
       {/* Usage snippet */}
       <div className="mt-6 p-5 font-mono text-[11px] leading-6" style={{
       background: COLOR.charBlack,
-      color: 'rgba(232,225,207,0.55)',
+      color: paperAlpha(0.55),
       borderLeft: `3px solid ${COLOR.ochreOrange}`
     }}>
         <span style={{
-        color: 'rgba(232,225,207,0.55)'
+        color: paperAlpha(0.55)
       }}>{'// import from onganda-icons'}</span>
         <br />
         <span style={{
@@ -2114,7 +2114,7 @@ export const IconShowcase = () => {
         <br />
         <br />
         <span style={{
-        color: 'rgba(232,225,207,0.55)'
+        color: paperAlpha(0.55)
       }}>{'// render with size + color props'}</span>
         <br />
         <span>{'<'}</span>
@@ -2131,10 +2131,10 @@ export const IconShowcase = () => {
         <span>{"='"}</span>
         <span style={{
         color: COLOR.mahanguGold
-      }}>{'#D9791F'}</span>
+      }}>{COLOR.ochreOrange}</span>
         <span>{"' />"}</span>
       </div>
-      <CodeSnippetBlock label="Icon · Icon Bank" lines={SNIPPET_ICON_BANK} accentHex="#D9791F" />
+      <CodeSnippetBlock label="Icon · Icon Bank" lines={SNIPPET_ICON_BANK} accentHex={COLOR.ochreOrange} />
     </section>;
 };
 
@@ -2237,9 +2237,9 @@ export const IconFactoryLab = () => {
   const Doodle = useMemo(() => createPixelIcon(def), [def]);
   const problems = useMemo(() => validatePixelIconDef('Doodle', def), [def]);
   const snippet = useMemo(() => factorySnippetLines(def), [def]);
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const cellBg = isDark ? 'rgba(232,225,207,0.05)' : 'rgba(30,26,23,0.04)';
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const cellBg = isDark ? paperAlpha(0.05) : inkAlpha(0.04);
   const paintCell = (idx: number) => setCells(prev => {
     const next = [...prev];
     next[idx] = activeColor === null || prev[idx] === activeColor ? null : activeColor;
@@ -2251,7 +2251,7 @@ export const IconFactoryLab = () => {
         {/* ── Editor ── */}
         <div>
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            {FACTORY_PALETTE.map(hex => <button key={hex} onClick={() => setActiveColor(hex)} aria-label={`Paint with ${hex}`} style={{
+            {FACTORY_PALETTE.map((hex, i) => <button key={i} onClick={() => setActiveColor(hex)} aria-label={`Paint with ${hex}`} style={{
             width: 22,
             height: 22,
             background: hex,
@@ -3088,12 +3088,13 @@ export const ExpressiveRange = () => {
       />
 
       {label('A · Even grid — flat cards, corner marks, the site default')}
-      <div className="grid gap-4 md:grid-cols-3" data-onganda-stagger="">
-        {EXPRESSIVE_ITEMS.map((it, i) => (
-          <PixelPanel key={it.title} isDark={isDark} accent={accentFor(i)} tag={String(i + 1).padStart(2, '0')}
+      {/* PixelPeers gives each card the next accent and its ordinal. */}
+      <PixelPeers isDark={isDark}>
+        {EXPRESSIVE_ITEMS.map(it => (
+          <PixelPanel key={it.title} isDark={isDark}
             icon={systemIconForName(it.system, ICON_SIZE.hero)} eyebrow={it.system} title={it.title} note={it.body} />
         ))}
-      </div>
+      </PixelPeers>
 
       <div className="mt-12">
         {label('B · Bento — one tinted, raised feature with a display illustration; peers lift on hover')}

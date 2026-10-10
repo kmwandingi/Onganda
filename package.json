@@ -59,10 +59,16 @@
       "import": "./dist/package/sites.js",
       "require": "./dist/package/sites.cjs"
     },
+    "./palettes": {
+      "types": "./dist/package/design-system/palettes.d.ts",
+      "import": "./dist/package/palettes.js",
+      "require": "./dist/package/palettes.cjs"
+    },
     "./maps.css": "./dist/package/maps.css",
     "./style.css": "./dist/package/style.css",
     "./style": "./dist/package/style.css",
     "./tokens.css": "./dist/package/tokens.css",
+    "./palettes/*.css": "./dist/package/palettes/*.css",
     "./tailwind.css": "./dist/package/tailwind.css",
     "./fonts.css": "./dist/package/fonts.css",
     "./package.json": "./package.json"
@@ -72,7 +78,9 @@
     "scripts/onganda-check.mjs",
     "scripts/check-design-tokens.mjs",
     "scripts/check-contrast.mjs",
+    "scripts/palette-source.mjs",
     "tokens",
+    "src/components/onganda/onganda-palettes.ts",
     "src/components/onganda/onganda-colors.ts",
     "src/components/onganda/onganda-roles.ts",
     "src/components/onganda/onganda-type.ts",
@@ -80,6 +88,7 @@
     "USAGE.md",
     "LICENSE",
     "skills",
+    "blocks",
     "reference",
     "screenshots/test-pages",
     "src/test-pages",
@@ -100,7 +109,7 @@
     "typecheck": "tsc -b",
     "build": "npm run typecheck && npm run build:showcase && npm run build:lib",
     "build:showcase": "vite build",
-    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && cp src/design-system/tailwind.css dist/package/tailwind.css && cp src/design-system/fonts.css dist/package/fonts.css && rm -rf dist/package/fonts && cp -R src/design-system/fonts dist/package/fonts && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
+    "build:lib": "vite build --config vite.lib.config.ts && node scripts/build-layout-css.mjs && node scripts/build-token-css.mjs && cp src/design-system/tokens.css dist/package/tokens.css && rm -rf dist/package/palettes && cp -R src/design-system/palettes dist/package/palettes && cp src/design-system/tailwind.css dist/package/tailwind.css && cp src/design-system/fonts.css dist/package/fonts.css && rm -rf dist/package/fonts && cp -R src/design-system/fonts dist/package/fonts && cat src/design-system/lib-style.css src/design-system/lib-layout.css > dist/package/style.css && cp node_modules/leaflet/dist/leaflet.css dist/package/maps.css && cp -R node_modules/leaflet/dist/images dist/package/images",
     "prepare": "node scripts/stamp-version.mjs && npm run build:lib && npm run build:showcase",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-design-tokens.mjs",

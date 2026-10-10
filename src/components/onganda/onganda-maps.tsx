@@ -3,6 +3,7 @@ import type { LatLngExpression, Map as LeafletMap, Marker as LeafletMarker } fro
 import { COLOR } from './onganda-colors';
 import { IconMap } from './onganda-icons';
 import { PixelCornerMarks, PixelTag, useDark } from './onganda-primitives';
+import { inkAlpha, paperAlpha } from './onganda-roles';
 
 export type OngandaMapPosition = readonly [latitude: number, longitude: number];
 export type OngandaMapAccent = 'ochre' | 'gold' | 'rust' | 'brown' | 'plum' | 'red';
@@ -95,24 +96,24 @@ const MAP_STYLES = `
     box-shadow: none;
   }
   .onganda-map-shell .leaflet-control-zoom {
-    border: 1px solid rgba(30, 26, 23, 0.25);
+    border: 1px solid ${inkAlpha(0.25)};
     margin: 16px 16px 0 0;
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-control-zoom {
-    border-color: rgba(232, 225, 207, 0.25);
+    border-color: ${paperAlpha(0.25)};
   }
   .onganda-map-shell .leaflet-control-zoom a {
     width: 34px;
     height: 34px;
     border: 0;
-    border-bottom: 1px solid rgba(30, 26, 23, .14);
+    border-bottom: 1px solid ${inkAlpha(.14)};
     border-radius: 0 !important;
     background: ${COLOR.milletClay};
     color: ${COLOR.charBlack};
     font: 600 18px/34px Inter, Arial, sans-serif;
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-control-zoom a {
-    border-color: rgba(232, 225, 207, 0.1);
+    border-color: ${paperAlpha(0.1)};
     background: ${COLOR.darkCard};
     color: ${COLOR.milletClay};
   }
@@ -160,7 +161,7 @@ const MAP_STYLES = `
     height: 30px;
     border: 4px solid ${COLOR.dustLight};
     background: var(--onganda-map-accent);
-    box-shadow: 4px 4px 0 rgba(30, 26, 23, .42);
+    box-shadow: 4px 4px 0 ${inkAlpha(.42)};
     transition: transform 140ms ease, box-shadow 140ms ease;
   }
   .onganda-map-shell .onganda-map-marker-shape::before,
@@ -183,15 +184,15 @@ const MAP_STYLES = `
   .onganda-map-shell .onganda-map-marker-host:hover .onganda-map-marker-shape,
   .onganda-map-shell .onganda-map-marker-host:focus-visible .onganda-map-marker-shape {
     transform: translateY(-3px);
-    box-shadow: 4px 7px 0 rgba(30, 26, 23, .34);
+    box-shadow: 4px 7px 0 ${inkAlpha(.34)};
   }
   .onganda-map-shell .leaflet-popup-content-wrapper {
-    border: 1px solid rgba(30, 26, 23, 0.2);
+    border: 1px solid ${inkAlpha(0.2)};
     background: ${COLOR.dustLight};
     color: ${COLOR.charBlack};
   }
   .onganda-map-shell[data-theme='dark'] .leaflet-popup-content-wrapper {
-    border-color: rgba(232, 225, 207, 0.2);
+    border-color: ${paperAlpha(0.2)};
     background: ${COLOR.darkCard};
     color: ${COLOR.milletClay};
   }
@@ -229,7 +230,7 @@ const MAP_STYLES = `
     font-size: 12px;
   }
   .onganda-map-shell[data-theme='dark'] .onganda-map-popup-description {
-    color: rgba(232, 225, 207, .65);
+    color: ${paperAlpha(.65)};
   }
   .onganda-map-shell .onganda-map-canvas:focus-visible {
     outline: 3px solid ${COLOR.ochreOrange};
@@ -504,7 +505,7 @@ export const OngandaMap = ({
       data-onganda-map
       data-theme={isDark ? 'dark' : 'light'}
       style={{
-        borderColor: isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.14)',
+        borderColor: isDark ? paperAlpha(0.1) : inkAlpha(0.1),
         background: isDark ? COLOR.darkCard : COLOR.dustLight,
         color: isDark ? COLOR.milletClay : COLOR.charBlack,
       }}
@@ -528,7 +529,7 @@ export const OngandaMap = ({
             <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{title}</h2>
             <p
               className="mt-2 max-w-2xl text-sm leading-relaxed md:text-base"
-              style={{ color: isDark ? 'rgba(232,225,207,0.65)' : 'rgba(30,26,23,0.66)' }}
+              style={{ color: isDark ? paperAlpha(0.65) : inkAlpha(0.66) }}
             >
               {description}
             </p>
@@ -538,7 +539,7 @@ export const OngandaMap = ({
           aria-live="polite"
           className="text-[10px] font-bold uppercase tracking-[0.15em]"
           data-map-state={mapState}
-          style={{ color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)' }}
+          style={{ color: isDark ? paperAlpha(0.55) : inkAlpha(0.66) }}
         >
           {status}
         </p>
@@ -546,7 +547,7 @@ export const OngandaMap = ({
 
       <div
         className="relative border-y"
-        style={{ borderColor: isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.14)' }}
+        style={{ borderColor: isDark ? paperAlpha(0.1) : inkAlpha(0.1) }}
       >
         <div
           ref={containerRef}
@@ -579,7 +580,7 @@ export const OngandaMap = ({
         <div
           className="relative grid gap-px sm:grid-cols-2 lg:grid-cols-3"
           data-onganda-map-legend
-          style={{ background: isDark ? 'rgba(232,225,207,0.12)' : 'rgba(30,26,23,0.12)' }}
+          style={{ background: isDark ? paperAlpha(0.12) : inkAlpha(0.12) }}
         >
           {points.map((point, index) => {
             const active = activePointId === point.id;
@@ -612,7 +613,7 @@ export const OngandaMap = ({
                   {point.eyebrow && (
                     <span
                       className="mt-0.5 block truncate text-[9px] font-bold uppercase tracking-[0.13em]"
-                      style={{ color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)' }}
+                      style={{ color: isDark ? paperAlpha(0.55) : inkAlpha(0.66) }}
                     >
                       {point.eyebrow}
                     </span>
@@ -621,7 +622,7 @@ export const OngandaMap = ({
                 <span
                   aria-hidden="true"
                   className="text-[10px] font-bold tabular-nums"
-                  style={{ color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)' }}
+                  style={{ color: isDark ? paperAlpha(0.55) : inkAlpha(0.66) }}
                 >
                   {String(index + 1).padStart(2, '0')}
                 </span>

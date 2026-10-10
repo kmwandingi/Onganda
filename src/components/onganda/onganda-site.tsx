@@ -498,7 +498,7 @@ export const PixelFooter = ({
                   <p className="uppercase" style={{ margin: 0, fontSize: TYPE.label.size, fontWeight: TYPE.label.weight, letterSpacing: TYPE.label.tracking, color: dark.textMuted }}>{col.title}</p>
                   <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0 }} className="grid gap-2">
                     {col.links.map(l => (
-                      <li key={l.label}><a href={l.href} className="onganda-focus no-underline" style={{ fontSize: TYPE.meta.size, color: light.textOnInverse, ['--onganda-focus' as string]: dark.focusRing } as React.CSSProperties}>{l.label}</a></li>
+                      <li key={l.label}><a href={l.href} data-onganda-underline="" className="onganda-focus no-underline" style={{ fontSize: TYPE.meta.size, color: light.textOnInverse, ['--onganda-focus' as string]: dark.focusRing } as React.CSSProperties}>{l.label}</a></li>
                     ))}
                   </ul>
                 </nav>

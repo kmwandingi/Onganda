@@ -11,17 +11,18 @@ import { COLOR } from './onganda-colors';
 import { CHART_SERIES, onColor, roles } from './onganda-roles';
 import { TYPE } from './onganda-type';
 import { SectionHeader, PixelTag, PixelDot, useIsDark } from './onganda-primitives';
+import { paperAlpha, inkAlpha } from './onganda-roles';
 
 // ─── Design tokens for charts ─────────────────────────────────────────────────
 const C = {
   card: COLOR.dustLight,
   // dustLight — warm lifted surface
-  cardAlt: 'rgba(232,225,207,0.62)',
+  cardAlt: paperAlpha(0.62),
   // slightly deeper for alt rows
-  border: 'rgba(30,26,23,0.10)',
-  label: 'rgba(30,26,23,0.66)',
-  tick: 'rgba(30,26,23,0.66)',
-  grid: 'rgba(30,26,23,0.07)',
+  border: inkAlpha(0.10),
+  label: inkAlpha(0.66),
+  tick: inkAlpha(0.66),
+  grid: inkAlpha(0.07),
   tooltipBg: COLOR.charBlack,
   tooltipText: COLOR.milletClay,
   // Fixed series order — see CHART_SERIES in onganda-roles.ts
@@ -601,7 +602,7 @@ export const ChartPanel = ({
       fontWeight: 700,
       letterSpacing: '0.10em',
       textTransform: 'uppercase',
-      color: 'rgba(30,26,23,0.65)'
+      color: inkAlpha(0.65)
     }}>
         {title}
       </p>
@@ -642,7 +643,7 @@ const GroupedBarChartPanel = () => <ChartCard title="Monthly Activity — Groupe
         fill: C.tick
       }} axisLine={false} tickLine={false} />
         <Tooltip content={<ChartTooltip />} cursor={{
-        fill: 'rgba(30,26,23,0.04)'
+        fill: inkAlpha(0.04)
       }} />
         <Bar dataKey="okaanda" name="Okaanda" fill={C.p[0]} />
         <Bar dataKey="oshini" name="Oshini" fill={C.p[1]} />
@@ -676,7 +677,7 @@ const StackedBarChartPanel = () => <ChartCard title="Phase Progress — Stacked"
         fill: C.tick
       }} axisLine={false} tickLine={false} />
         <Tooltip content={<ChartTooltip />} cursor={{
-        fill: 'rgba(30,26,23,0.04)'
+        fill: inkAlpha(0.04)
       }} />
         <Bar dataKey="foundation" name="Foundation" stackId="a" fill={C.p[0]} />
         <Bar dataKey="adaptation" name="Adaptation" stackId="a" fill={C.p[1]} />
@@ -702,7 +703,7 @@ const HorizontalBarChartPanel = () => <ChartCard title="System Readiness — Hor
         fontWeight: 700
       }} axisLine={false} tickLine={false} width={72} />
         <Tooltip content={<ChartTooltip />} cursor={{
-        fill: 'rgba(30,26,23,0.04)'
+        fill: inkAlpha(0.04)
       }} />
         <Bar dataKey="score" name="Readiness Score" fill={C.p[0]}>
           {HORIZONTAL_DATA.map(entry => <Cell key={`hb-${entry.system}`} fill={C.p[HORIZONTAL_DATA.indexOf(entry) % C.p.length]} />)}
@@ -731,7 +732,7 @@ const DeltaBarChartPanel = () => <ChartCard title="Monthly Delta — Gain / Loss
       }} axisLine={false} tickLine={false} />
         <ReferenceLine y={0} stroke={C.border} strokeWidth={1.5} />
         <Tooltip content={<ChartTooltip />} cursor={{
-        fill: 'rgba(30,26,23,0.04)'
+        fill: inkAlpha(0.04)
       }} />
         <Bar dataKey="delta" name="Delta">
           {DELTA_DATA.map(entry => <Cell key={`dc-${entry.month}`} fill={entry.delta >= 0 ? C.p[0] : C.p[5]} />)}
@@ -955,7 +956,7 @@ const RadialBarChartPanel = () => <ChartCard title="System Progress — Radial B
     <ResponsiveContainer width="100%" height={220}>
       <RadialBarChart cx="50%" cy="50%" innerRadius={24} outerRadius={96} data={RADIAL_DATA} startAngle={90} endAngle={-270}>
         <RadialBar dataKey="value" cornerRadius={0} background={{
-        fill: 'rgba(30,26,23,0.05)'
+        fill: inkAlpha(0.05)
       }}>
           {RADIAL_DATA.map(entry => <Cell key={`rb-${entry.name}`} fill={entry.fill} />)}
         </RadialBar>
@@ -1063,7 +1064,7 @@ const WaterfallChartPanel = () => <ChartCard title="Contribution Waterfall" tag=
       }} axisLine={false} tickLine={false} />
         <ReferenceLine y={0} stroke={C.border} strokeWidth={1} />
         <Tooltip content={<ChartTooltip />} cursor={{
-        fill: 'rgba(30,26,23,0.04)'
+        fill: inkAlpha(0.04)
       }} />
         <Bar dataKey="value" name="Value">
           {WATERFALL_DATA.map(entry => <Cell key={`wf-${entry.name}`} fill={entry.type === 'base' ? C.p[3] : entry.type === 'gain' ? C.p[0] : C.p[5]} />)}
@@ -1204,8 +1205,8 @@ export const ChartGallery = () => {
   const [activeCategory, setActiveCategory] = useState<ChartCategory | 'All'>('All');
   const TABS: Array<ChartCategory | 'All'> = ['All', ...CHART_CATEGORIES];
   const visible = activeCategory === 'All' ? CHART_PANELS : CHART_PANELS.filter(p => p.category === activeCategory);
-  const borderColor = 'rgba(30,26,23,0.10)';
-  const labelColor = 'rgba(30,26,23,0.66)';
+  const borderColor = inkAlpha(0.10);
+  const labelColor = inkAlpha(0.66);
   return <section id="chart-gallery" className="max-w-7xl mx-auto px-6 pb-24 md:px-12">
       <SectionHeader label="Chart Gallery" headline="Every chart. One palette." accent={COLOR.mahanguGold} />
 

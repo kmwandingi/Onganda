@@ -8,6 +8,7 @@ import React from 'react';
 import { COLOR } from './onganda-colors';
 import { OngandaLogoMark, PixelDot, DitherBar } from './onganda-primitives';
 import type { DocBlock } from './onganda-block-types';
+import { paperAlpha, inkAlpha } from './onganda-roles';
 
 const ACCENT_COLORS = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
 
@@ -27,9 +28,9 @@ export const DocBlockDisplay = ({
   idx?: number;
 }) => {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const bodyColor = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const bodyColor = isDark ? paperAlpha(0.78) : inkAlpha(0.82);
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const accent = ACCENT_COLORS[idx % ACCENT_COLORS.length];
   const headingAccent = ACCENT_COLORS[Math.floor(idx / 2) % ACCENT_COLORS.length];
 
@@ -96,7 +97,7 @@ export const DocBlockDisplay = ({
   // principles, swatchrow, chart-*) rely on editor state; render a labelled
   // placeholder when shown outside the document editor.
   const label = block.chartTitle ?? block.content;
-  return <div style={{ padding: '10px 14px', border: `1px solid ${border}`, background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(30,26,23,0.03)' }}>
+  return <div style={{ padding: '10px 14px', border: `1px solid ${border}`, background: isDark ? paperAlpha(0.04) : inkAlpha(0.03) }}>
     <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: muted }}>{block.type}</span>
     {label ? <span style={{ fontSize: 11, color: muted, marginLeft: 10 }}>{label}</span> : null}
   </div>;

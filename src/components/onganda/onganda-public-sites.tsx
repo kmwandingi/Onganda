@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AUTOMATED } from './onganda-motion';
-import { COLOR, roles, onColor, inkOn, SYSTEMS, TERMINAL_BLOCKS, SystemEntry } from './onganda-tokens';
+import { COLOR, roles, onColor, inkOn, SYSTEMS, TERMINAL_BLOCKS, SystemEntry, inkAlpha, paperAlpha } from './onganda-tokens';
 import { DarkContext, OngandaLogoMark, PixelButton, PixelCornerMarks, PixelDot, PixelField, PixelInput, PixelTag, PixelTextarea, SectionHeader, TerminalCard, WeaveOverlay, systemIconForName } from './onganda-primitives';
 import {
   PixelTicker,
@@ -30,10 +30,10 @@ type PublicPage = 'home' | 'full';
 
 const BRAND = 'Onganda';
 const LAB_LABEL = 'Namibia AI Systems Lab';
-const muted = 'rgba(30,26,23,0.66)';
-const quiet = 'rgba(30,26,23,0.66)';
-const line = 'rgba(30,26,23,0.10)';
-const darkLine = 'rgba(232,225,207,0.10)';
+const muted = inkAlpha(0.66);
+const quiet = inkAlpha(0.66);
+const line = inkAlpha(0.10);
+const darkLine = paperAlpha(0.10);
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -61,7 +61,7 @@ const PublicNav = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <nav className="sticky top-0 z-50 w-full border-b" style={{
-      background: 'rgba(232,225,207,0.92)',
+      background: paperAlpha(0.92),
       borderColor: line,
       backdropFilter: 'blur(14px)'
     }}>
@@ -195,7 +195,7 @@ const PublicHero = ({
         )}
       </div>
       <div className="mt-8 flex gap-1" aria-hidden="true">
-        {[COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown].map(hex => <PixelDot key={hex} color={hex} size={8} opacity={0.45} />)}
+        {[COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.barkRust, COLOR.mopaneBrown].map((hex, i) => <PixelDot key={i} color={hex} size={8} opacity={0.45} />)}
       </div>
     </div>
   </header>
@@ -256,7 +256,7 @@ const SignalBand = () => (
         <div className="relative">
           <PixelTag hex={COLOR.ochreOrange} label="Why Onganda" />
           <h2 className="mt-10 max-w-xl text-3xl font-semibold leading-tight md:text-5xl">Namibia should not only consume AI. It should be able to shape it.</h2>
-          <p className="mt-8 max-w-lg text-sm leading-relaxed md:text-base" style={{ color: 'rgba(232,225,207,0.58)' }}>
+          <p className="mt-8 max-w-lg text-sm leading-relaxed md:text-base" style={{ color: paperAlpha(0.58) }}>
             Onganda is building the missing layer: adaptation, evaluation, deployment, interfaces, and delivered tools.
           </p>
         </div>

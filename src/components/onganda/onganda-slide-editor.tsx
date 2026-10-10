@@ -5,7 +5,7 @@
 
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR, EDITOR_SURFACE, statusFor, onColor, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
+import { COLOR, EDITOR_SURFACE, statusFor, onColor, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, TERMINAL_BLOCKS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_BAR_DATA, SLIDE_RADAR_DATA, inkAlpha, paperAlpha } from './onganda-tokens';
 import { TEXTURE, FONT } from './onganda-type';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, useDark, FlowNodeIcon } from './onganda-primitives';
 import { AiAuthoringPanel, AiAuthoringResult, AiSlideBlock } from './onganda-ai-authoring';
@@ -1471,7 +1471,7 @@ const CanvasTextEdit = ({
     fontFamily: isHeadline ? 'inherit' : 'Georgia, serif',
     fontSize: isHeadline ? 22 : 12,
     fontWeight: isHeadline ? 700 : 400,
-    color: isHeadline ? 'inherit' : 'rgba(30,26,23,0.82)',
+    color: isHeadline ? 'inherit' : inkAlpha(0.82),
     lineHeight: isHeadline ? 1.2 : 1.8,
     whiteSpace: 'pre-wrap'
   }} />;
@@ -1490,14 +1490,14 @@ const renderSlideTextWithCitations = (text: string) => text.split(/(\[\d+\])/g).
 // ─── Dropped block renderer ───────────────────────────────────────────────────
 function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock: (id: string, updates: Partial<DroppedBlock>) => void) {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const isAiSlideBlock = block.id.startsWith('ai-slide-');
   const colorMap: Record<string, string> = {
-    comment: '#6A4B2E',
-    keyword: '#D9791F',
-    string: '#DFAE2B',
-    plain: '#E8E1CF60',
-    accent: '#C84A1B'
+    comment: COLOR.mopaneBrown,
+    keyword: COLOR.ochreOrange,
+    string: COLOR.mahanguGold,
+    plain: `${COLOR.milletClay}60`,
+    accent: COLOR.firedRed
   };
   const iconMap: Record<string, {
     Icon: React.FC<{
@@ -1678,7 +1678,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
           }} axisLine={false} tickLine={false} />
           <YAxis hide />
           <Tooltip contentStyle={{
-            background: '#1E1A17',
+            background: COLOR.charBlack,
             border: `1px solid ${COLOR.ochreOrange}40`,
             borderRadius: 0,
             fontSize: 9
@@ -1724,7 +1724,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
           }} axisLine={false} tickLine={false} />
           <YAxis hide domain={[0, 100]} />
           <Tooltip contentStyle={{
-            background: '#1E1A17',
+            background: COLOR.charBlack,
             border: `1px solid ${COLOR.barkRust}40`,
             borderRadius: 0,
             fontSize: 9
@@ -1751,7 +1751,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       return COLOR.charBlack;
     };
     return <div style={{
-      background: '#1E1A17',
+      background: COLOR.charBlack,
       padding: '10px 12px',
       minWidth: 220
     }}>
@@ -1771,7 +1771,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       }}>
         <span style={{
           fontSize: 9,
-          color: 'rgba(232,225,207,0.55)',
+          color: paperAlpha(0.55),
           width: 42,
           flexShrink: 0,
           textAlign: 'right',
@@ -1848,7 +1848,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       <div style={{
         width: '100%',
         height: 4,
-        background: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'
+        background: isDark ? paperAlpha(0.08) : inkAlpha(0.08)
       }}>
         <div style={{
           height: '100%',
@@ -2233,7 +2233,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
       <div style={{
         width: '100%',
         height: 3,
-        background: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'
+        background: isDark ? paperAlpha(0.08) : inkAlpha(0.08)
       }}>
         <div style={{
           height: '100%',
@@ -2495,7 +2495,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
     const tIdx = block.terminalIdx ?? parseInt(block.type.replace('terminal-', ''), 10);
     const terminal = TERMINAL_BLOCKS[tIdx % TERMINAL_BLOCKS.length];
     return <div style={{
-      background: '#1E1A17',
+      background: COLOR.charBlack,
       minWidth: 180,
       maxWidth: 280
     }}>
@@ -2511,7 +2511,7 @@ function renderDroppedBlock(block: DroppedBlock, isDark: boolean, onUpdateBlock:
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
-          color: 'rgba(232,225,207,0.55)'
+          color: paperAlpha(0.55)
         }}>{terminal.title}</span>
         <PixelTag hex={terminal.tagHex} label={terminal.tag} />
       </div>
@@ -2544,7 +2544,7 @@ function ComponentPreview({
   item: ComponentPaletteItem;
   isDark: boolean;
 }) {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const ICON_MAP: Record<string, React.ReactNode> = {
     'icon-okaanda': <IconOkaanda size={24} />,
     'icon-oshini': <IconOshini size={24} />,
@@ -2609,7 +2609,7 @@ function ComponentPreview({
     alignItems: 'center'
   }}><div style={{
       height: 6,
-      background: isDark ? 'rgba(232,225,207,0.6)' : 'rgba(30,26,23,0.6)',
+      background: isDark ? paperAlpha(0.6) : inkAlpha(0.6),
       width: '80%'
     }} /></div>;
   if (item.id === 'text-quote') return <div style={{
@@ -2635,7 +2635,7 @@ function ComponentPreview({
     justifyContent: 'center'
   }}>{[90, 75, 82].map((w, i) => <div key={`bd-${i}`} style={{
       height: 3,
-      background: isDark ? `rgba(232,225,207,${0.3 - i * 0.06})` : `rgba(30,26,23,${0.3 - i * 0.06})`,
+      background: isDark ? paperAlpha(0.3 - i * 0.06) : inkAlpha(0.3 - i * 0.06),
       width: `${w}%`
     }} />)}</div>;
   if (item.category === 'Systems') return <div style={{
@@ -2683,7 +2683,7 @@ function ComponentPreview({
       <div style={{
         width: '100%',
         height: 3,
-        background: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)'
+        background: isDark ? paperAlpha(0.08) : inkAlpha(0.08)
       }}>
         <div style={{
           height: '100%',
@@ -2756,7 +2756,7 @@ function ComponentPreview({
     const terminal = TERMINAL_BLOCKS[tIdx % TERMINAL_BLOCKS.length];
     return <div style={{
       height: 40,
-      background: '#1E1A17',
+      background: COLOR.charBlack,
       display: 'flex',
       alignItems: 'center',
       paddingLeft: 8,
@@ -2879,8 +2879,8 @@ const SlideCanvas = ({
     origH: number;
   } | null>(null);
   const bg = isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm;
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.07)';
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.07);
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const slide = slides.find(s => s.id === slideId) ?? {
     id: slideId,
     tag: '??',
@@ -3174,7 +3174,7 @@ const SlideCanvas = ({
           {[1, 2, 3].map(i => <div key={`guide-col-${i}`} style={{
             width: 60,
             height: 40,
-            border: `1px solid ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.15)'}`
+            border: `1px solid ${isDark ? paperAlpha(0.2) : inkAlpha(0.2)}`
           }} />)}
         </div>
         <p style={{
@@ -3358,11 +3358,11 @@ const ComponentPanel = ({
 }) => {
   const panelBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.dustPanel;
   const headerBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.dustHeader;
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const itemBg = isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.6)';
-  const itemHoverBg = isDark ? 'rgba(232,225,207,0.08)' : EDITOR_SURFACE.paperWarm;
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const itemBg = isDark ? paperAlpha(0.04) : 'rgba(255,255,255,0.6)';
+  const itemHoverBg = isDark ? paperAlpha(0.08) : EDITOR_SURFACE.paperWarm;
   const filtered = SLIDE_COMPONENT_PALETTE.filter(i => i.category === activeCategory);
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: ComponentPaletteItem) => {
     e.dataTransfer.setData('component-type', item.id);
@@ -3504,7 +3504,7 @@ function SlideThumbnail({
   isDragging: boolean;
   isDragOver: boolean;
 }) {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
   return <div draggable onDragStart={e => {
     e.stopPropagation();
@@ -3517,7 +3517,7 @@ function SlideThumbnail({
     width: '100%',
     padding: '9px 14px',
     background: isActive ? `${COLOR.ochreOrange}18` : isDragOver ? `${COLOR.ochreOrange}0C` : 'transparent',
-    borderLeft: `3px solid ${isActive ? COLOR.ochreOrange : isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
+    borderLeft: `3px solid ${isActive ? COLOR.ochreOrange : isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
     cursor: isDragging ? 'grabbing' : 'pointer',
     textAlign: 'left',
     display: 'flex',
@@ -3527,7 +3527,7 @@ function SlideThumbnail({
     transition: 'background 0.1s, border-color 0.1s',
     userSelect: 'none'
   }} onMouseEnter={e => {
-    if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(232,225,207,0.05)' : 'rgba(30,26,23,0.05)';
+    if (!isActive) e.currentTarget.style.background = isDark ? paperAlpha(0.05) : inkAlpha(0.05);
   }} onMouseLeave={e => {
     if (!isActive) e.currentTarget.style.background = 'transparent';
   }}>
@@ -3535,7 +3535,7 @@ function SlideThumbnail({
       width: '100%',
       aspectRatio: '16/9',
       background: isDark ? EDITOR_SURFACE.canvasWellDark : EDITOR_SURFACE.paperWarm,
-      border: `1px solid ${isActive ? `${COLOR.ochreOrange}40` : isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
+      border: `1px solid ${isActive ? `${COLOR.ochreOrange}40` : isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
       marginBottom: 6,
       overflow: 'hidden',
       position: 'relative'
@@ -3553,7 +3553,7 @@ function SlideThumbnail({
         <div style={{
           width: '40%',
           height: 3,
-          background: isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)'
+          background: isDark ? paperAlpha(0.15) : inkAlpha(0.15)
         }} />
         <div style={{
           width: 10,
@@ -3569,7 +3569,7 @@ function SlideThumbnail({
       }}>
         {[70, 55, 40].map((w, i) => <div key={`prv-${i}`} style={{
           height: 2,
-          background: isDark ? `rgba(232,225,207,${0.08 - i * 0.02})` : `rgba(30,26,23,${0.08 - i * 0.02})`,
+          background: isDark ? paperAlpha(0.08 - i * 0.02) : inkAlpha(0.08 - i * 0.02),
           width: `${w}%`
         }} />)}
       </div>
@@ -3636,9 +3636,9 @@ const ExportModal = ({
     setTimeout(tick, 300);
   };
   const panelBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.emberBrown;
-  const borderC = 'rgba(232,225,207,0.08)';
+  const borderC = paperAlpha(0.08);
   const fg = COLOR.milletClay;
-  const muted = 'rgba(232,225,207,0.55)';
+  const muted = paperAlpha(0.55);
   const formatColor = format === 'PDF' ? COLOR.ochreOrange : COLOR.dyePlum;
   const exportOpts = [{
     label: 'Slides',
@@ -3751,7 +3751,7 @@ const ExportModal = ({
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '8px 12px',
-              background: 'rgba(232,225,207,0.04)',
+              background: paperAlpha(0.04),
               border: `1px solid ${borderC}`
             }}>
               <span style={{
@@ -3823,7 +3823,7 @@ const ExportModal = ({
             <div style={{
               width: '100%',
               height: 4,
-              background: 'rgba(232,225,207,0.08)'
+              background: paperAlpha(0.08)
             }}>
               <motion.div animate={{
                 width: `${progress}%`
@@ -3848,7 +3848,7 @@ const ExportModal = ({
                 <div style={{
                   width: 8,
                   height: 8,
-                  background: step.done ? COLOR.mahanguGold : 'rgba(232,225,207,0.15)'
+                  background: step.done ? COLOR.mahanguGold : paperAlpha(0.15)
                 }} />
                 <span style={{
                   fontSize: 10,
@@ -3960,9 +3960,9 @@ const EditorToolbar = ({
 }) => {
   const [editingTitle, setEditingTitle] = useState(false);
   const bg = isDark ? COLOR.darkCard : EDITOR_SURFACE.dustCream;
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const activeIdx = slides.findIndex(s => s.id === activeSlide);
   const fmtBtns: Array<'PDF' | 'PPT'> = ['PDF', 'PPT'];
   const btnBase: React.CSSProperties = {
@@ -4135,7 +4135,7 @@ const EditorToolbar = ({
       <button onClick={onAddSlide} style={{
         padding: '6px 12px',
         background: 'transparent',
-        border: `1px solid ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.18)'}`,
+        border: `1px solid ${isDark ? paperAlpha(0.2) : inkAlpha(0.2)}`,
         cursor: 'pointer',
         fontSize: 10,
         fontWeight: 600,
@@ -4144,7 +4144,7 @@ const EditorToolbar = ({
         e.currentTarget.style.borderColor = COLOR.ochreOrange;
         e.currentTarget.style.color = COLOR.barkRust;
       }} onMouseLeave={e => {
-        e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.18)' : 'rgba(30,26,23,0.18)';
+        e.currentTarget.style.borderColor = isDark ? paperAlpha(0.18) : inkAlpha(0.18);
         e.currentTarget.style.color = muted;
       }}>+ Slide</button>
       {fmtBtns.map(fmt => <button key={`toolbar-${fmt}`} onClick={() => onExport(fmt)} style={{
@@ -4153,7 +4153,7 @@ const EditorToolbar = ({
         gap: 5,
         padding: '6px 14px',
         background: fmt === 'PDF' ? COLOR.ochreOrange : 'transparent',
-        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? 'rgba(232,225,207,0.2)' : 'rgba(30,26,23,0.18)'}`,
+        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? paperAlpha(0.2) : inkAlpha(0.2)}`,
         cursor: 'pointer',
         fontSize: 10,
         fontWeight: 700,
@@ -4174,7 +4174,7 @@ const EditorToolbar = ({
       }} onMouseLeave={e => {
         if (fmt === 'PDF') e.currentTarget.style.color = onColor(COLOR.ochreOrange);
         if (fmt === 'PDF') e.currentTarget.style.background = COLOR.ochreOrange;else {
-          e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.18)' : 'rgba(30,26,23,0.18)';
+          e.currentTarget.style.borderColor = isDark ? paperAlpha(0.18) : inkAlpha(0.18);
           e.currentTarget.style.color = muted;
         }
       }}>
@@ -4199,9 +4199,9 @@ const SlidePicker = ({
 }) => {
   const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
   const cardBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm;
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.08)';
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.08);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const templates = [{
     id: 'blank',
     label: 'Blank Presentation',
@@ -4261,7 +4261,7 @@ const SlidePicker = ({
           alignItems: 'center',
           gap: 6,
           background: 'transparent',
-          border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
           cursor: 'pointer',
           color: muted,
           fontSize: 11,
@@ -4272,7 +4272,7 @@ const SlidePicker = ({
           e.currentTarget.style.borderColor = COLOR.dyePlum;
           e.currentTarget.style.color = COLOR.dyePlum;
         }} onMouseLeave={e => {
-          e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)';
+          e.currentTarget.style.borderColor = isDark ? paperAlpha(0.15) : inkAlpha(0.15);
           e.currentTarget.style.color = muted;
         }}>
           <svg width="14" height="10" viewBox="0 0 7 5" fill="none" aria-hidden="true">
@@ -4287,7 +4287,7 @@ const SlidePicker = ({
       </div>
       {onResume && <button onClick={onResume} style={{
         width: '100%',
-        background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.55)',
+        background: isDark ? paperAlpha(0.04) : 'rgba(255,255,255,0.55)',
         border: `1px solid ${COLOR.dyePlum}45`,
         color: fg,
         padding: '14px 16px',
@@ -4340,7 +4340,7 @@ const SlidePicker = ({
             transition: 'border-color 0.15s'
           }} onMouseEnter={e => {
             e.currentTarget.style.borderColor = `${opt.color}60`;
-            e.currentTarget.style.background = isDark ? 'rgba(232,225,207,0.05)' : 'rgba(255,255,255,0.02)';
+            e.currentTarget.style.background = isDark ? paperAlpha(0.05) : 'rgba(255,255,255,0.02)';
           }} onMouseLeave={e => {
             e.currentTarget.style.borderColor = border;
             e.currentTarget.style.background = cardBg;
@@ -4545,11 +4545,11 @@ export const SlideEditor = ({
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [history]);
-  const pageBg = isDark ? COLOR.darkBg : '#E8E1CF';
+  const pageBg = isDark ? COLOR.darkBg : COLOR.milletClay;
   const panelBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.dustPanelDeep;
-  const panelBorder = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const panelBorder = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const handlePickerSelect = (templateId: string, title: string, initialSlides: SlideEntry[]) => {
     const initialBlocks: Record<string, DroppedBlock[]> = {};
     if (templateId === 'full-deck') {
@@ -4981,7 +4981,7 @@ export const SlideEditor = ({
             <div style={{
               flex: 1,
               height: 1,
-              background: isDark ? 'rgba(232,225,207,0.06)' : 'rgba(30,26,23,0.08)'
+              background: isDark ? paperAlpha(0.06) : inkAlpha(0.08)
             }} />
             <span style={{
               fontSize: 9,

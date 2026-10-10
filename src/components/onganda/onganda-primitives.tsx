@@ -8,7 +8,7 @@ import React, { createContext, useContext, useState, useCallback, useMemo, useEf
 import { motion, MotionConfig } from 'framer-motion';
 import { AUTOMATED, MOTION, installReveal } from './onganda-motion';
 import { TYPE, TEXTURE, FONT } from './onganda-type';
-import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS } from './onganda-tokens';
+import { WEAVE, COLOR, roles, onColor, contrast, inkOn, STATUS, ColorRoles, DENSITY, DensityName, Density, SystemEntry, FlowNodeEntry, StatEntry, SwatchEntry, TerminalBlock, TerminalLine, SectorApp, PrincipleEntry, GuideAnnotation, PixelRule, FooterLink, GUIDE_PALETTE_SWATCHES, FOOTER_DITHER_SWATCHES, FOOTER_LINKS, paperAlpha } from './onganda-tokens';
 
 // ─── Dark Mode Context ────────────────────────────────────────────────────────
 export const DarkContext = createContext<{
@@ -19,6 +19,14 @@ export const DarkContext = createContext<{
   toggle: () => {}
 });
 export const useDark = () => useContext(DarkContext);
+
+/** A peer inside PixelPeers: its place in the set, its accent and ordinal. */
+export type Peer = { index: number; accent: string; ordinal?: string; lift: boolean };
+export const PeerContext = createContext<Peer | null>(null);
+
+/** The peer this element belongs to, inside a PixelPeers: its index, accent
+ *  and ordinal. For a product's own element that should follow the set. */
+export const usePeer = () => useContext(PeerContext);
 
 /**
  * Resolve a control's mode: the explicit prop wins, otherwise the surrounding
@@ -313,7 +321,8 @@ export const SectionHeader = ({
 }: {
   label: string;
   headline: string;
-  /** the section's one permitted accent; defaults to the accent ink */
+  /** the section's one permitted accent; inside a PixelPeers, that peer's;
+   *  otherwise the accent ink */
   accent?: string;
   /** 1 when this header opens the page. A screen whose first header is its
    *  title needs an <h1>; a page built only from section headers otherwise
@@ -327,11 +336,14 @@ export const SectionHeader = ({
 } & React.HTMLAttributes<HTMLDivElement>) => {
   const isDark = useIsDark(isDarkProp);
   const c = roles(isDark);
+  // A header inside a PixelPeers takes that peer's accent unless given one.
+  const peer = usePeer();
+  const hue = accent ?? peer?.accent ?? c.accentInk;
   const Heading = level === 1 ? 'h1' : 'h2';
   return (
     <div data-onganda-enter="" {...rest} className={`border-b pb-6 mb-12 ${className}`} style={{ borderColor: c.line, ...rest.style }}>
       <div className="mb-3 flex items-center gap-3">
-        <PixelDot color={accent ?? c.accentInk} size={7} />
+        <PixelDot color={hue} size={7} />
         {/* The eyebrow is a label, not a heading. It was an <h2> while the
             headline below it was a <p>, which put the section's largest text
             outside the display-face rule and the smallest text inside it —
@@ -620,17 +632,17 @@ export const OngandaLogoMark = ({
 }: {
   size?: number;
 }) => <Px size={size} viewBox="0 0 12 12">
-    <rect x="5" y="0" width="2" height="1" fill="#D9791F" />
-    <rect x="4" y="1" width="4" height="1" fill="#D9791F" />
-    <rect x="3" y="2" width="6" height="1" fill="#C84A1B" />
-    <rect x="4" y="3" width="4" height="4" fill="#D9791F" />
-    <rect x="4" y="3" width="1" height="4" fill="#C84A1B" fillOpacity="0.5" />
-    <rect x="7" y="3" width="1" height="4" fill="#C84A1B" fillOpacity="0.5" />
-    <rect x="5" y="4" width="1" height="1" fill="#8F3E21" fillOpacity="0.6" />
-    <rect x="3" y="7" width="6" height="1" fill="#8F3E21" />
-    <rect x="4" y="8" width="1" height="3" fill="#6A4B2E" />
-    <rect x="7" y="8" width="1" height="3" fill="#6A4B2E" />
-    <rect x="3" y="11" width="6" height="1" fill="#1E1A17" fillOpacity="0.18" />
+    <rect x="5" y="0" width="2" height="1" fill={COLOR.ochreOrange} />
+    <rect x="4" y="1" width="4" height="1" fill={COLOR.ochreOrange} />
+    <rect x="3" y="2" width="6" height="1" fill={COLOR.firedRed} />
+    <rect x="4" y="3" width="4" height="4" fill={COLOR.ochreOrange} />
+    <rect x="4" y="3" width="1" height="4" fill={COLOR.firedRed} fillOpacity="0.5" />
+    <rect x="7" y="3" width="1" height="4" fill={COLOR.firedRed} fillOpacity="0.5" />
+    <rect x="5" y="4" width="1" height="1" fill={COLOR.barkRust} fillOpacity="0.6" />
+    <rect x="3" y="7" width="6" height="1" fill={COLOR.barkRust} />
+    <rect x="4" y="8" width="1" height="3" fill={COLOR.mopaneBrown} />
+    <rect x="7" y="8" width="1" height="3" fill={COLOR.mopaneBrown} />
+    <rect x="3" y="11" width="6" height="1" fill={COLOR.charBlack} fillOpacity="0.18" />
   </Px>;
 
 // ─── Surface context — what ground am I painted on? ─────────────────────────
@@ -1305,12 +1317,12 @@ export const SwatchChip = ({
 }: {
   swatch: SwatchEntry;
 }) => <div className="flex flex-col gap-2">
-    <div className="w-full aspect-square border border-[#1E1A17]/10" style={{
+    <div className="w-full aspect-square border border-(--onganda-char-black)/10" style={{
     background: swatch.hex
   }} title={swatch.name} aria-label={swatch.name} />
     <div>
-      <p className="text-[11px] font-semibold text-[#1E1A17] leading-tight">{swatch.name}</p>
-      <p className="text-[10px] text-[#1E1A17]/66 mt-0.5">{swatch.desc}</p>
+      <p className="text-[11px] font-semibold text-(--onganda-char-black) leading-tight">{swatch.name}</p>
+      <p className="text-[10px] text-(--onganda-char-black)/66 mt-0.5">{swatch.desc}</p>
     </div>
   </div>;
 
@@ -1325,10 +1337,10 @@ export const TerminalCard = ({
   // ochre. Only ochre, mahangu gold and paper >=0.52 clear 4.5:1 on this
   // surface, so keyword and accent share a hue by necessity.
   const colorMap: Record<TerminalLine['type'], string> = {
-    comment: 'rgba(232,225,207,0.55)',
+    comment: paperAlpha(0.55),
     keyword: COLOR.ochreOrange,
     string: COLOR.mahanguGold,
-    plain: 'rgba(232,225,207,0.78)',
+    plain: paperAlpha(0.78),
     accent: COLOR.ochreOrange
   };
   return <motion.div initial={AUTOMATED ? false : {
@@ -1342,26 +1354,27 @@ export const TerminalCard = ({
     margin: '-40px'
   }} transition={{
     duration: 0.5
-  }} className="bg-[#1E1A17] overflow-hidden">
+  }} className="bg-(--onganda-char-black) overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b" style={{
       borderColor: `${block.tagHex}33`
     }}>
         <div className="flex items-center gap-2.5">
           <div className="flex gap-1.5" aria-hidden="true">
             <div className="w-2.5 h-2.5" style={{
-            background: '#D9791F',
+            background: COLOR.ochreOrange,
             opacity: 0.7
           }} />
             <div className="w-2.5 h-2.5" style={{
-            background: '#C84A1B',
+            background: COLOR.firedRed,
             opacity: 0.7
           }} />
             <div className="w-2.5 h-2.5" style={{
-            background: '#DFAE2B',
+            // onganda-allow: system-colour-as-chrome — the terminal's three title-bar marks, a fixed illustration
+            background: COLOR.mahanguGold,
             opacity: 0.7
           }} />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E8E1CF]/55 ml-2">{block.title}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-millet-clay)/55 ml-2">{block.title}</span>
         </div>
         <PixelTag hex={block.tagHex} label={block.tag} />
       </div>
@@ -1462,7 +1475,7 @@ export const FlowNodeCard = ({
   isHovered: boolean;
 }) => {
   const inkFor = useInkOn();
-  return <div className="relative w-full bg-[#F3E8C3] overflow-hidden mb-4" style={{
+  return <div className="relative w-full bg-(--onganda-dust-light) overflow-hidden mb-4" style={{
   border: `1px solid ${node.hex}`,
   borderLeftWidth: 4,
   borderLeftColor: node.hex,
@@ -1484,8 +1497,8 @@ export const FlowNodeCard = ({
         <PixelTag hex={node.hex} label={node.pixelTag} />
         <FlowNodeIcon id={node.id} hex={node.hex} />
       </div>
-      <p className="text-[16px] font-semibold tracking-tight text-[#1E1A17] leading-none">{node.oshiwambo}</p>
-      <p className="text-xs text-[#1E1A17]/66 font-medium mb-3">{node.english}</p>
+      <p className="text-[16px] font-semibold tracking-tight text-(--onganda-char-black) leading-none">{node.oshiwambo}</p>
+      <p className="text-xs text-(--onganda-char-black)/66 font-medium mb-3">{node.english}</p>
       <div className="flex items-center gap-1.5 min-w-0">
         <PixelDot color={node.hex} size={4} />
         <span className="text-[10px] font-bold uppercase tracking-[0.13em] truncate" style={{
@@ -1519,7 +1532,7 @@ export const FieldAppCard = ({
 }} transition={{
   delay: idx * 0.09,
   duration: 0.48
-}} className="relative bg-[#F3E8C3] border border-[#1E1A17]/10 p-7 overflow-hidden group">
+}} className="relative bg-(--onganda-dust-light) border border-(--onganda-char-black)/10 p-7 overflow-hidden group">
     <div className="flex items-start justify-between mb-6">
       <PixelTag hex={app.hex} label={app.tag} />
       <div className="flex gap-0.5" aria-hidden="true">
@@ -1533,15 +1546,15 @@ export const FieldAppCard = ({
       }} />
       </div>
     </div>
-    <h3 className="text-lg font-semibold tracking-tight text-[#1E1A17] leading-none">{app.name}</h3>
-    <p className="text-xs font-medium text-[#1E1A17]/66 mb-4">
+    <h3 className="text-lg font-semibold tracking-tight text-(--onganda-char-black) leading-none">{app.name}</h3>
+    <p className="text-xs font-medium text-(--onganda-char-black)/66 mb-4">
       <span style={{
       color: inkFor(app.hex)
     }}>{app.oshiwambo}</span>
-      <span className="mx-1.5 text-[#1E1A17]/66">·</span>
+      <span className="mx-1.5 text-(--onganda-char-black)/66">·</span>
       <span>{app.sector}</span>
     </p>
-    <p className="text-sm text-[#1E1A17]/65 leading-relaxed mb-6">{app.desc}</p>
+    <p className="text-sm text-(--onganda-char-black)/65 leading-relaxed mb-6">{app.desc}</p>
     <div className="flex items-center gap-1.5">
       <PixelDot color={app.hex} size={6} />
       <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{
@@ -1563,24 +1576,24 @@ export const AnnotationPanel = ({
   rules: PixelRule[];
 }) => <div className="lg:w-72 xl:w-80 shrink-0 flex flex-col gap-0">
     <div className="mb-8">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E1A17]/66 mb-4">Reading the chart</p>
-      <dl className="flex flex-col gap-0 divide-y divide-[#1E1A17]/10">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-(--onganda-char-black)/66 mb-4">Reading the chart</p>
+      <dl className="flex flex-col gap-0 divide-y divide-(--onganda-char-black)/10">
         {annotations.map(item => <div key={item.label} className="flex flex-col gap-0.5 py-4">
-            <dt className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8F3E21]">{item.label}</dt>
-            <dd className="text-sm text-[#1E1A17]/65 leading-relaxed">{item.note}</dd>
+            <dt className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-bark-rust)">{item.label}</dt>
+            <dd className="text-sm text-(--onganda-char-black)/65 leading-relaxed">{item.note}</dd>
           </div>)}
       </dl>
     </div>
-    <div className="border border-[#1E1A17]/12 bg-[#F3E8C3] p-5">
+    <div className="border border-(--onganda-char-black)/12 bg-(--onganda-dust-light) p-5">
       <div className="flex items-center gap-2 mb-4" aria-hidden="true">
         {GUIDE_PALETTE_SWATCHES.map((c, i) => <div key={`guide-sw-${i}`} className="w-2.5 h-2.5" style={{
         background: c
       }} />)}
       </div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E1A17]/66 mb-3">Pixel rules</p>
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-(--onganda-char-black)/66 mb-3">Pixel rules</p>
       <ul className="flex flex-col gap-2">
-        {rules.map(item => <li key={item.rule} className="flex items-start gap-2 text-xs text-[#1E1A17]/65 leading-snug">
-            <div className="w-1 h-1 mt-1.5 shrink-0 bg-[#D9791F]" aria-hidden="true" />
+        {rules.map(item => <li key={item.rule} className="flex items-start gap-2 text-xs text-(--onganda-char-black)/65 leading-snug">
+            <div className="w-1 h-1 mt-1.5 shrink-0 bg-(--onganda-ochre-orange)" aria-hidden="true" />
             <span>{item.rule}</span>
           </li>)}
       </ul>
@@ -1605,8 +1618,8 @@ export const PrincipleRow = ({
 }} transition={{
   delay: idx * 0.07
 }} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-8 py-5">
-    <dt className="text-xs font-bold uppercase tracking-[0.13em] text-[#8F3E21] w-32 shrink-0">{principle.label}</dt>
-    <dd className="text-[#1E1A17]/80 text-base">{principle.value}</dd>
+    <dt className="text-xs font-bold uppercase tracking-[0.13em] text-(--onganda-bark-rust) w-32 shrink-0">{principle.label}</dt>
+    <dd className="text-(--onganda-char-black)/80 text-base">{principle.value}</dd>
   </motion.div>;
 
 // ─── CodeSnippetBlock — section-bottom code snippet with copy button ──────────
@@ -1631,13 +1644,13 @@ export const CodeSnippetBlock = ({
   const colorMap: Record<CodeSnippetLine['type'], string> = {
     // See TerminalCard: this block is char-black in both modes, so the
     // comment tone is dimmed paper rather than a brown that fails on it.
-    comment: 'rgba(232,225,207,0.55)',
+    comment: paperAlpha(0.55),
     keyword: COLOR.ochreOrange,
     string: COLOR.mahanguGold,
-    plain: isDark ? 'rgba(232,225,207,0.7)' : 'rgba(232,225,207,0.78)',
+    plain: isDark ? paperAlpha(0.7) : paperAlpha(0.78),
     accent: COLOR.ochreOrange,
     import: COLOR.ochreOrange,
-    tag: isDark ? 'rgba(232,225,207,0.9)' : 'rgba(232,225,207,0.95)',
+    tag: isDark ? paperAlpha(0.9) : paperAlpha(0.95),
     prop: COLOR.mahanguGold
   };
   const rawText = lines.map(l => l.text).join('\n');
@@ -1708,7 +1721,7 @@ export const CodeSnippetBlock = ({
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          color: 'rgba(232,225,207,0.82)',
+          color: paperAlpha(0.82),
           opacity: 0.85
         }}>
             {label}
@@ -1718,7 +1731,7 @@ export const CodeSnippetBlock = ({
           fontWeight: 500,
           letterSpacing: '0.10em',
           textTransform: 'uppercase',
-          color: 'rgba(232,225,207,0.55)'
+          color: paperAlpha(0.55)
         }}>
             snippet
           </span>
@@ -1731,8 +1744,8 @@ export const CodeSnippetBlock = ({
         gap: 8,
         padding: '4px 12px',
         background: copied ? `${accentHex}22` : 'transparent',
-        border: `1px solid ${copied ? accentHex : 'rgba(232,225,207,0.1)'}`,
-        color: copied ? COLOR.mahanguGold : 'rgba(232,225,207,0.58)',
+        border: `1px solid ${copied ? accentHex : paperAlpha(0.1)}`,
+        color: copied ? COLOR.mahanguGold : paperAlpha(0.58),
         fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.14em',
@@ -1784,29 +1797,29 @@ export const CodeSnippetBlock = ({
 const CURRENT_YEAR = new Date().getFullYear();
 
 // ─── OngandaFooter — site-wide footer ────────────────────────────────────────
-export const OngandaFooter = () => <footer className="w-full bg-[#1E1A17] text-[#E8E1CF] py-16 px-6 md:px-12 border-t-[3px] border-[#D9791F]">
+export const OngandaFooter = () => <footer className="w-full bg-(--onganda-char-black) text-(--onganda-millet-clay) py-16 px-6 md:px-12 border-t-[3px] border-(--onganda-ochre-orange)">
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start gap-10 md:gap-0">
         <div>
           <div className="flex items-center gap-2.5 mb-3">
             <OngandaLogoMark size={22} />
             <span className="font-semibold tracking-tight text-base">
-              <span className="text-[#D9791F]">Onganda</span>
-              <span className="text-[#E8E1CF]/55 mx-1.5">·</span>
-              <span className="text-[#E8E1CF]/70 font-normal text-sm">Namibia AI Systems Lab</span>
+              <span className="text-(--onganda-ochre-orange)">Onganda</span>
+              <span className="text-(--onganda-millet-clay)/55 mx-1.5">·</span>
+              <span className="text-(--onganda-millet-clay)/70 font-normal text-sm">Namibia AI Systems Lab</span>
             </span>
           </div>
-          <p className="text-sm text-[#E8E1CF]/55 max-w-xs leading-relaxed">
+          <p className="text-sm text-(--onganda-millet-clay)/55 max-w-xs leading-relaxed">
             A sovereign intelligence workshop. Pixelated by design. Material by palette. Oshiwambo by name. Calm by layout.
           </p>
         </div>
         <nav aria-label="Footer navigation" className="flex flex-col gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E8E1CF]/55 mb-1">Navigate</p>
-          {FOOTER_LINKS.map(link => <a key={link.label} href={link.href} className="text-sm text-[#E8E1CF]/60 hover:text-[#D9791F] transition-colors duration-200">{link.label}</a>)}
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-(--onganda-millet-clay)/55 mb-1">Navigate</p>
+          {FOOTER_LINKS.map(link => <a key={link.label} href={link.href} className="text-sm text-(--onganda-millet-clay)/60 hover:text-(--onganda-ochre-orange) transition-colors duration-200">{link.label}</a>)}
         </nav>
       </div>
-      <div className="mt-12 pt-6 border-t border-[#E8E1CF]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <p className="text-[11px] text-[#E8E1CF]/55">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
+      <div className="mt-12 pt-6 border-t border-(--onganda-millet-clay)/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <p className="text-[11px] text-(--onganda-millet-clay)/55">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
         <div aria-hidden="true" className="flex gap-0.5">
           {FOOTER_DITHER_SWATCHES.map((c, i) => <div key={`foot-sw-${i}`} className="w-3 h-3" style={{
           background: c,

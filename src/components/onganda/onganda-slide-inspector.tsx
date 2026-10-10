@@ -1,7 +1,7 @@
 // ─── Onganda Slide Inspector — Block Property Panel ──────────────────────────
 
 import React from 'react';
-import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, HEATMAP_CELLS, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_RADAR_DATA } from './onganda-tokens';
+import { COLOR, SYSTEMS, FLOW_NODES, TIMELINE_PHASES, HEATMAP_CELLS, HEATMAP_LABELS_Y, SECTOR_APPS, SLIDE_MARKET_DATA, SLIDE_RADAR_DATA, paperAlpha, inkAlpha } from './onganda-tokens';
 import { PixelDot } from './onganda-primitives';
 import type { DroppedBlock, SlideEntry } from './onganda-block-types';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
@@ -24,15 +24,15 @@ export const SlideInspector = ({
 }) => {
   const panelBg = isDark ? COLOR.darkCard : '#E0D8C6';
   const headerBg = isDark ? COLOR.darkCard : '#D5CEBB';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const inputStyle: React.CSSProperties = {
     width: '100%',
     fontSize: 11,
     fontWeight: 500,
     color: fg,
-    background: isDark ? 'rgba(232,225,207,0.05)' : 'rgba(255,255,255,0.04)',
+    background: isDark ? paperAlpha(0.05) : 'rgba(255,255,255,0.04)',
     border: `1px solid ${border}`,
     outline: 'none',
     padding: '5px 8px'
@@ -296,7 +296,7 @@ export const SlideInspector = ({
       }}>
         <label style={labelStyle}>Cell Intensities (0.0–1.0)</label>
         <div style={{
-          background: '#1E1A17',
+          background: COLOR.charBlack,
           padding: '8px',
           overflowX: 'auto'
         }}>
@@ -308,7 +308,7 @@ export const SlideInspector = ({
           }}>
             <span style={{
               fontSize: 9,
-              color: 'rgba(232,225,207,0.55)',
+              color: paperAlpha(0.55),
               width: 36,
               flexShrink: 0,
               textAlign: 'right',
@@ -339,7 +339,7 @@ export const SlideInspector = ({
                 border: 'none',
                 outline: 'none',
                 padding: '1px 2px',
-                color: 'rgba(232,225,207,0.66)',
+                color: paperAlpha(0.66),
                 textAlign: 'center'
               }} />
             </div>)}
@@ -749,7 +749,7 @@ export const SlideInspector = ({
             fontSize: 11,
             fontWeight: 600,
             color: fg,
-            background: isDark ? 'rgba(232,225,207,0.05)' : 'rgba(255,255,255,0.04)',
+            background: isDark ? paperAlpha(0.05) : 'rgba(255,255,255,0.04)',
             border: `1px solid ${border}`,
             outline: 'none',
             padding: '5px 8px'
@@ -785,7 +785,7 @@ export const SlideInspector = ({
           }}>Slide notes</p>
           <textarea placeholder="Add speaker notes…" style={{
             width: '100%',
-            background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(30,26,23,0.04)',
+            background: isDark ? paperAlpha(0.04) : inkAlpha(0.04),
             border: `1px solid ${border}`,
             padding: '8px 10px',
             fontSize: 9,

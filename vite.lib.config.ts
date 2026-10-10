@@ -31,6 +31,7 @@ export default defineConfig({
         ai: path.resolve(__dirname, 'src/design-system/ai.ts'),
         maps: path.resolve(__dirname, 'src/design-system/maps.ts'),
         sites: path.resolve(__dirname, 'src/design-system/sites.ts'),
+        palettes: path.resolve(__dirname, 'src/design-system/palettes.ts'),
       },
       name: 'OngandaDesignSystem',
       formats: ['es', 'cjs'],

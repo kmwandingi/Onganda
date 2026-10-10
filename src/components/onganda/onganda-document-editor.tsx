@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { FONT } from './onganda-type';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLOR, EDITOR_SURFACE, statusFor, onColor, inkOn, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES } from './onganda-tokens';
+import { COLOR, EDITOR_SURFACE, statusFor, onColor, inkOn, STATS, TERMINAL_BLOCKS, TIMELINE_PHASES, SYSTEMS, HEATMAP_CELLS, HEATMAP_LABELS_X, HEATMAP_LABELS_Y, FLOW_NODES, paperAlpha, inkAlpha } from './onganda-tokens';
 import { OngandaLogoMark, PixelDot, DitherBar, PixelTag, WeaveOverlay, useDark, IconOkaanda, IconOshini, IconOmbiga, IconEtiti, IconOshitoo, FlowNodeIcon } from './onganda-primitives';
 import { ChartGallery } from './onganda-charts';
 import { AiAuthoringPanel, regenerateDocBlock } from './onganda-ai-authoring';
@@ -715,8 +715,8 @@ const StatBlock = ({
 }) => {
   const hex = block.statHex ?? COLOR.ochreOrange;
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const fields = [{
     key: 'statValue',
     label: 'Value',
@@ -840,12 +840,12 @@ const TerminalBlock = ({
 }) => {
   const idx = block.terminalIdx ?? 0;
   const terminal = TERMINAL_BLOCKS[idx % TERMINAL_BLOCKS.length];
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const colorMap: Record<string, string> = {
-    comment: 'rgba(232,225,207,0.55)',
-    keyword: '#D9791F',
-    string: '#DFAE2B',
-    plain: '#E8E1CF99',
+    comment: paperAlpha(0.55),
+    keyword: COLOR.ochreOrange,
+    string: COLOR.mahanguGold,
+    plain: `${COLOR.milletClay}99`,
     accent: COLOR.ochreOrange
   };
   if (isConfiguring) {
@@ -872,7 +872,7 @@ const TerminalBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.terminalIdx ?? 0) === i ? tb.tagHex : 'rgba(30,26,23,0.1)'}`,
+          border: `1px solid ${(block.terminalIdx ?? 0) === i ? tb.tagHex : inkAlpha(0.1)}`,
           background: (block.terminalIdx ?? 0) === i ? `${tb.tagHex}18` : 'transparent',
           color: (block.terminalIdx ?? 0) === i ? tb.tagHex : muted
         }}>
@@ -882,7 +882,7 @@ const TerminalBlock = ({
       </div>;
   }
   return <div data-onganda-export-ui="true" style={{
-    background: '#1E1A17',
+    background: COLOR.charBlack,
     overflow: 'hidden'
   }}>
       <div style={{
@@ -913,7 +913,7 @@ const TerminalBlock = ({
           fontWeight: 700,
           letterSpacing: '0.14em',
           textTransform: 'uppercase' as const,
-          color: 'rgba(232,225,207,0.55)',
+          color: paperAlpha(0.55),
           marginLeft: 8
         }}>{terminal.title}</span>
         </div>
@@ -949,8 +949,8 @@ const TimelineBlock = ({
 }) => {
   const idx = block.timelinePhaseIdx ?? 0;
   const phase = TIMELINE_PHASES[idx % TIMELINE_PHASES.length];
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.08);
   if (isConfiguring) {
     return <div>
         <label style={{
@@ -975,7 +975,7 @@ const TimelineBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.timelinePhaseIdx ?? 0) === i ? ph.hex : 'rgba(30,26,23,0.1)'}`,
+          border: `1px solid ${(block.timelinePhaseIdx ?? 0) === i ? ph.hex : inkAlpha(0.1)}`,
           background: (block.timelinePhaseIdx ?? 0) === i ? `${ph.hex}18` : 'transparent',
           color: (block.timelinePhaseIdx ?? 0) === i ? ph.hex : muted
         }}>
@@ -1026,14 +1026,14 @@ const TimelineBlock = ({
       </div>
       <p style={{
       fontSize: 12,
-      color: isDark ? 'rgba(232,225,207,0.65)' : 'rgba(30,26,23,0.65)',
+      color: isDark ? paperAlpha(0.65) : inkAlpha(0.65),
       lineHeight: 1.65,
       marginBottom: 10
     }}>{phase.desc}</p>
       <div style={{
       width: '100%',
       height: 6,
-      background: isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)',
+      background: isDark ? paperAlpha(0.08) : inkAlpha(0.08),
       marginBottom: 8
     }}>
         <div style={{
@@ -1081,8 +1081,8 @@ const SystemCardBlock = ({
 }) => {
   const idx = block.systemIdx ?? 0;
   const sys = SYSTEMS[idx % SYSTEMS.length];
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.08);
   if (isConfiguring) {
     return <div>
         <label style={{
@@ -1107,7 +1107,7 @@ const SystemCardBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.systemIdx ?? 0) === i ? s.borderHex : 'rgba(30,26,23,0.1)'}`,
+          border: `1px solid ${(block.systemIdx ?? 0) === i ? s.borderHex : inkAlpha(0.1)}`,
           background: (block.systemIdx ?? 0) === i ? `${s.borderHex}18` : 'transparent',
           color: (block.systemIdx ?? 0) === i ? s.borderHex : muted
         }}>
@@ -1163,7 +1163,7 @@ const SystemCardBlock = ({
         </div>
         <p style={{
         fontSize: 11,
-        color: 'rgba(232,225,207,0.78)',
+        color: paperAlpha(0.78),
         lineHeight: 1.6
       }}>{sys.desc}</p>
       </div>
@@ -1184,7 +1184,7 @@ const FlowNodeBlock = ({
 }) => {
   const idx = block.flowNodeIdx ?? 0;
   const node = FLOW_NODES[idx % FLOW_NODES.length];
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   if (isConfiguring) {
     return <div>
         <label style={{
@@ -1209,7 +1209,7 @@ const FlowNodeBlock = ({
           fontSize: 10,
           fontWeight: 600,
           cursor: 'pointer',
-          border: `1px solid ${(block.flowNodeIdx ?? 0) === i ? n.hex : 'rgba(30,26,23,0.1)'}`,
+          border: `1px solid ${(block.flowNodeIdx ?? 0) === i ? n.hex : inkAlpha(0.1)}`,
           background: (block.flowNodeIdx ?? 0) === i ? `${n.hex}18` : 'transparent',
           color: (block.flowNodeIdx ?? 0) === i ? n.hex : muted
         }}>
@@ -1245,7 +1245,7 @@ const FlowNodeBlock = ({
         }}>{node.oshiwambo}</span>
           <span style={{
           fontSize: 10,
-          color: 'rgba(30,26,23,0.66)'
+          color: inkAlpha(0.66)
         }}>{node.english}</span>
         </div>
         <span style={{
@@ -1309,11 +1309,11 @@ const HeatmapBlock = ({
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
-        color: 'rgba(232,225,207,0.55)',
+        color: paperAlpha(0.55),
         display: 'block'
       }}>Edit Cell Intensities (0.0 – 1.0)</label>
         <div style={{
-        background: '#1E1A17',
+        background: COLOR.charBlack,
         padding: '12px 14px',
         overflowX: 'auto'
       }}>
@@ -1327,7 +1327,7 @@ const HeatmapBlock = ({
             width: 36,
             textAlign: 'center',
             fontSize: 9,
-            color: 'rgba(232,225,207,0.55)',
+            color: paperAlpha(0.55),
             fontWeight: 700
           }}>{lbl}</div>)}
           </div>
@@ -1342,7 +1342,7 @@ const HeatmapBlock = ({
               <div style={{
             width: 72,
             fontSize: 9,
-            color: 'rgba(232,225,207,0.55)',
+            color: paperAlpha(0.55),
             fontWeight: 700,
             textAlign: 'right',
             paddingRight: 6,
@@ -1368,10 +1368,10 @@ const HeatmapBlock = ({
                 width: 36,
                 fontSize: 9,
                 background: 'transparent',
-                border: '1px solid rgba(232,225,207,0.1)',
+                border: `1px solid ${paperAlpha(0.1)}`,
                 outline: 'none',
                 padding: '2px 3px',
-                color: 'rgba(232,225,207,0.66)',
+                color: paperAlpha(0.66),
                 textAlign: 'center'
               }} />
                 </div>;
@@ -1380,13 +1380,13 @@ const HeatmapBlock = ({
         </div>
         <p style={{
         fontSize: 9,
-        color: 'rgba(232,225,207,0.55)',
+        color: paperAlpha(0.55),
         margin: 0
       }}>Enter values 0.0 (inactive) to 1.0 (maximum activity) for each cell.</p>
       </div>;
   }
   return <div style={{
-    background: '#1E1A17',
+    background: COLOR.charBlack,
     padding: '16px 20px'
   }}>
       <div style={{
@@ -1402,7 +1402,7 @@ const HeatmapBlock = ({
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
-        color: 'rgba(232,225,207,0.55)'
+        color: paperAlpha(0.55)
       }}>{label}</div>)}
       </div>
       {rowLabels.map((yLabel, rowIdx) => <div key={`hr-doc-${rowIdx}`} style={{
@@ -1414,7 +1414,7 @@ const HeatmapBlock = ({
           <div style={{
         width: 72,
         fontSize: 9,
-        color: 'rgba(232,225,207,0.55)',
+        color: paperAlpha(0.55),
         fontWeight: 700,
         textAlign: 'right',
         paddingRight: 8,
@@ -1437,7 +1437,7 @@ const HeatmapBlock = ({
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
-        color: 'rgba(232,225,207,0.55)'
+        color: paperAlpha(0.55)
       }}>Low</span>
         {[COLOR.charBlack, COLOR.mopaneBrown, COLOR.barkRust, COLOR.mahanguGold, COLOR.ochreOrange, COLOR.firedRed].map((c, i) => <div key={`hl-doc-${i}`} style={{
         width: 12,
@@ -1449,7 +1449,7 @@ const HeatmapBlock = ({
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
-        color: 'rgba(232,225,207,0.55)'
+        color: paperAlpha(0.55)
       }}>High</span>
       </div>
     </div>;
@@ -1467,8 +1467,8 @@ const MarketChartBlock = ({
   isConfiguring: boolean;
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.08);
   const chartTitle = block.chartTitle ?? 'Global AI Market Growth';
   const chartData = block.marketData ? JSON.parse(block.marketData) as Array<{
     year: string;
@@ -1603,7 +1603,7 @@ const MarketChartBlock = ({
   }
   return <div style={{
     background: isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm,
-    border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
+    border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
     padding: '16px 20px'
   }}>
       <div style={{
@@ -1652,7 +1652,7 @@ const MarketChartBlock = ({
             fill: muted
           }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}B`} />
             <Tooltip contentStyle={{
-            background: '#1E1A17',
+            background: COLOR.charBlack,
             border: `1px solid ${COLOR.ochreOrange}40`,
             borderRadius: 0,
             fontSize: 10
@@ -1684,8 +1684,8 @@ const BarChartBlock = ({
   isConfiguring: boolean;
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.08);
   const rawValues = block.barValues ? JSON.parse(block.barValues) as Array<{
     name: string;
     progress: number;
@@ -1772,7 +1772,7 @@ const BarChartBlock = ({
   }
   return <div style={{
     background: isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm,
-    border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
+    border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
     padding: '16px 20px'
   }}>
       <div style={{
@@ -1815,7 +1815,7 @@ const BarChartBlock = ({
             fill: muted
           }} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
             <Tooltip contentStyle={{
-            background: '#1E1A17',
+            background: COLOR.charBlack,
             border: `1px solid ${COLOR.barkRust}40`,
             borderRadius: 0,
             fontSize: 10
@@ -1859,9 +1859,9 @@ const PrinciplesBlock = ({
   isConfiguring: boolean;
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
-  const fg = isDark ? 'rgba(232,225,207,0.80)' : 'rgba(30,26,23,0.80)';
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
+  const fg = isDark ? paperAlpha(0.80) : inkAlpha(0.80);
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const principles = block.principlesData ? JSON.parse(block.principlesData) as Array<{
     label: string;
     value: string;
@@ -1998,39 +1998,39 @@ const PrinciplesBlock = ({
 // ─── Swatch Row Block ─────────────────────────────────────────────────────────
 const SWATCH_DATA = [{
   name: 'Millet Clay',
-  hex: '#E8E1CF',
+  hex: COLOR.milletClay,
   light: true
 }, {
   name: 'Dust Light',
-  hex: '#F3E8C3',
+  hex: COLOR.dustLight,
   light: true
 }, {
   name: 'Mahangu Gold',
-  hex: '#DFAE2B',
+  hex: COLOR.mahanguGold,
   light: true
 }, {
   name: 'Ochre Orange',
-  hex: '#D9791F',
+  hex: COLOR.ochreOrange,
   light: false
 }, {
   name: 'Fired Red',
-  hex: '#C84A1B',
+  hex: COLOR.firedRed,
   light: false
 }, {
   name: 'Bark Rust',
-  hex: '#8F3E21',
+  hex: COLOR.barkRust,
   light: false
 }, {
   name: 'Mopane Brown',
-  hex: '#6A4B2E',
+  hex: COLOR.mopaneBrown,
   light: false
 }, {
   name: 'Char Black',
-  hex: '#1E1A17',
+  hex: COLOR.charBlack,
   light: false
 }, {
   name: 'Dye Plum',
-  hex: '#6F4A6E',
+  hex: COLOR.dyePlum,
   light: false
 }];
 const SwatchRowBlock = ({
@@ -2044,8 +2044,8 @@ const SwatchRowBlock = ({
   isConfiguring: boolean;
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.08);
   const swatches = block.swatchData ? JSON.parse(block.swatchData) as Array<{
     name: string;
     hex: string;
@@ -2165,7 +2165,7 @@ const SwatchRowBlock = ({
         width: 52,
         height: 52,
         background: sw.hex,
-        border: '1px solid rgba(30,26,23,0.10)'
+        border: `1px solid ${inkAlpha(0.10)}`
       }} />
           <span style={{
         fontSize: 9,
@@ -2223,9 +2223,9 @@ const SourcesBlock = ({
   isConfiguring: boolean;
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const fg = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const fg = isDark ? paperAlpha(0.78) : inkAlpha(0.82);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const sources = parseSources(block.sourcesData);
   const updateSource = (idx: number, updates: Partial<(typeof sources)[number]>) => {
     onEditChange({
@@ -2437,8 +2437,8 @@ const SpacerBlock = ({
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
   const height = block.spacerHeight ?? 48;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.12)' : 'rgba(30,26,23,0.12)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.12) : inkAlpha(0.12);
   if (isConfiguring) {
     return <div style={{
       display: 'flex',
@@ -2507,9 +2507,9 @@ const SignatureBlock = ({
   onEditChange: (u: Partial<DocBlock>) => void;
   onStartEdit?: () => void;
 }) => {
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const fg = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const fg = isDark ? paperAlpha(0.78) : inkAlpha(0.82);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const author = block.sigAuthor ?? '';
   const year = block.sigYear ?? String(CURRENT_YEAR);
   if (isConfiguring) {
@@ -2595,8 +2595,8 @@ const LetterheadBlock = ({
   onEditChange: (u: Partial<DocBlock>) => void;
 }) => {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const dotColors = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
   const lh = parseLetterhead(block.letterheadData);
   const update = (patch: Partial<typeof DEFAULT_LETTERHEAD>) => {
@@ -2682,7 +2682,7 @@ const LetterheadBlock = ({
         color: fg, lineHeight: 1.2, marginBottom: 10, maxWidth: 600
       }}>{lh.title}</h1>
       <p style={{
-        fontSize: 14, color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+        fontSize: 14, color: isDark ? paperAlpha(0.55) : inkAlpha(0.66),
         lineHeight: 1.6, maxWidth: 520, marginBottom: 22
       }}>{lh.subtitle}</p>
       <div style={{
@@ -2706,12 +2706,12 @@ const LetterheadBlock = ({
 const DesignChartGalleryBlock = ({ isDark }: { isDark: boolean }) => (
   <div style={{
     background: isDark ? COLOR.darkCard : COLOR.dustLight,
-    border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
+    border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
     overflow: 'hidden'
   }}>
     <div style={{
       padding: '14px 18px',
-      borderBottom: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.08)'}`,
+      borderBottom: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -2729,7 +2729,7 @@ const DesignChartGalleryBlock = ({ isDark }: { isDark: boolean }) => (
       </div>
       <span style={{
         fontSize: 9,
-        color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
+        color: isDark ? paperAlpha(0.55) : inkAlpha(0.66)
       }}>from @onganda/design-system</span>
     </div>
     <div style={{
@@ -2791,9 +2791,9 @@ function DocBlockView({
   regenerating?: boolean;
 }) {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const bodyColor = isDark ? 'rgba(232,225,207,0.78)' : 'rgba(30,26,23,0.82)';
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const bodyColor = isDark ? paperAlpha(0.78) : inkAlpha(0.82);
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const selBorder = `${COLOR.ochreOrange}60`;
   const ACCENT_COLORS = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
   const accent = ACCENT_COLORS[idx % ACCENT_COLORS.length];
@@ -2803,7 +2803,7 @@ function DocBlockView({
   const isDragOver = dragState.overIdx === idx && dragState.draggingId !== block.id;
   const sharedTextareaStyle: React.CSSProperties = {
     width: '100%',
-    background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(30,26,23,0.03)',
+    background: isDark ? paperAlpha(0.04) : inkAlpha(0.03),
     border: `1px solid ${COLOR.ochreOrange}60`,
     outline: 'none',
     padding: '8px 10px',
@@ -3088,7 +3088,7 @@ function DocBlockView({
     cursor: 'default',
     transition: 'outline 0.15s',
     opacity: isDragging ? 0.35 : 1,
-    background: isDragOver ? isDark ? 'rgba(232,225,207,0.04)' : 'rgba(30,26,23,0.03)' : 'transparent'
+    background: isDragOver ? isDark ? paperAlpha(0.04) : inkAlpha(0.03) : 'transparent'
   }} data-onganda-block data-onganda-block-id={block.id} data-onganda-block-type={block.type} data-onganda-avoid-page-break={shouldAvoidPageBreak ? 'true' : undefined} data-onganda-page-break-before={block.pageBreakBefore ? 'true' : undefined} onClick={e => {
     e.stopPropagation();
     onSelect();
@@ -3153,7 +3153,7 @@ function DocBlockView({
         fontWeight: 600,
         cursor: 'pointer',
         background: 'transparent',
-        border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
+        border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
         color: muted,
         padding: '2px 8px',
         letterSpacing: '0.08em'
@@ -3161,7 +3161,7 @@ function DocBlockView({
         e.currentTarget.style.borderColor = COLOR.firedRed;
         e.currentTarget.style.color = COLOR.firedRed;
       }} onMouseLeave={e => {
-        e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)';
+        e.currentTarget.style.borderColor = isDark ? paperAlpha(0.15) : inkAlpha(0.15);
         e.currentTarget.style.color = muted;
       }}>✕ Remove</button>
       </div>}
@@ -3307,7 +3307,7 @@ function DocBlockView({
       }} style={{
         padding: '4px 8px',
         background: 'transparent',
-        border: `1px solid ${isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)'}`,
+        border: `1px solid ${isDark ? paperAlpha(0.10) : inkAlpha(0.10)}`,
         cursor: 'pointer',
         fontSize: 9,
         fontWeight: 600,
@@ -3316,7 +3316,7 @@ function DocBlockView({
         e.currentTarget.style.borderColor = COLOR.firedRed;
         e.currentTarget.style.color = COLOR.firedRed;
       }} onMouseLeave={e => {
-        e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+        e.currentTarget.style.borderColor = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
         e.currentTarget.style.color = muted;
       }}>✕ Remove</button>}
           <span style={{
@@ -3341,11 +3341,11 @@ const InsertPanel = ({
   const [activeCat, setActiveCat] = useState<string>('Text');
   const panelBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.dustPanel;
   const headerBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.dustHeader;
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const itemBg = isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.6)';
-  const itemHoverBg = isDark ? 'rgba(232,225,207,0.08)' : EDITOR_SURFACE.paperWarm;
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const itemBg = isDark ? paperAlpha(0.04) : 'rgba(255,255,255,0.6)';
+  const itemHoverBg = isDark ? paperAlpha(0.08) : EDITOR_SURFACE.paperWarm;
   const filtered = DOC_INSERT_PALETTE.filter(item => item.category === activeCat);
   return <div style={{
     width: 210,
@@ -3487,9 +3487,9 @@ const DocExportModal = ({
     setTimeout(tick, 280);
   };
   const panelBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.emberBrown;
-  const borderC = 'rgba(232,225,207,0.08)';
+  const borderC = paperAlpha(0.08);
   const fg = COLOR.milletClay;
-  const muted = 'rgba(232,225,207,0.55)';
+  const muted = paperAlpha(0.55);
   const formatColor = format === 'PDF' ? COLOR.ochreOrange : COLOR.mahanguGold;
   const exportOpts = [{
     label: 'Pages',
@@ -3602,7 +3602,7 @@ const DocExportModal = ({
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '8px 12px',
-              background: 'rgba(232,225,207,0.04)',
+              background: paperAlpha(0.04),
               border: `1px solid ${borderC}`
             }}>
                     <span style={{
@@ -3674,7 +3674,7 @@ const DocExportModal = ({
                 <div style={{
               width: '100%',
               height: 4,
-              background: 'rgba(232,225,207,0.08)'
+              background: paperAlpha(0.08)
             }}>
                   <motion.div animate={{
                 width: `${progress}%`
@@ -3699,7 +3699,7 @@ const DocExportModal = ({
                       <div style={{
                   width: 8,
                   height: 8,
-                  background: step.done ? COLOR.mahanguGold : 'rgba(232,225,207,0.15)'
+                  background: step.done ? COLOR.mahanguGold : paperAlpha(0.15)
                 }} />
                       <span style={{
                   fontSize: 10,
@@ -3897,10 +3897,10 @@ const DocToolbar = ({
   onToggleAutoLetterhead: () => void;
 }) => {
   const [editingTitle, setEditingTitle] = useState(false);
-  const bg = isDark ? COLOR.darkCard : '#F3E8C3';
-  const border = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.10)';
+  const bg = isDark ? COLOR.darkCard : COLOR.dustLight;
+  const border = isDark ? paperAlpha(0.08) : inkAlpha(0.10);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const mutedFg = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const mutedFg = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   const fmtBtns: Array<'PDF' | 'WORD'> = ['PDF', 'WORD'];
   const btnBase: React.CSSProperties = {
     padding: '4px 10px',
@@ -4092,7 +4092,7 @@ const DocToolbar = ({
         gap: 5,
         padding: '6px 14px',
         background: fmt === 'PDF' ? COLOR.ochreOrange : 'transparent',
-        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
+        border: fmt === 'PDF' ? 'none' : `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
         cursor: 'pointer',
         fontSize: 10,
         fontWeight: 700,
@@ -4114,7 +4114,7 @@ const DocToolbar = ({
           e.currentTarget.style.background = COLOR.ochreOrange;
           e.currentTarget.style.color = onColor(COLOR.ochreOrange);
         } else {
-          e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)';
+          e.currentTarget.style.borderColor = isDark ? paperAlpha(0.15) : inkAlpha(0.15);
           e.currentTarget.style.color = mutedFg;
         }
       }}>
@@ -4134,8 +4134,8 @@ const DocLetterhead = ({
   title: string;
 }) => {
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.10)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.10);
   const dotColors = [COLOR.ochreOrange, COLOR.firedRed, COLOR.mahanguGold, COLOR.mopaneBrown, COLOR.dyePlum];
   return <div>
       <div style={{
@@ -4216,7 +4216,7 @@ const DocLetterhead = ({
       }}>{title}</h1>
         <p style={{
         fontSize: 14,
-        color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+        color: isDark ? paperAlpha(0.55) : inkAlpha(0.66),
         lineHeight: 1.6,
         maxWidth: 520,
         marginBottom: 22
@@ -4291,9 +4291,9 @@ const TemplatePicker = ({
 }) => {
   const bg = isDark ? COLOR.darkBg : COLOR.milletClay;
   const cardBg = isDark ? COLOR.darkCard : EDITOR_SURFACE.paperWarm;
-  const border = isDark ? 'rgba(232,225,207,0.10)' : 'rgba(30,26,23,0.08)';
+  const border = isDark ? paperAlpha(0.10) : inkAlpha(0.08);
   const fg = isDark ? COLOR.milletClay : COLOR.charBlack;
-  const muted = isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)';
+  const muted = isDark ? paperAlpha(0.55) : inkAlpha(0.66);
   return <div style={{
     minHeight: '100vh',
     background: bg,
@@ -4338,7 +4338,7 @@ const TemplatePicker = ({
           alignItems: 'center',
           gap: 6,
           background: 'transparent',
-          border: `1px solid ${isDark ? 'rgba(232,225,207,0.1)' : 'rgba(30,26,23,0.15)'}`,
+          border: `1px solid ${isDark ? paperAlpha(0.1) : inkAlpha(0.1)}`,
           cursor: 'pointer',
           color: muted,
           fontSize: 11,
@@ -4349,7 +4349,7 @@ const TemplatePicker = ({
           e.currentTarget.style.borderColor = COLOR.ochreOrange;
           e.currentTarget.style.color = COLOR.barkRust;
         }} onMouseLeave={e => {
-          e.currentTarget.style.borderColor = isDark ? 'rgba(232,225,207,0.15)' : 'rgba(30,26,23,0.15)';
+          e.currentTarget.style.borderColor = isDark ? paperAlpha(0.15) : inkAlpha(0.15);
           e.currentTarget.style.color = muted;
         }}>
             <svg width="14" height="10" viewBox="0 0 7 5" fill="none" aria-hidden="true">
@@ -4364,7 +4364,7 @@ const TemplatePicker = ({
         </div>
         {onResume && <button onClick={onResume} style={{
         width: '100%',
-        background: isDark ? 'rgba(232,225,207,0.04)' : 'rgba(255,255,255,0.55)',
+        background: isDark ? paperAlpha(0.04) : 'rgba(255,255,255,0.55)',
         border: `1px solid ${COLOR.ochreOrange}45`,
         color: fg,
         padding: '14px 16px',
@@ -4410,7 +4410,7 @@ const TemplatePicker = ({
           transition: 'border-color 0.15s'
         }} onMouseEnter={e => {
           e.currentTarget.style.borderColor = `${opt.color}60`;
-          e.currentTarget.style.background = isDark ? 'rgba(232,225,207,0.05)' : 'rgba(30,26,23,0.02)';
+          e.currentTarget.style.background = isDark ? paperAlpha(0.05) : inkAlpha(0.02);
         }} onMouseLeave={e => {
           e.currentTarget.style.borderColor = border;
           e.currentTarget.style.background = cardBg;
@@ -4516,7 +4516,7 @@ const PageGuideOverlay = ({
       top: `${i * A4_PAGE_HEIGHT_MM}mm`,
       right: 10,
       paddingTop: 8,
-      color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+      color: isDark ? paperAlpha(0.55) : inkAlpha(0.66),
       fontSize: 9,
       fontWeight: 700,
       letterSpacing: '0.12em',
@@ -4686,7 +4686,7 @@ export const DocumentEditor = ({
   }, [history]);
   const pageBg = isDark ? COLOR.darkBg : COLOR.milletClay;
   const paperBg = isDark ? COLOR.darkCard : paperBackgroundHex(paperBackground);
-  const paperBorder = isDark ? 'rgba(232,225,207,0.08)' : 'rgba(30,26,23,0.08)';
+  const paperBorder = isDark ? paperAlpha(0.08) : inkAlpha(0.08);
   const citationCount = blocks.reduce((count, block) => block.type === 'sources' ? Math.max(count, parseSources(block.sourcesData).length) : count, 0);
   const handleTemplateSelect = (templateId: string, title: string) => {
     setDocTitle(title);
@@ -5089,7 +5089,7 @@ export const DocumentEditor = ({
                       </div>
                       <p style={{
                     fontSize: 14,
-                    color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+                    color: isDark ? paperAlpha(0.55) : inkAlpha(0.66),
                     letterSpacing: '0.06em',
                     margin: 0
                   }}>
@@ -5097,7 +5097,7 @@ export const DocumentEditor = ({
                       </p>
                       <p style={{
                     fontSize: 11,
-                    color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+                    color: isDark ? paperAlpha(0.55) : inkAlpha(0.66),
                     margin: 0
                   }}>
                         <span>Use the Insert panel on the left to add blocks.</span>
@@ -5123,13 +5123,13 @@ export const DocumentEditor = ({
                     <OngandaLogoMark size={14} />
                     <span style={{
                     fontSize: 9,
-                    color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)',
+                    color: isDark ? paperAlpha(0.55) : inkAlpha(0.66),
                     letterSpacing: '0.08em'
                   }}>{COPYRIGHT_NOTICE}</span>
                   </div>
                   <span style={{
                   fontSize: 9,
-                  color: isDark ? 'rgba(232,225,207,0.55)' : 'rgba(30,26,23,0.66)'
+                  color: isDark ? paperAlpha(0.55) : inkAlpha(0.66)
                 }}>{DOCUMENT_STATUS}</span>
                 </div>
               </div>

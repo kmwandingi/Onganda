@@ -46,6 +46,8 @@ export const MOTION_TOKENS = {
   ease: 'cubic-bezier(0.2, 0, 0, 1)',
   /** micro-motion moves in whole pixels, like the art */
   step: 'steps(2, end)',
+  /** a rule draws in, like an underline under a link */
+  draw: 'steps(4, end)',
   /** a clickable card rises this far on hover */
   lift: '4px',
   /** an icon steps this far on hover */
