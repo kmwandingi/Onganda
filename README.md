@@ -95,7 +95,8 @@ reset, so `bg-blue-500` does not compile:
 
 On Tailwind 3, the same vocabulary is a preset. One line in your config, and
 the roles, the type scale, zero radius and the pixel shadows are the
-utilities; Tailwind's palette is replaced:
+utilities; Tailwind's palette is replaced, and opacity modifiers
+(`bg-surface/50`) work on the roles:
 
 ```js
 // tailwind.config.cjs

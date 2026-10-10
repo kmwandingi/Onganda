@@ -530,7 +530,7 @@ The implementation modules are:
 1.  `onganda-tokens.ts`: color constants, cultural system data, charts, publication formats, guide annotations, and TypeScript interfaces.
 2.  `onganda-primitives.tsx`: atomic Onganda UI primitives such as pixel marks, hairline rules, tags, overlays, cards, buttons, logo marks, and dark-mode context.
 3.  `onganda-icons.tsx`: pixel-art interface and system icons.
-4.  `onganda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the Onganda palette.
+4.  `onganda-charts.tsx`: Recharts-based chart gallery and chart composition patterns using the active palette.
 5.  `onganda-maps.tsx`: Leaflet-backed maps with Onganda controls, markers, routes, popups, and accessibility behavior.
 6.  `onganda-sections.tsx`: composed page sections such as hero, navigation, diagrams, timelines, heatmaps, and icon showcase.
 7.  `onganda-publications.tsx`, `onganda-document-editor.tsx`, and `onganda-slide-editor.tsx`: larger product surfaces built on the same system.
@@ -622,7 +622,7 @@ Every design-system module passes `npm run check:tokens`. Remaining debt is
 structural, not chromatic:
 
 *   Many components still write approved palette literals inline instead of reading `roles(isDark)`. The colours are correct, so the check passes, but the mode branching is duplicated. Migrate a file to the role layer when you are already editing it. Do not copy the pattern into new code.
-*   `DocumentEditor` and `SlideEditor` use the `EDITOR_SURFACE` paper and panel tones. Those are editor-only surface variants, not brand identity colours, and they are sanctioned. Promote a new one into `EDITOR_SURFACE` rather than inlining a hex.
+*   `DocumentEditor` and `SlideEditor` use the `EDITOR_SURFACE` paper and panel tones, which come from each palette's `editor` slot. Those are editor-only surface variants, not brand identity colours, and they are sanctioned. Add a new one to every palette's `editor` slot rather than inlining a hex.
 *   `src/index.css` maps global Tailwind/shadcn-style variables to the Onganda palette so generic utilities such as `bg-background`, `text-foreground`, and `border-border` remain brand-aligned.
 *   The lint configuration allows the named library utilities that intentionally share modules with components. Add no broad Fast Refresh exemptions.
 

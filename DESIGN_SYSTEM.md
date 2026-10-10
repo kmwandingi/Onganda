@@ -288,7 +288,7 @@ most of the design:
 **Text and lines are brand ink at a fixed opacity, not new hues.** Use the steps
 in `ALPHA`, which is mode-aware: `body`, `muted`, `faint`, `line`, `lineStrong`,
 `control`, `controlHover`. They are measured against every ground in the
-system, including the eleven `EDITOR_SURFACE` tones. A step not in `ALPHA` is drift.
+system, including each palette's ten editor grounds. A step not in `ALPHA` is drift.
 
 `textFaint` is deliberately below 4.5:1. WCAG exempts inactive controls, and
 ordinals repeat information already in the adjacent label. **Never put meaning
@@ -379,6 +379,11 @@ the Okabe-Ito set, which stays distinct for every common colour-vision
 deficiency. Take colors from the front. Never reorder or substitute, so series index 2
 reads the same in every chart across a product.
 
+Series are not held to 3:1 on the ground. In every palette some sit under it
+(Onganda's ochre and mahangu gold; Okabe-Ito orange, pink and sky blue), so a
+chart never relies on hue alone: every series is in the legend, and a value a
+reader needs is on the axis or in the tooltip.
+
 ### Palettes
 
 A palette is the set of pigments the roles are built from. Every role above is
@@ -389,15 +394,16 @@ its `primaryInk` — so a palette changes every pigment and no rule.
 |---|---|---|---|
 | `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems | No green and no blue. Success is a check glyph on the settled tone, never a new hue. |
 | `coast` | Cool fog and signal amber: Radix slate, teal, amber, iris | Security, infrastructure, data tools | Cool, with one warm signal: amber is the secondary action and caution, and nothing else. Success is a check glyph on the settled slate, never a green. |
-| `etosha` | Salt pan, acacia and sun: Radix sand, grass, yellow, blue | Education, learning, public services | Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text. |
+| `etosha` | Salt pan, acacia and sun: Radix sand, grass and blue, Tailwind yellow | Education, learning, public services | Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text. |
 
 Every rule in this document that names a pigment describes the Onganda
 palette. Under another palette the role holds that palette's pigment and the
 palette's own rule (`PALETTE.rules`) replaces Onganda's hue rule.
 
 Each palette also carries five peer accents for light grounds and five for dark
-(the `accentFor` rotation and the five system identities) and six chart
-series. Every shipped palette passes the same contrast claims (`CONTRAST_CLAIMS`
+(the `accentFor` rotation and the five system identities), six chart series,
+and ten grounds for the document and slide editors (`editor`, read through
+`EDITOR_SURFACE`). Every shipped palette passes the same contrast claims (`CONTRAST_CLAIMS`
 in `onganda-roles.ts`) in both modes: `npm run check:contrast` measures them
 from source, and the browser audit measures the rendered showcase and test
 pages in each palette.
@@ -444,8 +450,8 @@ table. A failing palette is not shippable.
 does not reach components, which read the palette in JavaScript; choose a
 palette instead.
 
-The editors' paper tones (`EDITOR_SURFACE`) are the same warm papers in every
-palette: they are measured against the Onganda ink only.
+The editors' paper and panel tones (`EDITOR_SURFACE`) come from the palette's
+`editor` slot, and each palette's are measured against its own text roles.
 
 ---
 
@@ -1484,7 +1490,7 @@ import { ChartGallery } from '@onganda/design-system/charts';
 <ChartGallery isDark={false} />
 ```
 
-A composed showcase of all chart types using Recharts and the Onganda palette:
+A composed showcase of all chart types using Recharts and the active palette:
 bar, line, area, pie, radar, scatter, treemap, funnel, radial bar, and composed charts.
 
 **The gallery's own parts are exported**, so a product's chart can be the
@@ -2057,7 +2063,7 @@ guards over every design-system module and fails the build.
 | Rule | Catches |
 |---|---|
 | `tailwind-color` | `bg-blue-500` and every other generic Tailwind hue |
-| `off-palette-hex` | Any hex outside `COLOR` and `EDITOR_SURFACE` (an alpha suffix such as `#D9791F60` is fine) |
+| `off-palette-hex` | Any hex outside the shipped palettes, editor grounds included (an alpha suffix such as `#D9791F60` is fine) |
 | `off-palette-rgba` | `rgba()` on a colour the palette does not contain |
 | `modern-color-fn` | `oklch`, `oklab`, `lch`, `lab` |
 | `system-colour-as-chrome` | A system hue bound to a `background` or `border*` property |

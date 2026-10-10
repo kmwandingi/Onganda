@@ -11,9 +11,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 from the same source: the roles as colours through their CSS variables, the
 type scale, zero radius and the pixel shadows, with Tailwind's own palette
 replaced. One line in `tailwind.config.cjs`:
-`presets: [require('@onganda/design-system/tailwind.preset.cjs')]`. Compiled
-against Tailwind 3 (`bg-blue-500` does not exist); the package smoke test loads
-it.
+`presets: [require('@onganda/design-system/tailwind.preset.cjs')]`. Each
+colour is a Tailwind 3 function colour, so an opacity modifier works
+(`bg-surface/50` mixes the role with transparent through `color-mix()`). The
+package smoke test compiles it with Tailwind 3 from a consumer install: the
+roles are utilities, the modifier works, and `bg-blue-500` does not exist.
 
 ### Added — each palette carries its own hue rule
 
@@ -44,6 +46,35 @@ cells with colours from `COLOR` or `accentFor(i)` for marks, so they follow the
 palette; `validatePixelIconDef()` checks them. The guidance no longer puts an
 icon tile on every feature card: a lead icon goes on peers that differ in kind.
 
+### Fixed — what still showed Onganda under another palette
+
+A pass over every surface in `coast` and `etosha` found these, now fixed:
+
+- **CommonJS.** `PALETTE` was reassigned, and a CommonJS build copies an export
+  once, so `require()` kept the Onganda palette. It is now one object updated in
+  place; ask which palette is active with `activePalette()` (newly exported from
+  the root). The package smoke test selects `coast` through `require()`.
+- **Copy that described Onganda.** The chart gallery footer, the hero line and
+  the "Palette" principle now name the active palette; the document editor's
+  principles and swatches read `PRINCIPLES` and `SWATCHES` instead of their own
+  Onganda copies, and its paper choices are named from the palette.
+- **The map** tinted its tiles sepia in every palette; that warmth is now
+  Onganda's only.
+- **The PowerPoint export** wrote Onganda's paper and muted text, and the
+  primary as small text. It now takes the palette's editor paper, the muted role
+  and the accent ink, as the slide canvas does.
+- **The document editor** set the callout label in fired red and a stat value
+  in the primary at any contrast. Each now falls back to text where it fails
+  (4.5:1, and 3:1 for the large stat); under `onganda` both render as before.
+- **The public-site tones** were computed once, at load.
+- **The hero ticker** set coast's and etosha's ink-dark peers on the black band;
+  a name under 3:1 there takes paper. Onganda's ticker is unchanged.
+
+Chart series are not held to 3:1 in any palette; `DESIGN_SYSTEM.md` now says so
+and what carries the meaning instead. The Tailwind 3 preset takes opacity
+modifiers. A smoke test checks that the palette parser the checks use reads
+exactly what the compiled module holds.
+
 ### Fixed — a palette selected after the system loaded was lost
 
 The first version read the palette once, at load, and assumed the palette file
@@ -70,13 +101,17 @@ selectPalette('coast');
 
 - **Three palettes.** `onganda` (the default, unchanged), `coast` (cool fog and
   signal amber: Radix Colors slate, teal, amber, iris, red) and `etosha` (salt
-  pan, acacia and sun: Radix sand, grass, yellow, blue, red). The new two use
+  pan, acacia and sun: Radix sand, grass, blue, red, and Tailwind's yellow-400
+  for the sun). The new two use
   the Okabe-Ito chart series, distinct for every common colour-vision
   deficiency.
 - **Every palette meets the same contrast claims.** The claims moved into
   `CONTRAST_CLAIMS` (`onganda-roles.ts`); `check:contrast` measures every
-  palette in both modes (308 measurements), and the browser audit measures the
-  showcase and two test pages in `coast` and `etosha`, light and dark.
+  palette in both modes, editor grounds included (408 measurements). The
+  browser audit measures the showcase and two test pages in `coast` and
+  `etosha` (the test pages in both modes; the showcase has no page-wide dark
+  mode, so its Control Standards dark switch is audited instead), and both
+  editors in every palette.
 - **Everything follows.** `COLOR`, the roles, statuses, peer accents, system
   identities, chart series, the weave, the brand-guide swatches, the CSS
   variables (written to the page for a non-default palette) and the token
@@ -95,7 +130,9 @@ To make the components follow, 351 hard-coded ink and paper `rgba()` values
 became `inkAlpha()` / `paperAlpha()` and 203 hard-coded hex values became
 `COLOR` references or pigment variables. Under `onganda` every one renders the
 same: the visual baselines pass unregenerated. The five system icons keep their
-own pixel colours, and the editors' paper tones stay warm in every palette.
+own pixel colours. Each palette carries its own ten editor grounds (`editor`,
+read through `EDITOR_SURFACE`), so the document and slide editors and the
+PowerPoint export are cool under `coast` and neutral under `etosha`.
 
 ### Added — `PixelPeers`: the showcase's peer colouring is the default
 
