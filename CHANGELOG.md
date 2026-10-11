@@ -46,6 +46,13 @@ cells with colours from `COLOR` or `accentFor(i)` for marks, so they follow the
 palette; `validatePixelIconDef()` checks them. The guidance no longer puts an
 icon tile on every feature card: a lead icon goes on peers that differ in kind.
 
+### Changed — agents stay on the Onganda palette unless asked
+
+An agent given a bookkeeping brief read the palette table's "For" column and
+switched to `coast` unasked. The guide's first step is now to stay on
+`onganda`, and every guide says to choose another palette only when the
+product asks for one.
+
 ### Fixed — what still showed Onganda under another palette
 
 A pass over every surface in `coast` and `etosha` found these, now fixed:

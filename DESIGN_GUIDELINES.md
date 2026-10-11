@@ -8,7 +8,7 @@ This document serves as the single source of truth for the design language of **
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
 > There is no corner radius, no blurred shadow and no second typeface. The
-> Onganda palette has no green and no blue; a product that needs other hues
+> Onganda palette has no green and no blue; a product that asks for other hues
 > chooses another shipped palette whole, never a hex at a time. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
@@ -106,7 +106,7 @@ The colour rules, all measured and all enforced by `npm run check:design`:
     `lineStrong` sit below the contrast floors, and they are reserved for
     disabled text, ordinals, and decorative dividers.
 6.  **The Onganda palette has no green and no blue, and none may be added to
-    it.** A product that needs other hues chooses another palette (see
+    it.** A product that asks for other hues chooses another palette (see
     "Palettes" below). The four status colours are `active` (ochre), `caution`
     (gold), `critical` (fired red), and `settled` (mopane brown) in Onganda,
     and the same four slots in every palette. Read them through
@@ -126,7 +126,8 @@ infrastructure and data tools) and `etosha` (salt pan, acacia and sun, for
 education and public services). The roles are the same in all three; only the
 pigments change. A rule here that names a pigment ("the primary is ochre", "no
 green and no blue") describes Onganda; another palette's own hue rule is its
-`rules` field, and the showcase shows it on the Control Standards section. A product chooses one in a
+`rules` field, and the showcase shows it on the Control Standards section. Keep `onganda` unless the
+product asks for another; a product that does chooses it in a
 single file with `selectPalette()` from `@onganda/design-system/palettes`,
 imported by the entry before the first render. `DESIGN_SYSTEM.md` §4 has the details.
 

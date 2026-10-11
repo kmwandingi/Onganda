@@ -6,7 +6,7 @@ Read `DESIGN_SYSTEM.md` §4 (Color Roles) and §5 (Controls) before styling anyt
 
 Before changing design data, read:
 
-- `onganda-palettes.ts` for the palettes (`onganda`, `coast`, `etosha`); a product chooses one with `selectPalette()` in one file. Never add a hex to get another colour.
+- `onganda-palettes.ts` for the palettes (`onganda`, `coast`, `etosha`); `onganda` unless the product asks for another, chosen with `selectPalette()` in one file. Never add a hex to get another colour.
 - `onganda-colors.ts` for `COLOR`, built from the chosen palette, and the surface tokens.
 - `onganda-roles.ts` for `roles()`, `ALPHA`, `statusFor()`, `onColor()`, `SYSTEM_COLOR`, `COLOR_POLICY`.
 - `onganda-types.ts` for shared types.

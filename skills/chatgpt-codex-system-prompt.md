@@ -29,11 +29,13 @@ Build products that feel unmistakably Onganda without copying the showcase's con
 These six steps produce a screen that looks like the showcase. Do them before
 reading the rest of this guide; the rest explains why they work.
 
-1. **Choose the palette in one file.** Create `src/onganda-palette.ts`:
+1. **Stay on the Onganda palette.** It is the default and needs no code. Only
+   when the product asks for another palette (`coast`, `etosha`, or its own
+   colours) choose it in one file, `src/onganda-palette.ts`:
 
    ```ts
    import { selectPalette } from '@onganda/design-system/palettes';
-   selectPalette('onganda'); // or 'coast', 'etosha', or your own definePalette({...})
+   selectPalette('coast'); // or 'etosha', or your own definePalette({...})
    ```
 
    Import it on the first line of `main.tsx`, so it runs before the first
@@ -328,6 +330,8 @@ same in every palette, so the rules in this guide do too: the primary action is
 `actionBg`, the accent ink is `accentInk`, peers rotate through the palette's
 five peer accents. Only the pigments change.
 
+Use `onganda` unless the product's brief asks for another palette or its own colours. The "For" column says what each palette was made for; it is not a reason to switch unasked.
+
 | Palette | Mood | For | Its own hue rule (`rules`) |
 |---|---|---|---|
 | `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems | No green and no blue. Success is a check glyph on the settled tone, never a new hue. |
@@ -458,7 +462,7 @@ before you claim it is done.
 - Preserve the product's business goals, domain model, and information architecture. Onganda governs presentation and interaction.
 - Reuse existing tokens, primitives, icons, and patterns EXCLUSIVELY.
 - Style from `roles(isDark)`, not from the palette. Being in `COLOR` does not make a token available for any purpose, and every role value is measured against WCAG AA.
-- The primary action is ochre with a char black label and a bark rust edge; the in-card accent is mahangu gold with a mopane edge; danger is bark rust with a fired red edge. Char black is ink and the inverse band, never the primary fill. Ochre orange is a **fill**, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — read `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. System colours mean membership when a component picks them: mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo, and bark rust identifies Oshini; they reach chrome only through roles. The Onganda palette has no green and no blue; do not add one to it. A product that needs other hues chooses another palette. Read status through `statusFor(name, isDark)`. These pigments are the Onganda palette's; under `coast` or `etosha` the same roles hold that palette's pigments, and the role is the rule.
+- The primary action is ochre with a char black label and a bark rust edge; the in-card accent is mahangu gold with a mopane edge; danger is bark rust with a fired red edge. Char black is ink and the inverse band, never the primary fill. Ochre orange is a **fill**, with char black on it. As ink on a light surface it is 2.4:1, so the light-mode accent ink is bark rust — read `accentInk`, never a raw token. Fired red is an indicator only: status marks and invalid borders, never behind small text and never error-message text. System colours mean membership when a component picks them: mahangu gold, mopane brown, and dye plum identify Ombiga, Etiti, and Oshitoo, and bark rust identifies Oshini; they reach chrome only through roles. The Onganda palette has no green and no blue; do not add one to it. A product that asks for other hues chooses another palette. Read status through `statusFor(name, isDark)`. These pigments are the Onganda palette's; under `coast` or `etosha` the same roles hold that palette's pigments, and the role is the rule.
 - Colour is never the only carrier of state: an invalid field has a border, a marker, and a message; a status mark has a label and a hairline ring.
 - Never write a raw hex, an `rgba()`, or a generic framework color class in a component.
 - Never hand-roll a control. Use `PixelButton`, `PixelInput`, `PixelTextarea`, `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, and `PixelToggle`. One primary action per view, and no rounded corners anywhere. A control on an inverse surface takes the dark role set — pass `isDark`. A control that is not in the `/showcase` Control Standards section does not exist yet.

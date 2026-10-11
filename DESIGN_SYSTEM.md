@@ -9,7 +9,7 @@ Earthy palette, pixel-art SVG primitives, basket-weave textures, quiet mechanica
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
 > There is no corner radius, no blurred shadow and no second typeface. The
-> Onganda palette has no green and no blue; a product that needs other hues
+> Onganda palette has no green and no blue; a product that asks for other hues
 > chooses another shipped palette whole, never a hex at a time. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
@@ -365,7 +365,7 @@ so a bare dot also needs a hairline: `<PixelDot ring={c.lineStrong} />`.
 
 **The Onganda palette is earth-derived. It has no green and no blue, and none
 may be added to it.** Success reads as a check glyph on a settled tone. A
-product that needs other hues chooses another palette (below).
+product that asks for other hues chooses another palette (below).
 
 ### Charts
 
@@ -389,6 +389,8 @@ reader needs is on the axis or in the tooltip.
 A palette is the set of pigments the roles are built from. Every role above is
 defined by a palette SLOT — `actionBg` is the palette's `primary`, `accentInk`
 its `primaryInk` — so a palette changes every pigment and no rule.
+
+Use `onganda` unless the product's brief asks for another palette or its own colours. The "For" column says what each palette was made for; it is not a reason to switch unasked.
 
 | Palette | Mood | For | Its own hue rule (`rules`) |
 |---|---|---|---|
@@ -1919,7 +1921,7 @@ on this system.
   bark rust. Char black is ink, never the primary fill.
 - Fired red is an indicator: critical status and invalid borders. It never sits
   behind small text and is never error-message text.
-- The Onganda palette has no green and no blue. Do not add one for success or info; a product that needs them chooses another palette.
+- The Onganda palette has no green and no blue. Do not add one for success or info; a product that asks for them chooses another palette.
 - Read status through `statusFor(name, isDark)`, never `STATUS[name]`.
 - `npm run check:design` enforces all of this across every design-system module.
 

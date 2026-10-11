@@ -8,7 +8,7 @@ Onganda is the pixel editorial design language for the Namibia AI Systems Lab. I
 > type step, spacing value, border width and motion value. **Anything not in
 > that file is not Onganda and is not acceptable**, in code or in design.
 > There is no corner radius, no blurred shadow and no second typeface. The
-> Onganda palette has no green and no blue; a product that needs other hues
+> Onganda palette has no green and no blue; a product that asks for other hues
 > chooses another shipped palette whole, never a hex at a time. If the system lacks something you need, extend the system — see
 > [FOR_DESIGNERS.md](./FOR_DESIGNERS.md) and `DESIGN_GUIDELINES.md` §3.
 > `npm run check:design` fails on every violation.
@@ -45,10 +45,11 @@ on `/showcase` to copy any section or element as working code.
 There is no registry release yet. `npm install @onganda/design-system`
 returns a 404 until the scoped package is published.
 
-**Choose a palette in one file.** `onganda` (warm earth, the default),
-`coast` (cool fog and signal amber, for security and data tools) or `etosha`
-(salt pan, acacia and sun, for education and public services). All three pass
-the same contrast claims in light and dark.
+**The palette is `onganda` (warm earth) unless the product asks for another.**
+Two more ship: `coast` (cool fog and signal amber, for security and data tools)
+and `etosha` (salt pan, acacia and sun, for education and public services). All
+three pass the same contrast claims in light and dark. A product that asks for
+one chooses it in one file:
 
 ```ts
 // src/onganda-palette.ts
@@ -328,7 +329,7 @@ WCAG AA rather than chosen by eye:
   foreground is 4.05:1, so it never sits behind small text.
 - Mahangu gold, mopane brown, and dye plum identify systems and carry chart
   series. They are not interface chrome.
-- The Onganda palette has no green and no blue, and none may be added to it. A product that needs other hues chooses `coast` or `etosha`, or defines its own palette.
+- The Onganda palette has no green and no blue, and none may be added to it. A product that asks for other hues chooses `coast` or `etosha`, or defines its own palette.
 
 Never hand-roll a control. `PixelButton`, `PixelInput`, `PixelTextarea`,
 `PixelSelect`, `PixelField`, `PixelCheckbox`, `PixelRadio`, and `PixelToggle`
