@@ -766,6 +766,10 @@ export type PixelButtonProps = {
    *  stopPropagation, and a bare `() => void` makes that impossible. */
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   href?: string;
+  /** with `href`: `_blank` for a page outside the product, such as a cited
+   *  source. Pass `rel="noopener noreferrer"` with it. */
+  target?: string;
+  rel?: string;
   className?: string;
   /** steps up and left 2px onto a hard 4px pixel shadow on hover — the
    *  expressive call to action. Use it on one or two buttons a page, not all. */
@@ -796,6 +800,8 @@ export const PixelButton = ({
   disabled = false,
   onClick,
   href,
+  target,
+  rel,
   lift = false,
   type = 'button',
   className = '',
@@ -859,6 +865,8 @@ export const PixelButton = ({
         {...rest}
         {...MOTION.tap}
         href={href}
+        target={target}
+        rel={rel}
         style={style}
         className={`onganda-focus ${className}`}
         onMouseEnter={e => enter(e.currentTarget)}
