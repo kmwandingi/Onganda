@@ -15,6 +15,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
   text, with icons on the text line. For sources, suggested questions, reply
   options and "Show more", where a box would be noise. On `/showcase` in
   Control Standards and asserted in `control-standards.spec.ts`.
+- **`PixelButton` takes `target` and `rel`** with `href`, so a link to a page
+  outside the product, such as a cited source, can open in a new tab safely.
 - **`TYPE.caption`**, 12px sentence case: the step to drop to when metadata
   would wrap at 14px.
 - **`PixelPanel`**'s ordinal tag no longer shrinks into the card's edge when a

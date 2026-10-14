@@ -679,6 +679,10 @@ Each item below happened in a real product and passed every automated check.
   Shorten the copy first, then drop a step on the type scale (`caption`, 12px,
   is for metadata), then use smaller icons. Wrap only on very narrow screens,
   and never let a tag or label overflow its container or truncate it.
+- **Content set as tags.** `PixelTag` and eyebrows are labels of one to three
+  words. A sentence or a list a person must read, such as the details an
+  assistant still needs, is sentence-case text, never a stack of uppercase
+  tags.
 - **Checking one state.** Check spacing at 390, 768 and 1280px, and in every
   state the surface reaches: empty, first result, a follow-up, a long list or
   conversation that scrolls, loading and error. A chat that looks right with

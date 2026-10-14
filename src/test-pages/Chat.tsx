@@ -9,7 +9,7 @@ import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   ICON_SIZE, IconArrowRight, IconArrowUp, IconExternalLink, IconRefresh, IconUser, PixelButton,
   PixelDot, PixelIconButton, PixelInputGroup, PixelSkeleton,
-  PixelTag, PixelTextarea, TYPE, createPixelIcon, roles, statusFor, useDark, type StatusName
+  PixelTextarea, TYPE, createPixelIcon, roles, statusFor, useDark, type StatusName
 } from '@onganda/design-system';
 import { TestFrame } from './shell';
 
@@ -45,7 +45,7 @@ const ANSWER: Turn = {
 const CLARIFY: Turn = {
   role: 'assistant', status: 'caution', state: 'One more detail needed',
   text: 'Visa rules depend on the passport you travel on. Which country issued yours?',
-  sources: [], needs: ['Nationality']
+  sources: [], needs: ['Your nationality', 'Where you are now']
 };
 
 function RailTurn({ mark, label, labelColor, aside, last, children }: {
@@ -99,7 +99,7 @@ function SourceList({ sources }: { sources: Source[] }) {
         <div key={s.title} style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', alignItems: 'baseline', columnGap: 10, padding: '4px 0' }}>
           <span style={{ minWidth: 20, padding: '0 4px', background: c.surfaceWell, color: c.accentInk, fontSize: TYPE.meta.size, fontWeight: 700, textAlign: 'center' }}>{i + 1}</span>
           <span style={{ minWidth: 0 }}>
-            <PixelButton variant="link" href="#">{s.title} <IconExternalLink size={ICON_SIZE.inline} /></PixelButton>
+            <PixelButton variant="link" href="#">{s.title}<IconExternalLink size={ICON_SIZE.inline} /></PixelButton>
             <div style={{ color: c.textMuted, fontSize: TYPE.caption.size, marginTop: 2 }}>{s.publisher} · {s.checked}</div>
           </span>
         </div>
@@ -124,9 +124,16 @@ function AssistantTurn({ turn, last }: { turn: Extract<Turn, { role: 'assistant'
     >
       <CitedText text={turn.text} count={turn.sources.length} />
       {turn.needs && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
-          <span style={{ ...LABEL, color: c.textMuted }}>To answer, I need</span>
-          {turn.needs.map(n => <PixelTag key={n} label={n} />)}
+        <div style={{ marginTop: 12, padding: '10px 14px', background: c.surfaceWell }}>
+          <div style={{ ...LABEL, color: c.textMuted, marginBottom: 6 }}>To answer, I need</div>
+          {/* Content in sentence case, not uppercase tags: tags are labels. */}
+          <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 4 }}>
+            {turn.needs.map(n => (
+              <li key={n} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: TYPE.meta.size, color: c.text }}>
+                <PixelDot color={c.accentInk} size={5} />{n}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
       {turn.sources.length > 0 && <SourceList sources={turn.sources} />}
@@ -194,7 +201,7 @@ export const Chat = () => {
                   {SUGGESTED.map(s => (
                     <li key={s.question} style={{ borderTop: `1px solid ${c.line}`, padding: '10px 0' }}>
                       <PixelButton variant="link" onClick={() => ask(s.question)}>
-                        {s.question} <IconArrowRight size={ICON_SIZE.inline} />
+                        {s.question}<IconArrowRight size={ICON_SIZE.inline} />
                       </PixelButton>
                     </li>
                   ))}
