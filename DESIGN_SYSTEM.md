@@ -274,7 +274,7 @@ most of the design:
 | | `dangerBg` / `dangerFg` | Bark Rust / Millet Clay | Bark Rust / Millet Clay | Destructive action |
 | | `dangerBorder` | Fired Red | Fired Red | The danger edge — where "red means danger" lives on the button |
 | | `dangerHoverBg` / `dangerHoverFg` | Char Black / Millet Clay | Millet Clay / Char Black | Danger hover |
-| | `ghostBorder` / `ghostFg` | ink 51% / Char Black | paper 42% / Millet Clay | Quiet alternative |
+| | `ghostBg` / `ghostBorder` / `ghostFg` | ink 10% / ink 10% / Char Black | paper 10% / paper 10% / Millet Clay | Quiet alternative: a wash, no outline |
 | | `ghostHoverBorder` / `ghostHoverFg` | Bark Rust | Ochre Orange | Ghost hover |
 | Field | `fieldBg` | transparent | transparent | Field ground |
 | | `fieldBorder` | ink 51% | paper 42% | The control's visible boundary (3:1 floor) |
@@ -487,6 +487,7 @@ import { PixelButton } from '@onganda/design-system';
 <PixelButton variant="accent" href="/manifesto">Read the manifesto</PixelButton>
 <PixelButton variant="ghost" isDark>Cancel</PixelButton>
 <PixelButton variant="danger" onClick={remove}>Delete</PixelButton>
+<PixelButton variant="link" href={source.url}>Application fees</PixelButton>
 <PixelButton variant="primary" disabled>Saving…</PixelButton>
 ```
 
@@ -494,8 +495,9 @@ import { PixelButton } from '@onganda/design-system';
 |---|---|---|---|
 | `primary` | Ochre, bark rust edge → mopane brown | Ochre → mahangu gold | The one main action in a view |
 | `accent` | Mahangu gold, mopane edge → dye plum | Mahangu gold → millet clay | An action inside a card that already sits on the page's primary |
-| `ghost` | Transparent, ink-50% border → bark rust | Transparent, paper-42% border → ochre | The quiet alternative next to a primary |
+| `ghost` | Ink 10% wash, no outline → bark rust edge and label | Paper 10% wash → ochre edge and label | The quiet alternative next to a primary |
 | `danger` | Bark rust, fired red edge → char black | Bark rust, fired red edge → millet clay | Destroys something |
+| `link` | Bark rust text, underlined, no box → char black | Ochre text, underlined → millet clay | A text action: a source, a reply option, "Show more". Not everything clickable is a box |
 
 The primary is ochre, not char black. A black primary made every screen read
 as a black slab with some cream around it: the heaviest object on the page was
@@ -628,7 +630,7 @@ and the native props.
 ### Utility controls
 
 Tab chips, filter buttons, mode toggles, and canvas tools are not `PixelButton`.
-They follow the ghost recipe — transparent ground, `fieldBorder`, `text` label,
+They take a transparent ground, `fieldBorder`, a `text` label,
 `accentInk` when active or focused — at a smaller scale. They never take a system
 color and never take a fill other than `surface` or `controlOn`.
 
@@ -2026,6 +2028,7 @@ If you think a step is missing, the question is not "should we add it" — it is
 | `label` | 11 | 700 | 0.18em | 1.5 | UPPER | A standalone identifier in a dense strip — the system name in the ticker |
 | `eyebrow` | 12 | 700 | 0.16em | 1.33 | UPPER | **THE eyebrow.** Above every section headline, every nav item, every card's role line |
 | `code` | 12 | 400 | — | 2.0 | — | Terminal and code lines. Airy because it is read line by line |
+| `caption` | 12 | 400 | — | 1.45 | — | Metadata under an item: a source's publisher and date, a timestamp. The step to drop to when 14px would wrap |
 | `ui` | 14 | 600 | — | 1.43 | — | The button and control label — "Request a conversation" |
 | `meta` | 14 | 500 | — | 1.43 | — | A subtitle directly under a title — "Granary" under "Okaanda" |
 | `body` | 14 | 400 | — | 1.6 | — | Default body, and the body of every card |

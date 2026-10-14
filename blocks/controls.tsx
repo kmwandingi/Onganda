@@ -228,7 +228,7 @@ export function OneRecipePerControlNoFreeChoicesSection() {
                 <span
                   aria-hidden="true"
                   className="h-5 w-5 shrink-0"
-                  style={{ background: c.ghostBorder, border: `1px solid ${c.lineStrong}` }}
+                  style={{ background: c.fieldBorder, border: `1px solid ${c.lineStrong}` }}
                 />
                 <dt className="w-28 shrink-0 font-mono text-xs sm:w-40" style={{ color: c.text }}>
                   fieldBorder
@@ -346,12 +346,13 @@ export function OneRecipePerControlNoFreeChoicesSection() {
                   </div>
                 </DensityProvider>
               </div>
-              <PixelSubhead spaced>Buttons · four intents</PixelSubhead>
+              <PixelSubhead spaced>Buttons · five intents</PixelSubhead>
               <div className="flex flex-wrap items-center gap-3">
                 <PixelButton variant="primary">Primary</PixelButton>
                 <PixelButton variant="accent">Accent</PixelButton>
                 <PixelButton variant="ghost">Ghost</PixelButton>
                 <PixelButton variant="danger">Delete</PixelButton>
+                <PixelButton variant="link">Link</PixelButton>
                 <PixelButton variant="primary" disabled>Disabled</PixelButton>
                 <PixelIconButton label="Move up"><span aria-hidden="true">↑</span></PixelIconButton>
               </div>

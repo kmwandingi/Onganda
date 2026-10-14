@@ -57,7 +57,7 @@ const expectEdge = (scope: Page | ReturnType<Page['locator']>, name: string, val
 test('every sanctioned control is present in the showcase', async ({ page }) => {
   const section = await openControls(page);
 
-  for (const label of ['Primary', 'Accent', 'Ghost', 'Delete', 'Disabled']) {
+  for (const label of ['Primary', 'Accent', 'Ghost', 'Delete', 'Link', 'Disabled']) {
     await expect(section.getByRole('button', { name: label, exact: true })).toBeVisible();
   }
   await expect(section.locator('input[type="radio"]')).toHaveCount(4);
@@ -93,7 +93,15 @@ test('light mode: each button intent has its measured recipe', async ({ page }) 
   await expectFg(section, 'Delete', MILLET_CLAY);
   await expectEdge(section, 'Delete', FIRED_RED);
 
-  await expectBg(section, 'Ghost', 'rgba(0, 0, 0, 0)');
+  // Ghost is a tonal wash of ink with no outline; its edge matches the wash.
+  await expectBg(section, 'Ghost', 'rgba(30, 26, 23, 0.1)');
+  await expectEdge(section, 'Ghost', 'rgba(30, 26, 23, 0.1)');
+
+  // Link is text in the accent ink, underlined, with no box.
+  await expectBg(section, 'Link', 'rgba(0, 0, 0, 0)');
+  await expectFg(section, 'Link', BARK_RUST);
+  await expect.poll(() => section.getByRole('button', { name: 'Link', exact: true })
+    .evaluate(el => getComputedStyle(el).textDecorationLine)).toBe('underline');
 });
 
 test('dark mode: the fills hold and the edges match them', async ({ page }) => {

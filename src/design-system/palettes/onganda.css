@@ -56,7 +56,9 @@
   --onganda-danger-hover-bg: #1E1A17;
   --onganda-danger-hover-fg: #E8E1CF;
   --onganda-danger-hover-border: #1E1A17;
-  --onganda-ghost-border: rgba(30,26,23,0.51);
+  --onganda-ghost-bg: rgba(30,26,23,0.1);
+  --onganda-ghost-hover-bg: rgba(30,26,23,0.1);
+  --onganda-ghost-border: rgba(30,26,23,0.1);
   --onganda-ghost-fg: #1E1A17;
   --onganda-ghost-hover-border: #8F3E21;
   --onganda-ghost-hover-fg: #8F3E21;
@@ -121,7 +123,9 @@
   --onganda-danger-hover-bg: #E8E1CF;
   --onganda-danger-hover-fg: #1E1A17;
   --onganda-danger-hover-border: #E8E1CF;
-  --onganda-ghost-border: rgba(232,225,207,0.42);
+  --onganda-ghost-bg: rgba(232,225,207,0.1);
+  --onganda-ghost-hover-bg: rgba(232,225,207,0.1);
+  --onganda-ghost-border: rgba(232,225,207,0.1);
   --onganda-ghost-fg: #E8E1CF;
   --onganda-ghost-hover-border: #D9791F;
   --onganda-ghost-hover-fg: #D9791F;

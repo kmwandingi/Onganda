@@ -2518,12 +2518,13 @@ export const ControlStandards = () => {
                   </DensityProvider>
                 </div>
 
-                <SubLabel isDark={isDark} spaced>Buttons · four intents</SubLabel>
+                <SubLabel isDark={isDark} spaced>Buttons · five intents</SubLabel>
                 <div className="flex flex-wrap items-center gap-3">
                   <PixelButton variant="primary" isDark={isDark}>Primary</PixelButton>
                   <PixelButton variant="accent" isDark={isDark}>Accent</PixelButton>
                   <PixelButton variant="ghost" isDark={isDark}>Ghost</PixelButton>
                   <PixelButton variant="danger" isDark={isDark}>Delete</PixelButton>
+                  <PixelButton variant="link" isDark={isDark}>Link</PixelButton>
                   <PixelButton variant="primary" isDark={isDark} disabled>Disabled</PixelButton>
                   <PixelIconButton label="Move up" isDark={isDark}><span aria-hidden="true">↑</span></PixelIconButton>
                 </div>

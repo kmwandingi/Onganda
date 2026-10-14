@@ -1,14 +1,14 @@
 // ─── /test/chat — an embedded assistant ──────────────────────────────────────
 // A chat or assistant panel, built only from the package. Each turn sits on a
 // rail: a 24px mark joined to the next turn by a hairline, a small caps label,
-// then the content at reading size. Starter questions are peer cards; sources
-// are shown with the answer, numbered, never folded away; the field and its
-// action are one control.
+// then the content at reading size. Starter questions, sources and feedback
+// are text actions (`variant="link"`), not boxes; sources are shown with the
+// answer, numbered, never folded away; the field and its action are one control.
 
-import { Fragment, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  ICON_SIZE, IconArrowUp, IconCheck, IconClose, IconRefresh, IconUser, PixelButton,
-  PixelDot, PixelIconButton, PixelInputGroup, PixelPanel, PixelPeers, PixelSkeleton,
+  ICON_SIZE, IconArrowRight, IconArrowUp, IconExternalLink, IconRefresh, IconUser, PixelButton,
+  PixelDot, PixelIconButton, PixelInputGroup, PixelSkeleton,
   PixelTag, PixelTextarea, TYPE, createPixelIcon, roles, statusFor, useDark, type StatusName
 } from '@onganda/design-system';
 import { TestFrame } from './shell';
@@ -25,10 +25,10 @@ const READING = { fontSize: TYPE.body.size, lineHeight: 1.6 } as const;
 const LABEL = { fontSize: TYPE.eyebrow.size, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' } as const;
 
 const SUGGESTED = [
-  { topic: 'Visas', question: 'Do I need a visa to visit Namibia?' },
-  { topic: 'Work permits', question: 'What documents does a work permit need?' },
-  { topic: 'Registration', question: 'How much is a duplicate birth certificate?' },
-  { topic: 'Study permits', question: 'Where do I apply for a study permit?' }
+  { question: 'Do I need a visa to visit Namibia?' },
+  { question: 'What documents does a work permit need?' },
+  { question: 'How much is a duplicate birth certificate?' },
+  { question: 'Where do I apply for a study permit?' }
 ];
 
 type Source = { title: string; publisher: string; checked: string };
@@ -39,7 +39,7 @@ type Turn =
 const ANSWER: Turn = {
   role: 'assistant', status: 'settled', state: 'Answered',
   text: 'A duplicate birth certificate costs N$100 for the first copy [1]. Apply at any regional office with your ID [1].',
-  sources: [{ title: 'Application fees', publisher: 'Ministry of Home Affairs · Civil registration', checked: 'Checked 2026-10-14' }]
+  sources: [{ title: 'Application fees', publisher: 'Ministry of Home Affairs', checked: '14 Oct 2026' }]
 };
 
 const CLARIFY: Turn = {
@@ -79,10 +79,31 @@ function CitedText({ text, count }: { text: string; count: number }) {
         ? <Fragment key={i}>{part}</Fragment>
         : (
           <span key={i} aria-label={`Source ${part}`} style={{
-            display: 'inline-block', minWidth: 14, padding: '0 3px', margin: '0 1px', border: `1px solid ${c.lineStrong}`,
-            color: c.accentInk, fontSize: TYPE.micro.size, fontWeight: 700, lineHeight: '14px', textAlign: 'center', verticalAlign: 'super'
+            display: 'inline-block', minWidth: 16, padding: '0 4px', margin: '0 1px', background: c.surfaceWell,
+            color: c.accentInk, fontSize: TYPE.micro.size, fontWeight: 700, lineHeight: '16px', textAlign: 'center', verticalAlign: 'super'
           }}>{part}</span>
         )))}
+    </div>
+  );
+}
+
+/** Sources under a hairline: number, title as a link, and when it was checked.
+ *  Text actions, not boxes. */
+function SourceList({ sources }: { sources: Source[] }) {
+  const { isDark } = useDark();
+  const c = roles(isDark);
+  return (
+    <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${c.line}` }}>
+      <div style={{ ...LABEL, color: c.textMuted, marginBottom: 8 }}>{sources.length === 1 ? 'Source' : 'Sources'}</div>
+      {sources.map((s, i) => (
+        <div key={s.title} style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', alignItems: 'baseline', columnGap: 10, padding: '4px 0' }}>
+          <span style={{ minWidth: 20, padding: '0 4px', background: c.surfaceWell, color: c.accentInk, fontSize: TYPE.meta.size, fontWeight: 700, textAlign: 'center' }}>{i + 1}</span>
+          <span style={{ minWidth: 0 }}>
+            <PixelButton variant="link" href="#">{s.title} <IconExternalLink size={ICON_SIZE.inline} /></PixelButton>
+            <div style={{ color: c.textMuted, fontSize: TYPE.caption.size, marginTop: 2 }}>{s.publisher} · {s.checked}</div>
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -108,30 +129,16 @@ function AssistantTurn({ turn, last }: { turn: Extract<Turn, { role: 'assistant'
           {turn.needs.map(n => <PixelTag key={n} label={n} />)}
         </div>
       )}
-      {turn.sources.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ ...LABEL, color: c.textMuted, marginBottom: 8 }}>Source</div>
-          {turn.sources.map((s, i) => (
-            <div key={s.title} style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', alignItems: 'start', gap: 10, padding: '10px 12px', background: c.surfaceWell, borderLeft: `2px solid ${c.accentInk}` }}>
-              <PixelTag label={String(i + 1).padStart(2, '0')} />
-              <div style={{ minWidth: 0 }}>
-                <a href="#" data-onganda-underline="" style={{ color: c.accentInk, fontWeight: 600 }}>{s.title}</a>
-                <div style={{ color: c.textMuted, fontSize: TYPE.meta.size, marginTop: 2 }}>{s.publisher}</div>
-                <div style={{ color: c.textMuted, fontSize: TYPE.meta.size }}>{s.checked}</div>
-              </div>
-            </div>
-          ))}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12, fontSize: TYPE.meta.size, color: c.textMuted }}>
-            {vote ? 'Thank you.' : (
-              <>
-                <span style={{ marginRight: 4 }}>Was this helpful?</span>
-                <PixelButton variant="ghost" onClick={() => setVote(true)}><IconCheck size={ICON_SIZE.inline} /> Yes</PixelButton>
-                <PixelButton variant="ghost" onClick={() => setVote(true)}><IconClose size={ICON_SIZE.inline} /> No</PixelButton>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      {turn.sources.length > 0 && <SourceList sources={turn.sources} />}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12, fontSize: TYPE.meta.size, color: c.textMuted }}>
+        {vote ? 'Thank you.' : (
+          <>
+            <span>Was this helpful?</span>
+            <PixelButton variant="link" onClick={() => setVote(true)}>Yes</PixelButton>
+            <PixelButton variant="link" onClick={() => setVote(true)}>No</PixelButton>
+          </>
+        )}
+      </div>
     </RailTurn>
   );
 }
@@ -145,6 +152,11 @@ export const Chat = () => {
   ]);
   const [draft, setDraft] = useState('');
   const [working, setWorking] = useState(false);
+  const transcript = useRef<HTMLDivElement>(null);
+  // Follow the conversation; the welcome screen stays at its top.
+  useEffect(() => {
+    if (turns.length) transcript.current?.scrollTo({ top: transcript.current.scrollHeight });
+  }, [turns, working]);
   const ask = (text: string) => {
     if (!text.trim() || working) return;
     setTurns(t => [...t, { role: 'user', text: text.trim() }]);
@@ -164,25 +176,29 @@ export const Chat = () => {
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{ margin: 0, fontSize: TYPE.title.size, lineHeight: 1.2, color: c.textOnInverse }}>Service assistant</h1>
-              <div style={{ ...LABEL, marginTop: 4, color: c.textOnInverse, opacity: 0.7 }}>Published official sources</div>
+              <div style={{ ...LABEL, marginTop: 4, color: c.textOnInverse, opacity: 0.7 }}>Official sources</div>
             </div>
             <PixelIconButton isDark label="Start over" onClick={() => setTurns([])}>
               <IconRefresh size={ICON_SIZE.control} color={c.textOnInverse} />
             </PixelIconButton>
           </header>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '24px 16px 8px' }}>
+          <div ref={transcript} style={{ flex: 1, overflowY: 'auto', padding: '24px 16px 8px' }}>
             {turns.length === 0 && !working ? (
               <div data-onganda-enter="">
                 <h2 style={{ margin: '0 0 8px', fontSize: TYPE.headline.size, lineHeight: 1.15, color: c.text }}>Ask about a public service</h2>
                 <p style={{ ...READING, margin: '0 0 24px', color: c.textMuted }}>Every answer cites the published source.</p>
-                <PixelPeers minWidth={168} gap={12} lift>
+                <div style={{ ...LABEL, color: c.textMuted, marginBottom: 4 }}>Common questions</div>
+                {/* Starter questions are actions, so they read as links, not as cards. */}
+                <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
                   {SUGGESTED.map(s => (
-                    <PixelPanel key={s.question} eyebrow={s.topic} onClick={() => ask(s.question)}>
-                      <span style={{ fontSize: TYPE.body.size, lineHeight: 1.45, color: c.text }}>{s.question}</span>
-                    </PixelPanel>
+                    <li key={s.question} style={{ borderTop: `1px solid ${c.line}`, padding: '10px 0' }}>
+                      <PixelButton variant="link" onClick={() => ask(s.question)}>
+                        {s.question} <IconArrowRight size={ICON_SIZE.inline} />
+                      </PixelButton>
+                    </li>
                   ))}
-                </PixelPeers>
+                </ul>
               </div>
             ) : turns.map((turn, i) => {
               const last = i === turns.length - 1 && !working;
@@ -205,7 +221,7 @@ export const Chat = () => {
             <PixelInputGroup>
               <PixelTextarea
                 value={draft} onChange={e => setDraft(e.target.value)} rows={1} aria-label="Your question"
-                placeholder="Ask about a visa, permit or fee"
+                placeholder="Ask a question"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(draft); } }}
                 style={{ flex: 1, minHeight: 44, maxHeight: 132, resize: 'none', fieldSizing: 'content' } as React.CSSProperties}
               />

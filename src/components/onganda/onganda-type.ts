@@ -36,6 +36,10 @@ export const TYPE = {
   /** 12px — terminal and code lines. Airy leading because a code block is
    *  read line by line. Measured: TerminalCard. */
   code: { size: 12, lineHeight: 2, tracking: '0em', weight: 400, case: 'none' },
+  /** 12px — a sentence-case caption under an item: a source's publisher and
+   *  date, a timestamp, a file size. The step to drop to when metadata would
+   *  otherwise wrap at 14px. Muted ink, never the only carrier of meaning. */
+  caption: { size: 12, lineHeight: 1.45, tracking: '0em', weight: 400, case: 'none' },
   /** 14px — the button and control label. Measured: "Request a conversation". */
   ui: { size: 14, lineHeight: 1.43, tracking: '0em', weight: 600, case: 'none' },
   /** 14px — a subtitle directly under a title, weighted to hold its own

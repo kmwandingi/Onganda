@@ -46,6 +46,8 @@
   --color-danger-hover-bg: var(--onganda-danger-hover-bg);
   --color-danger-hover-fg: var(--onganda-danger-hover-fg);
   --color-danger-hover-border: var(--onganda-danger-hover-border);
+  --color-ghost-bg: var(--onganda-ghost-bg);
+  --color-ghost-hover-bg: var(--onganda-ghost-hover-bg);
   --color-ghost-border: var(--onganda-ghost-border);
   --color-ghost-fg: var(--onganda-ghost-fg);
   --color-ghost-hover-border: var(--onganda-ghost-hover-border);
@@ -99,6 +101,10 @@
   --text-code--line-height: 2;
   --text-code--letter-spacing: 0em;
   --text-code--font-weight: 400;
+  --text-caption: 12px;
+  --text-caption--line-height: 1.45;
+  --text-caption--letter-spacing: 0em;
+  --text-caption--font-weight: 400;
   --text-ui: 14px;
   --text-ui--line-height: 1.43;
   --text-ui--letter-spacing: 0em;

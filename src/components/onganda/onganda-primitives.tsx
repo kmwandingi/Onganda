@@ -740,11 +740,13 @@ export const DensityProvider = ({
 const CONTROL_TRANSITION = 'background 0.2s, border-color 0.2s, color 0.2s';
 
 // ─── PixelButton ──────────────────────────────────────────────────────────────
-// Four intents, one recipe each. `primary` is the page's main action;
-// `accent` is the warm in-card action; `ghost` is the quiet alternative;
-// `danger` destroys something. A button never invents a fourth colour, and
-// `href` renders an <a> with identical styling to the <button>.
-export type PixelButtonVariant = 'primary' | 'accent' | 'ghost' | 'danger';
+// Five intents, one recipe each. `primary` is the page's main action;
+// `accent` is the warm in-card action; `ghost` is the quiet alternative, a
+// tonal wash with no outline; `danger` destroys something; `link` is a text
+// action (a source, "Yes", "Show more") in the accent ink, underlined, with no
+// box. A button never invents another colour, and `href` renders an <a> with
+// identical styling to the <button>.
+export type PixelButtonVariant = 'primary' | 'accent' | 'ghost' | 'danger' | 'link';
 
 // framer-motion redefines the drag and animation handlers with its own
 // signatures. Rather than cast the conflict away, drop them from the public
@@ -777,7 +779,9 @@ const buttonPalette = (variant: PixelButtonVariant, c: ColorRoles) => {
     case 'accent':
       return { bg: c.accentBg, fg: c.accentFg, border: c.accentBorder, hoverBg: c.accentHoverBg, hoverFg: c.accentHoverFg, hoverBorder: c.accentHoverBorder };
     case 'ghost':
-      return { bg: 'transparent', fg: c.ghostFg, border: c.ghostBorder, hoverBg: 'transparent', hoverFg: c.ghostHoverFg, hoverBorder: c.ghostHoverBorder };
+      return { bg: c.ghostBg, fg: c.ghostFg, border: c.ghostBorder, hoverBg: c.ghostHoverBg, hoverFg: c.ghostHoverFg, hoverBorder: c.ghostHoverBorder };
+    case 'link':
+      return { bg: 'transparent', fg: c.accentInk, border: 'transparent', hoverBg: 'transparent', hoverFg: c.text, hoverBorder: 'transparent' };
     case 'danger':
       return { bg: c.dangerBg, fg: c.dangerFg, border: c.dangerBorder, hoverBg: c.dangerHoverBg, hoverFg: c.dangerHoverFg, hoverBorder: c.dangerHoverBorder };
     default:
@@ -805,18 +809,23 @@ export const PixelButton = ({
   // slab, heavier than the live ghost button beside it, so the dead control
   // draws the eye first. Every disabled control takes the same quiet surface
   // instead, whatever variant it was.
+  const link = variant === 'link';
   const off = disabled
-    ? { bg: c.fieldDisabledBg, fg: c.fieldDisabledText, border: c.line }
+    ? { bg: link ? 'transparent' : c.fieldDisabledBg, fg: c.fieldDisabledText, border: link ? 'transparent' : c.line }
     : null;
   const style: React.CSSProperties = {
-    display: 'inline-flex',
+    // A link flows like text: a long label wraps left-aligned and the
+    // underline follows each line.
+    display: link ? 'inline' : 'inline-flex',
+    textAlign: link ? 'left' : undefined,
     alignItems: 'center',
     gap: 8,
-    padding: d.buttonPadding,
+    padding: link ? 0 : d.buttonPadding,
     fontSize: d.buttonFont,
-    fontWeight: 500,
+    fontWeight: link ? 600 : 500,
     letterSpacing: '0.02em',
-    textDecoration: 'none',
+    textDecoration: link ? 'underline' : 'none',
+    textUnderlineOffset: link ? 3 : undefined,
     borderRadius: 0,
     border: `1px solid ${off ? off.border : p.border}`,
     background: off ? off.bg : p.bg,
@@ -845,7 +854,7 @@ export const PixelButton = ({
   if (href && !disabled) {
     return (
       <motion.a
-        data-onganda-button=""
+        data-onganda-button={link ? 'link' : ''}
         data-onganda-depth={lift ? 'lift' : undefined}
         {...rest}
         {...MOTION.tap}
@@ -861,7 +870,7 @@ export const PixelButton = ({
   }
   return (
     <motion.button
-      data-onganda-button=""
+      data-onganda-button={link ? 'link' : ''}
       data-onganda-depth={lift && !disabled ? 'lift' : undefined}
       {...rest}
       {...(disabled ? {} : MOTION.tap)}

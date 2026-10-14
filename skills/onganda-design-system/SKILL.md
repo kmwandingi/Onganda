@@ -651,6 +651,23 @@ Each item below happened in a real product and passed every automated check.
   paragraphs, sources behind a toggle. Start from the closest test page
   (`Chat.tsx` for an assistant), and when none fits, report the gap rather
   than composing one from primitives alone.
+- **Making every action a box.** Not everything clickable is a button. A
+  text action, such as a source, a suggested question, "Yes" and "No" or
+  "Show more", is `<PixelButton variant="link">`: accent ink, underlined,
+  flowing as text, with an inline icon if it has one. `ghost` is a tonal wash
+  for the quiet alternative beside a primary, not an outline. A `PixelPanel`
+  presents content; it is clickable only when it opens the thing it shows,
+  never as a list of choices. If a reader cannot tell what is clickable, the
+  design is wrong whatever the checks say.
+- **Text that wraps or collides at normal widths.** Labels, eyebrows, tags,
+  buttons, placeholders and metadata fit on one line at the widths you ship.
+  Shorten the copy first, then drop a step on the type scale (`caption`, 12px,
+  is for metadata), then use smaller icons. Wrap only on very narrow screens,
+  and never let a tag or label overflow its container or truncate it.
+- **Checking one state.** Check spacing at 390, 768 and 1280px, and in every
+  state the surface reaches: empty, first result, a follow-up, a long list or
+  conversation that scrolls, loading and error. A chat that looks right with
+  one answer can collapse at the fifth.
 - **Choosing a palette nobody asked for.** Stay on `onganda` unless the brief
   names another. The "For" column of the palette table is not a reason.
 - **Shadow roots without the system.** A browser-extension UI in a shadow root

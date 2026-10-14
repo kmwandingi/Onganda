@@ -777,10 +777,20 @@
         "$value": "#1E1A17",
         "$description": "light — charBlack"
       },
+      "ghostBg": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.1)",
+        "$description": "light — ink 10%"
+      },
+      "ghostHoverBg": {
+        "$type": "color",
+        "$value": "rgba(30, 26, 23, 0.1)",
+        "$description": "light — ink 10%"
+      },
       "ghostBorder": {
         "$type": "color",
-        "$value": "rgba(30, 26, 23, 0.51)",
-        "$description": "light — ink 51%"
+        "$value": "rgba(30, 26, 23, 0.1)",
+        "$description": "light — ink 10%"
       },
       "ghostFg": {
         "$type": "color",
@@ -1035,10 +1045,20 @@
         "$value": "#E8E1CF",
         "$description": "dark — milletClay"
       },
+      "ghostBg": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.1)",
+        "$description": "dark — paper 10%"
+      },
+      "ghostHoverBg": {
+        "$type": "color",
+        "$value": "rgba(232, 225, 207, 0.1)",
+        "$description": "dark — paper 10%"
+      },
       "ghostBorder": {
         "$type": "color",
-        "$value": "rgba(232, 225, 207, 0.42)",
-        "$description": "dark — paper 42%"
+        "$value": "rgba(232, 225, 207, 0.1)",
+        "$description": "dark — paper 10%"
       },
       "ghostFg": {
         "$type": "color",
@@ -1263,6 +1283,17 @@
         "fontSize": "12px",
         "fontWeight": 400,
         "lineHeight": 2,
+        "letterSpacing": "0em",
+        "textCase": "none"
+      }
+    },
+    "caption": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "'Inter', 'Inter Variable', Arial, Helvetica, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": 400,
+        "lineHeight": 1.45,
         "letterSpacing": "0em",
         "textCase": "none"
       }

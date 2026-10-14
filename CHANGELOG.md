@@ -5,6 +5,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Changed — ghost is a tonal button; added `link`, and a `caption` type step
+
+- **`ghost`** is now a wash of ink at the `line` step with no outline. The
+  hairline-black edge read as a form field, not an action. On hover it takes
+  the accent edge and label, as before. The "ghost button border 3:1" claim is
+  gone; the label is measured on the wash instead.
+- **`variant="link"`**: a text action in the accent ink, underlined, flowing as
+  text, with icons on the text line. For sources, suggested questions, reply
+  options and "Show more", where a box would be noise. On `/showcase` in
+  Control Standards and asserted in `control-standards.spec.ts`.
+- **`TYPE.caption`**, 12px sentence case: the step to drop to when metadata
+  would wrap at 14px.
+- **`PixelPanel`**'s ordinal tag no longer shrinks into the card's edge when a
+  long eyebrow wraps.
+- **`/test/chat`** uses all of these: suggested questions and sources as links,
+  feedback as text actions, and a transcript that follows the conversation.
+
 ### Added — `/test/chat`, a reference for chat and assistant panels
 
 Agents asked to build an embedded assistant had no example to start from, and
@@ -131,7 +148,7 @@ selectPalette('coast');
   deficiency.
 - **Every palette meets the same contrast claims.** The claims moved into
   `CONTRAST_CLAIMS` (`onganda-roles.ts`); `check:contrast` measures every
-  palette in both modes, editor grounds included (408 measurements). The
+  palette in both modes, editor grounds included (402 measurements). The
   browser audit measures the showcase and two test pages in `coast` and
   `etosha` (the test pages in both modes; the showcase has no page-wide dark
   mode, so its Control Standards dark switch is audited instead), and both

@@ -985,7 +985,7 @@ export const PixelPanel = ({
         {icon && (
           <div className="flex items-start justify-between gap-4" style={{ marginBottom: SPACE_SCALE['5'] }}>
             <PixelIconTile hex={hue}>{icon}</PixelIconTile>
-            {tag && <PixelTag hex={hue} label={tag} isDark={isDark} />}
+            {tag && <span className="shrink-0"><PixelTag hex={hue} label={tag} isDark={isDark} /></span>}
           </div>
         )}
         {(eyebrow || (tag && !icon)) && (
@@ -1005,7 +1005,8 @@ export const PixelPanel = ({
                 {eyebrow}
               </p>
             ) : <span />}
-            {tag && !icon && <PixelTag hex={hue} label={tag} isDark={isDark} />}
+            {/* The tag never shrinks into the card's edge when the eyebrow wraps. */}
+            {tag && !icon && <span className="shrink-0"><PixelTag hex={hue} label={tag} isDark={isDark} /></span>}
           </div>
         )}
         {title && !aside && (

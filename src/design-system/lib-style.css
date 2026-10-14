@@ -189,6 +189,12 @@
  * should step forward on hover, data-onganda-slide on a row or tab that should
  * step along, data-onganda-underline on a text link, data-onganda-live on a
  * status mark. */
+/* A link button is text: its icon sits on the text line, not on a line of its own. */
+:where([data-onganda-button="link"]) > svg {
+  display: inline-block;
+  vertical-align: -1px;
+  margin-left: 6px;
+}
 :where([data-onganda-button], [data-onganda-nudge]) > svg:last-child {
   transition: transform var(--onganda-motion-fast) var(--onganda-motion-step);
 }

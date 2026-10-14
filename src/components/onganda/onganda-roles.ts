@@ -112,6 +112,10 @@ export interface ColorRoles {
   dangerHoverBg: string;
   dangerHoverFg: string;
   dangerHoverBorder: string;
+  /** the ghost button's wash: a tonal fill, not an outline */
+  ghostBg: string;
+  ghostHoverBg: string;
+  /** matches ghostBg at rest, so no edge is drawn; the hover edge is the accent */
   ghostBorder: string;
   ghostFg: string;
   ghostHoverBorder: string;
@@ -192,7 +196,9 @@ const lightRoles = (): ColorRoles => ({
   dangerHoverBg: P.ink,
   dangerHoverFg: P.paper,
   dangerHoverBorder: P.ink,
-  ghostBorder: ink(ALPHA.control.light),
+  ghostBg: ink(ALPHA.line.light),
+  ghostHoverBg: ink(ALPHA.line.light),
+  ghostBorder: ink(ALPHA.line.light),
   ghostFg: P.ink,
   ghostHoverBorder: P.primaryInk,
   ghostHoverFg: P.primaryInk,
@@ -255,7 +261,9 @@ const darkRoles = (): ColorRoles => ({
   dangerHoverBg: P.paper,
   dangerHoverFg: P.ink,
   dangerHoverBorder: P.paper,
-  ghostBorder: paper(ALPHA.control.dark),
+  ghostBg: paper(ALPHA.line.dark),
+  ghostHoverBg: paper(ALPHA.line.dark),
+  ghostBorder: paper(ALPHA.line.dark),
   ghostFg: P.paper,
   ghostHoverBorder: P.primary,
   ghostHoverFg: P.primary,
@@ -492,8 +500,8 @@ export const CONTRAST_CLAIMS: readonly (readonly [string, keyof ColorRoles, keyo
   ['accent button label, hover', 'accentHoverFg', 'accentHoverBg', AA],
   ['danger button label', 'dangerFg', 'dangerBg', AA],
   ['danger button label, hover', 'dangerHoverFg', 'dangerHoverBg', AA],
-  ['ghost button label on surface', 'ghostFg', 'surface', AA],
-  ['ghost button label, hover', 'ghostHoverFg', 'surface', AA],
+  ['ghost button label on its wash', 'ghostFg', 'ghostBg', AA],
+  ['ghost button label, hover', 'ghostHoverFg', 'ghostHoverBg', AA],
   ['checked control glyph', 'controlOnFg', 'controlOn', AA],
   ['field border on surface', 'fieldBorder', 'surface', UI],
   ['field border on canvas', 'fieldBorder', 'canvas', UI],
@@ -502,7 +510,6 @@ export const CONTRAST_CLAIMS: readonly (readonly [string, keyof ColorRoles, keyo
   ['field border, invalid', 'fieldBorderInvalid', 'surface', UI],
   ['focus ring on surface', 'focusRing', 'surface', UI],
   ['focus ring on canvas', 'focusRing', 'canvas', UI],
-  ['ghost button border', 'ghostBorder', 'surface', UI],
   ['primary button edge on surface', 'actionBorder', 'surface', UI],
   ['primary button edge on canvas', 'actionBorder', 'canvas', UI],
   ['primary button edge, hover', 'actionHoverBorder', 'surface', UI],
