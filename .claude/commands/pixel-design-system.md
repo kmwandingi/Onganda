@@ -666,14 +666,17 @@ Each item below happened in a real product and passed every automated check.
   paragraphs, sources behind a toggle. Start from the closest test page
   (`Chat.tsx` for an assistant), and when none fits, report the gap rather
   than composing one from primitives alone.
-- **Making every action a box.** Not everything clickable is a button. A
-  text action, such as a source, a suggested question, "Yes" and "No" or
-  "Show more", is `<PixelButton variant="link">`: accent ink, underlined,
-  flowing as text, with an inline icon if it has one. `ghost` is a tonal wash
-  for the quiet alternative beside a primary, not an outline. A `PixelPanel`
-  presents content; it is clickable only when it opens the thing it shows,
-  never as a list of choices. If a reader cannot tell what is clickable, the
-  design is wrong whatever the checks say.
+- **Mixing up links and buttons.** A link goes somewhere: a cited source, an
+  official page, a document. It is `<PixelButton variant="link" href>`, accent
+  ink and underlined, flowing as text, with `IconExternalLink` and
+  `target="_blank"` when it leaves the product. A button does something here:
+  asks a suggested question, rates an answer, sends. Suggested questions are
+  clickable cards (`PixelPanel onClick` in a `PixelPeers` with
+  `numbered={false}`, the question and a trailing arrow), not a stack of
+  outlined buttons and not text links. Rating is icon buttons. `ghost` is a
+  tonal wash for the quiet alternative beside a primary, not an outline. If a
+  reader cannot tell what is clickable, or where it leads, the design is wrong
+  whatever the checks say.
 - **Text that wraps or collides at normal widths.** Labels, eyebrows, tags,
   buttons, placeholders and metadata fit on one line at the widths you ship.
   Shorten the copy first, then drop a step on the type scale (`caption`, 12px,

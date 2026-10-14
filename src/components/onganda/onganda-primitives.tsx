@@ -742,9 +742,9 @@ const CONTROL_TRANSITION = 'background 0.2s, border-color 0.2s, color 0.2s';
 // ─── PixelButton ──────────────────────────────────────────────────────────────
 // Five intents, one recipe each. `primary` is the page's main action;
 // `accent` is the warm in-card action; `ghost` is the quiet alternative, a
-// tonal wash with no outline; `danger` destroys something; `link` is a text
-// action (a source, "Yes", "Show more") in the accent ink, underlined, with no
-// box. A button never invents another colour, and `href` renders an <a> with
+// tonal wash with no outline; `danger` destroys something; `link` goes
+// somewhere (a cited source, an official page) in the accent ink, underlined,
+// with no box. A button never invents another colour, and `href` renders an <a> with
 // identical styling to the <button>.
 export type PixelButtonVariant = 'primary' | 'accent' | 'ghost' | 'danger' | 'link';
 

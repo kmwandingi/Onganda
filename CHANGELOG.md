@@ -11,18 +11,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
   hairline-black edge read as a form field, not an action. On hover it takes
   the accent edge and label, as before. The "ghost button border 3:1" claim is
   gone; the label is measured on the wash instead.
-- **`variant="link"`**: a text action in the accent ink, underlined, flowing as
-  text, with icons on the text line. For sources, suggested questions, reply
-  options and "Show more", where a box would be noise. On `/showcase` in
+- **`variant="link"`**: a link to somewhere, such as a cited source or an
+  official page, in the accent ink, underlined, flowing as text, with icons on
+  the text line. An action that happens in place stays a button. On `/showcase` in
   Control Standards and asserted in `control-standards.spec.ts`.
 - **`PixelButton` takes `target` and `rel`** with `href`, so a link to a page
   outside the product, such as a cited source, can open in a new tab safely.
 - **`TYPE.caption`**, 12px sentence case: the step to drop to when metadata
   would wrap at 14px.
-- **`PixelPanel`**'s ordinal tag no longer shrinks into the card's edge when a
-  long eyebrow wraps.
-- **`/test/chat`** uses all of these: suggested questions and sources as links,
-  feedback as text actions, and a transcript that follows the conversation.
+- **`PixelPanel`**'s ordinal tag wraps below a long eyebrow on a narrow card
+  instead of running past the card's edge.
+- **`/test/chat`** uses all of these: sources as links, suggested questions as
+  clickable cards with an arrow, rating as icon buttons, and a transcript that
+  follows the conversation.
 
 ### Added — `/test/chat`, a reference for chat and assistant panels
 

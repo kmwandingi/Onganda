@@ -497,7 +497,7 @@ import { PixelButton } from '@onganda/design-system';
 | `accent` | Mahangu gold, mopane edge → dye plum | Mahangu gold → millet clay | An action inside a card that already sits on the page's primary |
 | `ghost` | Ink 10% wash, no outline → bark rust edge and label | Paper 10% wash → ochre edge and label | The quiet alternative next to a primary |
 | `danger` | Bark rust, fired red edge → char black | Bark rust, fired red edge → millet clay | Destroys something |
-| `link` | Bark rust text, underlined, no box → char black | Ochre text, underlined → millet clay | A text action: a source, a reply option, "Show more". Not everything clickable is a box |
+| `link` | Bark rust text, underlined, no box → char black | Ochre text, underlined → millet clay | A link to somewhere: a cited source, an official page, a document. An action that happens here stays a button |
 
 The primary is ochre, not char black. A black primary made every screen read
 as a black slab with some cream around it: the heaviest object on the page was

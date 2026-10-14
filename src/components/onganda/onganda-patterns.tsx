@@ -989,7 +989,8 @@ export const PixelPanel = ({
           </div>
         )}
         {(eyebrow || (tag && !icon)) && (
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            {/* On a narrow card the tag wraps below a long eyebrow rather than overflowing the edge. */}
             {eyebrow ? (
               <p
                 className="uppercase"

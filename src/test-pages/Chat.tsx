@@ -1,14 +1,15 @@
 // ─── /test/chat — an embedded assistant ──────────────────────────────────────
 // A chat or assistant panel, built only from the package. Each turn sits on a
 // rail: a 24px mark joined to the next turn by a hairline, a small caps label,
-// then the content at reading size. Starter questions, sources and feedback
-// are text actions (`variant="link"`), not boxes; sources are shown with the
-// answer, numbered, never folded away; the field and its action are one control.
+// then the content at reading size. Sources are links (`variant="link"`)
+// because they go somewhere; starter questions are clickable cards and rating
+// is icon buttons because they act here. Sources are shown with the answer,
+// numbered, never folded away; the field and its action are one control.
 
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  ICON_SIZE, IconArrowRight, IconArrowUp, IconExternalLink, IconRefresh, IconUser, PixelButton,
-  PixelDot, PixelIconButton, PixelInputGroup, PixelSkeleton,
+  ICON_SIZE, IconArrowRight, IconArrowUp, IconCheck, IconClose, IconExternalLink, IconRefresh, IconUser,
+  PixelButton, PixelDot, PixelIconButton, PixelInputGroup, PixelPanel, PixelPeers, PixelSkeleton,
   PixelTextarea, TYPE, createPixelIcon, roles, statusFor, useDark, type StatusName
 } from '@onganda/design-system';
 import { TestFrame } from './shell';
@@ -137,12 +138,12 @@ function AssistantTurn({ turn, last }: { turn: Extract<Turn, { role: 'assistant'
         </div>
       )}
       {turn.sources.length > 0 && <SourceList sources={turn.sources} />}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12, fontSize: TYPE.meta.size, color: c.textMuted }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12, fontSize: TYPE.meta.size, color: c.textMuted }}>
         {vote ? 'Thank you.' : (
           <>
             <span>Was this helpful?</span>
-            <PixelButton variant="link" onClick={() => setVote(true)}>Yes</PixelButton>
-            <PixelButton variant="link" onClick={() => setVote(true)}>No</PixelButton>
+            <PixelIconButton label="Helpful" onClick={() => setVote(true)}><IconCheck size={ICON_SIZE.control} color={c.textMuted} /></PixelIconButton>
+            <PixelIconButton label="Not helpful" onClick={() => setVote(true)}><IconClose size={ICON_SIZE.control} color={c.textMuted} /></PixelIconButton>
           </>
         )}
       </div>
@@ -195,17 +196,19 @@ export const Chat = () => {
               <div data-onganda-enter="">
                 <h2 style={{ margin: '0 0 8px', fontSize: TYPE.headline.size, lineHeight: 1.15, color: c.text }}>Ask about a public service</h2>
                 <p style={{ ...READING, margin: '0 0 24px', color: c.textMuted }}>Every answer cites the published source.</p>
-                <div style={{ ...LABEL, color: c.textMuted, marginBottom: 4 }}>Common questions</div>
-                {/* Starter questions are actions, so they read as links, not as cards. */}
-                <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                <div style={{ ...LABEL, color: c.textMuted, marginBottom: 10 }}>Common questions</div>
+                {/* Asking is an action here, so each question is a card that is a
+                    button: the arrow and the hover lift say it can be pressed. */}
+                <PixelPeers minWidth={220} gap={12} numbered={false}>
                   {SUGGESTED.map(s => (
-                    <li key={s.question} style={{ borderTop: `1px solid ${c.line}`, padding: '10px 0' }}>
-                      <PixelButton variant="link" onClick={() => ask(s.question)}>
-                        {s.question}<IconArrowRight size={ICON_SIZE.inline} />
-                      </PixelButton>
-                    </li>
+                    <PixelPanel key={s.question} onClick={() => ask(s.question)}>
+                      <span style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, fontSize: TYPE.body.size, lineHeight: 1.45, color: c.text }}>
+                        {s.question}
+                        <span style={{ display: 'inline-flex', paddingTop: 4 }}><IconArrowRight size={ICON_SIZE.inline} color={c.accentInk} /></span>
+                      </span>
+                    </PixelPanel>
                   ))}
-                </ul>
+                </PixelPeers>
               </div>
             ) : turns.map((turn, i) => {
               const last = i === turns.length - 1 && !working;
