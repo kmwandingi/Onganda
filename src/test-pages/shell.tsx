@@ -16,7 +16,8 @@ export const TEST_PAGES = [
   { path: '/test/form', label: 'Form' },
   { path: '/test/landing', label: 'Landing' },
   { path: '/test/launch', label: 'Launch' },
-  { path: '/test/article', label: 'Article' }
+  { path: '/test/article', label: 'Article' },
+  { path: '/test/chat', label: 'Chat' }
 ] as const;
 
 export type TestPath = (typeof TEST_PAGES)[number]['path'];

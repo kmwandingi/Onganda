@@ -52,6 +52,7 @@ createServer(async (req, res) => {
     ['/test/form', 'every control in every state'],
     ['/test/landing', 'an editorial page'],
     ['/test/launch', 'a second landing page, the dials set differently'],
+    ['/test/chat', 'an embedded chat assistant'],
     ['/', 'the public site']
   ]) console.log(`  ${base}${route}`.padEnd(46) + what);
 });

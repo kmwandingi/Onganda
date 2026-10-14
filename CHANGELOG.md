@@ -5,6 +5,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — `/test/chat`, a reference for chat and assistant panels
+
+Agents asked to build an embedded assistant had no example to start from, and
+every attempt came out plain. `/test/chat` is one built only from the package:
+each turn on a rail with a 24px mark and a small caps label, answers at
+reading size with numbered citations, sources shown with the answer, starter
+questions as peer cards, and the field and its button as one control. It is in
+the contrast and critical-path tests, the comparison sheets and the
+`onganda-showcase` list.
+
+### Fixed — pages without their own font rendered in serif
+
+`style.css` set the heading face but not the body face, so a product that set
+no font of its own showed its text in the browser's serif. It now sets the
+body face and ink on `html` at zero specificity, so a product's own rule still
+wins.
+
 ### Added — a Tailwind 3 preset
 
 `@onganda/design-system/tailwind.preset.cjs`, generated beside `tailwind.css`

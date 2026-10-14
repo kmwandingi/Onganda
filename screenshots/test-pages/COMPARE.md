@@ -17,3 +17,4 @@ version of the right, the gap is in the package, not in the page.
 | [`landing`](./compare-landing.png) | `/test/landing` | An editorial page: hero, ticker, system grid, focus rows, editorial section, contact, footer. | `site-systems-grid`, `system-cards`, `site-focus-rows`, `site-contact`, `icons`, `palette` |
 | [`launch`](./compare-launch.png) | `/test/launch` | A second landing page with the creative dials set differently from /test/landing: gold lead, split hero, bento, mid-page inverse, lift. | `expressive-range`, `site-systems-grid` |
 | [`article`](./compare-article.png) | `/test/article` | A reading surface: long-form type, a results table, a pull quote, a side rail. | `publications`, `brand-principles` |
+| [`chat`](./compare-chat.png) | `/test/chat` | An embedded assistant: turns on a rail, cited sources shown with the answer, starter questions as peers, one composer. | `product-surface`, `patterns-light` |

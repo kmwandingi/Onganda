@@ -37,7 +37,9 @@ const PAGES = [
   ['launch', '/test/launch', 'A second landing page with the creative dials set differently from /test/landing: gold lead, split hero, bento, mid-page inverse, lift.',
    ['expressive-range', 'site-systems-grid']],
   ['article', '/test/article', 'A reading surface: long-form type, a results table, a pull quote, a side rail.',
-   ['publications', 'brand-principles']]
+   ['publications', 'brand-principles']],
+  ['chat', '/test/chat', 'An embedded assistant: turns on a rail, cited sources shown with the answer, starter questions as peers, one composer.',
+   ['product-surface', 'patterns-light']]
 ];
 
 if (!existsSync(path.join(root, 'dist/showcase/index.html')) && !existsSync(path.join(root, 'dist/index.html'))) {

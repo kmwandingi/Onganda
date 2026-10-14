@@ -48,7 +48,10 @@ reading the rest of this guide; the rest explains why they work.
    read roles and peer accents only, never pigments, so they follow your
    palette and both modes unchanged.
    `src/test-pages/` holds whole pages built the same way (`FormPage.tsx` for
-   a settings screen, `Studio.tsx` and `AppScreen.tsx` for tools).
+   a settings screen, `Studio.tsx` and `AppScreen.tsx` for tools, `Chat.tsx`
+   for a chat or assistant panel). If nothing there matches what you are
+   building, say so before you build: that is a gap in the system, and the
+   result will be generic until it is filled.
 4. **Put peers in `<PixelPeers>`.** Cards, results or moments in a list go
    inside it. Each gets the next accent and its ordinal tag, and the set is
    laid out and staggered. Do not pass `accent` or `tag` to them by hand.
@@ -150,7 +153,7 @@ and pass `onganda-check`. Handlers and state come stubbed: wire them to your
 data, then adapt the content.
 
 **See it done from the package.** `/test/studio`, `/test/app`, `/test/dashboard`,
-`/test/form`, `/test/landing`, `/test/launch` and `/test/article` (`src/test-pages`; open them
+`/test/form`, `/test/landing`, `/test/launch`, `/test/article` and `/test/chat` (`src/test-pages`; open them
 with `npx onganda-showcase`) are built
 only from `@onganda/design-system`, as a product would build them.
 `screenshots/test-pages/compare-*.png` lays each one beside the reference
@@ -656,6 +659,12 @@ Neither is edited by hand. Both are rebuilt from the TypeScript source.
 
 Each item below happened in a real product and passed every automated check.
 
+- **Building a product type the system has no example of.** A chat panel
+  assembled from generic cards and buttons came out plain every time: a
+  three-line text box beside a floating send button, answers as bare
+  paragraphs, sources behind a toggle. Start from the closest test page
+  (`Chat.tsx` for an assistant), and when none fits, report the gap rather
+  than composing one from primitives alone.
 - **Choosing a palette nobody asked for.** Stay on `onganda` unless the brief
   names another. The "For" column of the palette table is not a reason.
 - **Shadow roots without the system.** A browser-extension UI in a shadow root

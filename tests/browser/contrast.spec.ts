@@ -89,7 +89,7 @@ const settle = async (page: Page) => {
 
 // The consumer test pages are included: built only from the package, they are
 // what a product's screen actually looks like.
-for (const route of ['/', '/full', '/showcase', '/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article']) {
+for (const route of ['/', '/full', '/showcase', '/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article', '/test/chat']) {
   test(`every text node on ${route} meets its contrast floor`, async ({ page }) => {
     await stubMapTiles(page);
     await page.goto(route);
@@ -102,7 +102,7 @@ for (const route of ['/', '/full', '/showcase', '/test/app', '/test/studio', '/t
 // The same audit with the product in dark mode. Pages built from the package
 // are dark wherever DarkProvider says so; a hard-coded light surface inside
 // one shows up here as dark-on-dark text.
-for (const route of ['/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article']) {
+for (const route of ['/test/app', '/test/studio', '/test/dashboard', '/test/form', '/test/landing', '/test/launch', '/test/article', '/test/chat']) {
   test(`every text node on ${route} meets its contrast floor in dark mode`, async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('onganda-dark', '1'));
     await page.goto(route);

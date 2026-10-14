@@ -2,6 +2,7 @@
 import type { ReactElement } from 'react';
 import { DarkProvider } from '@onganda/design-system';
 import { AppScreen } from './AppScreen';
+import { Chat } from './Chat';
 import { Article } from './Article';
 import { Dashboard } from './Dashboard';
 import { FormPage } from './FormPage';
@@ -17,7 +18,8 @@ const PAGES: Record<string, () => ReactElement> = {
   '/test/form': FormPage,
   '/test/landing': Landing,
   '/test/launch': Launch,
-  '/test/article': Article
+  '/test/article': Article,
+  '/test/chat': Chat
 };
 
 export const TestPages = ({ path }: { path: string }) => {
