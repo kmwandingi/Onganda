@@ -101,6 +101,12 @@
 :where(h1, h2, h3, h4) {
   font-family: var(--onganda-font-display);
 }
+/* The body face and ink, at the same zero specificity. Without it a page that
+   sets no font of its own renders its text in the browser's serif. */
+:where(html) {
+  font-family: var(--onganda-font-body);
+  color: var(--onganda-text);
+}
 /* Family only. An earlier version also set letter-spacing here, which
    silently overrode every `tracking-*` utility on a heading — including the
    0.16em on a section's uppercase label, which stopped reading as a label at
