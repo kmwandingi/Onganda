@@ -637,6 +637,72 @@ not have, that is a gap: build it as a primitive, add it to the showcase in
 every state, document it, and extend the composition test. It is never a
 licence to invent generic chrome.
 
+## The token files
+
+Two generated files hold the whole vocabulary. Both sit beside this guide
+(`tokens.css`, `onganda.tokens.json`) and ship in the package.
+
+- **`tokens.css`** (`@onganda/design-system/tokens.css`, imported by
+  `style.css`): every role, type step, space, texture and rule as a CSS
+  variable, light and dark. Use it in code.
+- **`onganda.tokens.json`** (`node_modules/@onganda/design-system/tokens/`):
+  the same set in the W3C design-tokens format, with what each pigment may and
+  may not do. Use it for Figma, Tokens Studio or another tool. Design from its
+  `role` group, not its `palette` group.
+
+Neither is edited by hand. Both are rebuilt from the TypeScript source.
+
+## Where agents go wrong
+
+Each item below happened in a real product and passed every automated check.
+
+- **Choosing a palette nobody asked for.** Stay on `onganda` unless the brief
+  names another. The "For" column of the palette table is not a reason.
+- **Shadow roots without the system.** A browser-extension UI in a shadow root
+  sees neither the page's stylesheets nor its own `@font-face` rules. Text falls
+  back to Arial, `sr-only` and layout utilities vanish, and controls break.
+  Put the package's `style.css` into each root with `:root` rewritten to
+  `:host`, and the `@font-face` rules on the document once. WXT's
+  `splitShadowRootCss` does the split. Never hand-copy utility classes into
+  the root instead.
+- **A second implementation per host.** A VS Code webview or another host gets
+  a thin HTML document (security policy, script URIs, `postMessage`) that mounts
+  the same React components as the browser surface. It does not get its own
+  hand-written header, conversation or cards. Stand in for the host API (for
+  example `chrome.storage`) instead of copying the component.
+- **Toolbar icons at 12px.** `ICON_SIZE.control` (24) for every icon that is
+  a control or sits alone: toolbars, headers, avatars on a rail, status marks
+  at a row's end. `ICON_SIZE.inline` (12) only inside a button or beside text.
+  Never a size off the grid (10, 18, 26).
+- **The gold accent as every main action.** One `variant="primary"` per view:
+  the action the view exists for, such as Save, Send or the first card's start.
+  `accent` is for an action inside a card when the view already has a primary,
+  and for repeated row actions. A next step can move the primary: "Upload" is
+  primary until a file is loaded, then "Coach".
+- **Three left edges.** Navigation, page header, filter bars and cards share
+  one content column. A band with padding wraps a card with `maxWidth` 1148px;
+  the band and its card are separate elements, so a rule that strips a band's
+  padding never strips the card's.
+- **Raw identifiers on screen.** No `snake_case`, enum values or format ids
+  (`CODEORDER`, `pilot_window`) in labels, chips or values. Map them to the
+  words a person uses, in sentence case, from one shared table. Labels and
+  buttons are sentence case everywhere ("Sign up", "Coach selection").
+- **A text area for one line.** `PixelInput` for a single-line value;
+  `PixelTextarea` with `rows={1}` still renders at its minimum height. Code goes
+  in the mono face (`style={{ fontFamily: 'var(--onganda-font-mono)' }}`):
+  components set their font inline, so a stylesheet rule does not win.
+- **Values captured at load.** A constant built from `COLOR`, `inkAlpha()` or
+  `roles()` at module level keeps the default palette. Build it in the
+  component, or wrap it in `followPalette()`.
+- **Trusting old screenshots.** Judge a change from a fresh capture at 2x
+  device scale, because a 12px icon looks crisper there than at 1x. Look at
+  every surface the change reaches, including the ones behind a click or inside
+  a shadow root. Screenshots captured against a stubbed model are for review,
+  not evidence: never commit them over real ones.
+- **Breaking tests by renaming labels.** A test that selects by visible text
+  breaks when the text improves. Import the shared label table into the test
+  from a plain `.ts` module, not from a JSX component.
+
 ## Verify the result
 
 **In a product:** run `npx onganda-check src/` — the same guards as the
