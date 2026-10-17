@@ -195,6 +195,42 @@ export const PALETTES = {
       critical: ['Ember', 'Critical mark'], primaryInk: ['Thorn', 'Accent ink'],
       deep: ['Shade', 'Support neutral'], ink: ['Dusk', 'Ink'], rare: ['Sky', 'Rare accent']
     }
+  },
+  // Indigo ink and brass on paper. Deliberate and quiet, for evidence review in
+  // financial integrity work. Named for the Olupale product it was built with.
+  // No green: no result is not clearance, so no state may read as "all clear".
+  olupale: {
+    label: 'Olupale',
+    description: 'Indigo ink and brass on paper, for evidence review in financial integrity work.',
+    rules: 'No green. No-result and low-risk states are never green, because no result is not clearance. Every state carries text, an icon and a shape as well as colour.',
+    canvas: '#E8E0CF',
+    surface: '#F7F3E8',
+    ink: '#191B2A',
+    paper: '#F7F3E8',
+    primary: '#D7A43B',
+    primaryInk: '#2F3A78',
+    secondary: '#ECD08C',
+    deep: '#2F3A78',
+    deepLight: '#8C9BE0',
+    rare: '#98640F',
+    critical: '#C23B22',
+    danger: '#A52A1A',
+    darkCanvas: '#0F1020',
+    darkSurface: '#171828',
+    darkInverse: '#20223A',
+    peers: ['#2F3A78', '#98640F', '#7A3E6B', '#3A6EA5', '#8A4B2D'],
+    peersDark: ['#8C9BE0', '#D7A43B', '#C48BB8', '#7FB0E0', '#D49A74'],
+    chart: ['#2F3A78', '#D7A43B', '#7A3E6B', '#3A6EA5', '#98640F', '#C23B22'],
+    editor: {
+      paperWhite: '#FFFFFF', paperWarm: '#FBF8F0', dustCream: '#F1EBDC', dustHover: '#ECE4D0', dustPanel: '#E6DECB',
+      dustPanelDeep: '#E2DAC6', dustWell: '#DDD5C1', dustHeader: '#D9D1BD', canvasWellDark: '#0B0C18', emberBrown: '#1F2136'
+    },
+    swatches: {
+      canvas: ['Paper', 'Base background'], surface: ['Quiet surface', 'Panels and bands'],
+      secondary: ['Pale brass', 'Secondary highlight'], primary: ['Brass', 'Primary action'],
+      critical: ['Signal red', 'Critical mark'], primaryInk: ['Indigo', 'Accent ink'],
+      deep: ['Deep indigo', 'Hover and settled'], ink: ['Night ink', 'Ink'], rare: ['Brass ink', 'Text-safe brass']
+    }
   }
 } as const satisfies Record<string, Palette>;
 

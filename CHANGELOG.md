@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — `olupale`, a fourth shipped palette
+
+- **`PALETTES.olupale`**: indigo ink and brass on paper, for evidence review
+  in financial integrity work. Contributed from the Olupale product, where it
+  had been defined locally with `definePalette()`. Its own hue rule forbids
+  green: no result is not clearance, so no state may read as "all clear".
+  `selectPalette('olupale')` in a product; `palettes/olupale.css` for
+  CSS-only styling. All 536 contrast measurements pass in both modes.
+
 ### Changed — ghost is a tonal button; added `link`, and a `caption` type step
 
 - **`ghost`** is now a wash of ink at the `line` step with no outline. The

@@ -564,6 +564,172 @@
         "$type": "color",
         "$value": "#2a2a28"
       }
+    },
+    "olupale": {
+      "canvas": {
+        "$type": "color",
+        "$value": "#E8E0CF"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#F7F3E8"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "#191B2A"
+      },
+      "paper": {
+        "$type": "color",
+        "$value": "#F7F3E8"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#D7A43B"
+      },
+      "primaryInk": {
+        "$type": "color",
+        "$value": "#2F3A78"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#ECD08C"
+      },
+      "deep": {
+        "$type": "color",
+        "$value": "#2F3A78"
+      },
+      "deepLight": {
+        "$type": "color",
+        "$value": "#8C9BE0"
+      },
+      "rare": {
+        "$type": "color",
+        "$value": "#98640F"
+      },
+      "critical": {
+        "$type": "color",
+        "$value": "#C23B22"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#A52A1A"
+      },
+      "darkCanvas": {
+        "$type": "color",
+        "$value": "#0F1020"
+      },
+      "darkSurface": {
+        "$type": "color",
+        "$value": "#171828"
+      },
+      "darkInverse": {
+        "$type": "color",
+        "$value": "#20223A"
+      },
+      "peers-1": {
+        "$type": "color",
+        "$value": "#2F3A78"
+      },
+      "peers-2": {
+        "$type": "color",
+        "$value": "#98640F"
+      },
+      "peers-3": {
+        "$type": "color",
+        "$value": "#7A3E6B"
+      },
+      "peers-4": {
+        "$type": "color",
+        "$value": "#3A6EA5"
+      },
+      "peers-5": {
+        "$type": "color",
+        "$value": "#8A4B2D"
+      },
+      "peersDark-1": {
+        "$type": "color",
+        "$value": "#8C9BE0"
+      },
+      "peersDark-2": {
+        "$type": "color",
+        "$value": "#D7A43B"
+      },
+      "peersDark-3": {
+        "$type": "color",
+        "$value": "#C48BB8"
+      },
+      "peersDark-4": {
+        "$type": "color",
+        "$value": "#7FB0E0"
+      },
+      "peersDark-5": {
+        "$type": "color",
+        "$value": "#D49A74"
+      },
+      "chart-1": {
+        "$type": "color",
+        "$value": "#2F3A78"
+      },
+      "chart-2": {
+        "$type": "color",
+        "$value": "#D7A43B"
+      },
+      "chart-3": {
+        "$type": "color",
+        "$value": "#7A3E6B"
+      },
+      "chart-4": {
+        "$type": "color",
+        "$value": "#3A6EA5"
+      },
+      "chart-5": {
+        "$type": "color",
+        "$value": "#98640F"
+      },
+      "chart-6": {
+        "$type": "color",
+        "$value": "#C23B22"
+      },
+      "editor-paperWhite": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "editor-paperWarm": {
+        "$type": "color",
+        "$value": "#FBF8F0"
+      },
+      "editor-dustCream": {
+        "$type": "color",
+        "$value": "#F1EBDC"
+      },
+      "editor-dustHover": {
+        "$type": "color",
+        "$value": "#ECE4D0"
+      },
+      "editor-dustPanel": {
+        "$type": "color",
+        "$value": "#E6DECB"
+      },
+      "editor-dustPanelDeep": {
+        "$type": "color",
+        "$value": "#E2DAC6"
+      },
+      "editor-dustWell": {
+        "$type": "color",
+        "$value": "#DDD5C1"
+      },
+      "editor-dustHeader": {
+        "$type": "color",
+        "$value": "#D9D1BD"
+      },
+      "editor-canvasWellDark": {
+        "$type": "color",
+        "$value": "#0B0C18"
+      },
+      "editor-emberBrown": {
+        "$type": "color",
+        "$value": "#1F2136"
+      }
     }
   },
   "palette-editor": {

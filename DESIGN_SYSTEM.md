@@ -397,6 +397,7 @@ Use `onganda` unless the product's brief asks for another palette or its own col
 | `onganda` (default) | Warm earth: ochre, mahangu gold, mopane, dye plum on millet clay | The lab and its systems | No green and no blue. Success is a check glyph on the settled tone, never a new hue. |
 | `coast` | Cool fog and signal amber: Radix slate, teal, amber, iris | Security, infrastructure, data tools | Cool, with one warm signal: amber is the secondary action and caution, and nothing else. Success is a check glyph on the settled slate, never a green. |
 | `etosha` | Salt pan, acacia and sun: Radix sand, grass and blue, Tailwind yellow | Education, learning, public services | Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text. |
+| `olupale` | Indigo ink and brass on paper | Evidence review in financial integrity work | No green. No-result and low-risk states are never green, because no result is not clearance. Every state carries text, an icon and a shape as well as colour. |
 
 Every rule in this document that names a pigment describes the Onganda
 palette. Under another palette the role holds that palette's pigment and the
