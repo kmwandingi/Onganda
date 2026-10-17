@@ -1,8 +1,8 @@
 {
   "name": "@onganda/design-system",
-  "version": "2.0.0",
+  "version": "2.0.0+c41eae9",
   "type": "module",
-  "description": "Onganda pixel editorial design system \u2014 tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
+  "description": "Onganda pixel editorial design system — tokens, primitives, icons, charts, sections, editors, and AI authoring tools for the Namibia AI Systems Lab.",
   "keywords": [
     "design-system",
     "react",
@@ -143,7 +143,8 @@
     "framer-motion": ">=10.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
-    "recharts": ">=2.0.0"
+    "recharts": ">=2.0.0",
+    "pptxgenjs": ">=4.0.0"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -164,7 +165,6 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.542.0",
     "next-themes": "^0.4.6",
-    "pptxgenjs": "^4.0.1",
     "radix-ui": "^1.4.3",
     "react": ">=18.0.0",
     "react-day-picker": "^9.9.0",
@@ -199,6 +199,12 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
-    "vite-plugin-dts": "^5.0.2"
+    "vite-plugin-dts": "^5.0.2",
+    "pptxgenjs": "^4.0.1"
+  },
+  "peerDependenciesMeta": {
+    "pptxgenjs": {
+      "optional": true
+    }
   }
 }

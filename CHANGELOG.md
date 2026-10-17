@@ -14,6 +14,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
   `selectPalette('olupale')` in a product; `palettes/olupale.css` for
   CSS-only styling. All 536 contrast measurements pass in both modes.
 
+### Changed — `pptxgenjs` is an optional peer
+
+- The PowerPoint export is the only feature that needs `pptxgenjs`, and its
+  `image-size` chain carries three unpatched high-severity advisories. It
+  moved from `dependencies` to an optional `peerDependencies` entry, so
+  consumers that never render slides no longer install it. A consumer that
+  wants the slide export declares `pptxgenjs@>=4` itself; the package smoke
+  consumer does exactly that and still covers the `/editors` entry.
+
 ### Changed — ghost is a tonal button; added `link`, and a `caption` type step
 
 - **`ghost`** is now a wash of ink at the `line` step with no outline. The

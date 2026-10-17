@@ -33,6 +33,7 @@ try {
       '@types/react-dom@^19.0.0',
       'tailwindcss@^3',
       'postcss@^8',
+      'pptxgenjs@^4',
     ],
     { cwd: consumerRoot }
   );
