@@ -394,6 +394,9 @@ find yourself writing one, the prop you need is probably already there:
 | A status, count or small action beside a card's title | `<PixelPanel title aside={…} />` |
 | A rating — strength, fit, confidence | `<PixelMeter value={2} label="Needs trim" />` |
 | A product's own navigation | `<PixelNav label items orientation />` |
+| The suite switcher inside that nav | `<PixelNav products={…} />` — active product takes the accent-ink edge |
+| A numbered "how it works" sequence | `<PixelStepLine label steps />` — staircase connectors, one accent per node |
+| A region a finding can light up | `<PixelDocumentViewer src regions activeRegionId onRegionActivate />` |
 | The chosen one of a set of peer cards | `<PixelPanel selected onClick>` — accent edge, `aria-pressed`, keyboard-operable |
 | A form's main button | `<PixelButton type="submit">` |
 | A ticker or footer for a product that is not the lab | `<PixelTicker items={…} />`, `<PixelFooter name mark line columns fine />` |

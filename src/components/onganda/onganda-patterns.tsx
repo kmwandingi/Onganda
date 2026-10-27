@@ -306,10 +306,22 @@ export type PixelNavItem = {
   badge?: React.ReactNode;
 };
 
+/** One sibling product in the suite switcher. */
+export type PixelNavProduct = {
+  label: string;
+  /** the product's own mark — sized to ICON_SIZE.control for you */
+  icon?: React.ComponentType<{ size?: number; color?: string }>;
+  href: string;
+  /** the product the user is inside right now */
+  active?: boolean;
+};
+
 export const PixelNav = ({
   label,
   items,
   orientation = 'vertical',
+  products,
+  productsLabel = 'Products',
   isDark: isDarkProp,
   className = ''
 }: {
@@ -317,6 +329,10 @@ export const PixelNav = ({
   label: string;
   items: PixelNavItem[];
   orientation?: 'vertical' | 'horizontal';
+  /** the suite's products; the active one takes the accent-ink edge */
+  products?: PixelNavProduct[];
+  /** the eyebrow over the switcher */
+  productsLabel?: string;
   isDark?: boolean;
   className?: string;
 }) => {
@@ -325,6 +341,44 @@ export const PixelNav = ({
   const vertical = orientation === 'vertical';
   return (
     <nav aria-label={label} className={className}>
+      {products && products.length > 0 && (
+        <div className={vertical ? 'mb-3' : 'mb-0 mr-4 flex items-center gap-2'}>
+          <ul
+            aria-label={productsLabel}
+            className="flex gap-1"
+            style={{ listStyle: 'none', margin: 0, padding: 0 }}
+          >
+            {products.map(product => {
+              const Icon = product.icon;
+              return (
+                <li key={product.label}>
+                  <a
+                    href={product.href}
+                    aria-current={product.active ? 'page' : undefined}
+                    data-onganda-press=""
+                    className="onganda-focus flex items-center gap-2"
+                    style={{
+                      padding: '6px 10px',
+                      textDecoration: 'none',
+                      fontSize: TYPE.meta.size,
+                      fontWeight: product.active ? TYPE.ui.weight : TYPE.meta.weight,
+                      color: product.active ? c.text : c.textMuted,
+                      background: product.active ? c.surface : 'transparent',
+                      border: `1px solid ${product.active ? c.accentInk : c.line}`,
+                      fontFamily: 'inherit',
+                      whiteSpace: 'nowrap',
+                      ['--onganda-focus' as string]: c.focusRing
+                    } as React.CSSProperties}
+                  >
+                    {Icon && <Icon size={ICON_SIZE.control} color={product.active ? c.accentInk : c.textMuted} />}
+                    <span>{product.label}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
       <ul
         className={vertical ? 'grid gap-1' : 'flex gap-1 overflow-x-auto'}
         style={{ listStyle: 'none', margin: 0, padding: 0, scrollbarWidth: 'none' }}
@@ -418,6 +472,97 @@ export const PixelMeter = ({
       </span>
       {label}
     </span>
+  );
+};
+
+// ─── PixelStepLine — a sequence drawn in pixels ─────────────────────────────
+// "How it works" and privacy flows need a numbered sequence, and every product
+// drew its own: circles, gradients, an arrow glyph from an icon set. The step
+// line is data-driven — `steps` and nothing else — with one accent per node
+// (peers differ in kind, so each takes the next peer accent) and a staircase
+// connector in the pixel language: vertical on a phone, horizontal from `md`
+// up. The order is the meaning, so it is an `<ol>` and the ordinals repeat
+// what the position already says.
+//
+// Usage:
+//   <PixelStepLine label="How a check stays private" steps={[
+//     { title: 'Your record', note: 'Never leaves the member.' },
+//     { title: 'A token', note: 'Made with the custodian.' },
+//   ]} />
+export type PixelStep = {
+  title: string;
+  /** one sentence under the title */
+  note?: string;
+  /** an Onganda icon inside the node instead of the ordinal */
+  icon?: React.ComponentType<{ size?: number; color?: string }>;
+};
+
+export const PixelStepLine = ({
+  label,
+  steps,
+  isDark: isDarkProp,
+  className = ''
+}: {
+  /** names the sequence for screen readers: "How a check stays private" */
+  label: string;
+  steps: PixelStep[];
+  isDark?: boolean;
+  className?: string;
+}) => {
+  const isDark = useIsDark(isDarkProp);
+  const c = roles(isDark);
+  return (
+    <ol
+      aria-label={label}
+      className={`m-0 flex list-none flex-col gap-0 p-0 md:flex-row md:items-start ${className}`}
+    >
+      {steps.map((step, i) => {
+        const accent = accentFor(i, isDark);
+        const Icon = step.icon;
+        const last = i === steps.length - 1;
+        return (
+          <li key={step.title} className="flex items-start gap-4 md:flex-1 md:flex-col md:gap-0">
+            <div className="flex w-9 shrink-0 flex-col items-center self-stretch md:w-full md:flex-row md:items-center">
+              <span
+                aria-hidden="true"
+                className="flex h-9 w-9 shrink-0 items-center justify-center"
+                style={{
+                  border: `2px solid ${accent}`,
+                  boxShadow: `0 0 0 1px ${c.line}`,
+                  background: c.surface,
+                  color: c.accentInk,
+                  fontSize: TYPE.ui.size,
+                  fontWeight: TYPE.ui.weight,
+                  fontVariantNumeric: 'tabular-nums'
+                }}
+              >
+                {Icon ? <Icon size={ICON_SIZE.control} color={accent} /> : String(i + 1).padStart(2, '0')}
+              </span>
+              {!last && (
+                <>
+                  {/* vertical staircase: down, step right, down, step back */}
+                  <svg aria-hidden="true" width="12" viewBox="0 0 12 24" preserveAspectRatio="none" className="mt-1 grow md:hidden">
+                    <path d="M1 0v8h10v8H1v8" fill="none" stroke={accent} strokeWidth="2" />
+                  </svg>
+                  {/* horizontal staircase: right, dip, right, back up, right */}
+                  <svg aria-hidden="true" viewBox="0 0 40 12" preserveAspectRatio="none" className="hidden h-3 grow md:block">
+                    <path d="M0 6h8v6h24V6h8" fill="none" stroke={accent} strokeWidth="2" />
+                  </svg>
+                </>
+              )}
+            </div>
+            <div className="pt-1 md:px-3 md:pt-3 md:text-center">
+              <p className="m-0" style={{ fontSize: TYPE.meta.size, fontWeight: TYPE.ui.weight, color: c.text }}>{step.title}</p>
+              {step.note && (
+                <p className="m-0 mt-1" style={{ fontSize: TYPE.caption.size, lineHeight: TYPE.caption.lineHeight, color: c.textMuted }}>
+                  {step.note}
+                </p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 };
 

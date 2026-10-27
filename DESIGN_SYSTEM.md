@@ -878,6 +878,35 @@ accent-ink edge (left, or bottom when horizontal) and `aria-current="page"`;
 icons are sized to `ICON_SIZE.control` and coloured for you; items press like
 buttons. `href` renders links, `onClick` alone renders buttons.
 
+### PixelNav `products`
+
+```tsx
+<PixelNav label="Workspace" items={…} products={[
+  { label: 'Olupale', icon: IconSearch, href: 'https://olupale.onganda.ai' },
+  { label: 'Oshipale', icon: IconFile, href: 'https://oshipale.onganda.ai', active: true },
+]} />
+```
+
+The suite switcher: the products a customer can move between, above the nav's
+own items. The active product takes the accent-ink edge and
+`aria-current="page"`; each mark is its product's own icon at
+`ICON_SIZE.control`. `productsLabel` names the group for screen readers.
+
+### PixelStepLine
+
+```tsx
+<PixelStepLine label="How a check stays private" steps={[
+  { title: 'Your record', note: 'Never leaves the member.' },
+  { title: 'A token', note: 'Made with the custodian.' },
+  { title: 'The index', note: 'Counts matches only.' },
+]} />
+```
+
+A numbered sequence for "how it works" and privacy flows. Each node takes the
+next peer accent; the connector is a staircase in the pixel language —
+vertical below `md`, horizontal above it. It is an `<ol>`: the order is the
+meaning. Pass `icon` on a step when a mark says more than its number.
+
 ### PixelMeter
 
 ```tsx
@@ -946,6 +975,28 @@ surface. "Choose files" is built in and opens the picker; `children` add more
 actions beside it. It exists because every product that took media
 hand-rolled one with a dashed border and a weave that switched on while
 dragging — both retired, both now failed by `check:tokens`.
+
+### PixelDocumentViewer
+
+```tsx
+<PixelDocumentViewer
+  src="/report/payslip.png" alt="Payslip, page 1"
+  regions={[{ id: 'r1', x: 0.6, y: 0.42, w: 0.3, h: 0.06,
+              label: 'Net pay', status: 'critical', findingId: 'f1' }]}
+  activeRegionId={active}
+  onRegionActivate={r => setActive(r.id)}
+/>
+```
+
+A document page with regions a finding can light up. Regions are fractions of
+the page (`x`, `y`, `w`, `h` in 0–1) drawn as focusable buttons: Tab reaches
+each in reading order, Enter or Space activates it, and both report through
+`onRegionActivate` so the finding beside the viewer lights the same moment.
+`activeRegionId` drives the reverse direction — hover a finding, its region
+lights. A region's `status` gives its edge the status hue with the hairline
+ring; an unset status renders the neutral "could not check" line. Pass
+`children` instead of `src` for a synthetic page, and keep `regions` to what
+the report found.
 
 ### PixelSkeleton
 

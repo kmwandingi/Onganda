@@ -220,6 +220,9 @@ Three habits carry almost everything:
 | Segmented navigation | `<PixelTabs>` | styled links |
 | A determinate bar | `<PixelProgress>` | `<progress>` |
 | A product's sidebar or top nav | `<PixelNav>` | styled anchors |
+| The suite switcher inside that nav | `<PixelNav products={…}>` | a dropdown of logos |
+| A numbered "how it works" sequence | `<PixelStepLine>` | circles joined by arrows |
+| A region a finding can light up | `<PixelDocumentViewer>` | an absolutely-positioned box |
 | A rating — strength, fit, confidence | `<PixelMeter value label>` | a status colour (that means *state*) |
 | A field with its button | `<PixelInputGroup>` | two boxes side by side |
 | Taking files | `<PixelDropZone>` | a dashed box |

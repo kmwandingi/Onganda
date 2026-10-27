@@ -1,7 +1,7 @@
 // The "The compounds, not just the atoms." section of /showcase
 // Generated from the live showcase. Event handlers and state are stubbed:
 // wire them to your own data. Requires @onganda/design-system/style.css.
-import { DensityProvider, ICON_SIZE, IconOkaanda, PixelActions, PixelButton, PixelChoice, PixelChoiceList, PixelDialog, PixelDot, PixelEmptyState, PixelField, PixelFocusRow, PixelInput, PixelInputGroup, PixelLabCard, PixelMeter, PixelNotice, PixelPanel, PixelProgress, PixelSkeleton, PixelStatBand, PixelSubhead, PixelTable, PixelTabs, PixelTicker, PixelToggle, SectionHeader, accentFor, roles, useDark } from '@onganda/design-system';
+import { DensityProvider, ICON_SIZE, IconFile, IconFolder, IconOkaanda, IconSearch, PixelActions, PixelButton, PixelChoice, PixelChoiceList, PixelDialog, PixelDocumentViewer, PixelDot, PixelEmptyState, PixelField, PixelFocusRow, PixelInput, PixelInputGroup, PixelLabCard, PixelMeter, PixelNav, PixelNotice, PixelPanel, PixelProgress, PixelSkeleton, PixelStatBand, PixelStepLine, PixelSubhead, PixelTable, PixelTabs, PixelTicker, PixelToggle, SectionHeader, accentFor, roles, useDark } from '@onganda/design-system';
 import type { ReactNode } from 'react';
 
 export function TheCompoundsNotJustTheAtomsSection() {
@@ -275,6 +275,125 @@ export function TheCompoundsNotJustTheAtomsSection() {
             <PixelLabCard tag="Lab" title="Onganda" accent={accentFor(0)}>
               Five systems working as one compound: from readiness to delivery.
             </PixelLabCard>
+          </div>
+        </div>
+        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+          <PixelPanel eyebrow="Step line · a sequence drawn in pixels" accent={accentFor(3)}>
+            <PixelStepLine
+              label="How a check stays private"
+              steps={[{ title: "Your record", note: "Never leaves the member." }, { title: "A token", note: "Made with the custodian." }, { title: "The index", note: "Counts matches only." }, { title: "An answer", note: "seen at 2, details differ." }]}
+            />
+          </PixelPanel>
+          <PixelPanel
+            eyebrow="Document viewer · regions a finding can light up"
+            accent={accentFor(4)}
+          >
+            <div className="grid gap-4 md:grid-cols-[1fr_220px]">
+              <PixelDocumentViewer
+                aria-label="Synthetic payslip with marked regions"
+                regions={[{ id: "r-name", x: 0.08, y: 0.14, w: 0.5, h: 0.05, label: "Employee name", status: "settled", findingId: "f-name" }, { id: "r-net", x: 0.58, y: 0.62, w: 0.34, h: 0.05, label: "Net pay", status: "critical", findingId: "f-net" }, { id: "r-sum", x: 0.58, y: 0.7, w: 0.34, h: 0.05, label: "Arithmetic", status: "caution", findingId: "f-sum" }]}
+                onRegionActivate={() => {}}
+              >
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "14.000000000000002%", width: "50%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "22%", width: "50%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "30%", width: "34%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "38%", width: "50%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "46%", width: "50%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "54%", width: "34%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "62%", width: "50%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "70%", width: "50%", height: "1.6%", background: c.lineStrong }}
+                />
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "8%", top: "78%", width: "34%", height: "1.6%", background: c.lineStrong }}
+                />
+              </PixelDocumentViewer>
+              <ul className="m-0 grid list-none content-start gap-2 p-0">
+                <li data-finding-id="f-name">
+                  <button
+                    type="button"
+                    className="onganda-focus w-full text-left"
+                    style={{ border: 0, borderLeft: `3px solid ${c.line}`, background: c.inverseBorder, padding: "4px 8px", cursor: "pointer", fontFamily: "inherit" }}
+                    onMouseEnter={() => {}}
+                    onFocus={() => {}}
+                    onClick={() => {}}
+                  >
+                    <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: c.text }}>
+                      Employee name
+                    </span>
+                    <span style={{ display: "block", fontSize: 12, color: c.textMuted }}>
+                      Consistent with the record.
+                    </span>
+                  </button>
+                </li>
+                <li data-finding-id="f-net">
+                  <button
+                    type="button"
+                    className="onganda-focus w-full text-left"
+                    style={{ border: 0, borderLeft: `3px solid ${c.line}`, background: c.inverseBorder, padding: "4px 8px", cursor: "pointer", fontFamily: "inherit" }}
+                    onMouseEnter={() => {}}
+                    onFocus={() => {}}
+                    onClick={() => {}}
+                  >
+                    <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: c.text }}>Net pay</span>
+                    <span style={{ display: "block", fontSize: 12, color: c.textMuted }}>
+                      Conflicts with the arithmetic.
+                    </span>
+                  </button>
+                </li>
+                <li data-finding-id="f-sum">
+                  <button
+                    type="button"
+                    className="onganda-focus w-full text-left"
+                    style={{ border: 0, borderLeft: `3px solid ${c.line}`, background: c.inverseBorder, padding: "4px 8px", cursor: "pointer", fontFamily: "inherit" }}
+                    onMouseEnter={() => {}}
+                    onFocus={() => {}}
+                    onClick={() => {}}
+                  >
+                    <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: c.text }}>
+                      Arithmetic
+                    </span>
+                    <span style={{ display: "block", fontSize: 12, color: c.textMuted }}>Review the totals.</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <p className="mt-4 text-xs" style={{ color: c.textMuted }}>
+              Tab reaches every region; a finding lights its region in both directions. Regions are buttons, so Enter and Space activate them.
+            </p>
+          </PixelPanel>
+        </div>
+        <div className="mt-10">
+          <PixelSubhead spaced>Navigation · the suite switcher — products above the items</PixelSubhead>
+          <div className="max-w-xs">
+            <PixelNav
+              label="Workspace"
+              products={[{ label: "Olupale", icon: IconSearch, href: "https://olupale.onganda.ai" }, { label: "Oshipale", icon: IconFile, href: "https://oshipale.onganda.ai", active: true }]}
+              items={[{ label: "Check", icon: IconFile, href: "#/check", active: true }, { label: "Network", icon: IconFolder, href: "#/network" }, { label: "Requests", icon: IconSearch, href: "#/requests", badge: 2 }]}
+            />
           </div>
         </div>
         <PixelDialog

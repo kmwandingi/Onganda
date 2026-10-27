@@ -11,7 +11,9 @@ import { TYPE } from './onganda-type';
 import { ICON_REGISTRY, ICON_CATEGORIES, IconCategory, IconPlay, IconVideo, IconFile, IconFolder } from './onganda-icons';
 import { createPixelIcon, validatePixelIconDef, PixelIconDef, PixelRect } from './onganda-icon-factory';
 import { PixelTicker, PixelFocusRow, PixelLabCard, PixelStatBand } from './onganda-site';
-import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelPeers, PixelInversePanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { PixelNotice, PixelDialog, PixelDropZone, PixelMeter, PixelNav, PixelStepLine, PixelTable, PixelEmptyState, PixelSkeleton, PixelTabs, PixelProgress, PixelPanel, PixelPeers, PixelInversePanel, PixelChoice, PixelChoiceList, PixelActions } from './onganda-patterns';
+import { PixelDocumentViewer } from './onganda-document-viewer';
+import { IconSearch } from './onganda-icons';
 import { followPalette } from './onganda-colors';
 const LINE_1_COUNT = HERO_LINE_1_WORDS.length;
 const LINE_2_COUNT = HERO_LINE_2_WORDS.length;
@@ -2678,6 +2680,7 @@ export const ProductPatterns = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [choice, setChoice] = useState('The split changes between runs');
+  const [activeRegion, setActiveRegion] = useState<string | null>(null);
 
 
   return (
@@ -2956,6 +2959,95 @@ export const ProductPatterns = () => {
             <PixelLabCard tag="Lab" title="Onganda" accent={COLOR.ochreOrange}>
               Five systems working as one compound: from readiness to delivery.
             </PixelLabCard>
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+          {/* ── Step line ── */}
+          <PixelPanel isDark={isDark} eyebrow="Step line · a sequence drawn in pixels" accent={COLOR.mopaneBrown} data-testid="showcase-stepline">
+            <PixelStepLine
+              isDark={isDark}
+              label="How a check stays private"
+              steps={[
+                { title: 'Your record', note: 'Never leaves the member.' },
+                { title: 'A token', note: 'Made with the custodian.' },
+                { title: 'The index', note: 'Counts matches only.' },
+                { title: 'An answer', note: 'seen at 2, details differ.' }
+              ]}
+            />
+          </PixelPanel>
+
+          {/* ── Document viewer ── */}
+          <PixelPanel isDark={isDark} eyebrow="Document viewer · regions a finding can light up" accent={COLOR.dyePlum} data-testid="showcase-document-viewer">
+            <div className="grid gap-4 md:grid-cols-[1fr_220px]">
+              <PixelDocumentViewer
+                isDark={isDark}
+                aria-label="Synthetic payslip with marked regions"
+                regions={[
+                  { id: 'r-name', x: 0.08, y: 0.14, w: 0.5, h: 0.05, label: 'Employee name', status: 'settled', findingId: 'f-name' },
+                  { id: 'r-net', x: 0.58, y: 0.62, w: 0.34, h: 0.05, label: 'Net pay', status: 'critical', findingId: 'f-net' },
+                  { id: 'r-sum', x: 0.58, y: 0.7, w: 0.34, h: 0.05, label: 'Arithmetic', status: 'caution', findingId: 'f-sum' }
+                ]}
+                activeRegionId={activeRegion}
+                onRegionActivate={r => setActiveRegion(r.id)}
+              >
+                {/* a synthetic page: text lines, never real document content */}
+                {[0.14, 0.22, 0.3, 0.38, 0.46, 0.54, 0.62, 0.7, 0.78].map((y, i) => (
+                  <div key={i} aria-hidden="true" style={{ position: 'absolute', left: '8%', top: `${y * 100}%`, width: `${(i % 3 === 2 ? 0.34 : 0.5) * 100}%`, height: '1.6%', background: c.lineStrong }} />
+                ))}
+              </PixelDocumentViewer>
+              <ul className="m-0 grid list-none content-start gap-2 p-0">
+                {[
+                  { id: 'f-name', region: 'r-name', label: 'Employee name', text: 'Consistent with the record.' },
+                  { id: 'f-net', region: 'r-net', label: 'Net pay', text: 'Conflicts with the arithmetic.' },
+                  { id: 'f-sum', region: 'r-sum', label: 'Arithmetic', text: 'Review the totals.' }
+                ].map(f => (
+                  <li key={f.id} data-finding-id={f.id}>
+                    <button
+                      type="button"
+                      className="onganda-focus w-full text-left"
+                      style={{
+                        border: 0,
+                        borderLeft: `3px solid ${activeRegion === f.region ? c.accentInk : c.line}`,
+                        background: 'transparent',
+                        padding: '4px 8px',
+                        cursor: 'pointer',
+                        fontFamily: 'inherit'
+                      }}
+                      onMouseEnter={() => setActiveRegion(f.region)}
+                      onFocus={() => setActiveRegion(f.region)}
+                      onClick={() => setActiveRegion(f.region)}
+                    >
+                      <span style={{ display: 'block', fontSize: TYPE.ui.size, fontWeight: TYPE.ui.weight, color: c.text }}>{f.label}</span>
+                      <span style={{ display: 'block', fontSize: TYPE.caption.size, color: c.textMuted }}>{f.text}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="mt-4 text-xs" style={{ color: c.textMuted }}>
+              Tab reaches every region; a finding lights its region in both directions. Regions are buttons, so Enter and Space activate them.
+            </p>
+          </PixelPanel>
+        </div>
+
+        {/* ── Navigation with the suite switcher ── */}
+        <div className="mt-10">
+          <SubLabel isDark={isDark} spaced>Navigation · the suite switcher — products above the items</SubLabel>
+          <div data-testid="showcase-nav-switcher" className="max-w-xs">
+            <PixelNav
+              isDark={isDark}
+              label="Workspace"
+              products={[
+                { label: 'Olupale', icon: IconSearch, href: 'https://olupale.onganda.ai' },
+                { label: 'Oshipale', icon: IconFile, href: 'https://oshipale.onganda.ai', active: true }
+              ]}
+              items={[
+                { label: 'Check', icon: IconFile, href: '#/check', active: true },
+                { label: 'Network', icon: IconFolder, href: '#/network' },
+                { label: 'Requests', icon: IconSearch, href: '#/requests', badge: 2 }
+              ]}
+            />
           </div>
         </div>
 

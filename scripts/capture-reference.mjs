@@ -34,6 +34,15 @@ const SHOTS = [
   ['/showcase', '#patterns-stage', 'patterns-light',
    'The compounds a product needs on day one, plus the site compositions.',
    ['PixelNotice', 'PixelDialog', 'PixelTable', 'PixelEmptyState', 'PixelSkeleton', 'PixelTabs', 'PixelProgress', 'PixelPanel', 'PixelChoice', 'PixelChoiceList', 'PixelActions', 'PixelTicker', 'PixelFocusRow', 'PixelLabCard', 'PixelStatBand']],
+  ['/showcase', '[data-testid="showcase-stepline"]', 'stepline',
+   'A numbered sequence in the pixel language: one accent per node, a staircase connector, vertical on a phone and horizontal above `md`.',
+   ['PixelStepLine']],
+  ['/showcase', '[data-testid="showcase-document-viewer"]', 'document-viewer',
+   'A document page with regions a finding can light up: focusable region boxes, a status hue plus its label, and the findings beside it.',
+   ['PixelDocumentViewer', 'DocumentRegion']],
+  ['/showcase', '[data-testid="showcase-nav-switcher"]', 'nav-switcher',
+   'The suite switcher above a nav\'s own items: the active product takes the accent-ink edge.',
+   ['PixelNav', 'PixelNavProduct']],
   ['/showcase', '#product-surface', 'product-surface',
    'An APP screen, not a marketing page. Quiet chrome, colour on the work: peers with their own accent and ordinal, a meter for strength, an ochre primary. Copy this for a tool; copy the site shots for a public page.',
    ['PixelNav', 'PixelPanel', 'PixelMeter', 'PixelDropZone', 'PixelField', 'PixelSelect', 'PixelProgress', 'PixelButton']],
@@ -78,8 +87,8 @@ const SHOTS = [
    ['PixelEditorialSection', 'PixelFocusRow']],
 ];
 
-if (!existsSync(path.join(dist, 'index.html'))) {
-  throw new Error('capture-reference: dist/index.html missing — run `npm run build` first');
+if (!existsSync(path.join(dist, 'showcase', 'index.html'))) {
+  throw new Error('capture-reference: dist/showcase/index.html missing — run `npm run build` first');
 }
 
 // Reuse the preview server the browser tests already run against rather than
