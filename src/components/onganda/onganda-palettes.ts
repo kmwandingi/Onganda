@@ -231,6 +231,42 @@ export const PALETTES = {
       critical: ['Signal red', 'Critical mark'], primaryInk: ['Indigo', 'Accent ink'],
       deep: ['Deep indigo', 'Hover and settled'], ink: ['Night ink', 'Ink'], rare: ['Brass ink', 'Text-safe brass']
     }
+  },
+  // Sorghum and husk rose on swept stone, with dusk slate. The threshing floor
+  // at the end of the day, for document checks in financial integrity work.
+  // Named for the Oshipale product. No green: a passed check is not clearance.
+  oshipale: {
+    label: 'Oshipale',
+    description: 'Sorghum and husk rose on swept stone, with dusk slate, for document checks in financial integrity work.',
+    rules: 'No green. No state reads as all clear: a passed check is a check glyph on the settled tone with its words. Husk rose is the action fill and never a state; chaff is a fill and never text.',
+    canvas: '#E3E1DC',
+    surface: '#F4F3EF',
+    ink: '#1B1820',
+    paper: '#F4F3EF',
+    primary: '#E2A08E',
+    primaryInk: '#6B2346',
+    secondary: '#E6CC85',
+    deep: '#6B2346',
+    deepLight: '#D79AB6',
+    rare: '#3D5A80',
+    critical: '#C8372D',
+    danger: '#9C2A2C',
+    darkCanvas: '#110F15',
+    darkSurface: '#1A1720',
+    darkInverse: '#251F2C',
+    peers: ['#6B2346', '#3D5A80', '#8A6A1B', '#7A4A8C', '#8E4A36'],
+    peersDark: ['#D79AB6', '#9DB9DD', '#E6CC85', '#C6A6DA', '#E0A48C'],
+    chart: ['#6B2346', '#4F7BA8', '#C9A43E', '#7A4A8C', '#B0603F', '#C8372D'],
+    editor: {
+      paperWhite: '#FFFFFF', paperWarm: '#FAF9F6', dustCream: '#EFEDE8', dustHover: '#E9E7E1', dustPanel: '#E3E1DB',
+      dustPanelDeep: '#DEDCD5', dustWell: '#DAD8D1', dustHeader: '#D6D4CC', canvasWellDark: '#0B0A0E', emberBrown: '#221E27'
+    },
+    swatches: {
+      canvas: ['Floor stone', 'Base background'], surface: ['Swept floor', 'Lifted surface'],
+      secondary: ['Chaff', 'Secondary highlight'], primary: ['Husk rose', 'Primary action'],
+      critical: ['Signal red', 'Critical mark'], primaryInk: ['Sorghum', 'Accent ink'],
+      deep: ['Deep sorghum', 'Hover and settled'], ink: ['Night ink', 'Ink'], rare: ['Dusk blue', 'Rare accent']
+    }
   }
 } as const satisfies Record<string, Palette>;
 

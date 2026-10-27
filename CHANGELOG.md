@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — `oshipale`, a fifth shipped palette
+
+- **`PALETTES.oshipale`**: sorghum and husk rose on swept stone, with dusk
+  slate, for document checks in financial integrity work. Built for the
+  Oshipale product, so it reads as one family with Olupale and is told apart
+  from it at a glance. Its hue rule forbids green, and husk rose, the action
+  fill, is never a state. `selectPalette('oshipale')` in a product;
+  `palettes/oshipale.css` for CSS-only styling. All 670 contrast measurements
+  pass across the five palettes, light and dark.
+
 ### Added — `olupale`, a fourth shipped palette
 
 - **`PALETTES.olupale`**: indigo ink and brass on paper, for evidence review

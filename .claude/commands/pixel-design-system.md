@@ -28,12 +28,12 @@ These six steps produce a screen that looks like the showcase. Do them before
 reading the rest of this guide; the rest explains why they work.
 
 1. **Stay on the Onganda palette.** It is the default and needs no code. Only
-   when the product asks for another palette (`coast`, `etosha`, `olupale`, or
-   its own colours) choose it in one file, `src/onganda-palette.ts`:
+   when the product asks for another palette (`coast`, `etosha`, `olupale`,
+   `oshipale`, or its own colours) choose it in one file, `src/onganda-palette.ts`:
 
    ```ts
    import { selectPalette } from '@onganda/design-system/palettes';
-   selectPalette('coast'); // or 'etosha', 'olupale', or your own definePalette({...})
+   selectPalette('coast'); // or 'etosha', 'olupale', 'oshipale', or your own definePalette({...})
    ```
 
    Import it on the first line of `main.tsx`, so it runs before the first
@@ -339,6 +339,7 @@ Use `onganda` unless the product's brief asks for another palette or its own col
 | `coast` | Cool fog and signal amber: slate, teal, iris | Security, infrastructure, data tools | Cool, with one warm signal: amber is the secondary action and caution, and nothing else. Success is a check glyph on the settled slate, never a green. |
 | `etosha` | Salt pan, acacia and sun: sand, grass green, yellow, blue | Education, learning, public services | Green is the primary action, so it never also means success: success is a check glyph on the settled tone. Yellow is a fill, never text. |
 | `olupale` | Indigo ink and brass on paper | Evidence review in financial integrity work | No green. No-result and low-risk states are never green, because no result is not clearance. Every state carries text, an icon and a shape as well as colour. |
+| `oshipale` | Sorghum and husk rose on swept stone, with dusk slate | Document checks in financial integrity work | No green. No state reads as all clear: a passed check is a check glyph on the settled tone with its words. Husk rose is the action fill and never a state; chaff is a fill and never text. |
 
 **Follow the rule of the palette you are in.** Rules that name a pigment —
 "the primary is ochre", "no green and no blue" — describe Onganda. Under another

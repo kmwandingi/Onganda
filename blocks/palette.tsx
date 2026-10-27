@@ -15,7 +15,7 @@ export function MilletClayBarkSmokeOchreSection() {
         actions={<PixelTabs
           label="Palette"
           value="onganda"
-          tabs={[{ value: "onganda", label: "Onganda" }, { value: "coast", label: "Coast" }, { value: "etosha", label: "Etosha" }]}
+          tabs={[{ value: "onganda", label: "Onganda" }, { value: "coast", label: "Coast" }, { value: "etosha", label: "Etosha" }, { value: "olupale", label: "Olupale" }, { value: "oshipale", label: "Oshipale" }]}
           onChange={() => {}}
         />}
       />
