@@ -132,27 +132,28 @@ export const PixelDocumentViewer = ({
             />
             <span aria-hidden="true" className="absolute" style={{ inset: 12 }}>
               {on && <PixelCornerMarks hex={hue} size={8} />}
-              {on && (
-                <span
-                  className="absolute whitespace-nowrap"
-                  style={{
-                    left: 0,
-                    top: -2,
-                    transform: 'translateY(-100%)',
-                    fontSize: TYPE.tag.size,
-                    fontWeight: TYPE.tag.weight,
-                    letterSpacing: TYPE.tag.tracking,
-                    textTransform: 'uppercase',
-                    color: c.text,
-                    background: c.surface,
-                    border: `1px solid ${hue}`,
-                    padding: '2px 6px'
-                  }}
-                >
-                  {region.label}
-                </span>
-              )}
             </span>
+            {on && (
+              <span
+                aria-hidden="true"
+                className="absolute whitespace-nowrap"
+                style={{
+                  left: 12,
+                  top: 10,
+                  transform: 'translateY(-100%)',
+                  fontSize: TYPE.tag.size,
+                  fontWeight: TYPE.tag.weight,
+                  letterSpacing: TYPE.tag.tracking,
+                  textTransform: 'uppercase',
+                  color: c.text,
+                  background: c.surface,
+                  border: `1px solid ${hue}`,
+                  padding: '2px 6px'
+                }}
+              >
+                {region.label}
+              </span>
+            )}
           </button>
         );
       })}
