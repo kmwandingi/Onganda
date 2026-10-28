@@ -101,45 +101,58 @@ export const PixelDocumentViewer = ({
             aria-label={`${region.label}${region.status ? ` — ${region.status}` : ''}`}
             className="onganda-focus absolute"
             style={{
-              left: `${region.x * 100}%`,
-              top: `${region.y * 100}%`,
-              width: `${region.w * 100}%`,
-              height: `${region.h * 100}%`,
+              // The button reaches 12px past the box on every side, so a small
+              // region still meets the 24px pointer target. The marked box is
+              // drawn by the inner span and keeps the region's exact bounds.
+              left: `calc(${region.x * 100}% - 12px)`,
+              top: `calc(${region.y * 100}% - 12px)`,
+              width: `calc(${region.w * 100}% + 24px)`,
+              height: `calc(${region.h * 100}% + 24px)`,
               padding: 0,
               cursor: 'pointer',
-              // A 2px status edge plus a 1px `line` ring outside it, so a hue
-              // under 3:1 still delineates on the page (the palette's
-              // caution/active marks carry this ring for the same reason).
-              background: on ? `${hue}26` : 'transparent',
-              border: `2px solid ${hue}`,
-              boxShadow: `0 0 0 1px ${c.line}`,
+              background: 'transparent',
+              border: 'none',
               ['--onganda-focus' as string]: c.focusRing
             } as React.CSSProperties}
             onFocus={() => activate(region)}
             onClick={() => activate(region)}
           >
-            {on && <PixelCornerMarks hex={hue} size={8} />}
-            {on && (
-              <span
-                aria-hidden="true"
-                className="absolute whitespace-nowrap"
-                style={{
-                  left: 0,
-                  top: -2,
-                  transform: 'translateY(-100%)',
-                  fontSize: TYPE.tag.size,
-                  fontWeight: TYPE.tag.weight,
-                  letterSpacing: TYPE.tag.tracking,
-                  textTransform: 'uppercase',
-                  color: c.text,
-                  background: c.surface,
-                  border: `1px solid ${hue}`,
-                  padding: '2px 6px'
-                }}
-              >
-                {region.label}
-              </span>
-            )}
+            <span
+              aria-hidden="true"
+              className="absolute"
+              style={{
+                inset: 12,
+                // A 2px status edge plus a 1px `line` ring outside it, so a hue
+                // under 3:1 still delineates on the page (the palette's
+                // caution/active marks carry this ring for the same reason).
+                background: on ? `${hue}26` : 'transparent',
+                border: `2px solid ${hue}`,
+                boxShadow: `0 0 0 1px ${c.line}`
+              }}
+            />
+            <span aria-hidden="true" className="absolute" style={{ inset: 12 }}>
+              {on && <PixelCornerMarks hex={hue} size={8} />}
+              {on && (
+                <span
+                  className="absolute whitespace-nowrap"
+                  style={{
+                    left: 0,
+                    top: -2,
+                    transform: 'translateY(-100%)',
+                    fontSize: TYPE.tag.size,
+                    fontWeight: TYPE.tag.weight,
+                    letterSpacing: TYPE.tag.tracking,
+                    textTransform: 'uppercase',
+                    color: c.text,
+                    background: c.surface,
+                    border: `1px solid ${hue}`,
+                    padding: '2px 6px'
+                  }}
+                >
+                  {region.label}
+                </span>
+              )}
+            </span>
           </button>
         );
       })}
