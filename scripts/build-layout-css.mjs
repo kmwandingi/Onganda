@@ -36,6 +36,7 @@ const files = [
   'onganda-primitives.tsx',
   'onganda-patterns.tsx',
   'onganda-site.tsx',
+  'onganda-public-sites.tsx',
   'onganda-icons.tsx',
   'onganda-charts.tsx'
 ].filter(f => existsSync(path.join(SRC, f)));
