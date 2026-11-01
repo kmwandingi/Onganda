@@ -1824,11 +1824,11 @@ export const OngandaFooter = () => <footer className="w-full bg-(--onganda-inver
             <span className="font-semibold tracking-tight text-base">
               <span className="text-(--onganda-action-bg)">Onganda</span>
               <span className="text-(--onganda-text-on-inverse)/55 mx-1.5">·</span>
-              <span className="text-(--onganda-text-on-inverse)/70 font-normal text-sm">Namibia AI Systems Lab</span>
+              <span className="text-(--onganda-text-on-inverse)/70 font-normal text-sm">Applied AI lab for services</span>
             </span>
           </div>
           <p className="text-sm text-(--onganda-text-on-inverse)/55 max-w-xs leading-relaxed">
-            A sovereign intelligence workshop. Pixelated by design. Material by palette. Oshiwambo by name. Calm by layout.
+            Applied AI systems for public, financial, and institutional services. Built in Windhoek, Namibia.
           </p>
         </div>
         <nav aria-label="Footer navigation" className="flex flex-col gap-3">
@@ -1837,7 +1837,7 @@ export const OngandaFooter = () => <footer className="w-full bg-(--onganda-inver
         </nav>
       </div>
       <div className="mt-12 pt-6 border-t border-(--onganda-text-on-inverse)/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <p className="text-[11px] text-(--onganda-text-on-inverse)/55">© {CURRENT_YEAR} Namibia AI Systems Lab. All rights reserved. Names pending linguistic validation.</p>
+        <p className="text-[11px] text-(--onganda-text-on-inverse)/55">© {CURRENT_YEAR} Onganda · Applied AI Lab. Windhoek, Namibia. All rights reserved.</p>
         <div aria-hidden="true" className="flex gap-0.5">
           {FOOTER_DITHER_SWATCHES.map((c, i) => <div key={`foot-sw-${i}`} className="w-3 h-3" style={{
           background: c,

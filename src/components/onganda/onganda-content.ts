@@ -169,17 +169,17 @@ export const PIXEL_RULES: PixelRule[] = [{
 }];
 
 export const FOOTER_LINKS: FooterLink[] = [{
-  label: 'Manifesto',
-  href: '#'
+  label: 'Why Onganda',
+  href: '#why'
 }, {
-  label: 'Documentation',
-  href: '#'
+  label: 'Architecture',
+  href: '#building'
 }, {
-  label: 'Research',
-  href: '#'
+  label: 'Projects',
+  href: '#focus'
 }, {
-  label: 'Partners',
-  href: '#'
+  label: 'Contact',
+  href: '#contact'
 }];
 
 export const STATS: StatEntry[] = followPalette(() => ([{
@@ -188,18 +188,18 @@ export const STATS: StatEntry[] = followPalette(() => ([{
   sub: 'in architecture',
   hex: COLOR.ochreOrange
 }, {
-  value: '3',
-  label: 'Language Models',
-  sub: 'adapted for Namibia',
+  value: '4',
+  label: 'Live Products',
+  sub: 'deployed & running',
   hex: COLOR.barkRust
 }, {
-  value: '12',
-  label: 'Sector Pilots',
-  sub: 'across 4 industries',
+  value: '3',
+  label: 'Service Domains',
+  sub: 'finance, civic & media',
   hex: COLOR.mahanguGold
 }, {
   value: '1',
-  label: 'Sovereign Lab',
+  label: 'Applied AI Lab',
   sub: 'Windhoek, Namibia',
   hex: COLOR.mopaneBrown
 }]));

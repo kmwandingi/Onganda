@@ -98,7 +98,7 @@ export const PixelTicker = ({
                 letterSpacing: TYPE.label.tracking,
                 // The system hue has to survive the black ground: inkOn picks
                 // the readable form rather than trusting the raw token.
-                color: inkOn(row.hex, c.inverse)
+                color: inkOn(row.hex, c.inverse, true)
               }}
             >
               {row.label}
@@ -197,7 +197,7 @@ export const PixelFocusRow = ({
     <motion.article
       {...MOTION.fadeUp}
       whileHover={{ x: 4 }}
-      className="relative flex gap-5 border p-5"
+      className="relative flex items-start gap-5 border p-5"
       style={{ background: c.surface, borderColor: c.line }}
     >
       <PixelTag hex={accent} label={String(index + 1).padStart(2, '0')} isDark={isDark} />
