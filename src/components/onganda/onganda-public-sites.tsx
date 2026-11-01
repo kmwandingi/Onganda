@@ -30,7 +30,7 @@ import { followPalette } from './onganda-colors';
 type PublicPage = 'home' | 'full';
 
 const BRAND = 'Onganda';
-const LAB_LABEL = 'Namibia AI Systems Lab';
+const LAB_LABEL = 'Applied AI lab for services';
 const TONE = followPalette(() => ({
   muted: inkAlpha(0.66),
   quiet: inkAlpha(0.66),
