@@ -787,6 +787,7 @@ export const PixelPanel = ({
   depth = 'flat',
   tone = 'surface',
   selected,
+  level = 2,
   children,
   footer,
   isDark: isDarkProp,
@@ -825,7 +826,7 @@ export const PixelPanel = ({
   /** an ordinal or identity tag in the accent, top right: "01", "LIVE" */
   tag?: string;
   /** on the title's line, right-aligned: a status with its label, a count,
-   *  a small action. Keeps the title an <h2> and the row aligned. */
+   *  a small action. Keeps the title a heading and the row aligned. */
   aside?: React.ReactNode;
   /** how the card sits. `flat` (default) is the site's card. `raised` rests
    *  on a hard 8px pixel shadow; `lift` is flat until hovered, then steps up
@@ -839,6 +840,8 @@ export const PixelPanel = ({
    *  `aria-pressed`. Not texture, not a fill — the edge is the state. With
    *  `onClick` the card is a button: focusable, Enter and Space activate it. */
   selected?: boolean;
+  /** the title's heading level: 3 when the card sits under a section's h2 */
+  level?: 2 | 3;
   children?: React.ReactNode;
   footer?: React.ReactNode;
   isDark?: boolean;
@@ -862,6 +865,7 @@ export const PixelPanel = ({
   // card a product builds is a PixelPanel.
   const weave = TEXTURE[texture ?? 'none'];
   const pad = d.stackGap > 12 ? 24 : 16;
+  const Heading = level === 3 ? 'h3' : 'h2';
   return (
     <section
       data-onganda-panel={emphasis === 'quiet' ? 'quiet' : spine ? 'spine' : 'corners'}
@@ -884,7 +888,8 @@ export const PixelPanel = ({
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (e.currentTarget as HTMLElement).click(); }
         }
       } : {})}
-      className={`relative overflow-hidden ${className}`}
+      // A column, so a card stretched to its row's height hands it to the content.
+      className={`relative flex flex-col overflow-hidden ${className}`}
       style={{
         // A tint is the accent laid over the surface: text keeps its contrast
         // because the wash is 8% and the surface underneath is unchanged.
@@ -902,7 +907,7 @@ export const PixelPanel = ({
       {/* onganda-allow: texture-as-state — the caller's `texture` prop, not a UI state */}
       {weave > 0 && <WeaveOverlay isDark={isDark} opacity={weave} />}
       {!spine && !quiet && <PixelCornerMarks hex={hue} size={7} />}
-      <div className="relative" style={{ padding: pad }}>
+      <div className="relative flex-1" style={{ padding: pad }}>
         {/* With an icon, the card opens like a system card: the tile on the
             left, the ordinal on the right. Without one, the ordinal shares the
             eyebrow's line rather than taking a row of its own. */}
@@ -933,7 +938,7 @@ export const PixelPanel = ({
           </div>
         )}
         {title && !aside && (
-          <h2
+          <Heading
             style={{
               fontSize: TYPE.title.size,
               fontWeight: TYPE.title.weight,
@@ -945,13 +950,13 @@ export const PixelPanel = ({
             }}
           >
             {title}
-          </h2>
+          </Heading>
         )}
         {title && aside && (
           <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
             {/* The title keeps at least 12rem; on a narrow card the aside drops
                 below it instead of squeezing it to two words a line. */}
-            <h2
+            <Heading
               style={{
                 flex: '1 1 12rem',
                 fontSize: TYPE.title.size,
@@ -964,7 +969,7 @@ export const PixelPanel = ({
               }}
             >
               {title}
-            </h2>
+            </Heading>
             <div className="shrink-0" style={{ marginTop: eyebrow ? SPACE_SCALE['4'] : 0 }}>{aside}</div>
           </div>
         )}

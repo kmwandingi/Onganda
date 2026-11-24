@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — `PixelPanel` heading level and full-height content
+
+- **`level`**: `PixelPanel` titles stay `h2` by default; `level={3}` renders an
+  `h3`, for cards under a section's own `h2`.
+- A panel stretched to its row's height now hands that height to its content,
+  so a footer pushed down with `margin-top: auto` aligns across peer cards.
+  Panels sized by their content render as before.
+
 ### Fixed — everything on the showcase is reproducible from the system
 
 Copying every section showed six where the showcase used something the
