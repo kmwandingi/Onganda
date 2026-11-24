@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com); versions follow s
 
 ## [Unreleased]
 
+### Added — `PixelPanel` heading level and full-height content
+
+- **`level`**: `PixelPanel` titles stay `h2` by default; `level={3}` renders an
+  `h3`, for cards under a section's own `h2`.
+- A panel stretched to its row's height now hands that height to its content,
+  so a footer pushed down with `margin-top: auto` aligns across peer cards.
+  Panels sized by their content render as before.
+
 ### Added — `oshipale`, a fifth shipped palette
 
 - **`PALETTES.oshipale`**: sorghum and husk rose on swept stone, with dusk

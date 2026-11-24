@@ -732,6 +732,11 @@ the brand's general-purpose card. Surface, hairline border, four pixel corner
 marks in the card's accent, a 12px eyebrow, an 18px semibold title, 14px body.
 Padding follows density: 24 on a page, 16 in a side panel.
 
+The title is an `h2`; pass `level={3}` when the card sits under a section's
+own `h2`. A card stretched to its row (`className="h-full"`) passes that height
+to its content, so a footer pushed down with `margin-top: auto` lines up across
+peers.
+
 **It does not stack its marks.** The site never does. Its feature card has
 corner marks and no spine; its system card has a 3px spine and no corner
 marks. Pass `spine` to get the second
